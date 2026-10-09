@@ -11,4 +11,4 @@ createServer(async (req, res) => {
     const body = await readFile(file);
     res.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Content-Length': body.length, 'Cache-Control': 'no-store' }).end(body);
   } catch { res.writeHead(404).end('Not found'); }
-}).listen(Number(process.env.PORT || 4173), '127.0.0.1', () => console.log('Flippy demo: http://127.0.0.1:4173'));
+}).listen(Number(process.env.PORT || 4173), '127.0.0.1', () => console.log('Sela playground: http://127.0.0.1:4173'));

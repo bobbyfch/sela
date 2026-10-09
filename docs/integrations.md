@@ -42,12 +42,12 @@ SSR import and construction are safe; call `open()` only after mounting.
 
 `adapters/vue/SelaViewer.vue` is an optional source component, requiring Vue
 3 and a Vue SFC build pipeline. Its options are typed. For bundlers resolving
-the relative ESM file, use its adjacent `flippy.esm.d.ts` declaration.
+the relative ESM file, use its adjacent `sela.esm.d.ts` declaration.
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import SelaViewer from 'flippypdf/vue';
+import SelaViewer from '@bobbyfch/sela/vue';
 const visible = ref(false);
 const options = { pdfUrl: '/api/ebook/42', title: 'E-book' };
 </script>
