@@ -66,7 +66,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   await page.screenshot({ path: 'test-results/site-mobile-light-en.png', fullPage: true });
   expect(await page.locator('link[rel=canonical]').getAttribute('href')).toBe('https://bobbyfch.github.io/sela/');
   const schema=JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
-  expect(schema.softwareVersion).toBe('1.1.0');
+  expect(schema.softwareVersion).toBe('1.2.0');
   await page.locator('[data-theme-choice=auto]').click();
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(23, 35, 29)');

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
 test('dedicated room stores and deduplicates books, searches, opens, exports and undoes removal',async({page})=>{
- await page.goto('/extension/library.html');
+ await page.goto('/extension/library.html');await expect(page.locator('#home-app')).toHaveAttribute('data-ready','true');
  await expect(page.locator('#clock')).not.toHaveText('--:--');
  const file={name:'A quiet book.txt',mimeType:'text/plain',buffer:Buffer.from('Sela: a quiet story to keep offline.')};
  await page.locator('#books').setInputFiles(file);await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('#books')).toBeEnabled();
@@ -16,14 +16,14 @@ test('dedicated room stores and deduplicates books, searches, opens, exports and
 });
 
 test('library mobile light/dark and Indonesian preserve usable two-column shelf without overflow',async({page})=>{
- await page.goto('/extension/library.html');await page.locator('#books').setInputFiles([{name:'First.txt',mimeType:'text/plain',buffer:Buffer.from('First book')},{name:'Second.txt',mimeType:'text/plain',buffer:Buffer.from('Second book')}]);await expect(page.locator('.book')).toHaveCount(2);
+ await page.goto('/extension/library.html');await expect(page.locator('#home-app')).toHaveAttribute('data-ready','true');await page.locator('#books').setInputFiles([{name:'First.txt',mimeType:'text/plain',buffer:Buffer.from('First book')},{name:'Second.txt',mimeType:'text/plain',buffer:Buffer.from('Second book')}]);await expect(page.locator('.book')).toHaveCount(2);
  for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});for(const colorScheme of ['light','dark']){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const b=await page.locator('.cover').first().boundingBox();expect(b.width).toBeGreaterThan(90);}}
- await page.locator('#language').click();await expect(page.locator('html')).toHaveAttribute('lang','id');await expect(page.locator('h1')).toHaveText('Ada tempat untuk kembali.');
+ await page.locator('#language').click();await expect(page.locator('html')).toHaveAttribute('lang','id');await expect(page.locator('#home-app h1')).toHaveText('Ada tempat untuk kembali.');
  await page.screenshot({path:'test-results/library-id.png',fullPage:true});
 });
 
 test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{
- await page.goto('/extension/library.html');await page.locator('#sample').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
+ await page.goto('/extension/library.html');await expect(page.locator('#home-app')).toHaveAttribute('data-ready','true');await page.locator('#sample').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
   await page.locator('.cover').click();await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Reading tools',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.library-reader-page-form input')).toHaveValue('46');
 });
 

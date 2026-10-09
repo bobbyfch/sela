@@ -17,14 +17,14 @@ Do not move private PDFs into GitHub Pages.
 This repo is not automatically published to npm. Install from the GitHub tag:
 
 ```sh
-npm install github:bobbyfch/sela#v1.1.0
+npm install github:bobbyfch/sela#v1.2.0
 ```
 
 ```ts
 import Sela, { type SelaOptions } from '@bobbyfch/sela';
 const options: SelaOptions = {
   pdfUrl: '/api/ebook/42',
-  assetBase: 'https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.1.0/dist/'
+  assetBase: 'https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/'
 };
 const viewer = new Sela(options);
 await viewer.open();

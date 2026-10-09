@@ -5,7 +5,7 @@ import { Webtoon } from './webtoon.js';
 import { FILTERS, brightness, applyAppearance } from './appearance.js';
 export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.1.0';
+export const VERSION = '1.2.0';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;

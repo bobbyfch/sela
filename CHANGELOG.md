@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 — 2026-10-09
+
+- Three products: Viewer CDN, Home desktop new-tab extension and Bookshelf mobile web app.
+- Mobile-only install entry, bottom navigation, persistent local shelf, basic old-browser fallback and app shell caching.
+- Shared favorites, format/status filters and shelf/grid/list layouts; five example covers with four labeled text placeholders.
+- Home offline quotes and optional city weather with Open-Meteo attribution and explicit permissions.
+- Public product routing and updated EN/ID docs. Safari package and full iPhone 4 PWA are not claimed.
+- Clean generated extension folders before packaging to exclude stale assets.
+
+
 ## 1.1.0 — 2026-10-09
 
 - Public installation routes for CDN viewer and dedicated bookshelf extension; linked release/download badges and current bilingual documentation.

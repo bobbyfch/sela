@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "Sela Bookshelf",
+  "short_name": "Bookshelf",
+  "description": "A private mobile bookshelf and reader.",
+  "start_url": "./?installed=1",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3ec",
+  "theme_color": "#236947",
+  "icons": [
+    {
+      "src": "../site/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "../site/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

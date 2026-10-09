@@ -6,7 +6,7 @@ Browser-delivered JavaScript, CSS and extension ZIPs can be inspected. Obfuscati
 
 ## Local data
 
-Books are stored as byte buffers in IndexedDB under the extension's origin. This is **not application-level encryption at rest**. Browser/OS protections apply, but someone with access to the unlocked profile may read data. Use device encryption and retain originals. A future passphrase vault would need authenticated encryption, careful key handling, backups and a recovery design; no such vault is claimed here.
+Books are stored as byte buffers in IndexedDB on the Home extension origin or Bookshelf Pages origin. This is **not application-level encryption at rest**. Browser/OS protections apply, but someone with access to the unlocked profile may read data. Use device encryption and retain originals. A future passphrase vault would need authenticated encryption, careful key handling, backups and a recovery design; no such vault is claimed here.
 
 ## Active content and permissions
 
@@ -15,3 +15,6 @@ PDF.js runs with `isEvalSupported: false`. HTML/EPUB input is sanitized, externa
 Extension scripts and reading engines are bundled, with `script-src 'self'; object-src 'none'`. Mandatory permissions: `contextMenus`, `storage` (update preference/result), and `alarms` (daily stable-release notification). Remote book access is optional and scoped to the selected origin. The release check uses only the public GitHub releases API with credentials omitted; no book content is sent. Scheduled checks can be disabled.
 
 The update checker validates stable semantic versions and constructs the official release URL itself. It never executes downloaded code, automatically installs ZIPs, or silently changes extension identity. Chrome/Edge store distribution and signed Firefox distribution are the standard paths to automatic code updates. Current ZIPs are unsigned development builds.
+
+## Three-product storage and OS routing
+Viewer does not acquire a bookshelf. Home stores books on its extension origin; Bookshelf mobile stores books in Pages-origin IndexedDB. OS routing is a convenience guard, not security enforcement. Optional Home weather sends a city only when enabled; cached quotes are local. No location permission or GPS is requested.

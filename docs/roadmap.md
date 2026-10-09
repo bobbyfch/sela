@@ -60,3 +60,7 @@ Next: aligned PDF text selection and portable highlights; EPUB CFI/reflow pagina
 ## Shipped in Sela 1.1
 
 PWA viewer installation, clear CDN/extension routes, accessible reading-tools tabs, twelve filters, document brightness and dim controls, daily/manual stable-release notifications (manual code updates for unpacked packages). Core ~23.9 KiB gzip, optional tools ~6 KiB. Original example replaced with a 50-page mystery, twelve chapters and four minimalist illustrations. OPDS, CFI/highlights, OCR, sync, music playback and store signing remain future work.
+
+## Shipped in Sela 1.2
+
+Three product routes, mobile IndexedDB Bookshelf with bottom bar, desktop Home widgets (clock/calendar, local quotes, opt-in city weather), shared shelf filters/favorites/layouts, five sample covers with four labeled text placeholders. Native Safari extension signing and physical old-device validation remain future work.

@@ -11,7 +11,17 @@
 
 [![Sela live book reader](site/preview-reader.jpg)](https://bobbyfch.github.io/sela/)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/download-bookshelf_extension-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/install-Sela_Home-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+
+[![Install Bookshelf mobile](https://img.shields.io/badge/install-Bookshelf_mobile-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
+
+## Three ways to use Sela
+
+| Viewer | Home | Bookshelf |
+| --- | --- | --- |
+| CDN reader for websites / frameworks | Desktop new-tab extension + widgets + books | Mobile web app + bottom bar + local books |
+
+[Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
 ## ✨ Why Sela?
 
@@ -88,29 +98,29 @@ Open **Reading tools** in the reader header (six keyboard-accessible icon tabs: 
 
 Write page/chapter notes; export/import a versioned JSON file with notes and personal bookmarks. Import merges the current book's notes by page/chapter number: use the same document edition. Notes are not geometric PDF highlights. EPUB chapter and relative scroll position resume on reopen; stable EPUB CFI locations are future work.
 
-## 🗄️ A private room for your books
+## 🏡 Sela Home — your desktop new tab
 
-The browser extension has a dedicated bookshelf with local imports, PDF/EPUB/comic covers, title search, last-read sorting, rename/export/remove/undo, a clock, and a coffee pause. Books and reading state stay on that browser. All supported engines are bundled for offline reading; keep original files because browser storage is not a backup. GitHub Pages is a viewer playground only.
+A private bookshelf, clock/calendar, coffee pause, original offline quotes and optional city weather. Install the **New Tab** extension on supported Windows/macOS/Linux browsers. Standard is a compatibility edition. Safari is not packaged. Search, sort, favorites, format/status filters and shelf/grid/list views are included.
 
-Choose **Standard** (toolbar shelf) or **New Tab** (your private room on each new tab), for Chromium or Firefox. **Open with Sela** appears on supported document links; downloading requests optional access only to that site's origin. Development packages are unsigned and not store-published. Mobile API support varies; physical Quetta testing is pending. [Installation, permissions and limits](docs/offline-extension.md).
+[Choose a product](https://bobbyfch.github.io/sela/#products) · [Home installation](docs/offline-extension.md)
 
-## 📲 Install the viewer as a PWA
+## 📱 Sela Bookshelf — mobile app
 
-Install from Pages using the browser install button/menu. This is the viewer, without the extension shelf. The shell is cached on first visit; open each format online once to cache its adapter/worker. Then open local files offline. External DjVu code is not cached. Imported documents are never added to the service-worker cache. Browser storage can be cleared/evicted; retain originals. [Offline/PWA guide](docs/pwa.md).
+A persistent local library with a bottom bar, mobile reader, sorting, filters, favorites and shelf/grid/list layouts. Open Pages on your phone/tablet → Bookshelf → Add to Home Screen / Install. Desktop gets a device notice. Older phones have a basic PDF-link fallback; iPhone 4 cannot run a full modern offline PWA. Five example covers are prepared, including four clearly labeled text placeholders.
 
-The extension checks stable GitHub releases daily and shows a badge for newer versions. Use its refresh icon to check now; disable scheduled checks in the library details. Unpacked packages require manual replacement/reload; signed store packages are needed for browser-managed automatic code updates. [Security and provenance](docs/security.md).
+[Mobile setup and limits](docs/pwa.md)
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.1.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.2.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 
 ## Quick start
 
-[![CDN / self-hosted viewer](https://img.shields.io/badge/install-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](docs/install.md) [![Browser extension](https://img.shields.io/badge/download-Chromium_%2F_Firefox-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest)
+[![CDN / self-hosted viewer](https://img.shields.io/badge/install-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](docs/install.md) [![Browser extension](https://img.shields.io/badge/download-Chromium_%2F_Firefox-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension)
 
-Choose the **viewer** for your website (CDN, self-hosted, ESM/TypeScript, overlay or inline), or the **extension** for a local bookshelf (Standard or New Tab). [Copy-paste setup](docs/install.md) · [Framework integrations](docs/integrations.md) · [Extension installation](docs/offline-extension.md) · [Install viewer PWA](docs/pwa.md).
+Choose **Viewer** for websites/frameworks, **Home** for desktop new tabs, or **Bookshelf** for the mobile app. [Public installation routes](https://bobbyfch.github.io/sela/#products) · [Viewer code](docs/install.md) · [Home setup](docs/offline-extension.md) · [Mobile setup](docs/pwa.md).
 
 ## Reading API
 

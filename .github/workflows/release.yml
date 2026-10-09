@@ -39,6 +39,6 @@ jobs:
             git push origin "refs/tags/$tag"
           fi
           if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --verify-tag --title "Sela $version — lightweight reader and private bookshelf" --notes-file CHANGELOG.md
+            gh release create "$tag" --verify-tag --title "Sela $version — Viewer, Home and Bookshelf" --notes-file CHANGELOG.md
           fi
           gh release upload "$tag" .git/sela-extension/sela-*-"$version".zip .git/sela-extension/SHA256SUMS.txt --clobber

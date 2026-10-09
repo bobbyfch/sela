@@ -1,0 +1,4 @@
+(function(){var p=window.SelaPlatform;function id(){return document.documentElement.lang==='id';}var status=document.getElementById('product-status');
+document.getElementById('get-home').onclick=function(e){if(!p.desktop||p.safari){e.preventDefault();status.textContent=(p.desktop&&p.safari)?(id()?'Paket Safari belum tersedia. Perlu build dan signing Xcode. Viewer tetap dapat digunakan.':'Safari package is not available yet; Xcode build and signing are required. You can use Viewer.'):(id()?'Sela Home tersedia untuk browser desktop. Gunakan Bookshelf di ponsel.':'Sela Home is for desktop browsers. Use Bookshelf on mobile.');}};
+document.getElementById('get-bookshelf').onclick=function(e){if(!p.mobile){e.preventDefault();status.textContent=id()?'Bookshelf App khusus ponsel/tablet. Gunakan Sela Home di desktop.':'Bookshelf App is for phones/tablets. Use Sela Home on desktop.';}};
+})();

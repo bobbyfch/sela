@@ -4,11 +4,21 @@
 
 **Di antara waktu. Di dalam cerita.**
 
-Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Reader JavaScript ringan untuk aplikasi apa pun, dengan perpustakaan pribadi terpisah sebagai browser extension.
+Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Tiga produk dengan satu mesin baca ringan: Viewer CDN untuk website, Home untuk new tab desktop, dan Bookshelf sebagai app mobile.
 
-[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.1](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
+[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.2](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/download-bookshelf_extension-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/install-Sela_Home-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+
+[![Install Bookshelf mobile](https://img.shields.io/badge/install-Bookshelf_mobile-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
+
+## Tiga cara memakai Sela
+
+| Viewer | Home | Bookshelf |
+| --- | --- | --- |
+| Reader CDN untuk website / framework | Extension new tab desktop + widget + buku | Web app mobile + bottom bar + buku lokal |
+
+[Pilih / pasang lewat halaman publik](https://bobbyfch.github.io/sela/#products) · [Panduan produk](docs/products.md)
 
 ## ✨ Yang sudah tersedia
 
@@ -26,29 +36,27 @@ Core sekitar **23,9 KiB gzip**; CSS sekitar **3,4 KiB**. Adapter EPUB/CBZ sekita
 
 PDF, EPUB, CBZ, TXT, Markdown dasar, HTML aman, FB2 berbasis teks, serta DjVu dengan decoder eksternal. PDF pindai dan komik tidak punya teks untuk pencarian/TTS tanpa OCR. PDF punya transkrip teks, tetapi belum ada text layer yang sejajar atau highlight geometris. EPUB memakai navigasi bab, bukan pagination CFI/fidelitas layout penerbit. CBR/RAR, MOBI/AZW, DOCX dan DRM belum didukung. [Batas format](docs/formats.md).
 
-## 🚀 Pasang Sela 1.1
+## 🚀 Pasang Sela 1.2
 
-[![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Unduh extension](https://img.shields.io/badge/unduh-extension_rak_buku-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest)
+[![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Unduh extension](https://img.shields.io/badge/unduh-extension_rak_buku-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension)
 
-Pilih **viewer** untuk website: CDN, self-hosted, ESM/TypeScript, overlay atau embed inline. Pilih **extension** untuk rak pribadi: Standard atau New Tab, Chromium atau Firefox. [Langkah pemasangan publik](https://bobbyfch.github.io/sela/#install-viewer) · [Kode siap salin](docs/install.md) · [Integrasi framework](docs/integrations.md) · [Panduan browser](docs/offline-extension.md) · [PWA viewer](docs/pwa.md).
+Pilih **Viewer** untuk website/framework, **Home** untuk new tab desktop, atau **Bookshelf** untuk app mobile. [Pintu masuk publik](https://bobbyfch.github.io/sela/#products) · [Kode Viewer](docs/install.md) · [Pasang Home](docs/offline-extension.md) · [Pasang Bookshelf](docs/pwa.md).
 
 Viewer tidak memerlukan Bootstrap/jQuery. Host embed harus memiliki tinggi; shortcut hanya aktif saat fokus berada di dalam reader. `destroy()` ketika komponen dilepas. Belum diterbitkan ke npm registry; paket dapat dipasang melalui tag GitHub. Browser lama memakai compatibility entry dengan fallback ke PDF asli.
 
-Repo, Pages dan CDN memakai Sela; rilis saat ini **1.1.0**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
+Repo, Pages dan CDN memakai Sela; rilis saat ini **1.2.0**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
 
-## 📚 Extension: ruang kecil milikmu
+## 🏡 Sela Home — new tab desktop
 
-Rak buku adalah halaman khusus extension, **bukan halaman GitHub Pages yang dibungkus**. Impor banyak berkas lokal, sampul PDF/EPUB/komik bila bisa diambil, sampul tipografi untuk format lainnya, pencarian judul, urut terbaru/terakhir dibaca, ganti judul, ekspor berkas asli, hapus dan undo. Ada jam, tanggal, dan jeda secangkir kopi. Tata letak menyesuaikan layar kecil.
+Rak pribadi, jam/tanggal, jeda kopi, kutipan offline dan cuaca kota opsional. Pasang extension **New Tab** di browser Windows/macOS/Linux yang didukung. Standard hanya edisi kompatibilitas. Safari belum dipaketkan. Pencarian, sorting, favorit, filter format/status dan tampilan shelf/grid/list tersedia.
 
-Pilih edisi **Standard** (rak lewat toolbar) atau **New Tab** (rak pada tab baru), untuk Chromium atau Firefox. Menu klik kanan **Open with Sela** tersedia pada tautan dokumen yang didukung. Unduhan meminta izin opsional hanya ke asal situs yang dipilih; tidak ada intersepsi otomatis atau akses wajib ke semua situs.
+[Pilih produk](https://bobbyfch.github.io/sela/#products) · [Instal Home](docs/offline-extension.md)
 
-Buku tersimpan dalam IndexedDB pada browser/profil tersebut; engine dibundel sehingga membaca buku lokal bisa offline. Maksimal 64 MiB per buku, deduplikasi SHA-256. Hapus data/uninstall/ganti identitas extension dapat menghapus rak: simpan berkas asli dan ekspor catatan. DjVu tidak dibundel di extension karena membutuhkan kode decoder eksternal. Paket development belum ditandatangani/dipublikasikan di store. Quetta mendukung extension Android menurut dokumentasi resminya, tetapi pemasangan dan API pada perangkat fisik belum diuji. [Pemasangan, izin dan batasan](docs/offline-extension.md).
+## 📱 Sela Bookshelf — app mobile
 
-## 📲 PWA dan pembaruan
+Rak lokal persisten, bottom bar, reader mobile, sorting, filter, favorit dan tampilan shelf/grid/list. Buka Pages di ponsel/tablet → Bookshelf → Tambahkan ke Layar Utama / Install. Desktop mendapat pemberitahuan perangkat. Ponsel lama memperoleh fallback tautan PDF; iPhone 4 tidak bisa menjalankan PWA offline modern lengkap. Lima contoh sampul disiapkan, empat di antaranya placeholder teks berlabel jelas.
 
-Pasang viewer melalui tombol install atau menu homescreen browser. Shell tersimpan setelah kunjungan; buka setiap format sekali saat online agar mesin/adapternya tersimpan. Sesudahnya file lokal dapat dibuka offline. PWA tidak memiliki rak; buku pengguna tidak masuk cache service worker. Decoder DjVu eksternal tidak tersimpan. [Panduan PWA](docs/pwa.md).
-
-Ikon refresh extension memeriksa rilis GitHub; pemeriksaan harian memberi badge bila ada versi baru dan dapat dimatikan. Paket unpacked diperbarui manual dengan mempertahankan folder/identitas. Update kode otomatis memerlukan distribusi toko browser atau Firefox bertanda tangan. [Keamanan dan atribusi](docs/security.md).
+[Panduan dan batas mobile](docs/pwa.md)
 
 ## 🎧 Dengarkan, cari, simpan
 

@@ -22,6 +22,6 @@ try{
  await mkdir('.git/sela-proof',{recursive:true});await page.screenshot({path:'.git/sela-proof/library-mobile.png',fullPage:true});
  await page.setViewportSize({width:1360,height:900});await page.screenshot({path:'.git/sela-proof/library-desktop.png',fullPage:true});
  const tab=await context.newPage();await tab.goto('chrome://newtab/');await tab.locator('#shelf').waitFor();assert(new URL(tab.url()).host===id);assert.equal(await tab.locator('.book').count(),2);
- assert.deepEqual(errors,[]);console.log('PASS actual extension: bundled CSP, local PDF/text import, real covers, offline reload/read/tools, saved shelf, mobile dark/ID and new-tab override.');
+ assert.deepEqual(errors,[]);console.log('PASS actual extension: bundled CSP, local PDF/text import, real covers, offline reload/read/tools, saved shelf, narrow viewport dark/ID and new-tab override.');
 }finally{await context.close();}
 // Keep the disposable profile path separate from user browser data; OS temporary cleanup owns it.

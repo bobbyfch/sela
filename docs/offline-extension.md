@@ -1,3 +1,7 @@
+# Sela Home — desktop new-tab extension
+
+Start at [Sela products](https://bobbyfch.github.io/sela/#products), choose Home, download the **New Tab** package for your desktop browser. Standard remains a compatibility edition, not a fourth product. Mobile visitors use Bookshelf; Safari requires a separate Xcode/signing build and is not shipped.
+
 # Sela private library & browser extensions
 
 The extension has its own room: `extension/library.html`, with a bookshelf, real PDF/EPUB/comic covers when extractable, typographic covers otherwise, a clock, a coffee pause, theme and language controls. **GitHub Pages is only a viewer playground.** The library is not part of the reader's core download.
@@ -15,10 +19,10 @@ npm run package:extension
 
 | Package | Entry | New tabs |
 | --- | --- | --- |
-| `sela-chromium-standard-1.1.0.zip` | Toolbar opens your shelf | Unchanged |
-| `sela-chromium-newtab-1.1.0.zip` | Toolbar and new tabs open your shelf | Sela library |
-| `sela-firefox-standard-1.1.0.zip` | Toolbar opens your shelf | Unchanged |
-| `sela-firefox-newtab-1.1.0.zip` | Toolbar and new tabs open your shelf | Sela library |
+| `sela-chromium-standard-1.2.0.zip` | Toolbar opens your shelf | Unchanged |
+| `sela-chromium-newtab-1.2.0.zip` | Toolbar and new tabs open your shelf | Sela library |
+| `sela-firefox-standard-1.2.0.zip` | Toolbar opens your shelf | Unchanged |
+| `sela-firefox-newtab-1.2.0.zip` | Toolbar and new tabs open your shelf | Sela library |
 
 Build folders and ZIPs are in `.git/sela-extension/`. Extract the selected ZIP. In Chrome/Edge/Brave, open the extension manager, enable developer mode, then **Load unpacked** and choose the extracted folder containing `manifest.json`. In Firefox, open `about:debugging` → This Firefox → Load Temporary Add-on → choose the manifest. These development builds are **not store-published or signed**; permanent Firefox installation requires signing. The Firefox package targets Firefox 140+; the web viewer has separate capability-based fallback support.
 
@@ -40,7 +44,7 @@ Authenticated downloads omit credentials; redirects are rejected. Download those
 
 ## Mobile browsers
 
-The room adapts to narrow screens, with two cover columns and touch-size actions. Quetta documents Android Chrome/Edge extension support, but browser support for installation, new-tab overrides, context menus, storage and narration differs. A supported desktop API is not proof it works on every mobile browser. Actual Quetta/device installation remains a physical-device check; use the toolbar edition if the browser does not honor a new-tab override. [Quetta's official extension guide](https://www.quetta.net/blog/top-extensions-for-quetta-browser-customize-your-android-browsing).
+Home is a desktop product. Mobile devices receive a notice even if the package is manually loaded. Use the Bookshelf web app via the public product page. Physical devices remain unverified.
 
 ## Music: a later phase
 
@@ -53,3 +57,7 @@ Streaming is a separate provider integration. Spotify's Web Playback SDK require
 The refresh icon checks the latest stable GitHub release. A daily alarm checks too; disable it in library details. Requests send no book contents or identifiers and omit credentials. Offline/rate-limit failures leave the last successful check intact. A badge means a newer version is available. Download the same browser/edition, close Sela, replace the contents of the existing unpacked directory, and reload the extension; keep its path/identity to retain storage. Export originals and notes first. Never uninstall merely to update.
 
 Chrome/Edge unpacked packages cannot replace their own code. Browser-managed updates require Chrome Web Store / Edge Add-ons distribution. Firefox permanent installation requires signing and either AMO distribution or an approved self-hosted update manifest; these ZIPs are temporary development packages. No signing/store listing is claimed.
+
+## Home widgets and bookshelf controls
+
+Clock/calendar and original rotating quotes work offline. City weather is optional, no GPS, with explicit optional origin permission, local cached conditions and Open-Meteo attribution. See [product guide and weather limits](products.md). Both shelves include favorites, format/status filtering and shelf/grid/list views.

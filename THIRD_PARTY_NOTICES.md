@@ -31,3 +31,6 @@ generated landscape, encoded using DjVu.js.
 ## Original sample story
 
 Yang Tidak Ikut Pulang text and original AI-generated illustrations are CC BY 4.0, attributed to Sela and Bobby Fajar Christian. Text is AI-assisted fiction and does not describe the real people whose names appear. See example/story/README.md and prompts.md. Previous sample content remains licensed in historical releases; it is absent from the active distribution.
+
+## Optional weather
+Home city weather uses Open-Meteo when enabled. Data attribution: Open-Meteo, CC BY 4.0. Hosted free endpoint is for non-commercial use; see https://open-meteo.com/en/pricing. Quotes are original Sela EN/ID copy and work offline.
