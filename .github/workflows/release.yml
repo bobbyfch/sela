@@ -1,0 +1,40 @@
+name: Publish versioned release
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release.yml', 'package.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: git diff --exit-code -- dist index.html
+      - run: npm test && npm run test:types
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser
+      - run: npm run package:extension
+      - name: Create immutable release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          tag="v$version"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag"; then
+            echo 'Release already exists; never rewrite a tag.'
+          else
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$tag"
+          fi
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --verify-tag --title "Sela $version — a place between, a story within" --notes-file CHANGELOG.md
+          fi
+          gh release upload "$tag" .git/sela-extension/sela-*-"$version".zip --clobber

@@ -1,0 +1,32 @@
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { parse, compileScript } from '@vue/compiler-sfc';
+import { build } from 'esbuild';
+
+test('Vue real runtime: mount, close, options replacement, unmount cleanup', async ({ page }) => {
+  const { descriptor } = parse(await readFile('adapters/vue/SelaViewer.vue', 'utf8'));
+  let code = compileScript(descriptor, { id: 'test-flippy', inlineTemplate: true }).content.replace('export default', 'const FlippyViewer =');
+  code += `\nimport { createApp, h, reactive } from 'vue';
+window.vueState = reactive({ visible: false, options: { pdfUrl: '/example/sebentar-sebelum-pulang.pdf', mode: 'single', soundEnabled: false, duration: 0 } });
+const host = document.createElement('div'); document.body.appendChild(host);
+window.vueApp = createApp({ render() { return h(FlippyViewer, { modelValue: vueState.visible, options: vueState.options, 'onUpdate:modelValue': value => { vueState.visible = value; }, onError: error => { window.vueError = error.message; } }); } });
+vueApp.mount(host);`;
+  const result = await build({ stdin: { contents: code, loader: 'ts', resolveDir: resolve('adapters/vue') }, bundle: true, format: 'esm', write: false, external: ['../../dist/js/sela.esm.js'] });
+  await page.route('**/adapters/vue/compiled.js', route => route.fulfill({ contentType: 'application/javascript', body: result.outputFiles[0].text }));
+  await page.goto('/');
+  await page.evaluate(async () => { await import('/adapters/vue/compiled.js'); vueState.visible = true; });
+  await expect(page.locator('.library-reader-overlay')).toBeVisible();
+  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
+  await page.getByRole('button', { name: 'Tutup pembaca', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => vueState.visible)).toBe(false);
+  await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
+  await page.evaluate(() => { vueState.visible = true; });
+  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
+  await page.evaluate(() => { vueState.options = { ...vueState.options, mode: 'webtoon' }; });
+  await expect(page.locator('.flippy-webtoon')).toBeVisible();
+  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
+  await page.evaluate(() => vueApp.unmount());
+  await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
+  expect(await page.evaluate(() => window.vueError)).toBeUndefined();
+});

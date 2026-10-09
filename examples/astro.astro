@@ -1,0 +1,11 @@
+<button type="button" id="pdf-reader">Read PDF</button>
+<a href="/story.pdf">Open original PDF</a>
+<script>
+  import Sela from '@bobbyfch/sela';
+  let viewer: Sela | undefined;
+  document.querySelector('#pdf-reader')?.addEventListener('click', () => {
+    viewer ||= new Sela({ pdfUrl: '/story.pdf', mode: 'book' });
+    viewer.open().catch(console.error);
+  });
+  document.addEventListener('astro:before-swap', () => { viewer?.destroy(); });
+</script>

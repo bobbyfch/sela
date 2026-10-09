@@ -1,0 +1,18 @@
+# Sela 1.0
+> Open-source JavaScript reader for PDF, reflowable EPUB, CBZ, TXT, Markdown, safe HTML, text-only FB2 and optional DjVu. Renderers load on demand. No Bootstrap or jQuery required.
+- Demo: https://bobbyfch.github.io/sela/
+- Source and installation: https://github.com/bobbyfch/sela
+- Documentation: https://github.com/bobbyfch/sela/blob/main/docs/integrations.md
+- Format scope: https://github.com/bobbyfch/sela/blob/main/docs/formats.md
+- Proposed roadmap, not released features: https://github.com/bobbyfch/sela/blob/main/docs/roadmap.md
+- License: MIT. PDF.js is Apache-2.0; PDFlipbook/fflate are MIT. External DjVu.js is GPL-2.0 and is not bundled.
+- Modes: book, single, webtoon, manga (right-to-left).
+- Privacy: selected demo files are read in the browser; the demo does not upload them.
+- Compatibility: modern browsers; older browsers can open/download the original PDF. OS support depends on the browser.
+
+- Optional tools: embedded contents, extractable-text search/transcript, browser TTS, page/chapter notes and JSON export/import. No OCR, aligned PDF text layer, CFI/highlights, sync, OPDS or MOBI/AZW3.
+- Extension-only private bookshelf: IndexedDB, local cover extraction, multi-file import/deduplication, search, sort, rename/export/remove/undo, clock and coffee pause. Standard/New Tab Chromium and Firefox development packages; unsigned/not store-published. Optional origin permission for Open with Sela downloads. Pages is viewer-only.
+- Overlay and inline presentation share capabilities; use presentation: inline and a connected container with explicit height.
+- Sample: Sebentar Sebelum Pulang, original 33-page Indonesian novelet, 8 chapters and real PDF bookmarks; complete EPUB; CBZ illustration gallery only. Story/illustrations CC BY 4.0, AI-assisted; fictional characters.
+- Core release: 1.0.0. CDN https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.0.0/dist/js/sela.min.js. Historical FlippyPDF URLs remain untouched.
+- Privacy: first-visit Pages language lookup uses country.is IP-country service; ?geo=off disables. Embed library does not geolocate. Local narration default; online voices optional and may send text to provider.

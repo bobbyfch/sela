@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /flippypdf/
+Sitemap: https://bobbyfch.github.io/sela/sitemap.xml

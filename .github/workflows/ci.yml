@@ -1,0 +1,22 @@
+name: Viewer checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: git diff --exit-code -- dist index.html
+      - run: npm test
+      - run: npm run test:types
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser
