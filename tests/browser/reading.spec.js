@@ -31,10 +31,15 @@ test('manga arrows, left navigation and filters preserve PDF pixels', async ({ p
   await page.locator('.fb-hot-right').click();
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(2);
   await page.evaluate(() => reader.goTo(1));
+  await expect.poll(() => page.evaluate(() => reader.book.anim === null)).toBe(true);
   const zone = await page.locator('.fb-hot-right').boundingBox();
+  const book = await page.locator('.fb-book').boundingBox();
   await page.mouse.move(zone.x + zone.width / 2, zone.y + zone.height / 2);
   await page.mouse.down();
-  await page.mouse.move(zone.x + zone.width / 2 + 400, zone.y + zone.height / 2, { steps: 10 });
+  await expect.poll(() => page.evaluate(() => !!reader.book.drag)).toBe(true);
+  // Cross the book midpoint; completion must not depend on event delivery speed.
+  await page.mouse.move(book.x + book.width - 10, zone.y + zone.height / 2, { steps: 20 });
+  expect(await page.evaluate(() => reader.book.drag.p)).toBeGreaterThan(0.5);
   await page.mouse.up();
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(2);
 });

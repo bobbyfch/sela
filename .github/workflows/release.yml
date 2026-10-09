@@ -21,7 +21,7 @@ jobs:
       - run: npm test && npm run test:types
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
-      - name: Package extension with current source and story notices
+      - name: Package extension and SHA-256 release checksums
         run: npm run package:extension
       - name: Create immutable release tag
         env:
@@ -38,4 +38,4 @@ jobs:
           if ! gh release view "$tag" >/dev/null 2>&1; then
             gh release create "$tag" --verify-tag --title "Sela $version — lightweight reader and private bookshelf" --notes-file CHANGELOG.md
           fi
-          gh release upload "$tag" .git/sela-extension/sela-*-"$version".zip --clobber
+          gh release upload "$tag" .git/sela-extension/sela-*-"$version".zip .git/sela-extension/SHA256SUMS.txt --clobber

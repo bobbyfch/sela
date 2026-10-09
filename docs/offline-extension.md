@@ -5,6 +5,7 @@ The extension has its own room: `extension/library.html`, with a bookshelf, real
 ## Choose an edition
 
 Download an extension ZIP from [Sela releases](https://github.com/bobbyfch/sela/releases), or build locally:
+Download `SHA256SUMS.txt` from the same release to verify the ZIP before loading it. [Verification](security.md).
 
 ```sh
 npm ci

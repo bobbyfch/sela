@@ -1,6 +1,6 @@
 # Security, attribution and distribution
 
-Sela is open source under MIT. Copyright and upstream notices must be retained. Code exposes an author/version console attribution, and official bundles include a license banner. `dist/manifest.json` records asset SHA-256 hashes. These establish provenance; they do not make JavaScript impossible to copy.
+Sela is open source under MIT. Copyright and upstream notices must be retained. Code exposes an author/version console attribution, and official bundles include a license banner. `dist/manifest.json` records asset SHA-256 hashes; releases include `SHA256SUMS.txt` for the four extension ZIPs. These establish provenance; they do not make JavaScript impossible to copy. Compare a downloaded ZIP using `Get-FileHash -Algorithm SHA256` on Windows or `sha256sum -c SHA256SUMS.txt` on Linux; checksums detect corruption, not a compromised publisher account.
 
 Browser-delivered JavaScript, CSS and extension ZIPs can be inspected. Obfuscation, encryption with a client-side key, domain checks and watermark strings do not prevent cloning. Automatic redirects on third-party domains would also break legitimate self-hosting, localhost, intranet and framework integrations. Sela deliberately does not redirect or collect usage telemetry. A CDN cache cannot recall bytes that were already public.
 

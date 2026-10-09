@@ -1,6 +1,8 @@
 import {mkdir,cp,readFile,writeFile,readdir,stat} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {zipSync} from 'fflate';
+import {createHash} from 'node:crypto';
+const checksums=[];
 const output=resolve('.git/sela-extension');const {version}=JSON.parse(await readFile('package.json','utf8'));
 for(const browser of ['chromium','firefox'])for(const edition of ['standard','newtab']){
  const folder=`${output}/${browser}-${edition}`;await mkdir(folder,{recursive:true});
@@ -16,5 +18,6 @@ for(const browser of ['chromium','firefox'])for(const edition of ['standard','ne
  ...(browser==='firefox'?{browser_specific_settings:{gecko:{id:`sela-${edition}@bobbyfch.github.io`,strict_min_version:'140.0',data_collection_permissions:{required:['none']}}}}:{})};
  await writeFile(`${folder}/manifest.json`,JSON.stringify(manifest,null,2)+'\n');
  const files={};async function walk(path,prefix=''){for(const entry of await readdir(path)){const file=`${path}/${entry}`,name=prefix+entry;if((await stat(file)).isDirectory())await walk(file,name+'/');else files[name]=new Uint8Array(await readFile(file));}}
- await walk(folder);const bytes=zipSync(files,{level:6});await writeFile(`${output}/sela-${browser}-${edition}-${version}.zip`,bytes);console.log(`${browser}/${edition}: ${bytes.length} ZIP bytes`);
+ await walk(folder);const bytes=zipSync(files,{level:6}),name=`sela-${browser}-${edition}-${version}.zip`;await writeFile(`${output}/${name}`,bytes);checksums.push(createHash('sha256').update(bytes).digest('hex')+'  '+name);console.log(`${browser}/${edition}: ${bytes.length} ZIP bytes`);
 }
+await writeFile(`${output}/SHA256SUMS.txt`,checksums.join('\n')+'\n');
