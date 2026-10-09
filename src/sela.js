@@ -2,9 +2,10 @@ import { loadPdfEngine, safeUrl } from './pdf-loader.js';
 import { createBookEngine } from './book-engine.js';
 import { createReader } from './reader.js';
 import { Webtoon } from './webtoon.js';
+import { FILTERS, brightness, applyAppearance } from './appearance.js';
+export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.0.0';
-export const FILTERS = { none: 'none', grayscale: 'grayscale(1)', sepia: 'sepia(.7)', contrast: 'grayscale(1) contrast(1.4)', warm: 'sepia(.35) saturate(.8)', cool: 'hue-rotate(180deg) saturate(.65)' };
+export const VERSION = '1.1.0';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;
@@ -38,6 +39,7 @@ export function createSelaClass(defaultAssetBase) {
       if (options.presentation && !['overlay', 'inline'].includes(options.presentation)) throw new TypeError('presentation must be overlay or inline');
       if (!['book', 'single', 'webtoon', 'manga'].includes(this.options.mode)) throw new TypeError('mode must be book, single, webtoon or manga');
       if (this.options.filter && !Object.prototype.hasOwnProperty.call(FILTERS, this.options.filter)) throw new TypeError('Unknown reading filter');
+      this.options.brightness=brightness(this.options.brightness);
       if (this.options.readingDirection && !['ltr', 'rtl'].includes(this.options.readingDirection)) throw new TypeError('readingDirection must be ltr or rtl');
       if (!['auto', 'light', 'dark'].includes(this.options.theme)) throw new TypeError('theme must be auto, light or dark');
       if (options.format && !['auto','pdf','epub','cbz','djvu','txt','md','html','fb2'].includes(options.format)) throw new TypeError('Unsupported document format');
@@ -67,7 +69,7 @@ export function createSelaClass(defaultAssetBase) {
       }
       if (!win.__selaAttribution) {
         win.__selaAttribution = true;
-        console.info('Sela 1.0 · A place between. A story within.\nCreated by Bobby Fajar Christian · https://bobbyfajarc.github.io/\nGitHub: https://github.com/bobbyfch/sela · Instagram: https://instagram.com/bobby.fch · LinkedIn: https://www.linkedin.com/in/bobbyfajarc/');
+        console.info('Sela '+VERSION+' · Documents, books and comics.\nCreated by Bobby Fajar Christian · https://bobbyfajarc.github.io/\nGitHub: https://github.com/bobbyfch/sela · Instagram: https://instagram.com/bobby.fch · LinkedIn: https://www.linkedin.com/in/bobbyfajarc/');
       }
       if(options.language === 'auto')options.language = /^id\b/i.test(win.navigator.language) ? 'id' : 'en';
       const extension = /\.(epub|cbz|djvu|djv|txt|md|html|fb2)(?:[?#]|$)/i.exec(options.url || options.pdfUrl || '')?.[1].toLowerCase();
@@ -161,9 +163,21 @@ export function createSelaClass(defaultAssetBase) {
       if (!Object.prototype.hasOwnProperty.call(FILTERS, value)) throw new TypeError('Unknown reading filter');
       this.options.filter = value;
       if (this.overlay) {
-        this.overlay.style.setProperty('--flippy-page-filter', FILTERS[value]);
+        this._reader.getState().options.filter=value;
+        applyAppearance(this.overlay,this._reader.getState().options);
         this.overlay.querySelector('.flippy-filter').value = value;
       }
+      return this;
+    }
+    setBrightness(value) {
+      this.options.brightness=brightness(value);
+      const state=this._reader?.getState();
+      if(state){state.options.brightness=this.options.brightness;applyAppearance(this.overlay,state.options);}
+      return this;
+    }
+    setDim(value) {
+      this.options.dim=!!value;const state=this._reader?.getState();
+      if(state){state.options.dim=!!value;applyAppearance(this.overlay,state.options);}
       return this;
     }
     close() {

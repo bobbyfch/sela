@@ -1,4 +1,4 @@
-# Sela 1.0
+# Sela 1.1
 > Open-source JavaScript reader for PDF, reflowable EPUB, CBZ, TXT, Markdown, safe HTML, text-only FB2 and optional DjVu. Renderers load on demand. No Bootstrap or jQuery required.
 - Demo: https://bobbyfch.github.io/sela/
 - Source and installation: https://github.com/bobbyfch/sela
@@ -13,6 +13,11 @@
 - Optional tools: embedded contents, extractable-text search/transcript, browser TTS, page/chapter notes and JSON export/import. No OCR, aligned PDF text layer, CFI/highlights, sync, OPDS or MOBI/AZW3.
 - Extension-only private bookshelf: IndexedDB, local cover extraction, multi-file import/deduplication, search, sort, rename/export/remove/undo, clock and coffee pause. Standard/New Tab Chromium and Firefox development packages; unsigned/not store-published. Optional origin permission for Open with Sela downloads. Pages is viewer-only.
 - Overlay and inline presentation share capabilities; use presentation: inline and a connected container with explicit height.
-- Sample: Sebentar Sebelum Pulang, original 33-page Indonesian novelet, 8 chapters and real PDF bookmarks; complete EPUB; CBZ illustration gallery only. Story/illustrations CC BY 4.0, AI-assisted; fictional characters.
-- Core release: 1.0.0. CDN https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.0.0/dist/js/sela.min.js. Historical FlippyPDF URLs remain untouched.
+- Sample: Yang Tidak Ikut Pulang, original 50-page Indonesian novelet, 12 chapters and real PDF bookmarks; complete EPUB; CBZ illustration gallery only. Story/illustrations CC BY 4.0, AI-assisted; fictional characters.
+- Core release: 1.1.0. CDN https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.1.0/dist/js/sela.min.js. FlippyPDF is retired; public CDN caches cannot be recalled.
 - Privacy: first-visit Pages language lookup uses country.is IP-country service; ?geo=off disables. Embed library does not geolocate. Local narration default; online voices optional and may send text to provider.
+
+- PWA: installable viewer shell with lazy same-origin engine cache, no bookshelf or document caching.
+- Appearance: six accessible icon tabs, twelve filters, document brightness and dim controls.
+- Extension update check: manual/daily stable-release notification, opt-out; unpacked ZIPs update manually.
+- Security scope: no client-side anti-clone encryption; MIT attribution and SHA-256 provenance; local bookshelf is not application-encrypted.

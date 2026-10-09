@@ -12,10 +12,10 @@ try{
  const worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');const id=new URL(worker.url()).host;
  const page=await context.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto(`chrome-extension://${id}/extension/library.html`);
- await page.locator('#books').setInputFiles([{name:'Offline story.pdf',mimeType:'application/pdf',buffer:await readFile('example/sebentar-sebelum-pulang.pdf')},{name:'A second book.txt',mimeType:'text/plain',buffer:Buffer.from('A story beside another story.')}]);
+ await page.locator('#books').setInputFiles([{name:'Offline story.pdf',mimeType:'application/pdf',buffer:await readFile('example/yang-tidak-ikut-pulang.pdf')},{name:'A second book.txt',mimeType:'text/plain',buffer:Buffer.from('A story beside another story.')}]);
  await page.locator('.cover img').waitFor();await page.waitForFunction(()=>!document.querySelector('#books').disabled);assert.equal(await page.locator('.book').count(),2);
- await context.setOffline(true);await page.reload();await page.getByRole('button',{name:'Read Offline story',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.library-reader-footer input[type=range]')?.max==='33');
- await page.getByRole('button',{name:'Reading tools',exact:true}).click();await page.getByRole('button',{name:'8. Sebentar Sebelum Pulang',exact:true}).waitFor();
+ await context.setOffline(true);await page.reload();await page.getByRole('button',{name:'Read Offline story',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.library-reader-footer input[type=range]')?.max==='50');
+ await page.getByRole('button',{name:'Reading tools',exact:true}).click();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).waitFor();
  await page.getByRole('button',{name:'Close reader',exact:true}).click();
  await page.setViewportSize({width:390,height:844});await page.locator('#language').click();await page.locator('#theme').click();await page.locator('#theme').click();
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

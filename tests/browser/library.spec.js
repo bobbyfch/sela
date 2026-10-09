@@ -22,13 +22,13 @@ test('library mobile light/dark and Indonesian preserve usable two-column shelf 
  await page.screenshot({path:'test-results/library-id.png',fullPage:true});
 });
 
-test('PDF cover is a locally rendered thumbnail and sample has eight navigable chapters',async({page})=>{
+test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{
  await page.goto('/extension/library.html');await page.locator('#sample').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
-  await page.locator('.cover').click();await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','33');await page.getByRole('button',{name:'Reading tools',exact:true}).click();await expect(page.getByRole('button',{name:'8. Sebentar Sebelum Pulang',exact:true})).toBeVisible();await page.getByRole('button',{name:'8. Sebentar Sebelum Pulang',exact:true}).click();await expect(page.locator('.library-reader-page-form input')).toHaveValue('28');
+  await page.locator('.cover').click();await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Reading tools',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.library-reader-page-form input')).toHaveValue('46');
 });
 
 test('concurrent inline readers keep page scrolling and scope keyboard navigation to focus',async({page})=>{
- await page.goto('/');await page.evaluate(async()=>{await SelaReady;for(const id of ['one','two']){const host=document.createElement('div');host.id=id;host.style.height='520px';document.body.append(host);const r=new Sela({url:'/example/sebentar-sebelum-pulang.pdf',presentation:'inline',container:host,language:'en',duration:0});window[id]=r;await r.open();}});
+ await page.goto('/');await page.evaluate(async()=>{await SelaReady;for(const id of ['one','two']){const host=document.createElement('div');host.id=id;host.style.height='520px';document.body.append(host);const r=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,language:'en',duration:0});window[id]=r;await r.open();}});
  await expect(page.locator('.sela-inline')).toHaveCount(2);expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');await expect(page.locator('#one .sela-inline')).not.toHaveAttribute('aria-modal','true');
  await page.locator('#one .library-reader-close').focus();await page.keyboard.press('ArrowRight');await expect(page.locator('#one .library-reader-page-form input')).toHaveValue('2');await expect(page.locator('#two .library-reader-page-form input')).toHaveValue('1');
  await page.locator('#one .library-reader-close').click();await expect(page.locator('#one .sela-inline')).toHaveCount(0);await expect(page.locator('#two .sela-inline')).toHaveCount(1);

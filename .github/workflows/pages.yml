@@ -30,7 +30,7 @@ jobs:
       - run: npm run test:browser
       - run: |
           mkdir -p .pages
-          cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt README.md README.id.md THIRD_PARTY_NOTICES.md .pages/
+          cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt manifest.webmanifest sela-sw.js offline-assets.json README.md README.id.md THIRD_PARTY_NOTICES.md .pages/
           cp -r site dist example .pages/
           touch .pages/.nojekyll
       - uses: actions/configure-pages@v5

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 — 2026-10-09
+
+- Public installation routes for CDN viewer and dedicated bookshelf extension; linked release/download badges and current bilingual documentation.
+- Installable viewer PWA with versioned shell caching and lazy same-origin engine caching; no document caching or public bookshelf.
+- Accessible icon tabs for contents, search, appearance, voice, notes and text. Twelve filters, bounded document brightness and dim controls; public `setBrightness` / `setDim` methods.
+- Manual and daily stable-release notifications in the extension, opt-out preference and newer-version toolbar badge. No remote code or silent ZIP updates.
+- New original 50-page Indonesian mystery, Yang Tidak Ikut Pulang, twelve chapters, thirteen PDF bookmarks, complete EPUB, four minimalist illustrations and CBZ gallery.
+- Legacy FlippyPDF retirement and local recovery backup; public CDN cache revocation is not claimed.
+
 ## 1.0.0 — Sela reborn · 2026-10-09
 
 - New Sela repository, Pages and pinned CDN identity, version reset to 1.0.0. Existing FlippyPDF history and pinned CDNs remain available in the previous repository.

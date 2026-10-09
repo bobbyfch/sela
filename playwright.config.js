@@ -5,7 +5,7 @@ export default defineConfig({
   testDir: './tests/browser',
   timeout: 45000,
   workers: 1,
-  use: { baseURL: 'http://127.0.0.1:4173', headless: true },
+  use: { baseURL: 'http://127.0.0.1:4173', headless: true, serviceWorkers: 'block' },
   projects: [
     {name:'chromium',use:{browserName:'chromium',launchOptions:!process.env.CI&&existsSync(edge)?{executablePath:edge}:{}}},
     {name:'firefox',use:{browserName:'firefox'}},

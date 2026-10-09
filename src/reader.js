@@ -1,3 +1,4 @@
+import { FILTERS, FILTER_LABELS, applyAppearance } from './appearance.js';
 export function createReader(global, engine) {
     'use strict';
 
@@ -137,8 +138,8 @@ export function createReader(global, engine) {
         if (state.inline) overlay.classList.add('sela-inline');
         overlay.dataset.flippyTheme = options.theme || 'auto';
         overlay.dataset.paper = options.paperTexture ? 'true' : 'false';
-        var filters = { none: 'none', grayscale: 'grayscale(1)', sepia: 'sepia(.7)', contrast: 'grayscale(1) contrast(1.4)', warm: 'sepia(.35) saturate(.8)', cool: 'hue-rotate(180deg) saturate(.65)' };
-        overlay.style.setProperty('--flippy-page-filter', filters[options.filter] || 'none');
+        var filters = FILTERS;
+        applyAppearance(overlay,options);
         if (options.zIndex) overlay.style.zIndex = String(options.zIndex);
         overlay.setAttribute('role', state.inline ? 'region' : 'dialog');
         if (!state.inline) overlay.setAttribute('aria-modal', 'true');
@@ -184,15 +185,15 @@ export function createReader(global, engine) {
         var filter = document.createElement('select');
         filter.className = 'flippy-filter';
         filter.setAttribute('aria-label', 'Reading filter / Filter baca');
-        ['Original', 'Black & white', 'Sepia', 'High contrast', 'Warm colors', 'Cool colors'].forEach(function (name, index) {
+        Object.keys(filters).forEach(function (key) {
             var option = document.createElement('option');
-            option.value = Object.keys(filters)[index]; option.textContent = name;
+            option.value = key; option.textContent = FILTER_LABELS[key][options.language==='en'?0:1];
             filter.appendChild(option);
         });
         filter.value = options.filter || 'none';
         filter.addEventListener('change', function () {
             options.filter = filter.value;
-            overlay.style.setProperty('--flippy-page-filter', filters[filter.value]);
+            applyAppearance(overlay,options);
         });
         var filterControl=document.createElement('label');filterControl.className='sela-filter-control library-reader-button';filterControl.title=options.language==='en'?'Reading filter':'Filter baca';filterControl.appendChild(makeIcon('palette'));filterControl.appendChild(filter);actions.appendChild(filterControl);
         var fullscreenButton=button(options.language==='en'?'Fullscreen':'Layar penuh',null,'fullscreen');
@@ -244,6 +245,7 @@ export function createReader(global, engine) {
         content.appendChild(sidebar);
         shell.appendChild(content);
         var toolsHost=document.createElement('aside');toolsHost.className='sela-tools';toolsHost.hidden=true;content.appendChild(toolsHost);
+        state.setAppearance=function(values){Object.assign(options,values);filter.value=options.filter||'none';applyAppearance(overlay,options);};
         var toolsPromise;
         function loadTools(){
             if(!toolsPromise)toolsPromise=import(/* webpackIgnore: true */ /* @vite-ignore */ options.toolsUrl).then(function(module){
@@ -255,6 +257,7 @@ export function createReader(global, engine) {
         }
         state.getText=function(page){return loadTools().then(function(){return state.getText(page);});};
         state.showTools=function(){sidebar.hidden=true;marksButton.setAttribute('aria-expanded','false');toolsHost.hidden=false;toolsButton.setAttribute('aria-expanded','true');return loadTools();};
+        state.hideTools=function(){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();toolsButton.focus();};
         toolsButton.addEventListener('click',function(){if(toolsHost.hidden)state.showTools().catch(function(){});else{toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();}});
 
         var footer = document.createElement('footer');
@@ -461,7 +464,7 @@ export function createReader(global, engine) {
 
         state.onKey = function (event) {
             if (state.inline && !overlay.contains(event.target)) return;
-            if(!event.defaultPrevented&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'&&state.book){event.preventDefault();state.showTools().then(function(){toolsHost.querySelector('input[type=search]').focus();}).catch(function(){});return;}
+            if(!event.defaultPrevented&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'&&state.book){event.preventDefault();state.showTools().then(function(){state.tools.selectTab('search');toolsHost.querySelector('input[type=search]').focus();}).catch(function(){});return;}
             if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
             if (event.key === 'Escape') { event.preventDefault(); if(!help.hidden)toggleHelp();else if(!toolsHost.hidden){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();toolsButton.focus();}else close(); return; }
             if (!/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) && !event.target.isContentEditable && state.book) {

@@ -1,48 +1,64 @@
 {
-  "title": "Sebentar Sebelum Pulang",
-  "pages": 33,
-  "chapters": 8,
-  "pdfBookmarks": 9,
+  "title": "Yang Tidak Ikut Pulang",
+  "pages": 50,
+  "chapters": 12,
+  "pdfBookmarks": 13,
   "chapterPages": [
     {
-      "title": "1. Kunci yang Masih Sama",
-      "page": 4
+      "title": "1. Kunci Cadangan",
+      "page": 5
     },
     {
-      "title": "2. Orang yang Merawat Gang",
-      "page": 7
+      "title": "2. Pukul Empat Lewat Empat",
+      "page": 9
     },
     {
-      "title": "3. Cara Menghitung yang Hilang",
-      "page": 11
+      "title": "3. Suara dari Dapur",
+      "page": 13
     },
     {
-      "title": "4. Dua Cangkir di Teras",
-      "page": 14
+      "title": "4. Nama pada Kotak",
+      "page": 17
     },
     {
-      "title": "5. Tidak Semua Harus Kembali",
-      "page": 19
+      "title": "5. Gang yang Salah",
+      "page": 21
     },
     {
-      "title": "6. Hari Sabtu Milik Banyak Orang",
-      "page": 22
+      "title": "6. Yang Diingat Sarah",
+      "page": 24
     },
     {
-      "title": "7. Barang yang Cukup Dibawa",
-      "page": 25
+      "title": "7. Ruang Tanpa Jendela",
+      "page": 28
     },
     {
-      "title": "8. Sebentar Sebelum Pulang",
-      "page": 29
+      "title": "8. Salinan",
+      "page": 31
+    },
+    {
+      "title": "9. Hari yang Tidak Ada",
+      "page": 35
+    },
+    {
+      "title": "10. Jangan Perbaiki Bagian Ini",
+      "page": 38
+    },
+    {
+      "title": "11. Orang di Sebelah Pintu",
+      "page": 42
+    },
+    {
+      "title": "12. Sebelum Rekaman Dimulai",
+      "page": 46
     },
     {
       "title": "Tentang Cerita Ini",
-      "page": 33
+      "page": 50
     }
   ],
-  "words": 3402,
-  "illustrations": 3,
+  "words": 3803,
+  "illustrations": 4,
   "language": "id",
   "license": "CC-BY-4.0",
   "aiAssisted": true

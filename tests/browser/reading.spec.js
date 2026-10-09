@@ -5,7 +5,7 @@ test('manga arrows, left navigation and filters preserve PDF pixels', async ({ p
   await page.goto('/');
   await page.evaluate(async () => {
     await window.FlippyReady;
-    window.reader = new Flippy({ pdfUrl: '/example/sebentar-sebelum-pulang.pdf', mode: 'manga', duration: 0, soundEnabled: false });
+    window.reader = new Flippy({ pdfUrl: '/example/yang-tidak-ikut-pulang.pdf', mode: 'manga', duration: 0, soundEnabled: false });
     await reader.open();
   });
   await expect(page.locator('.fb-rtl')).toBeVisible();
@@ -20,7 +20,7 @@ test('manga arrows, left navigation and filters preserve PDF pixels', async ({ p
   await page.locator('.fb-nav-next').click();
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(2);
   await page.locator('.flippy-filter').selectOption('grayscale');
-  await expect.poll(() => page.locator('.fb-sheet canvas').first().evaluate(c => getComputedStyle(c).filter)).toBe('grayscale(1)');
+  await expect.poll(() => page.locator('.fb-sheet canvas').first().evaluate(c => getComputedStyle(c).filter)).toBe('grayscale(1) brightness(1)');
   await page.evaluate(() => reader.setFilter('sepia'));
   await expect(page.locator('.flippy-filter')).toHaveValue('sepia');
   expect(await page.locator('.fb-sheet canvas').first().evaluate(c => getComputedStyle(c).scale)).toBe('-1 1');
@@ -44,7 +44,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   await page.locator('[data-language-choice=id]').click();
   await expect(page.locator('[data-language-choice=id]')).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('html')).toHaveAttribute('lang', 'id');
-  await expect(page.locator('h1')).toContainText('Di dalam cerita');
+  await expect(page.locator('h1')).toContainText('Lebih banyak membaca');
   await page.locator('[data-theme-choice=dark]').click();
   await page.reload();
   await expect(page.locator('#language')).toHaveValue('id');
@@ -58,7 +58,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   await page.screenshot({ path: 'test-results/site-mobile-light-en.png', fullPage: true });
   expect(await page.locator('link[rel=canonical]').getAttribute('href')).toBe('https://bobbyfch.github.io/sela/');
   const schema=JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
-  expect(schema.softwareVersion).toBe('1.0.0');
+  expect(schema.softwareVersion).toBe('1.1.0');
   await page.locator('[data-theme-choice=auto]').click();
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(23, 35, 29)');
@@ -71,14 +71,14 @@ test('compatibility entry avoids modern bundle on missing browser capabilities',
   await page.goto('/');
   expect(await page.evaluate(() => Flippy.supported)).toBe(false);
   expect(modern).toEqual([]);
-  await expect(page.locator('a[href="example/sebentar-sebelum-pulang.pdf"]').first()).toBeVisible();
+  await expect(page.locator('a[href="example/yang-tidak-ikut-pulang.pdf"]').first()).toBeVisible();
   await expect(page.locator('[data-mode]')).toHaveCount(4);
-  await page.route('**/example/sebentar-sebelum-pulang.pdf', async route => route.fulfill({
+  await page.route('**/example/yang-tidak-ikut-pulang.pdf', async route => route.fulfill({
     contentType: 'application/pdf',
     headers: { 'Content-Disposition': 'attachment; filename="limaraya.pdf"' },
-    body: await readFile('example/sebentar-sebelum-pulang.pdf')
+    body: await readFile('example/yang-tidak-ikut-pulang.pdf')
   }));
-  const original = page.waitForRequest(request => request.url().endsWith('/example/sebentar-sebelum-pulang.pdf') && request.isNavigationRequest());
+  const original = page.waitForRequest(request => request.url().endsWith('/example/yang-tidak-ikut-pulang.pdf') && request.isNavigationRequest());
   const downloaded = browserName !== 'webkit' ? page.waitForEvent('download') : null;
   await page.locator('[data-mode=book]').click();
   expect((await original).resourceType()).toBe('document');
@@ -89,7 +89,7 @@ test('web component destroys viewer on disconnect and reconnects once', async ({
   await page.goto('/');
   await page.evaluate(async () => {
     const {registerFlippyElement}=await import('/examples/web-component.js'); registerFlippyElement();
-    window.element=document.createElement('flippy-reader'); element.setAttribute('src','/example/sebentar-sebelum-pulang.pdf'); document.body.appendChild(element);
+    window.element=document.createElement('flippy-reader'); element.setAttribute('src','/example/yang-tidak-ikut-pulang.pdf'); document.body.appendChild(element);
     await element.viewer.open();
     element.remove(); document.body.appendChild(element);
   });

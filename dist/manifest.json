@@ -1,16 +1,16 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "pdfjs": "4.10.38",
   "assets": {
     "dist/js/flippy.min.js": {
-      "bytes": 78002,
-      "gzip": 23980,
-      "sha256": "e340047d63f0e66b00b6d9e1557a4b8ca7d63e2531f55657492bd88c42dd15a6"
+      "bytes": 79260,
+      "gzip": 24445,
+      "sha256": "59409d4e867f94cc78214918516a567b1e21df44c505ebafb65d19bbb448890a"
     },
     "dist/js/flippy.esm.js": {
-      "bytes": 78090,
-      "gzip": 24026,
-      "sha256": "0f852b4c4a9361ea3aaaa2119543053ea06d0f76e9ffb01d5c2622856d40adbd"
+      "bytes": 79348,
+      "gzip": 24490,
+      "sha256": "e73afa6a6778841b438c5432b7d8de7be2a0eed2db19711739c43f13a02195b3"
     },
     "dist/js/flippy.compat.js": {
       "bytes": 1604,
@@ -28,14 +28,14 @@
       "sha256": "38795190a15565f0f7a8d11370cd41a5f27a649795f5ac4ac15d39f2d400f864"
     },
     "dist/js/sela.min.js": {
-      "bytes": 78002,
-      "gzip": 23980,
-      "sha256": "e340047d63f0e66b00b6d9e1557a4b8ca7d63e2531f55657492bd88c42dd15a6"
+      "bytes": 79260,
+      "gzip": 24445,
+      "sha256": "59409d4e867f94cc78214918516a567b1e21df44c505ebafb65d19bbb448890a"
     },
     "dist/js/sela.esm.js": {
-      "bytes": 78090,
-      "gzip": 24026,
-      "sha256": "0f852b4c4a9361ea3aaaa2119543053ea06d0f76e9ffb01d5c2622856d40adbd"
+      "bytes": 79348,
+      "gzip": 24490,
+      "sha256": "e73afa6a6778841b438c5432b7d8de7be2a0eed2db19711739c43f13a02195b3"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1604,
@@ -53,9 +53,9 @@
       "sha256": "38795190a15565f0f7a8d11370cd41a5f27a649795f5ac4ac15d39f2d400f864"
     },
     "dist/js/sela.tools.js": {
-      "bytes": 10350,
-      "gzip": 4636,
-      "sha256": "11774491af5d9c9609d88c15875a966aff981482b74930417b9afc27ef4a8ffb"
+      "bytes": 14271,
+      "gzip": 6142,
+      "sha256": "03645cbb9c53e2cd19bd0363bf7fd1d482161935fe57cf3e2ec5ca17c29f3278"
     },
     "dist/js/sela.text.js": {
       "bytes": 5928,
@@ -63,14 +63,14 @@
       "sha256": "5f16ac0ff65cda7697334d3e881caa43e7af9a0ef4a1d1e55a2e214a98d7976e"
     },
     "dist/css/sela.min.css": {
-      "bytes": 11485,
-      "gzip": 3057,
-      "sha256": "303e66466fc3777c1b3a64e8c50a51fb0d4fefc60d081364cc11965dbc8cdbf3"
+      "bytes": 13209,
+      "gzip": 3430,
+      "sha256": "dae30bdfd3f870c7bb1fc1d45e9c4231900061f17e8ee2af05dcf83fb5d9c4b6"
     },
     "dist/css/flippy.min.css": {
-      "bytes": 11485,
-      "gzip": 3057,
-      "sha256": "303e66466fc3777c1b3a64e8c50a51fb0d4fefc60d081364cc11965dbc8cdbf3"
+      "bytes": 13209,
+      "gzip": 3430,
+      "sha256": "dae30bdfd3f870c7bb1fc1d45e9c4231900061f17e8ee2af05dcf83fb5d9c4b6"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

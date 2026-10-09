@@ -1,7 +1,7 @@
 <p align="center"><img src="logo.svg" width="88" alt="Sela open-book emblem"></p>
 <h1 align="center">Sela</h1>
 <p align="center"><strong>A place between. A story within. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
-<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <img alt="Release" src="https://img.shields.io/github/v/release/bobbyfch/sela?color=31725a"> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
+<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/bobbyfch/sela?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
 
 [Live playground](https://bobbyfch.github.io/sela/) · [Bahasa Indonesia](README.id.md) · [Integrations](docs/integrations.md) · [Formats](docs/formats.md) · [Browser support](docs/compatibility.md) · [Changelog](CHANGELOG.md)
 
@@ -10,6 +10,8 @@
 🇮🇩 [Baca panduan lengkap dalam Bahasa Indonesia →](README.id.md)
 
 [![Sela live book reader](site/preview-reader.jpg)](https://bobbyfch.github.io/sela/)
+
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/download-bookshelf_extension-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
 
 ## ✨ Why Sela?
 
@@ -21,18 +23,18 @@
 | 🎯 Responsive single-page focus | Bootstrap/Tailwind can stay in your app |
 | 🌗 Themes and reduced motion | Auth headers, credentials, byte-data PDFs |
 | 🔖 Bookmarks and saved progress | Lazy PDF.js and bounded canvas sizes |
-| 🎨 Monochrome, sepia, contrast, warm/cool | Compatibility entry with direct-PDF fallback |
+| 🎨 12 filters, brightness and dim controls | Compatibility entry with direct-PDF fallback |
 
-[Read **Sebentar Sebelum Pulang**, an original 33-page Indonesian novelet](https://bobbyfch.github.io/sela/#demo-heading): eight chapters, three pastel illustrations, embedded PDF bookmarks and complete EPUB navigation. Bobby returns briefly to his old home and meets a life that has continued without him. [Story, licensing and illustration prompts](example/story/README.md).
+[Read **Yang Tidak Ikut Pulang**, an original 50-page Indonesian novelet](https://bobbyfch.github.io/sela/#demo-heading): twelve chapters, four minimalist pencil/pastel illustrations, embedded PDF bookmarks and complete EPUB navigation. Bobby finds a recording that remembers what he has not said. A quiet mystery about a house, borrowed memories and a missing answer. [Story, licensing and illustration prompts](example/story/README.md).
 
 ## 🧩 Load only what you read
 
 | Module | Gzip size | Loaded when |
 | --- | ---: | --- |
-| Main interface | ~23.4 KiB | Main script requested |
-| Scoped CSS | ~3 KiB | First open |
+| Main interface | ~23.9 KiB | Main script requested |
+| Scoped CSS | ~3.4 KiB | First open |
 | EPUB / CBZ adapter (includes fflate) | ~6.8 KiB | EPUB or CBZ selected |
-| Reading tools: contents, search, notes, TTS | ~4.5 KiB | Tools first opened |
+| Reading tools: contents, search, notes, TTS | ~6 KiB | Tools first opened |
 | Plain text / Markdown / HTML / FB2 | ~2.5 KiB | Text format selected |
 | DjVu adapter | ~1.4 KiB | DjVu selected; external decoder also needed |
 | PDF.js + worker (modern) | ~491 KiB combined | PDF selected; fonts/CMaps may load separately |
@@ -70,14 +72,17 @@ Use `pageGap: 0` for seamless webtoon, `paperTexture: true` for subtle grain on 
 | + / − / 0 | Zoom in / out / reset |
 | F / B / M | Fullscreen / bookmark / page sound |
 | ? / Escape | Shortcut help / dismiss help or close reader |
+| Ctrl/Cmd + F | Search within this document |
 
 Shortcuts ignore editable fields. Reduced motion overrides fold duration. The playground exposes settings before opening and inside the reader.
 
 Set `language: 'en'` for English reader controls or `'id'` for Indonesian (the default retained for existing integrations). The Pages topbar selects the demo language.
 
+Use the Appearance tab for twelve page filters, document brightness and dimmed controls. These also work through `new Sela({brightness: .8, dim: true})`, `reader.setBrightness(.8)` and `reader.setDim(true)`. Filters affect presentation only; original files remain intact.
+
 ## 🎧 Listen, find, keep
 
-Open **Reading tools** in the reader header, or call `await reader.showTools()`. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work.
+Open **Reading tools** in the reader header (six keyboard-accessible icon tabs: contents, search, appearance, voice, notes, text), or call `await reader.showTools()`. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work.
 
 **TTS uses the Web Speech API:** no Sela API key, paid SDK, server or model download. Local voices are selected by default; enable online voices explicitly if desired. Voices/languages come from the browser/OS. Remote voices may send narration text to their provider; local voice availability, audible quality, pause/resume and background playback vary. No guaranteed free third-party voice service or Indonesian voice is promised. Speech is chunked, user-started and cancelled on manual navigation or close. Optional continuous narration advances pages/chapters.
 
@@ -89,87 +94,27 @@ The browser extension has a dedicated bookshelf with local imports, PDF/EPUB/com
 
 Choose **Standard** (toolbar shelf) or **New Tab** (your private room on each new tab), for Chromium or Firefox. **Open with Sela** appears on supported document links; downloading requests optional access only to that site's origin. Development packages are unsigned and not store-published. Mobile API support varies; physical Quetta testing is pending. [Installation, permissions and limits](docs/offline-extension.md).
 
+## 📲 Install the viewer as a PWA
+
+Install from Pages using the browser install button/menu. This is the viewer, without the extension shelf. The shell is cached on first visit; open each format online once to cache its adapter/worker. Then open local files offline. External DjVu code is not cached. Imported documents are never added to the service-worker cache. Browser storage can be cleared/evicted; retain originals. [Offline/PWA guide](docs/pwa.md).
+
+The extension checks stable GitHub releases daily and shows a badge for newer versions. Use its refresh icon to check now; disable scheduled checks in the library details. Unpacked packages require manual replacement/reload; signed store packages are needed for browser-managed automatic code updates. [Security and provenance](docs/security.md).
+
 ## 🌿 Born as Sela 1.0
 
-Project, package, Pages and new CDN paths now use **Sela** and **1.0.0**. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). Historical FlippyPDF releases/CDNs remain intact in the previous repository. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.1.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 
 ## Quick start
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.0.0/dist/js/sela.min.js"></script>
-<button id="read" type="button">Read PDF</button>
-<script>
-const reader = new Sela({
-  pdfUrl: '/books/story.pdf', title: 'My story',
-  mode: 'book', // book | single | webtoon | manga
-  theme: 'auto', language: 'en', soundEnabled: false
-});
-document.querySelector('#read').addEventListener('click', () => {
-  reader.open().catch(error => console.error(error));
-});
-</script>
-```
+[![CDN / self-hosted viewer](https://img.shields.io/badge/install-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](docs/install.md) [![Browser extension](https://img.shields.io/badge/download-Chromium_%2F_Firefox-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/bobbyfch/sela/releases/latest)
 
-CSS loads automatically on first open. For explicit loading/CSP:
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.0.0/dist/css/sela.min.css">
-```
-
-Pin releases in production. New CDN: `bobbyfch/sela@v1.0.0`; historical FlippyPDF tags are not rewritten. [Migration](docs/migration.md).
-
-### ESM / TypeScript
-
-```sh
-npm install github:bobbyfch/sela#v1.0.0
-```
-
-```ts
-import Sela from '@bobbyfch/sela';
-const reader = new Sela({ pdfUrl: '/story.pdf', mode: 'manga', filter: 'grayscale' });
-await reader.open();
-reader.next().setFilter('sepia');
-reader.addEventListener('pagechange', event => console.log(event.detail.page));
-reader.destroy(); // component cleanup
-```
-
-Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: serve all of `dist/` and set `assetBase: '/assets/sela/dist/'`. Keep module and worker versions matched.
-
-### Older browsers
-
-Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.0.0/dist/js/sela.compat.js"></script>
-<script>
-document.getElementById('read').onclick = function () {
-  var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };
-  if (window.SelaReady) SelaReady.then(start).catch(function () {
-    window.location.assign('/story.pdf');
-  }); else start();
-};
-</script>
-```
-
-Keep a normal PDF link for disabled JavaScript and load failures. Very old browsers receive the original PDF. [Verified capabilities and limits](docs/compatibility.md).
-
-## Embed or overlay
-
-Overlay is the default. Inline embeds keep the same navigation, themes, filters, search, narration, notes and fullscreen controls. Give the host a height; multiple inline readers can coexist. Keyboard shortcuts act only when focus is inside that embed, and page scrolling stays available.
-
-```html
-<div id="reading-room" style="height:640px"></div>
-<script>
-new Sela({ url: '/story.pdf', presentation: 'inline', container: '#reading-room',
-  theme: 'auto', language: 'auto' }).open().catch(console.error);
-</script>
-```
+Choose the **viewer** for your website (CDN, self-hosted, ESM/TypeScript, overlay or inline), or the **extension** for a local bookshelf (Standard or New Tab). [Copy-paste setup](docs/install.md) · [Framework integrations](docs/integrations.md) · [Extension installation](docs/offline-extension.md) · [Install viewer PWA](docs/pwa.md).
 
 ## Reading API
 
-`open()` returns a promise; `close()`/`destroy()` cancel work. Controls: `next()`, `prev()`, `goTo(page)`, `firstPage()`, `lastPage()`, `zoomIn()`, `zoomOut()`, `setZoom(value)`, `toggleFullscreen()`, `setFilter(value)`. Position: `currentPage()` and `totalPages`.
+`open()` returns a promise; `close()`/`destroy()` cancel work. Controls: `next()`, `prev()`, `goTo(page)`, `firstPage()`, `lastPage()`, `zoomIn()`, `zoomOut()`, `setZoom(value)`, `toggleFullscreen()`, `setFilter(value)`, `setBrightness(.35 ... 1.25)`, `setDim(boolean)`. Position: `currentPage()` and `totalPages`.
 
 Manga preserves PDF page numbers: `next()` increases the page number; **ArrowLeft** advances in RTL. Source pages must already be in reading order. `readingDirection: 'rtl'` also works with book/single.
 

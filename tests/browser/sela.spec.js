@@ -33,13 +33,16 @@ test('PDF embedded bookmark, selectable transcript, search, notes round trip and
   await page.keyboard.press('Control+f');
   await expect(page.getByRole('searchbox', { name: 'Search text', exact: true })).toBeFocused();
   await expect(page.locator('.sela-transcript')).toContainText('A quiet interval');
+  await page.getByRole('tab',{name:'Contents',exact:true}).click();
   await page.getByRole('button', { name: 'Second chapter', exact: true }).click();
   await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
+  await page.getByRole('tab',{name:'Find in book',exact:true}).click();
   await page.getByRole('searchbox', { name: 'Search text', exact: true }).fill('quiet');
   await page.getByRole('button', { name: 'Find', exact: true }).click();
   await expect(page.locator('.sela-search-results button')).toHaveCount(1);
   await page.locator('.sela-search-results button').click();
   await expect(page.locator('.library-reader-page-form input')).toHaveValue('1');
+  await page.getByRole('tab',{name:'Your notes',exact:true}).click();
   await page.getByRole('textbox', { name: 'Note for this page / chapter', exact: true }).fill('A note to keep.');
   const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Export notes & bookmarks', exact: true }).click();
   const notes = JSON.parse(await readFile(await (await download).path(), 'utf8')); expect(notes.notes['1']).toBe('A note to keep.');
@@ -51,7 +54,7 @@ test('PDF embedded bookmark, selectable transcript, search, notes round trip and
 });
 
 test('EPUB nav anchors and footnotes survive sanitization', async ({ page }) => {
-  const files = unzipSync(await readFile('example/sebentar-sebelum-pulang.epub'));
+  const files = unzipSync(await readFile('example/yang-tidak-ikut-pulang.epub'));
   files['OEBPS/chapter0.xhtml'] = strToU8('<html><body><h1>Start</h1><p><a href="#note">A footnote</a></p><div style="height:2000px">Long content</div><h2 id="note">The note</h2><p>The ending.</p></body></html>');
   files['OEBPS/nav.xhtml'] = strToU8('<html xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol><li><a href="chapter0.xhtml#note">A nested note</a><ol><li><a href="chapter1.xhtml">Next chapter</a></li></ol></li></ol></nav></body></html>');
   await page.route('**/anchors.epub', route => route.fulfill({ body: Buffer.from(zipSync(files)) }));
@@ -60,7 +63,7 @@ test('EPUB nav anchors and footnotes survive sanitization', async ({ page }) => 
   await expect(page.locator('.flippy-epub-chapter:not([hidden]) h2')).toHaveAttribute('id', 'note');
   await page.getByRole('button', { name: 'Next chapter', exact: true }).click();
   await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
-  expect(await page.evaluate(() => r.getText())).toContain('2. Orang yang Merawat Gang\n');
+  expect(await page.evaluate(() => r.getText())).toContain('2. Pukul Empat Lewat Empat\n');
 });
 
 for (const format of ['txt', 'md', 'html', 'fb2']) test(`${format}: reflow, outline and no PDF/ZIP decoder`, async ({ page }) => {
@@ -83,8 +86,8 @@ test('TTS asynchronous voices, local preference, pause/resume, page change and c
     Object.defineProperty(window, 'speechSynthesis', { value: new Speech(), configurable: true });
     window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
   });
-  await ready(page, { url: '/example/sebentar-sebelum-pulang.epub', mode: 'single' }); await page.evaluate(() => r.showTools());
-  await expect(page.getByRole('button', { name: 'Listen', exact: true })).toBeDisabled();
+  await ready(page, { url: '/example/yang-tidak-ikut-pulang.epub', mode: 'single' }); await page.evaluate(() => r.showTools());
+  await page.getByRole('tab',{name:'Read aloud',exact:true}).click(); await expect(page.getByRole('button', { name: 'Listen', exact: true })).toBeDisabled();
   await page.evaluate(() => { fakeVoices = [{ name: 'Local Indonesian', lang: 'id-ID', localService: true }, { name: 'Remote', lang: 'en-US', localService: false }]; speechSynthesis.dispatchEvent(new Event('voiceschanged')); });
   await expect(page.getByRole('combobox', { name: 'Narration voice', exact: true }).locator('option')).toHaveCount(1);
   await page.getByRole('button', { name: 'Listen', exact: true }).click();
@@ -99,9 +102,9 @@ test('TTS asynchronous voices, local preference, pause/resume, page change and c
 
 test('unavailable TTS degrades; mobile tools and rotation denial remain readable', async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }));
-  await page.setViewportSize({ width: 375, height: 812 }); await ready(page, { url: '/example/sebentar-sebelum-pulang.pdf', mode: 'book' });
+  await page.setViewportSize({ width: 375, height: 812 }); await ready(page, { url: '/example/yang-tidak-ikut-pulang.pdf', mode: 'book' });
   await expect(page.locator('.fb-book')).toHaveClass(/fb-single-mode/);
-  await page.evaluate(() => r.showTools()); await expect(page.getByRole('button', { name: 'Listen', exact: true })).toBeDisabled();
+  await page.evaluate(() => r.showTools()); await page.getByRole('tab',{name:'Read aloud',exact:true}).click(); await expect(page.getByRole('button', { name: 'Listen', exact: true })).toBeDisabled();
   const bounds = await page.locator('.sela-tools').boundingBox(); expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x + bounds.width).toBeLessThanOrEqual(375);
   await page.getByRole('button', { name: 'Reading tools', exact: true }).click(); await page.evaluate(() => r.goTo(5));
   await page.setViewportSize({ width: 1000, height: 600 }); await expect(page.locator('.fb-book')).not.toHaveClass(/fb-single-mode/);

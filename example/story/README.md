@@ -1,12 +1,11 @@
-# Sebentar Sebelum Pulang
+# Yang Tidak Ikut Pulang
 
-Original Indonesian novelet: **33 pages, 8 chapters, 3 illustrations**. Characters and events are fictional. This replaces the former Limaraya sample entirely.
+Original Indonesian mystery novella: **50 pages, 12 chapters, 3,803 words, 4 illustrations and 13 PDF bookmarks**. Bobby returns to a house whose recordings remember too much. The ending remains open. Characters and events are fictional.
 
-- [PDF with embedded bookmarks](../sebentar-sebelum-pulang.pdf)
-- [Complete EPUB](../sebentar-sebelum-pulang.epub)
-- [CBZ illustration gallery](../sebentar-sebelum-pulang.cbz) — three illustrations, not the full prose
-- [Text source](sebentar-sebelum-pulang.md)
-- [Image prompts](prompts.md), generated with Codex built-in image generation
-- Rebuild: `python scripts/build-story.py` (ReportLab, Pillow, pypdf; Georgia fonts on Windows)
+- [PDF with embedded bookmarks](../yang-tidak-ikut-pulang.pdf)
+- [Complete EPUB with navigation and NCX](../yang-tidak-ikut-pulang.epub)
+- [CBZ illustration gallery](../yang-tidak-ikut-pulang.cbz) — four images, not the prose
+- [Editable text](yang-tidak-ikut-pulang.md) · [Image prompts](prompts.md) · [Build statistics](manifest.json)
+- Rebuild: `python scripts/build-story.py` (ReportLab, Pillow, pypdf and Windows Georgia fonts)
 
-Text is AI-assisted original fiction; images are original AI-generated watercolor/pencil illustrations. Story text and illustration assets: **CC BY 4.0**, attribution to Sela and Bobby Fajar Christian. Code remains MIT. Names do not imply personal biography.
+The prose is AI-assisted original fiction. Sparse pencil outlines alternate with pastel washes; interior sketches return as visual motifs. Text and illustrations: **CC BY 4.0**, attribution to Bobby Fajar Christian / Sela. Code: MIT. Previous sample assets are removed from the active tree and retained in historical releases/local backup.

@@ -6,11 +6,11 @@ for(const browser of ['chromium','firefox'])for(const edition of ['standard','ne
  const folder=`${output}/${browser}-${edition}`;await mkdir(folder,{recursive:true});
  for(const name of ['dist','extension','logo.svg','favicon.svg','LICENSE','THIRD_PARTY_NOTICES.md'])await cp(name,`${folder}/${name}`,{recursive:true});
  await mkdir(`${folder}/site`,{recursive:true});for(const name of ['icon-192.png','flag-en.svg','flag-id.svg'])await cp(`site/${name}`,`${folder}/site/${name}`);
- await mkdir(`${folder}/example`,{recursive:true});await cp('example/sebentar-sebelum-pulang.pdf',`${folder}/example/sebentar-sebelum-pulang.pdf`);
+ await mkdir(`${folder}/example`,{recursive:true});await cp('example/yang-tidak-ikut-pulang.pdf',`${folder}/example/yang-tidak-ikut-pulang.pdf`);
  const manifest={manifest_version:3,name:`Sela — private library${edition==='newtab'?' · New Tab':''}`,version,
- description:'Your books, a warm cup, and a little time of your own. A private offline bookshelf and reader.',
- icons:{192:'site/icon-192.png'},action:{default_title:'Open Sela library'},permissions:['contextMenus'],optional_host_permissions:['https://*/*','http://*/*'],
- background:browser==='firefox'?{scripts:['extension/background.js']}:{service_worker:'extension/background.js'},
+ description:'A private offline bookshelf for PDF, EPUB, comics and text. Search, notes and optional browser voices.',
+ icons:{192:'site/icon-192.png'},action:{default_title:'Open Sela library'},permissions:['contextMenus','storage','alarms'],optional_host_permissions:['https://*/*','http://*/*'],
+ background:browser==='firefox'?{scripts:['extension/updates.js','extension/background.js']}:{service_worker:'extension/background.js'},
  content_security_policy:{extension_pages:"script-src 'self'; object-src 'none';"},
  ...(edition==='newtab'?{chrome_url_overrides:{newtab:'extension/library.html'}}:{}),
  ...(browser==='firefox'?{browser_specific_settings:{gecko:{id:`sela-${edition}@bobbyfch.github.io`,strict_min_version:'140.0',data_collection_permissions:{required:['none']}}}}:{})};

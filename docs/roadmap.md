@@ -56,3 +56,7 @@ PDF has extractable-text search and a separate transcript, but no aligned text/h
 [Readest's feature list](https://github.com/readest/readest#features) and [narration documentation](https://www.readest.com/docs/listen) establish expectations for search, annotation, navigation and speech. [foliate-js](https://github.com/johnfactotum/foliate-js) provides modular ebook parsing, CFI, search/annotation helpers and MOBI/KF8/FB2. Sela borrows product patterns and implements its own small optional tools; no source from either project was copied into this release. Our narrower EPUB fidelity/format coverage and lack of sync mean feature parity is not claimed.
 
 Next: aligned PDF text selection and portable highlights; EPUB CFI/reflow pagination and publisher typography; optional tested MOBI/AZW3 decoder; OPDS and host-owned sync adapters; manual comic-panel regions. Each new parser should be lazy, licensed, bounded against malformed input and tested with real fixtures. Cloud AI, neural TTS and automatic OCR models must remain optional providers to preserve the embedding budget.
+
+## Shipped in Sela 1.1
+
+PWA viewer installation, clear CDN/extension routes, accessible reading-tools tabs, twelve filters, document brightness and dim controls, daily/manual stable-release notifications (manual code updates for unpacked packages). Core ~23.9 KiB gzip, optional tools ~6 KiB. Original example replaced with a 50-page mystery, twelve chapters and four minimalist illustrations. OPDS, CFI/highlights, OCR, sync, music playback and store signing remain future work.

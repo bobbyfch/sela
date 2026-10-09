@@ -8,7 +8,7 @@ test('Vue real runtime: mount, close, options replacement, unmount cleanup', asy
   const { descriptor } = parse(await readFile('adapters/vue/SelaViewer.vue', 'utf8'));
   let code = compileScript(descriptor, { id: 'test-flippy', inlineTemplate: true }).content.replace('export default', 'const FlippyViewer =');
   code += `\nimport { createApp, h, reactive } from 'vue';
-window.vueState = reactive({ visible: false, options: { pdfUrl: '/example/sebentar-sebelum-pulang.pdf', mode: 'single', soundEnabled: false, duration: 0 } });
+window.vueState = reactive({ visible: false, options: { pdfUrl: '/example/yang-tidak-ikut-pulang.pdf', mode: 'single', soundEnabled: false, duration: 0 } });
 const host = document.createElement('div'); document.body.appendChild(host);
 window.vueApp = createApp({ render() { return h(FlippyViewer, { modelValue: vueState.visible, options: vueState.options, 'onUpdate:modelValue': value => { vueState.visible = value; }, onError: error => { window.vueError = error.message; } }); } });
 vueApp.mount(host);`;

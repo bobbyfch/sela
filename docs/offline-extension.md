@@ -14,10 +14,10 @@ npm run package:extension
 
 | Package | Entry | New tabs |
 | --- | --- | --- |
-| `sela-chromium-standard-1.0.0.zip` | Toolbar opens your shelf | Unchanged |
-| `sela-chromium-newtab-1.0.0.zip` | Toolbar and new tabs open your shelf | Sela library |
-| `sela-firefox-standard-1.0.0.zip` | Toolbar opens your shelf | Unchanged |
-| `sela-firefox-newtab-1.0.0.zip` | Toolbar and new tabs open your shelf | Sela library |
+| `sela-chromium-standard-1.1.0.zip` | Toolbar opens your shelf | Unchanged |
+| `sela-chromium-newtab-1.1.0.zip` | Toolbar and new tabs open your shelf | Sela library |
+| `sela-firefox-standard-1.1.0.zip` | Toolbar opens your shelf | Unchanged |
+| `sela-firefox-newtab-1.1.0.zip` | Toolbar and new tabs open your shelf | Sela library |
 
 Build folders and ZIPs are in `.git/sela-extension/`. Extract the selected ZIP. In Chrome/Edge/Brave, open the extension manager, enable developer mode, then **Load unpacked** and choose the extracted folder containing `manifest.json`. In Firefox, open `about:debugging` → This Firefox → Load Temporary Add-on → choose the manifest. These development builds are **not store-published or signed**; permanent Firefox installation requires signing. The Firefox package targets Firefox 140+; the web viewer has separate capability-based fallback support.
 
@@ -46,3 +46,9 @@ The room adapts to narrow screens, with two cover columns and touch-size actions
 The simplest free, offline option is a separate extension-only player for user-selected MP3/OGG/WAV files using HTML audio, with a playlist stored locally. It needs no service API key, account or streaming subscription; codec support varies. Keep it out of the embedding core and pause/duck it during narration. Store recordings only after the user chooses them.
 
 Streaming is a separate provider integration. Spotify's Web Playback SDK requires Spotify Premium, so it is not a universally free music engine. Official embeds can be considered after evaluating each provider's authentication, ads, background playback and terms. No streaming provider or music player is shipped in 1.0. [Spotify SDK reference](https://developer.spotify.com/documentation/web-playback-sdk/reference).
+
+## Release notifications
+
+The refresh icon checks the latest stable GitHub release. A daily alarm checks too; disable it in library details. Requests send no book contents or identifiers and omit credentials. Offline/rate-limit failures leave the last successful check intact. A badge means a newer version is available. Download the same browser/edition, close Sela, replace the contents of the existing unpacked directory, and reload the extension; keep its path/identity to retain storage. Export originals and notes first. Never uninstall merely to update.
+
+Chrome/Edge unpacked packages cannot replace their own code. Browser-managed updates require Chrome Web Store / Edge Add-ons distribution. Firefox permanent installation requires signing and either AMO distribution or an approved self-hosted update manifest; these ZIPs are temporary development packages. No signing/store listing is claimed.

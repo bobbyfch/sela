@@ -1,4 +1,6 @@
 // Optional reading utilities: loaded only when the reader's tools are opened.
+import { FILTER_LABELS, brightness } from './appearance.js';
+let toolsCount=0;
 export async function pageText(book, page) {
   if (book.getText) return (await book.getText(page)).slice(0, 1000000);
   if (!book.pdf?.getPage) return '';
@@ -35,11 +37,25 @@ export function mountTools(state, host) {
   const synth = window.speechSynthesis;
   const capable = !!(synth && window.SpeechSynthesisUtterance);
   const textCapable = !!(book.getText || (options.format === 'pdf' && book.pdf));
-  const element = (tag, text, parent = host) => { const el = document.createElement(tag); if (text) el.textContent = text; parent.appendChild(el); return el; };
+  let pane=host;
+  const element = (tag, text, parent = pane) => { const el = document.createElement(tag); if (text) el.textContent = text; parent.appendChild(el); return el; };
   const symbols={play:'M7 4 13 8-13 8Z',pause:'M7 4v16M17 4v16',stop:'M5 5h14v14H5Z',search:'M16 10a6 6 0 1 1-12 0 6 6 0 0 1 12 0m-1 5 6 6',close:'m6 6 12 12M18 6 6 18',smaller:'M5 12h14',larger:'M5 12h14M12 5v14',export:'M12 3v12m-5-5 5 5 5-5M5 21h14'};
   function setActionIcon(b,name,text){b.replaceChildren();b.title=text;b.setAttribute('aria-label',text);const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.classList.add('library-reader-icon');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',symbols[name]);svg.appendChild(path);b.appendChild(svg);b.classList.add('sela-tool-icon');}
-  const action = (text, fn, parent = host) => { const b = element('button', text, parent); b.type = 'button'; b.addEventListener('click', fn);const name=/^(Listen|Dengarkan)$/.test(text)?'play':/^(Pause|Jeda)$/.test(text)?'pause':/^(Stop|Hentikan)$/.test(text)?'stop':/^(Cancel search|Batalkan pencarian)$/.test(text)?'close':/^(Smaller|Perkecil)/.test(text)?'smaller':/^(Larger|Perbesar)/.test(text)?'larger':/^(Export notes|Ekspor catatan)/.test(text)?'export':null;if(name)setActionIcon(b,name,text);return b; };
-  const notice = element('p'); notice.setAttribute('role', 'status');
+  const action = (text, fn, parent = pane) => { const b = element('button', text, parent); b.type = 'button'; b.addEventListener('click', fn);const name=/^(Listen|Dengarkan)$/.test(text)?'play':/^(Pause|Jeda)$/.test(text)?'pause':/^(Stop|Hentikan)$/.test(text)?'stop':/^(Cancel search|Batalkan pencarian)$/.test(text)?'close':/^(Smaller|Perkecil)/.test(text)?'smaller':/^(Larger|Perbesar)/.test(text)?'larger':/^(Export notes|Ekspor catatan)/.test(text)?'export':null;if(name)setActionIcon(b,name,text);return b; };
+  const toolsId='sela-tools-'+(++toolsCount),tabs=new Map();
+  const top=element('div',null,host);top.className='sela-tools-top';
+  element('strong',label('Reading tools','Alat baca'),top);
+  const dismiss=action(label('Close tools','Tutup alat baca'),()=>state.hideTools(),top);setActionIcon(dismiss,'close',dismiss.textContent);
+  const tabbar=element('div',null,host);tabbar.className='sela-tool-tabs';tabbar.setAttribute('role','tablist');tabbar.setAttribute('aria-label',label('Reading tools sections','Bagian alat baca'));
+  Object.assign(symbols,{contents:'M5 5h14M5 12h14M5 19h14',appearance:'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6',voice:'M8 4h8v10H8ZM4 10v3a8 8 0 0 0 16 0v-3M12 21v-3',notes:'M5 3h14v18H5ZM8 7h8M8 11h8M8 15h5',text:'M4 5h16M12 5v15M8 20h8'});
+  function selectTab(key,focus=false){for(const [name,item] of tabs){const chosen=name===key;item.panel.hidden=!chosen;item.button.setAttribute('aria-selected',String(chosen));item.button.tabIndex=chosen?0:-1;if(chosen&&focus)item.button.focus();}host.scrollTop=0;}
+  function section(key,title,icon){
+    const panel=element('section',null,host);panel.className='sela-tool-panel';panel.id=toolsId+'-'+key;panel.setAttribute('role','tabpanel');panel.hidden=true;
+    const b=action(title,()=>selectTab(key),tabbar);setActionIcon(b,icon,title);b.id=panel.id+'-tab';b.setAttribute('role','tab');b.setAttribute('aria-controls',panel.id);b.setAttribute('aria-selected','false');b.tabIndex=-1;panel.setAttribute('aria-labelledby',b.id);tabs.set(key,{panel,button:b});
+    b.addEventListener('keydown',event=>{const names=[...tabs.keys()];let at=names.indexOf(key);if(event.key==='ArrowRight')at=(at+1)%names.length;else if(event.key==='ArrowLeft')at=(at+names.length-1)%names.length;else if(event.key==='Home')at=0;else if(event.key==='End')at=names.length-1;else return;event.preventDefault();selectTab(names[at],true);});pane=panel;
+  }
+  const notice = element('p',null,host); notice.className='sela-tools-status';notice.setAttribute('role', 'status');
+  section('contents',label('Contents','Daftar isi'),'contents');
   element('h3', label('Contents', 'Daftar isi'));
   const toc = element('nav'); toc.setAttribute('aria-label', label('Document contents', 'Daftar isi dokumen'));
   let outlineCount = 0;
@@ -71,6 +87,7 @@ export function mountTools(state, host) {
     if (!outlineCount) element('p', label('No embedded contents or bookmarks.', 'Dokumen ini tidak memiliki daftar isi atau penanda bawaan.'), toc);
   }).catch(() => { if (!destroyed) element('p', label('Contents unavailable.', 'Daftar isi tidak tersedia.'), toc); });
 
+  section('search',label('Find in book','Cari dalam buku'),'search');
   element('h3', label('Find in book', 'Cari dalam buku'));
   const form = element('form'); const query = element('input', null, form);
   query.type = 'search'; query.maxLength = 200; query.setAttribute('aria-label', label('Search text', 'Cari teks')); query.disabled = !textCapable;
@@ -96,7 +113,20 @@ export function mountTools(state, host) {
     } catch (error) { if (!destroyed && run === searchRun) notice.textContent = error.message; }
   });
 
+  section('appearance',label('Appearance','Tampilan'),'appearance');
+  element('h3',label('Reading appearance','Tampilan bacaan'));
+  const filterLabel=element('label',label('Page filter','Filter halaman'));const filter=element('select',null,filterLabel);filter.setAttribute('aria-label',label('Page filter','Filter halaman'));
+  for(const [key,names] of Object.entries(FILTER_LABELS)){const option=element('option',names[id?1:0],filter);option.value=key;}
+  const brightLabel=element('label',label('Document brightness','Kecerahan dokumen'));const bright=element('input',null,brightLabel);bright.type='range';bright.min='.35';bright.max='1.25';bright.step='.05';bright.setAttribute('aria-label',label('Document brightness','Kecerahan dokumen'));const brightValue=element('output',null,brightLabel);
+  const dimLabel=element('label');const dim=element('input',null,dimLabel);dim.type='checkbox';dimLabel.appendChild(document.createTextNode(label(' Dim reader controls',' Redupkan kontrol reader')));
+  filter.onchange=()=>state.setAppearance({filter:filter.value});bright.oninput=()=>state.setAppearance({brightness:brightness(bright.value)});dim.onchange=()=>state.setAppearance({dim:dim.checked});
+  action(label('Reset appearance','Reset tampilan'),()=>state.setAppearance({filter:'none',brightness:1,dim:false}));
+  element('p',label('Filters change the displayed page only. Brightness is a visual adjustment, not a device setting or medical color correction.','Filter hanya mengubah tampilan halaman. Kecerahan ini bukan pengaturan perangkat atau koreksi warna medis.'));
+  function syncAppearance(){filter.value=options.filter||'none';bright.value=String(options.brightness??1);brightValue.textContent=Math.round(Number(bright.value)*100)+'%';dim.checked=!!options.dim;}
+  state.overlay.addEventListener('sela:appearance',syncAppearance);syncAppearance();
+  section('voice',label('Read aloud','Dengarkan bacaan'),'voice');
   element('h3', label('Read aloud', 'Dengarkan bacaan'));
+  const voiceNotice=element('p');voiceNotice.className='sela-voice-notice';
   const voices = element('select'); voices.setAttribute('aria-label', label('Narration voice', 'Suara narasi'));
   const rate = element('input'); rate.type = 'range'; rate.min = '.5'; rate.max = '2'; rate.step = '.1'; rate.value = '1'; rate.setAttribute('aria-label', label('Narration speed', 'Kecepatan narasi'));
   const local = element('label'); const localOnly = element('input', null, local); localOnly.type = 'checkbox'; localOnly.checked = true;
@@ -112,13 +142,15 @@ export function mountTools(state, host) {
     voices.value = selected !== '' && available[+selected] ? selected : String(Math.max(0, preferred));
     play.disabled = !capable || !textCapable || !available.length;
     voices.disabled = !available.length; rate.disabled = !capable;
-    if(capable&&!speaking&&preferred<0)notice.textContent=label('No matching voice for this book language is installed. Choose an available voice, install a voice in your OS, or explicitly enable online voices.','Belum ada suara yang sesuai bahasa buku ini. Pilih suara yang tersedia, pasang suara di OS, atau aktifkan suara daring secara sadar.');
+    voiceNotice.textContent=capable&&preferred<0?label('No matching voice for this book language is installed. Choose an available voice, install a voice in your OS, or explicitly enable online voices.','Belum ada suara yang sesuai bahasa buku ini. Pilih suara yang tersedia, pasang suara di OS, atau aktifkan suara daring secara sadar.'):'';
   }
   const fontControls = element('div'); fontControls.className='sela-speech-controls';
   action(label('Smaller text / zoom', 'Perkecil teks / zoom'),()=>book.zoomOut(),fontControls);
   action(label('Larger text / zoom', 'Perbesar teks / zoom'),()=>book.zoomIn(),fontControls);
   const controls = element('div'); controls.className = 'sela-speech-controls';
   const autoLabel = element('label'); const auto = element('input', null, autoLabel); auto.type = 'checkbox'; autoLabel.appendChild(document.createTextNode(label(' Continue to next page / chapter', ' Lanjut ke halaman / bab berikutnya')));
+  const voicePane=pane;
+  section('notes',label('Your notes','Catatanmu'),'notes');
   element('h3',label('Your notes','Catatanmu'));
   let notes={};try{notes=JSON.parse(localStorage.getItem(state.notesKey)||'{}');if(!notes||Array.isArray(notes)||typeof notes!=='object')notes={};}catch{}
   const note=element('textarea');note.maxLength=10000;note.rows=4;note.setAttribute('aria-label',label('Note for this page / chapter','Catatan halaman / bab ini'));
@@ -139,6 +171,8 @@ export function mountTools(state, host) {
     state.marks=Array.from(new Set([...state.marks,...data.marks]));notes={...notes,...Object.fromEntries(imported)};saveNotes();
     try{localStorage.setItem(state.marksKey,JSON.stringify(state.marks));}catch{}state.updateMarks();loadNote();notice.textContent=label('Notes imported.','Catatan diimpor.');
   }catch(error){if(!destroyed)notice.textContent=error.message;}});
+  section('text',label('Document text','Teks dokumen'),'text');
+  element('h3',label('Document text','Teks dokumen'));
   const transcript = element('div'); transcript.className = 'sela-transcript'; transcript.tabIndex = 0; transcript.setAttribute('aria-label', label('Selectable document text', 'Teks dokumen yang dapat dipilih'));
   function stop() { speechRun++; if (speaking) synth?.cancel(); speaking = false; paused = false; setActionIcon(pause,'pause',label('Pause','Jeda')); }
   async function showText() {
@@ -178,7 +212,7 @@ export function mountTools(state, host) {
   const play = action(label('Listen', 'Dengarkan'), narrate, controls);
   const pause = action(label('Pause', 'Jeda'), () => { if (!speaking) return; paused = !paused; if (paused) synth.pause(); else synth.resume(); setActionIcon(pause,paused?'play':'pause',paused?label('Resume','Lanjutkan'):label('Pause','Jeda')); }, controls);
   action(label('Stop', 'Hentikan'), stop, controls);
-  element('p', label('Uses browser / OS voices, without a Sela API key or subscription. Online voices may send text to their provider. Voice availability and pause/background behavior vary by device.', 'Memakai suara browser / OS, tanpa kunci API atau langganan Sela. Suara daring dapat mengirim teks ke penyedianya. Pilihan suara serta jeda dan bacaan di latar bergantung pada perangkat.'));
+  element('p', label('Uses browser / OS voices, without a Sela API key or subscription. Online voices may send text to their provider. Voice availability and pause/background behavior vary by device.', 'Memakai suara browser / OS, tanpa kunci API atau langganan Sela. Suara daring dapat mengirim teks ke penyedianya. Pilihan suara serta jeda dan bacaan di latar bergantung pada perangkat.'),voicePane);
   if (!capable) notice.textContent = label('Speech synthesis is unavailable in this browser.', 'Browser ini tidak menyediakan narasi suara.');
   localOnly.addEventListener('change', () => { stop(); updateVoices(); });
   voices.addEventListener('change', stop); rate.addEventListener('change', stop);
@@ -186,5 +220,6 @@ export function mountTools(state, host) {
   let advancing = false;
   const onPage = () => { if (!advancing && (!speaking || book.currentPage() !== expectedSpeechPage)) stop(); loadNote();showText(); };
   book.container.addEventListener('flipbook:pagechange', onPage);
-  return { stop, destroy() { destroyed = true; searchRun++; textRun++; stop(); synth?.removeEventListener?.('voiceschanged', updateVoices); book.container.removeEventListener('flipbook:pagechange', onPage); host.replaceChildren(); } };
+  selectTab('contents');
+  return { stop, selectTab, destroy() { destroyed = true; searchRun++; textRun++; stop(); state.overlay.removeEventListener('sela:appearance',syncAppearance);synth?.removeEventListener?.('voiceschanged', updateVoices); book.container.removeEventListener('flipbook:pagechange', onPage); host.replaceChildren(); } };
 }

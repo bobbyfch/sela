@@ -16,7 +16,11 @@ export interface SelaOptions {
   wheelZoom?: boolean;
   paperTexture?: boolean;
   theme?: 'auto' | 'light' | 'dark';
-  filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'warm' | 'cool';
+  filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'warm' | 'cool' | 'night' | 'invert' | 'paper' | 'soft' | 'saturated' | 'lowblue';
+  /** Document brightness: 0.35–1.25; 1 is unchanged. Does not change OS brightness. */
+  brightness?: number;
+  /** Dim reader chrome independently of document filters. */
+  dim?: boolean;
   readingDirection?: 'ltr' | 'rtl';
   startPage?: number;
   id?: string | number;
@@ -82,6 +86,8 @@ export declare class Sela extends EventTarget {
   getText(page?: number): Promise<string>;
   toggleFullscreen(): this;
   setFilter(value: NonNullable<SelaOptions['filter']>): this;
+  setBrightness(value: number): this;
+  setDim(value: boolean): this;
 }
 export declare const VERSION: string;
 export { Sela as Flippy };
