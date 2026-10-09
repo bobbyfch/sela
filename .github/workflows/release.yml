@@ -21,7 +21,8 @@ jobs:
       - run: npm test && npm run test:types
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
-      - run: npm run package:extension
+      - name: Package extension with current source and story notices
+        run: npm run package:extension
       - name: Create immutable release tag
         env:
           GH_TOKEN: ${{ github.token }}

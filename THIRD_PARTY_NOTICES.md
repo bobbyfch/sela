@@ -30,4 +30,4 @@ generated landscape, encoded using DjVu.js.
 
 ## Original sample story
 
-Sebentar Sebelum Pulang text and original AI-generated illustrations are CC BY 4.0, attributed to Sela and Bobby Fajar Christian. Text is AI-assisted fiction and does not describe the real people whose names appear. See example/story/README.md and prompts.md.
+Yang Tidak Ikut Pulang text and original AI-generated illustrations are CC BY 4.0, attributed to Sela and Bobby Fajar Christian. Text is AI-assisted fiction and does not describe the real people whose names appear. See example/story/README.md and prompts.md. Previous sample content remains licensed in historical releases; it is absent from the active distribution.
