@@ -21,7 +21,7 @@ jobs:
       - run: npm test && npm run test:types
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
-      - name: Package extension and SHA-256 release checksums
+      - name: Package tested extension and SHA-256 release checksums
         run: npm run package:extension
       - name: Create immutable release tag
         env:
