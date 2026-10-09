@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: sela-release
+  cancel-in-progress: true
 jobs:
   release:
     runs-on: ubuntu-latest
