@@ -1,4 +1,10 @@
 import {test,expect} from '@playwright/test';
+test('closing keyboard help keeps manual zoom instead of refitting the inner reading area',async({page})=>{
+ await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;window.panelReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'book',fit:'page',duration:0,language:'en',id:'panel-zoom-test'});await panelReader.open();});
+ await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await expect(page.locator('.flippy-shortcuts')).toBeVisible();await page.waitForTimeout(100);
+ await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await page.evaluate(()=>panelReader.setZoom(1.5));await page.waitForTimeout(250);
+ expect(await page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
+});
 test('a delayed initial resize notification preserves manual zoom; real resize still fits',async({page})=>{
  await page.addInitScript(()=>{
   const Native=ResizeObserver;
@@ -93,6 +99,6 @@ test('mobile screens separate personal books and samples with usable themes and 
  await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.locator('#export-library')).toBeVisible();
  for(const scheme of ['light','dark']){await page.emulateMedia({colorScheme:scheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
  await page.screenshot({path:'test-results/mobile-settings-new.png',fullPage:true});
- await page.getByRole('button',{name:'Home',exact:true}).click();await page.locator('.home-page .catalog-book').getByRole('button',{name:'Read sample',exact:true}).click();await expect(page.locator('.library-reader-footer input[type=range]')).toBeVisible();
- await page.getByRole('button',{name:'Reading tools',exact:true}).click();await page.getByRole('tab',{name:'Reading mode',exact:true}).click();await page.getByRole('combobox',{name:'Reading mode',exact:true}).selectOption('webtoon');await expect(page.locator('.flippy-webtoon')).toBeVisible();await expect(page.locator('.library-reader-footer input[type=range]')).toBeVisible();await context.close();
+ await page.getByRole('button',{name:'Home',exact:true}).click();await page.locator('.home-page .catalog-book').getByRole('button',{name:'Read sample',exact:true}).click();await expect(page.locator('.app-page-seek')).toBeVisible();
+ await page.getByRole('button',{name:'Reader settings',exact:true}).click();await page.getByRole('combobox',{name:'Reading mode',exact:true}).selectOption('webtoon');await expect(page.locator('.flippy-webtoon')).toBeVisible();await expect(page.locator('.app-page-seek')).toBeVisible();await context.close();
 });

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.2 — 2026-10-10
+
+- Independently constructed Reader app chrome: touch navigation dock, page scrubber, responsive settings sheet/sidebar, and direct contents/search/narration actions. Viewer CDN retains its own interface.
+- Persistent Limaraya, Paper, Ink and Rose app palettes, independent of light/dark/system and document filters. Optional screen wake lock with visibility/close cleanup.
+
+- Preserve zoom across internal keyboard-help/panel layout changes. Auto fit now follows the outer reader frame resize, including actual viewport or embed container changes.
+
 ## 1.3.1 — 2026-10-10
 
 - Preserve manual zoom when ResizeObserver delivers its initial or duplicate size notification. Actual viewport changes still apply the selected fit mode.

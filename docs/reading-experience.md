@@ -1,8 +1,14 @@
 # Reading, collections and backups
 
-Available in Sela Reader 1.3.1. The mobile app has its own touch reading screen; Home has a desktop workspace; the CDN viewer keeps its integration interface.
+Available in Sela Reader 1.3.2. The universal app has an independently built reading UI for phone, tablet and desktop. Its back/title bar, navigation dock, scrubber and reading-settings sheet/sidebar are app-owned; document engines and optional tools services are shared with Viewer. The CDN viewer keeps its integration interface and does not load app modules.
 
-## Shared reader
+## Reader app
+
+Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Four persistent palettes (Limaraya, Paper, Ink, Rose) are independent of the light/dark/system preference in Settings. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
+
+On phones the panel opens from the bottom; tablet/desktop use a side panel. The book occupies the reading canvas with app controls hidden by a center tap. Optional screen wake lock is available only where supported and permitted; it is released when hidden or closed. No native volume-key or forced rotation claim is made.
+
+## Shared document services
 
 Open Reading tools → Reading mode to change the current document. PDF, CBZ and DjVu support `single`, `book`, `scroll`, `webtoon` and `manga`. Scroll adds a page gap; Webtoon defaults to no gap. Text/EPUB offer single chapter and continuous scroll, with font family, size, line spacing, margins and alignment. PDF text does not reflow.
 

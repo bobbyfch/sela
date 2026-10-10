@@ -1,23 +1,53 @@
-// Product-specific reader chrome. The reusable CDN viewer remains unchanged.
+// App-owned chrome. Only document engines and lazy reading services are shared
+// with the embeddable Viewer; no CDN toolbar is moved into the app UI.
+import {mountPalettes} from './themes.js';
+const paths={back:'m14 5-7 7 7 7M7 12h14',contents:'M4 5h16M4 12h16M4 19h16',search:'m21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',settings:'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6',prev:'m15 5-7 7 7 7',next:'m9 5 7 7-7 7',mark:'M6 3h12v18l-6-4-6 4Z',voice:'M9 4a3 3 0 0 1 6 0v8a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3',close:'m6 6 12 12M18 6 6 18',minus:'M5 12h14',plus:'M12 5v14M5 12h14',full:'M9 3H3v6m12-6h6v6M3 15v6h6m6 0h6v-6'};
 export function configureLibraryReader(reader,{mobile,language='en'}={}){
- const overlay=reader.overlay;if(!overlay)return;
- overlay.dataset.productReader=mobile?'mobile':'home';
- const header=overlay.querySelector('.library-reader-header');
- const actions=header.querySelector('.library-reader-actions');
- const close=actions.querySelector('.library-reader-close');
- const title=header.querySelector('.library-reader-title');
- const tools=actions.querySelector('[aria-label="'+(language==='id'?'Alat baca':'Reading tools')+'"]');
- const icon=close.querySelector('path');if(icon)icon.setAttribute('d','m14 5-7 7 7 7M7 12h14');
- close.title=language==='id'?'Kembali ke rak':'Back to library';
- close.setAttribute('aria-label',close.title);header.prepend(close);
- if(mobile){
-  const menu=document.createElement('details');menu.className='app-reader-menu';
-  const summary=document.createElement('summary');summary.setAttribute('aria-label',language==='id'?'Pilihan bacaan':'Reading options');summary.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>';
-  const panel=document.createElement('div');panel.className='app-reader-menu-panel';
-  for(const child of [...actions.children])if(child!==tools)panel.append(child);
-  menu.append(summary,panel);actions.append(menu);
-  summary.addEventListener('click',()=>{if(!menu.open)reader.hideTools?.();});
-  tools?.addEventListener('click',()=>{menu.open=false;});
- }
- title.title=title.textContent;
+ const overlay=reader.overlay;if(!overlay||!mobile)return;
+ const state=reader._reader.getState(),shell=overlay.querySelector('.library-reader-shell'),host=overlay.querySelector('.library-reader-book'),tools=overlay.querySelector('.sela-tools');
+ overlay.dataset.productReader='app';
+ const t=(en,id)=>language==='id'?id:en;
+ const el=(tag,cls,parent)=>{const n=document.createElement(tag);n.className=cls||'';parent?.append(n);return n;};
+ const button=(icon,en,id,parent,fn)=>{const b=el('button','app-reader-icon',parent);b.type='button';b.title=t(en,id);b.setAttribute('aria-label',b.title);b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+paths[icon]+'"/></svg>';b.onclick=fn;return b;};
+ // Keep internal handlers for keyboard/bookmarks, but replace their presentation.
+ for(const node of shell.querySelectorAll(':scope > .library-reader-header,:scope > .library-reader-footer'))node.hidden=true;
+ const top=el('header','app-reading-top');shell.prepend(top);
+ button('back','Back to library','Kembali ke rak',top,()=>reader.close());
+ const title=el('div','app-reading-title',top);el('small','',title).textContent='Sela Reader';el('strong','',title).textContent=state.options.title||t('Your book','Buku kamu');
+ const dock=el('footer','app-reading-dock',shell);
+ const position=el('div','app-reading-position',dock),counter=el('output','',position),seek=el('input','app-page-seek',position);seek.type='range';seek.min='1';seek.setAttribute('aria-label',t('Reading position','Posisi bacaan'));seek.onchange=()=>reader.goTo(Number(seek.value));
+ const actions=el('nav','app-reading-actions',dock);actions.setAttribute('aria-label',t('Reader navigation','Navigasi bacaan'));
+ const drawer=el('section','app-reading-settings',shell);drawer.hidden=true;drawer.setAttribute('aria-label',t('Reader settings','Pengaturan reader'));const drawerTop=el('div','app-drawer-heading',drawer);el('h2','',drawerTop).textContent=t('Reading','Bacaan');
+ let returnFocus=null;
+ function dismiss(){drawer.hidden=true;tools.hidden=true;overlay.classList.remove('app-panel-open');returnFocus?.focus();}
+ state.hideTools=dismiss;
+ button('close','Close panel','Tutup panel',drawerTop,dismiss);
+ function openSettings(event){tools.hidden=true;drawer.hidden=false;overlay.classList.add('app-panel-open');overlay.classList.remove('sela-controls-hidden');returnFocus=event.currentTarget;drawerTop.querySelector('button').focus();}
+ const notice=el('p','app-reader-status',drawer);notice.setAttribute('role','status');
+ async function fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else if(shell.requestFullscreen)await shell.requestFullscreen();else overlay.classList.toggle('sela-controls-hidden');}catch{notice.textContent=t('Fullscreen is unavailable in this browser.','Layar penuh belum tersedia di browser ini.');}}
+ async function openTools(tab,event){returnFocus=event.currentTarget;drawer.hidden=true;overlay.classList.add('app-panel-open');overlay.classList.remove('sela-controls-hidden');try{const service=await reader.showTools();if(!overlay.isConnected)return;service.selectTab(tab);let close=tools.querySelector('.app-tools-close');if(!close){close=button('close','Close panel','Tutup panel',tools,dismiss);close.classList.add('app-tools-close');tools.prepend(close);}let saved=tools.querySelector('.app-saved-marks');if(!saved){saved=el('section','app-saved-marks');tools.querySelector('.sela-tool-panel[id$="-contents"]').prepend(saved);}saved.replaceChildren();saved.hidden=false;{el('h3','',saved).textContent=t('Your bookmarks','Penandamu');const list=el('div','',saved);for(const page of [...state.marks].sort((a,b)=>a-b)){const jump=el('button','',list);jump.type='button';jump.textContent=String(page);jump.setAttribute('aria-label',t('Bookmarked page ','Halaman bertanda ')+page);jump.onclick=()=>{state.navigate(page);dismiss();};}if(!state.marks.length)el('p','',saved).textContent=t('Tap the bookmark icon to keep a page.','Ketuk ikon penanda untuk menyimpan halaman.');}tools.querySelector('[aria-selected=true]')?.focus();}catch(e){if(overlay.isConnected){drawer.hidden=false;notice.textContent=e.message;}}}
+ button('contents','Contents & bookmarks','Daftar isi & penanda',top,e=>openTools('contents',e));button('search','Search book','Cari dalam buku',top,e=>openTools('search',e));button('settings','Reader settings','Pengaturan reader',top,openSettings);
+ button('prev','Previous page','Halaman sebelumnya',actions,()=>reader.prev());
+ const bookmark=button('mark','Bookmark page','Tandai halaman',actions,()=>{overlay.querySelector('.library-reader-footer button[aria-pressed]')?.click();sync();});
+ button('voice','Read aloud','Baca bersuara',actions,e=>openTools('voice',e));button('full','Fullscreen','Layar penuh',actions,()=>reader.toggleFullscreen());button('next','Next page','Halaman berikutnya',actions,()=>reader.next());
+ function select(en,id,choices,value,fn){const label=el('label','app-reading-field',drawer);el('span','',label).textContent=t(en,id);const input=el('select','',label);input.setAttribute('aria-label',t(en,id));for(const [v,english,indonesian]of choices){const opt=el('option','',input);opt.value=v;opt.textContent=t(english,indonesian);}input.value=value;input.onchange=async()=>{input.disabled=true;notice.textContent='';try{await fn(input.value);}catch(e){notice.textContent=e.message;}finally{input.disabled=false;sync();}};return input;}
+ const textBook=!!reader.book.getText;
+ const modes=textBook?[['single','Chapter','Bab'],['scroll','Continuous','Berkelanjutan']]:[['single','Single page','Satu halaman'],['book','Spread','Dua halaman'],['manga','Manga · RTL','Manga · kanan ke kiri'],['scroll','Vertical · gaps','Vertikal · bercelah'],['webtoon','Webtoon · seamless','Webtoon · tanpa celah']];
+ const mode=select('Reading mode','Mode baca',modes,state.options.mode,v=>reader.setMode(v));
+ if(!textBook)select('Page fit','Ukuran halaman',[['page','Fit screen','Pas layar'],['width','Fit width','Pas lebar'],['original','Original size','Ukuran asli']],state.options.fit||'page',v=>reader.setFit(v));
+ const zoom=el('div','app-reading-zoom',drawer);button('minus','Zoom out','Perkecil',zoom,()=>reader.zoomOut());el('span','',zoom).textContent=t('Zoom','Zoom');button('plus','Zoom in','Perbesar',zoom,()=>reader.zoomIn());
+ function range(en,id,key,min,max,step,fallback){const label=el('label','app-reading-field',drawer);el('span','',label).textContent=t(en,id);const input=el('input','',label);input.type='range';input.min=min;input.max=max;input.step=step;input.value=state.options[key]??fallback;input.setAttribute('aria-label',t(en,id));input.oninput=()=>reader.setTypography({[key]:Number(input.value)});}
+ range('Brightness','Kecerahan','brightness',.35,1.25,.05,1);
+ if(textBook){range('Font size','Ukuran teks','fontSize',12,36,1,18);range('Line spacing','Jarak baris','lineHeight',1.2,2.4,.1,1.7);}else range('Crop margins','Pangkas tepi','cropMargin',0,15,1,0);
+ select('Page filter','Filter halaman',[['none','Original','Asli'],['grayscale','Black & white','Hitam putih'],['sepia','Sepia','Sepia'],['invert','Inverted','Terbalik']],state.options.filter||'none',v=>reader.setFilter(v));
+ const advanced=el('button','app-advanced',drawer);advanced.type='button';advanced.textContent=t('All reading tools','Semua alat baca');advanced.onclick=e=>openTools('appearance',e);
+ const keep=el('label','app-reading-field',drawer);el('span','',keep).textContent=t('Keep screen awake','Jaga layar menyala');const awake=el('input','',keep);awake.type='checkbox';awake.disabled=!navigator.wakeLock;awake.setAttribute('aria-label',t('Keep screen awake','Jaga layar menyala'));let lock=null,disposed=false;
+ async function release(){const current=lock;lock=null;await current?.release().catch(()=>{});}
+ async function acquire(){if(!awake.checked||document.visibilityState!=='visible'||disposed)return;try{const result=await navigator.wakeLock.request('screen');if(disposed||!awake.checked){await result.release();return;}lock=result;result.addEventListener('release',()=>{if(lock===result)lock=null;});}catch{awake.checked=false;notice.textContent=t('Screen wake lock unavailable.','Penjaga layar belum tersedia.');}}
+ awake.onchange=()=>awake.checked?acquire():release();const visibility=()=>document.hidden?release():acquire();document.addEventListener('visibilitychange',visibility);
+ const palettes=el('div','app-reader-palettes',drawer);el('h3','',palettes).textContent=t('App palette','Palet aplikasi');const syncPalette=mountPalettes(palettes,t);document.addEventListener('sela:palette',syncPalette);
+ function sync(){if(reader.book)reader.book.toggleFullscreen=fullscreen;const page=reader.currentPage(),total=reader.totalPages,label=state.pageLabels?.[page-1];counter.textContent=(label&&label!==String(page)?label+' · ':'')+page+' / '+total;seek.max=String(total);seek.value=String(page);mode.value=state.options.mode;bookmark.setAttribute('aria-pressed',overlay.querySelector('.library-reader-footer button[aria-pressed]')?.getAttribute('aria-pressed')||'false');}
+ host.addEventListener('flipbook:pagechange',sync);host.addEventListener('flipbook:ready',sync);overlay.addEventListener('sela:preferences',sync);sync();
+ const key=e=>{if(e.key==='Escape'&&overlay.isConnected&&(!drawer.hidden||!tools.hidden)){e.preventDefault();e.stopImmediatePropagation();dismiss();}};document.addEventListener('keydown',key,true);
+ const cleanup=new MutationObserver(()=>{if(overlay.isConnected)return;disposed=true;void release();document.removeEventListener('sela:palette',syncPalette);document.removeEventListener('keydown',key,true);document.removeEventListener('visibilitychange',visibility);cleanup.disconnect();});cleanup.observe(document.body,{childList:true});
 }

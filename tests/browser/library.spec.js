@@ -24,7 +24,7 @@ test('library mobile light/dark and Indonesian preserve usable two-column shelf 
 
 test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.getByRole('button',{name:'Save offline',exact:true}).click();await page.locator('[data-tab=library]').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
-  await page.locator('.cover').click();await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Reading tools',exact:true}).click();await page.getByRole('tab',{name:'Contents',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.library-reader-page-form input')).toHaveValue('46');
+  await page.locator('.cover').click();await expect(page.locator('.app-page-seek')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Contents & bookmarks',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.app-reading-position output')).toHaveText('46 / 50');
 });
 
 test('concurrent inline readers keep page scrolling and scope keyboard navigation to focus',async({page})=>{

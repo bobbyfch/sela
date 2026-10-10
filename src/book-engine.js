@@ -637,15 +637,20 @@ export function createBookEngine(global) {
   PDFlipbook.prototype._observeResize = function () {
     var self = this;
     var width = this.container.clientWidth, height = this.container.clientHeight;
+    var frame = this.container.closest('.library-reader-shell') || this.container;
+    var frameWidth = frame.clientWidth, frameHeight = frame.clientHeight;
     this.ro = new ResizeObserver(function () {
       if (self.destroyed) return;
       var nextWidth = self.container.clientWidth, nextHeight = self.container.clientHeight;
       // Initial or duplicate notifications must not undo a reader's manual zoom.
       if (nextWidth === width && nextHeight === height) return;
       width = nextWidth; height = nextHeight;
+      var refit = frame.clientWidth !== frameWidth || frame.clientHeight !== frameHeight;
+      frameWidth = frame.clientWidth; frameHeight = frame.clientHeight;
       self._layout();
       clearTimeout(self._roT);
-      if(self.opts.fit)self.setFit(self.opts.fit);
+      // Reader panels change the inner area, but only an outer resize reapplies fit.
+      if(self.opts.fit && refit)self.setFit(self.opts.fit);
       self._roT = setTimeout(function () {
         if (self.destroyed) return;   // guard: destroy() may land in the gap
         self._renderWindow();

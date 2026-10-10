@@ -6,7 +6,7 @@ import { FILTERS, brightness, applyAppearance } from './appearance.js';
 import { MODES, readingPreferences, readStored } from './preferences.js';
 export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.3.1';
+export const VERSION = '1.3.2';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;

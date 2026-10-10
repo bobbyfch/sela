@@ -12,6 +12,9 @@ Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, m
 
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
+
+Sela Reader memiliki antarmuka baca aplikasi tersendiri: navigasi ringkas, penggeser halaman, serta panel pengaturan bawah di ponsel dan panel samping di layar besar. Pilih palet Limaraya, Kertas, Tinta, atau Mawar, terpisah dari tampilan terang/gelap/sistem. Mesin dokumen dan layanan isi buku, pencarian, catatan, serta narasi dibagi dengan Viewer tanpa memasukkan UI aplikasi ke bundle CDN. Penjaga layar menyala tersedia jika didukung browser.
+
 ## Reader + Viewer
 
 | Sela Reader | Sela Viewer |
@@ -44,7 +47,7 @@ Pilih **Reader** untuk perpustakaan pribadi atau **Viewer** untuk website/framew
 
 Viewer tidak memerlukan Bootstrap/jQuery. Host embed harus memiliki tinggi; shortcut hanya aktif saat fokus berada di dalam reader. `destroy()` ketika komponen dilepas. Belum diterbitkan ke npm registry; paket dapat dipasang melalui tag GitHub. Browser lama memakai compatibility entry dengan fallback ke PDF asli.
 
-Repo, Pages dan CDN memakai Sela; rilis saat ini **1.3.1**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
+Repo, Pages dan CDN memakai Sela; rilis saat ini **1.3.2**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
 
 ## 📚 Sela Reader — perpustakaan pribadi
 

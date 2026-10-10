@@ -1,5 +1,5 @@
 {
-  "version": "1.3.1",
+  "version": "1.3.2",
   "shell": [
     "index.html",
     "site/demo.css",
@@ -38,6 +38,7 @@
     "library/library.js",
     "library/library-experience.js",
     "library/reader-shell.js",
+    "library/themes.js",
     "library/catalog.js",
     "library/backup.js",
     "library/storage.js",
@@ -271,6 +272,7 @@
     "library/library.js",
     "library/reader-shell.js",
     "library/storage.js",
+    "library/themes.js",
     "library/updates.js",
     "logo.svg",
     "manifest.webmanifest",
