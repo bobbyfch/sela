@@ -1,5 +1,5 @@
 # Reader web app and Viewer share an immutable release with current discovery metadata.
-name: Publish versioned release
+name: Publish Reader and Viewer release
 on:
   push:
     branches: [main]
