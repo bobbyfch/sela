@@ -20,3 +20,5 @@ Reader 1.3.2 adds a dedicated app UI regression for independent chrome, persiste
 
 
 Reader 1.4.0: metadata, local quote/page PNGs, optional app-style inline CDN UI, one tools close control, portrait public covers and compact home were checked in Chromium and WebKit at 320, 390, 768 and 1440 pixels. Unit tests: 11 passed; TypeScript check passed. Local full matrix: 128 passed, one intentional WebKit offline skip, one Vue/WebKit timeout; the Vue case then passed three repeats. Final app/metadata/share regressions passed both browser projects, including actual PNG downloads, native-share API dispatch/fallback, metadata editing and backup/restore. Physical OS share-sheet behavior remains device-dependent. The final Firefox/Chromium/WebKit matrix runs on Linux before release and Pages publication.
+
+Release 1.4.0 passed 193 browser scenarios across Linux Chromium, Firefox and WebKit, with two intentional offline skips. Pages and core/app/metadata/style CDN hashes were verified live. Patch 1.4.1 adds immediate bookmark-list refresh for dock and keyboard changes while the contents panel remains open.

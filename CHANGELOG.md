@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 — 2026-10-10
+
+- Refresh the open personal bookmark list immediately after dock or keyboard changes.
+
 ## 1.4.0 — 2026-10-10
 
 - Optional app-style CDN interface (`ui: app`), including inline embeds and isolated palettes.

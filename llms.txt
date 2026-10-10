@@ -12,5 +12,5 @@ Web app: https://bobbyfch.github.io/sela/mobile/
 Products: https://github.com/bobbyfch/sela/blob/main/docs/products.md
 App installation: https://github.com/bobbyfch/sela/blob/main/docs/pwa.md
 Viewer installation: https://github.com/bobbyfch/sela/blob/main/docs/install.md
-Pinned CDN: https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.4.0/dist/js/sela.min.js
+Pinned CDN: https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.4.1/dist/js/sela.min.js
 FlippyPDF main preserves v1.0.0 assets and directs new users to Sela. Historical CDN caches cannot be recalled.

@@ -26,7 +26,7 @@ Sela Reader uses its own app reading interface: a compact navigation dock, page 
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
-> Reading and library features are included in 1.4.0. Cloud backup sharing is manual; automatic account sync is not configured.
+> Reading and library features are included in 1.4.1. Cloud backup sharing is manual; automatic account sync is not configured.
 
 ## ✨ Why Sela?
 
@@ -130,7 +130,7 @@ The current sample has Read / Save offline actions. New novels are a later conte
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.4.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.4.1**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 

@@ -1,16 +1,16 @@
 {
-  "version": "1.4.0",
+  "version": "1.4.1",
   "pdfjs": "4.10.38",
   "assets": {
     "dist/js/flippy.min.js": {
       "bytes": 89481,
       "gzip": 27580,
-      "sha256": "4236f0d42f839d7aad481722576b07254c2733e312cba2c6dd18d0b035862082"
+      "sha256": "ffdd40783e505683a305d0928f7c0f893427bb8f171e87ac9b089e3b4c5cdfdd"
     },
     "dist/js/flippy.esm.js": {
       "bytes": 89569,
       "gzip": 27629,
-      "sha256": "fc8c778f5743cc56f17500844d4aaa9dd4568d593fca47e7265988fec8ca9c67"
+      "sha256": "f835b4ecb1fd60e3fc2b593e0113e2397aca4b81f41c63f0225f5fe3f861c59c"
     },
     "dist/js/flippy.compat.js": {
       "bytes": 1604,
@@ -30,12 +30,12 @@
     "dist/js/sela.min.js": {
       "bytes": 89481,
       "gzip": 27580,
-      "sha256": "4236f0d42f839d7aad481722576b07254c2733e312cba2c6dd18d0b035862082"
+      "sha256": "ffdd40783e505683a305d0928f7c0f893427bb8f171e87ac9b089e3b4c5cdfdd"
     },
     "dist/js/sela.esm.js": {
       "bytes": 89569,
       "gzip": 27629,
-      "sha256": "fc8c778f5743cc56f17500844d4aaa9dd4568d593fca47e7265988fec8ca9c67"
+      "sha256": "f835b4ecb1fd60e3fc2b593e0113e2397aca4b81f41c63f0225f5fe3f861c59c"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1604,
@@ -63,9 +63,9 @@
       "sha256": "f441a21dfa987c992d1de6f37f17c4c92e9ee192bca2247cebdcfa00bbdd1d74"
     },
     "dist/js/sela.app.js": {
-      "bytes": 17360,
-      "gzip": 6929,
-      "sha256": "fa3c876f36fc41297d4079590a396cf502b647fd71ea24f5e72907e586c7c8b8"
+      "bytes": 17646,
+      "gzip": 6998,
+      "sha256": "14ab8626a4034a901fe4eee04f71dba967cc33b721f1ece452b0032cbce3a15d"
     },
     "dist/js/sela.metadata.js": {
       "bytes": 3364,
@@ -80,12 +80,12 @@
     "dist/css/sela.min.css": {
       "bytes": 15983,
       "gzip": 3988,
-      "sha256": "b64a7fdfc8cc8e281bf191ec1d25f9a4bc20581c532115341b145391dbae2408"
+      "sha256": "19a2399ffba5b0d6a6056db6c5e78cf3318d3ac0a9769ddc64c032c24875cd11"
     },
     "dist/css/flippy.min.css": {
       "bytes": 15983,
       "gzip": 3988,
-      "sha256": "b64a7fdfc8cc8e281bf191ec1d25f9a4bc20581c532115341b145391dbae2408"
+      "sha256": "19a2399ffba5b0d6a6056db6c5e78cf3318d3ac0a9769ddc64c032c24875cd11"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

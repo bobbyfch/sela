@@ -3,7 +3,7 @@ import { mkdir, copyFile, cp, readFile, writeFile, stat, readdir } from 'node:fs
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 
-const banner = '/*! Sela v1.4.0 | MIT Bobby Fajar Christian | PDFlipbook MIT Symple NZ | see THIRD_PARTY_NOTICES.md */';
+const banner = '/*! Sela v1.4.1 | MIT Bobby Fajar Christian | PDFlipbook MIT Symple NZ | see THIRD_PARTY_NOTICES.md */';
 const copyText = async (source, target) => writeFile(target, (await readFile(source, 'utf8')).replace(/\r\n/g, '\n'));
 for (const dir of ['dist/js', 'dist/css', 'dist/types', 'dist/vendor/pdfjs/build', 'dist/vendor/pdfjs/legacy/build']) await mkdir(dir, { recursive: true });
 await build({ entryPoints: ['src/browser.js'], outfile: 'dist/js/flippy.min.js', bundle: true, minify: true, format: 'iife', target: 'es2020', banner: { js: banner }, legalComments: 'none' });
@@ -28,7 +28,7 @@ for (const folder of ['build', 'legacy/build']) {
 for (const folder of ['cmaps', 'standard_fonts']) await cp(`node_modules/pdfjs-dist/${folder}`, `dist/vendor/pdfjs/${folder}`, { recursive: true });
 await copyFile('node_modules/pdfjs-dist/LICENSE', 'dist/vendor/pdfjs/LICENSE');
 await copyFile('licenses/PDFlipbook-MIT.txt', 'dist/PDFlipbook-LICENSE.txt');
-const manifest = { version: '1.4.0', pdfjs: '4.10.38', assets: {} };
+const manifest = { version: '1.4.1', pdfjs: '4.10.38', assets: {} };
 for (const path of ['dist/js/flippy.min.js', 'dist/js/flippy.esm.js', 'dist/js/flippy.compat.js', 'dist/js/flippy.archive.js', 'dist/js/flippy.djvu.js', 'dist/js/sela.min.js', 'dist/js/sela.esm.js', 'dist/js/sela.compat.js', 'dist/js/sela.archive.js', 'dist/js/sela.djvu.js', 'dist/js/sela.tools.js', 'dist/js/sela.text.js', 'dist/js/sela.app.js', 'dist/js/sela.metadata.js', 'dist/css/sela.app.css', 'dist/css/sela.min.css', 'dist/css/flippy.min.css', 'dist/sound/turnPage.mp3', 'dist/vendor/pdfjs/build/pdf.min.mjs', 'dist/vendor/pdfjs/build/pdf.worker.min.mjs']) {
   const data = await readFile(path);
   manifest.assets[path] = { bytes: (await stat(path)).size, gzip: gzipSync(data).length, sha256: createHash('sha256').update(data).digest('hex') };
