@@ -1,0 +1,98 @@
+[
+  {
+    "id": "1342",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": "1813",
+    "genre": "Romance",
+    "url": "https://raw.githubusercontent.com/GITenberg/Pride-and-Prejudice_1342/81db45c9c48c592f0b77f01fc59e677ad0a5634e/1342-0.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "11",
+    "title": "Alice’s Adventures in Wonderland",
+    "author": "Lewis Carroll",
+    "year": "1865",
+    "genre": "Fantasy",
+    "url": "https://raw.githubusercontent.com/GITenberg/Alice-s-Adventures-in-Wonderland_11/7f18748e114b994d5d9454d5793581bc0b9cf9d7/11-0.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "84",
+    "title": "Frankenstein",
+    "author": "Mary Shelley",
+    "year": "1818",
+    "genre": "Science fiction",
+    "url": "https://raw.githubusercontent.com/GITenberg/Frankenstein_84/c98a483bd1f34e7366126b81bcedd1a6faee636e/84-0.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "1661",
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": "1892",
+    "genre": "Mystery",
+    "url": "https://raw.githubusercontent.com/GITenberg/The-Adventures-of-Sherlock-Holmes_1661/7e5dd2703fbf503c004063e96ab7c61262375e5f/1661.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "514",
+    "title": "Little Women",
+    "author": "Louisa May Alcott",
+    "year": "1868",
+    "genre": "Family",
+    "url": "https://raw.githubusercontent.com/GITenberg/Little-Women_514/2b0c302d954a57cfa42c95d88ef053fd1b1aef55/514.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "5200",
+    "title": "Metamorphosis",
+    "author": "Franz Kafka",
+    "year": "1915",
+    "genre": "Fiction",
+    "url": "https://raw.githubusercontent.com/GITenberg/Metamorphosis_5200/21ad108686230eaa50b6d973f141eeee00891e2b/5200.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "345",
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": "1897",
+    "genre": "Gothic",
+    "url": "https://raw.githubusercontent.com/GITenberg/Dracula_345/5216d6ea255fbf8966426a160b68251b18f16907/345.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  },
+  {
+    "id": "98",
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": "1859",
+    "genre": "Historical",
+    "url": "https://raw.githubusercontent.com/GITenberg/A-Tale-of-Two-Cities_98/0f6111bc7237af7375295ec1754c2e57e19f67f1/98.txt",
+    "language": "en",
+    "source": "Project Gutenberg / GITenberg",
+    "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
+    "format": "txt"
+  }
+]

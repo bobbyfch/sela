@@ -6,7 +6,7 @@
 
 Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Dua produk dengan satu mesin baca ringan: Reader sebagai web app perpustakaan pribadi di desktop, tablet dan ponsel, serta Viewer CDN untuk website.
 
-[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.4](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
+[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis terbaru](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
 
 [![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
 
@@ -95,7 +95,7 @@ Jika Sela membuat halaman proyekmu lebih nyaman dibaca, sebuah ⭐ membantu oran
 
 ## Backup cloud
 
-Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Koneksi Drive/OneDrive opsional dapat mengimpor berkas pilihan setelah konfigurasi OAuth. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.
+Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Tidak memerlukan akun atau pengaturan teknis. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.
 
 ## Info buku dan kartu bacaan
 
@@ -109,6 +109,6 @@ Viewer CDN mendukung `ui: 'app'` dan `palette: 'forest' | 'paper' | 'ink' | 'ros
 
 Reader dan Viewer CDN memakai satu antarmuka responsif: ikon navigasi, penanda, pratinjau halaman, tema sistem/terang/gelap dan palet **Rimba, Lontar, Nila, Seroja**. Tidak perlu memilih tampilan klasik atau app. `ui: 'classic'` lama menjadi alias antarmuka terbaru.
 
-**Jelajah → Cari buku terbuka** menyediakan pencarian Open Library dan Project Gutenberg. Akses baca/pinjam mengikuti penyedia; domain publik mengikuti negara pembaca. Unduh buku yang tersedia lalu simpan ke rak lokal.
+**Jelajah → Cari buku terbuka** menyediakan delapan klasik utuh berbahasa Inggris, dengan pencarian judul/penulis/genre, cover, Baca, dan Simpan offline. Buku dibuka langsung di Sela. Pencarian lokal; isi buku diunduh hanya saat dipilih. Ini koleksi terkurasi, bukan mesin pencari seluruh buku. Kredit Project Gutenberg/GITenberg dipertahankan; hak cipta mengikuti negara pembaca. [Detail koleksi](docs/library-sources.md).
 
-**Pengaturan → Hubungkan penyimpanan cloud** mengimpor berkas pilihan dari Google Drive atau OneDrive pribadi. Daftarkan aplikasi OAuth sendiri lalu isi ID publiknya dan izinkan akses akun. Token hanya berada di memori. Fitur ini bukan sinkronisasi otomatis. [Panduan koneksi](docs/cloud.md).
+**Beranda** menyediakan ringkasan rak, lanjut baca dengan cover, serta timer 15/25/45 menit. Cuaca opsional di samping jam memakai kota pilihan sendiri, tanpa akses lokasi perangkat atau API key. Data tersimpan 30 menit. [Cuaca dan privasi](docs/weather.md).

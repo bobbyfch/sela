@@ -4,7 +4,7 @@ Sela is MIT open source. Retain copyright and upstream notices. Bundles include 
 
 ## Local data
 
-Reader stores book bytes in IndexedDB on the website origin. This is not application-level encryption at rest. Browser/OS protections apply; retain original files and full ZIP backups. Clearing browser data or storage eviction may remove the shelf. Manual backup sharing and optional cloud imports are controlled by the user. OAuth tokens remain in memory; see [setup and privacy](cloud.md). No automatic cloud account sync exists.
+Reader stores book bytes in IndexedDB on the website origin. This is not application-level encryption at rest. Browser/OS protections apply; retain original files and full ZIP backups. Clearing browser data or storage eviction may remove the shelf. Manual backup sharing and classic-book downloads are controlled by the user. No cloud account credentials or tokens are requested. See [backup](backup.md) and [catalog sources](library-sources.md). Weather uses a manually selected city; see [privacy](weather.md). No automatic cloud account sync exists.
 
 ## Document handling
 

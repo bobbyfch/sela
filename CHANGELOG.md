@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.0
+
+- Rebuild the Reader home with balanced cards, shelf summaries, cover-based continue reading and a focus timer. Keep one book import action in the top bar.
+- Replace technical OAuth setup and redirect-only catalogs with eight searchable complete classics, generated covers, in-app reading and offline saving. Preserve Gutenberg credits and terms.
+- Add optional city-based Open-Meteo weather beside the clock, with a 30-minute cache and no device location request.
+- Improve plain-text reflow by grouping wrapped lines into paragraphs and recognizing common chapter headings.
+- Keep ZIP backup/share/restore without account setup, and update current documentation.
+
+
 ## 1.5.0
 
 - One responsive reader interface for web app, CDN and inline embeds; classic input remains a compatibility alias.

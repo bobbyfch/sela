@@ -79,4 +79,4 @@ Personal page bookmarks appear in Contents & bookmarks → Your bookmarks. Scree
 
 ## Online sources
 
-Explore → Find open books searches Open Library or Project Gutenberg. Source access and copyright restrictions remain in force. Settings → Connect cloud storage imports selected Google Drive or personal OneDrive files after OAuth setup and account consent. See [cloud setup](cloud.md). There is no automatic cloud synchronization.
+Explore → Find open books searches eight curated classics by title, author and genre. Each has a cover, direct reading within Sela and offline saving. Original credits and rights remain intact; see [sources](library-sources.md). Home adds shelf totals, cover-based recent reading, a focus timer and optional city weather; see [weather](weather.md). Backup uses the device share sheet or a ZIP download, without account setup. There is no automatic cloud synchronization.

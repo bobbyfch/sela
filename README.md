@@ -26,7 +26,7 @@ Reader and CDN Viewer use **one responsive interface**: icon controls, page navi
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
-> Reading and library features are included in 1.5.0. Cloud import is optional and requires your own OAuth registration. ZIP backup sharing is manual; there is no automatic account synchronization.
+> No account or technical setup is needed. Search the built-in classics, read inside Sela, and keep books offline. ZIP backup sharing is manual; there is no automatic synchronization.
 
 ## ✨ Why Sela?
 
@@ -130,7 +130,7 @@ The current sample has Read / Save offline actions. Cloud backup uses manual exp
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.5.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.6.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 
@@ -182,10 +182,10 @@ A built-in music player is a future content feature. Optional host-provided audi
 
 ## Cloud backup
 
-Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to send it through the phone share sheet to an installed cloud app. Google Drive and OneDrive links are provided for manual upload. Restore imports the downloaded ZIP without replacing existing books or newer notes. No automatic account sync or OAuth credentials are configured.
+Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to choose an installed app using your device’s share sheet. Restore imports the ZIP without replacing existing books or newer notes. No account setup is required.
 
 ## 🌐 Beyond your shelf
 
-In **Explore → Find open books**, search Open Library records or Project Gutenberg’s public-domain catalog. Open Library links preserve the source’s reading/borrowing requirements. Gutenberg downloads may be imported directly when the source permits browser access, or downloaded and added locally. Direct provider links remain available if a catalog API is unavailable. Check copyright rules in your country.
+In **Explore → Find open books**, search eight complete English-language classics by title, author or genre. Every card includes a cover, **Read** and **Save offline**. Read imports the book into your local shelf and opens it inside Sela. Search works locally; book content downloads only on request. Texts come from Project Gutenberg through pinned GITenberg sources, with original credits and terms intact. This is a curated collection, not a search engine for every book. Check copyright rules in your country. [Collection details](docs/library-sources.md).
 
-**Settings → Connect cloud storage** offers Google Drive Picker and personal OneDrive import. Register your own application, save its public IDs and approve access when connecting. Tokens stay in memory; books are imported only when selected. No account synchronization is implied. [OAuth setup and privacy](docs/cloud.md).
+**Home** includes shelf counts, cover-based continue-reading cards and a 15/25/45-minute focus timer. Optional weather sits beside the clock: choose a city manually, with no location permission or API key. Results are cached for 30 minutes. [Weather privacy and hosting](docs/weather.md).

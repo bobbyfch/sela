@@ -5,7 +5,7 @@
 ## Quick start
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/js/sela.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.6.0/dist/js/sela.min.js"></script>
 <button id="read" type="button">Read PDF</button>
 <script>
 const reader = new Sela({
@@ -22,16 +22,16 @@ document.querySelector('#read').addEventListener('click', () => {
 CSS loads automatically on first open. For explicit loading/CSP:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/css/sela.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/css/sela.app.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.6.0/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.6.0/dist/css/sela.app.css">
 ```
 
-Pin releases in production. New CDN: `bobbyfch/sela@v1.5.0`; historical FlippyPDF tags are not rewritten. [Migration](migration.md).
+Pin releases in production. New CDN: `bobbyfch/sela@v1.6.0`; historical FlippyPDF tags are not rewritten. [Migration](migration.md).
 
 ### ESM / TypeScript
 
 ```sh
-npm install github:bobbyfch/sela#v1.5.0
+npm install github:bobbyfch/sela#v1.6.0
 ```
 
 ```ts
@@ -50,7 +50,7 @@ Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: se
 Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/js/sela.compat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.6.0/dist/js/sela.compat.js"></script>
 <script>
 document.getElementById('read').onclick = function () {
   var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };

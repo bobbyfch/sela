@@ -28,6 +28,15 @@ export class TextBook {
         if (doc.querySelector('parsererror') || doc.documentElement.localName !== 'FictionBook') throw new Error('Invalid FictionBook 2 XML');
         this.metadata=fb2Metadata(doc);this.language = doc.getElementsByTagNameNS('*', 'lang')[0]?.textContent;
         for (const body of doc.getElementsByTagNameNS('*', 'body')) this.article.appendChild(this.sanitize(body, true));
+      } else if (this.opts.format === 'txt') {
+        // Printed text wraps lines inside paragraphs; avoid turning every line
+        // into a separate paragraph in the reflow reader.
+        for (const block of source.split(/\r?\n[ \t]*\r?\n/)) {
+          const value = block.trim(); if (!value) continue;
+          const heading = /^(?:chapter|book|part|letter)\s+(?:[ivxlcdm]+|\d+|one|two|three|four|five|six|seven|eight|nine|ten)\b[^\n]*$/i.test(value);
+          const el = document.createElement(heading ? 'h2' : 'p');
+          el.textContent = value; this.article.appendChild(el);
+        }
       } else {
         let fence = null;
         for (const line of source.split(/\r?\n/)) {

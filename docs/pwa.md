@@ -8,6 +8,6 @@ Reader has Home, Shelf, Explore and Settings. Wide screens use a side rail, touc
 
 ## Offline and backup
 
-The application shell is cached by its service worker. Offline document support needs the matching adapter/decoder already cached; a saved book alone does not guarantee every format works before its first online open. Browser storage can be evicted. Export the full library ZIP regularly; restoring merges records with integrity checks. Google Drive and OneDrive backup is manual export/share/upload and restore; optional OAuth connections import selected files; there is no automatic synchronization. See [cloud setup](cloud.md).
+The application shell is cached by its service worker. Offline document support needs the matching adapter/decoder already cached; a saved book alone does not guarantee every format works before its first online open. Browser storage can be evicted. Export the full library ZIP regularly; restoring merges records with integrity checks. Backup is manual ZIP export/share and restore, without account setup. There is no automatic synchronization. See [backup](backup.md).
 
 Older browsers receive a basic page with original PDF links. iPhone 4 cannot support the modern offline app. Physical device and background TTS behavior depend on browser/OS. A web app cannot replace every browser’s new-tab page automatically.
