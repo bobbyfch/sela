@@ -34,7 +34,7 @@ var selectedFile, generation=0;
 var input=document.querySelector('#pdf-file'),drop=document.querySelector('#drop-zone');
 var settings=document.querySelector('#playground');
 var samples={pdf:'example/yang-tidak-ikut-pulang.pdf',epub:'example/yang-tidak-ikut-pulang.epub',cbz:'example/yang-tidak-ikut-pulang.cbz',djvu:'example/green-valley.djvu',txt:'example/sela.txt',md:'example/sela.md',html:'example/sela.html',fb2:'example/sela.fb2'};
-function options(){return {presentation:document.querySelector('#demo-presentation').value,mode:document.querySelector('#demo-mode').value,filter:document.querySelector('#demo-filter').value,pageGap:+document.querySelector('#demo-gap').value,duration:+document.querySelector('#demo-duration').value,paperTexture:document.querySelector('#demo-paper').checked,wheelZoom:document.querySelector('#demo-wheel').checked,soundEnabled:document.querySelector('#demo-sound').checked};}
+function options(){return {ui:document.querySelector('#demo-ui').value,presentation:document.querySelector('#demo-presentation').value,mode:document.querySelector('#demo-mode').value,filter:document.querySelector('#demo-filter').value,pageGap:+document.querySelector('#demo-gap').value,duration:+document.querySelector('#demo-duration').value,paperTexture:document.querySelector('#demo-paper').checked,wheelZoom:document.querySelector('#demo-wheel').checked,soundEnabled:document.querySelector('#demo-sound').checked};}
 function showCode(){document.querySelector('#config-code').textContent='new Sela('+JSON.stringify(options(),null,2)+');';}
 function selectFile(file){
  if(file&&(!/\.(pdf|epub|cbz|djvu|djv|txt|md|html|fb2)$/i.test(file.name)||file.size>64*1024*1024)){status.textContent=language.value==='id'?'Pilih format yang didukung, maksimal 64 MiB.':'Choose a supported document up to 64 MiB.';return;}
@@ -48,6 +48,7 @@ if(!window.URL||!URL.createObjectURL)input.disabled=true;
 ['dragenter','dragover'].forEach(function(name){drop.addEventListener(name,function(e){e.preventDefault();drop.classList.add('is-dragging');});});
 ['dragleave','drop'].forEach(function(name){drop.addEventListener(name,function(e){e.preventDefault();drop.classList.remove('is-dragging');if(name==='drop'&&window.URL&&URL.createObjectURL)selectFile(e.dataTransfer.files[0]);});});
 function attachSettings(current){
+ if(current.options.ui==='app')return;
  var details=document.createElement('details');details.className='flippy-demo-settings';
  var summary=document.createElement('summary');summary.setAttribute('aria-label',language.value==='id'?'Pengaturan demo':'Demo settings');summary.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg>';
  details.appendChild(summary);var panel=document.createElement('div');panel.className='flippy-demo-panel';
@@ -75,13 +76,13 @@ function open(trigger,forceSample,startPage){
  var config=options();config.pdfUrl=url;config.format=format;config.language=language.value;config.theme=theme.value;config.trigger=trigger;config.startPage=startPage||1;
  config.title=!forceSample&&selectedFile?selectedFile.name:(format==='pdf'||format==='epub'?'Yang Tidak Ikut Pulang':format==='cbz'?'Yang Tidak Ikut Pulang · illustration gallery':'Green valley');
  if(format==='djvu'){config.djvujsSrc='https://djvu.js.org/assets/dist/djvu.js';config.djvuIntegrity='sha384-2L4uchU1kPKhHq+pfHZRZC4Aa0iSaT8GV8fX1oUuvmIJJaBguw2+zwG1sheMRee4';}
- var embed=document.querySelector('#embedded-reader');embed.hidden=config.presentation!=='inline';if(config.presentation==='inline')config.container=embed;viewer=new Sela(config);var current=viewer;status.textContent=language.value==='id'?'Memuat reader…':'Loading reader…';
+ var embed=document.querySelector('#embedded-reader');embed.hidden=config.presentation!=='inline';if(config.presentation==='inline')config.container=embed;if(!selectedFile&&['pdf','epub'].includes(format))config.metadata={title:'Yang Tidak Ikut Pulang',author:'Bobby Fajar Christian',year:'2026',language:'id',description:'A return to an old house, a recording that should not exist, and the people left between memory and distance.'};viewer=new Sela(config);var current=viewer;status.textContent=language.value==='id'?'Memuat reader…':'Loading reader…';
  current.open().then(function(){if(seq!==generation)return;current.setZoom(+document.querySelector('#demo-zoom').value);attachSettings(current);status.textContent=current.totalPages+' '+(format==='epub'?'chapters':language.value==='id'?'halaman':'pages')+' · '+config.mode;}).catch(function(error){if(error.name!=='AbortError'&&seq===generation)status.textContent=error.message;});
  };
  if(window.SelaReady)SelaReady.then(run).catch(function(error){status.textContent=error.message;});else run();
 }
 var buttons=document.querySelectorAll('[data-mode]');for(var j=0;j<buttons.length;j++)(function(button){button.addEventListener('click',function(){document.querySelector('#demo-mode').value=button.dataset.mode;showCode();open(button);});})(buttons[j]);
-document.querySelectorAll('[data-story-open]').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();document.querySelector('#sample').value='pdf';document.querySelector('#demo-mode').value=SelaPlatform.mobile?'single':'book';open(event.currentTarget,true);});});
+document.querySelectorAll('[data-story-open]').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();if(button.hasAttribute('data-app-demo'))document.querySelector('#demo-ui').value='app';document.querySelector('#sample').value='pdf';document.querySelector('#demo-mode').value=SelaPlatform.mobile?'single':'book';open(event.currentTarget,true);});});
 settings.addEventListener('submit',function(event){event.preventDefault();open(document.querySelector('.launch-reader'));});showCode();
 window.addEventListener('pagehide',function(){if(viewer)viewer.destroy();if(selectedUrl)URL.revokeObjectURL(selectedUrl);});
 })();

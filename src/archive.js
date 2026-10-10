@@ -1,6 +1,7 @@
 import { unzipSync, zipSync } from 'fflate';
 import { bindZoomGestures } from './gestures.js';
 import { captureTextPosition, restoreTextPosition } from './preferences.js';
+import {epubMetadata,comicMetadata} from './book-metadata.js';
 
 import { readBytes } from './bytes.js';
 export { readBytes } from './bytes.js';
@@ -39,7 +40,7 @@ export class Epub {
       if(!['application/xhtml+xml','text/html'].includes(resource.getAttribute('media-type')))throw new Error('Only HTML EPUB spine content is supported');
       return path(resource.getAttribute('href'),opfPath);
     });
-    this.language=nodes(opf,'language')[0]?.textContent||'';
+    this.metadata=epubMetadata(opf);this.language=nodes(opf,'language')[0]?.textContent||'';
     this.outline=this.readOutline(opf,items,opfPath);
     this.numPages=this.chapters.length;if(!this.numPages)throw new Error('EPUB has no chapters');
     if(this.chapters.some(name=>!this.files[name]))throw new Error('EPUB spine references a missing chapter');
@@ -102,7 +103,8 @@ export function cbzLibrary(){return {getDocument(options){
     const names=Object.keys(files).filter(name=>imageType(name)).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
     if(!names.length)throw new Error('CBZ contains no supported raster images');
     urls=names.map(name=>URL.createObjectURL(new Blob([files[name]],{type:imageType(name)})));
-    const doc={numPages:names.length,destroy:async()=>{destroyed=true;urls.forEach(url=>URL.revokeObjectURL(url));urls=[];},getPage:async number=>{
+    const comicInfo=Object.keys(files).find(name=>/(^|\/)ComicInfo\.xml$/i.test(name));let metadata={};try{if(comicInfo)metadata=comicMetadata(xml(files[comicInfo]));}catch{}
+    const doc={numPages:names.length,getMetadata:async()=>({info:{Title:metadata.title,Author:metadata.author,Subject:metadata.description},metadata:{get:key=>({'dc:date':metadata.year,'dc:publisher':metadata.publisher,'dc:language':metadata.language}[key])}}),metadata,destroy:async()=>{destroyed=true;urls.forEach(url=>URL.revokeObjectURL(url));urls=[];},getPage:async number=>{
       if(destroyed)throw new DOMException('Closed','AbortError');
       const img=new Image();img.src=urls[number-1];await img.decode();
       if(img.naturalWidth*img.naturalHeight>32000000)throw new Error('Comic image exceeds 32 megapixels');

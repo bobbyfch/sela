@@ -3,7 +3,7 @@ import { zipSync, strToU8 } from 'fflate';
 import { readFile } from 'node:fs/promises';
 
 test('story card opens reader; upload, live mode/filter/gap and global shortcuts',async({page})=>{
-  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
   await page.locator('[data-story-open]').click();
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
   await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
@@ -37,7 +37,7 @@ test('story card opens reader; upload, live mode/filter/gap and global shortcuts
 test('EPUB sanitized selectable text, chapter links, font zoom and no PDF engine',async({page})=>{
   const pdfRequests=[];page.on('request',r=>{if(r.url().includes('vendor/pdfjs'))pdfRequests.push(r.url());});
   const sample=await readFile('example/yang-tidak-ikut-pulang.epub');
-  await page.goto('/');await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.epub',mode:'single'});await r.open();});
+  await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.epub',mode:'single'});await r.open();});
   await expect(page.locator('.flippy-epub-chapter:not([hidden]) h1').last()).toHaveText('1. Kunci Cadangan');
   await page.evaluate(()=>r.showTools());
   await page.getByRole('button',{name:'2. Pukul Empat Lewat Empat',exact:true}).click();
@@ -53,7 +53,7 @@ test('EPUB sanitized selectable text, chapter links, font zoom and no PDF engine
 });
 
 test('CBZ actual raster pages in book and seamless webtoon',async({page})=>{
-  await page.goto('/');await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.cbz',mode:'book',duration:0});await r.open();});
+  await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.cbz',mode:'book',duration:0});await r.open();});
   expect(await page.evaluate(()=>r.totalPages)).toBe(4);
   await expect.poll(()=>page.locator('.fb-sheet canvas').first().evaluate(c=>c.width>0&&c.getContext('2d').getImageData(20,20,1,1).data[3]>0)).toBe(true);
   await page.evaluate(async()=>{r.close();window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.cbz',mode:'webtoon'});await r.open();r.goTo(2);});
@@ -61,7 +61,7 @@ test('CBZ actual raster pages in book and seamless webtoon',async({page})=>{
 });
 
 test('DjVu real optional GPL decoder and worker, without PDF.js download',async({page})=>{
-  test.setTimeout(60000);const requests=[];page.on('request',r=>requests.push(r.url()));await page.goto('/');
+  test.setTimeout(60000);const requests=[];page.on('request',r=>requests.push(r.url()));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
   await page.locator('#sample').selectOption('djvu');await page.locator('.launch-reader').click();
   await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','1',{timeout:30000});
   await expect.poll(()=>page.locator('.fb-sheet canvas').first().evaluate(c=>c.width>0&&c.getContext('2d').getImageData(20,20,1,1).data[3]>0)).toBe(true);
@@ -69,7 +69,7 @@ test('DjVu real optional GPL decoder and worker, without PDF.js download',async(
 });
 
 test('wheel zoom, touch pinch and cancellation leave no active pointer state',async({page})=>{
-  await page.goto('/');await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'webtoon'});await r.open();});
+  await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.evaluate(async()=>{await FlippyReady;window.r=new Flippy({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'webtoon'});await r.open();});
   const root=page.locator('.flippy-webtoon');
   await root.dispatchEvent('wheel',{deltaY:-80,ctrlKey:true});expect(await page.evaluate(()=>r.zoom)).toBeGreaterThan(1);
   await page.evaluate(()=>r.setZoom(1));
@@ -82,7 +82,7 @@ test('wheel zoom, touch pinch and cancellation leave no active pointer state',as
 });
 
 test('mobile live settings stay in viewport; book zoom and editable shortcuts',async({page})=>{
-  await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('[data-story-open]').click();
+  await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.locator('[data-story-open]').click();
   await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
   await page.locator('.flippy-demo-settings summary').click();
   const panel=await page.locator('.flippy-demo-panel').boundingBox();expect(panel.x).toBeGreaterThanOrEqual(0);expect(panel.x+panel.width).toBeLessThanOrEqual(375);expect(panel.y+panel.height).toBeLessThanOrEqual(812);
@@ -94,7 +94,7 @@ test('mobile live settings stay in viewport; book zoom and editable shortcuts',a
 });
 
 test('invalid archives and missing EPUB spine fail explicitly',async({page})=>{
-  await page.goto('/');
+  await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
   const {unzipSync}=await import('fflate');const files=unzipSync(await readFile('example/yang-tidak-ikut-pulang.epub'));delete files['OEBPS/chapter0.xhtml'];
   await page.route('**/missing.epub',route=>route.fulfill({body:Buffer.from(zipSync(files))}));
   await expect(page.evaluate(async()=>{await FlippyReady;const r=new Flippy({url:'/missing.epub'});try{await r.open();return 'unexpected';}catch(e){return e.message;}finally{r.close();}})).resolves.toMatch(/missing chapter/);

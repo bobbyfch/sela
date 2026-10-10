@@ -3,7 +3,7 @@
 Sela has two products.
 
 - **Reader**: a private, installable web app for desktop, tablet and phone. Home, Shelf, Explore and Settings are app screens, with local books, collections, favorites and full ZIP backup. Wide layouts use a side rail; phones use bottom navigation.
-- **Viewer**: a lightweight CDN/ESM plugin for websites and frameworks, inline or fullscreen. It shares the document engine, without the app library or navigation.
+- **Viewer**: a lightweight CDN/ESM plugin for websites and frameworks, inline or fullscreen. It shares the document engine, without the app library or navigation. Choose classic controls (default) or the responsive app reader using `ui: 'app'`; the extra module loads only when requested.
 
 [Open Reader](https://bobbyfch.github.io/sela/mobile/) · [Install the web app](pwa.md) · [Embed Viewer](install.md).
 

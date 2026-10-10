@@ -6,7 +6,7 @@ import { FILTERS, brightness, applyAppearance } from './appearance.js';
 import { MODES, readingPreferences, readStored } from './preferences.js';
 export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.3.2';
+export const VERSION = '1.4.0';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;
@@ -37,6 +37,7 @@ export function createSelaClass(defaultAssetBase) {
     constructor(options = {}) {
       super();
       this.options = { mode: 'book', theme: 'auto', ...options };
+      if(options.ui&&!['classic','app'].includes(options.ui))throw new TypeError('ui must be classic or app');
       if (options.presentation && !['overlay', 'inline'].includes(options.presentation)) throw new TypeError('presentation must be overlay or inline');
       if (!MODES.includes(this.options.mode)) throw new TypeError('mode must be book, single, scroll, webtoon or manga');
       if (this.options.filter && !Object.prototype.hasOwnProperty.call(FILTERS, this.options.filter)) throw new TypeError('Unknown reading filter');
@@ -99,7 +100,7 @@ export function createSelaClass(defaultAssetBase) {
         activeViewer = this;
       }
       try {
-        const [, lib] = await Promise.all([
+        const [, lib, appUI] = await Promise.all([
           options.autoStyles === false ? Promise.resolve() : loadCss(safeUrl(options.cssUrl || new URL('css/sela.min.css', base), win.location.href), win.document),
           options.format === 'pdf' ? loadPdfEngine(options, base, win) :
             import(/* webpackIgnore: true */ /* @vite-ignore */ new URL(options.format === 'djvu' ? 'js/sela.djvu.js' : ['txt','md','html','fb2'].includes(options.format) ? 'js/sela.text.js' : 'js/sela.archive.js', base).href).then(async module => {
@@ -109,7 +110,8 @@ export function createSelaClass(defaultAssetBase) {
               if(!options.djvujsSrc)throw new Error('DjVu requires a separately supplied djvujsSrc decoder');
               options.djvujsSrc = safeUrl(options.djvujsSrc, win.location.href);
               return module.loadDjvu(options);
-            })
+            }),
+          options.ui==='app'?Promise.all([import(/* webpackIgnore: true */ /* @vite-ignore */ new URL('js/sela.app.js',base).href),options.autoStyles===false?Promise.resolve():loadCss(safeUrl(new URL('css/sela.app.css',base),win.location.href),win.document)]).then(([module])=>module):Promise.resolve(null)
         ]);
         if (generation !== this._generation) throw abortError();
         options.pdfjsLib = lib;
@@ -123,6 +125,7 @@ export function createSelaClass(defaultAssetBase) {
           this._rejectReady = reject;
           options.onReady = () => {
             this._rejectReady = null;
+            try{if(appUI)appUI.configureLibraryReader(this,{mobile:true,viewer:true,language:options.language||'id'});}catch(error){reject(error);return;}
             this._event('ready', { pages: this.book?.numPages || 0 });
             resolve(this);
           };
@@ -183,6 +186,11 @@ export function createSelaClass(defaultAssetBase) {
     back() { this._reader?.getState()?.back(); return this; }
     showTools() { return this._reader?.getState()?.showTools?.() || Promise.reject(new Error('Open the reader first')); }
     getText(page = this.currentPage()) { return this._reader?.getState()?.getText?.(page) || Promise.resolve(''); }
+    async getMetadata() {
+      const base=new URL(this.options.assetBase||defaultAssetBase,window.location.href);if(!base.pathname.endsWith('/'))base.pathname+='/';
+      const module=await import(/* webpackIgnore: true */ /* @vite-ignore */ new URL('js/sela.metadata.js',base).href);
+      const metadata=await module.readBookMetadata(this.book,this.options.metadata);if(!metadata.title)metadata.title=this.options.title||'';return metadata;
+    }
     toggleFullscreen() { this.book?.toggleFullscreen(); return this; }
     setFilter(value) {
       if (!Object.prototype.hasOwnProperty.call(FILTERS, value)) throw new TypeError('Unknown reading filter');

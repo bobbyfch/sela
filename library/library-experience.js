@@ -1,11 +1,13 @@
+import {showBookInfo} from './book-info.js';
 import {samples} from './catalog.js';
 import {writeBook,getFile} from './storage.js';
-import {mountPalettes} from './themes.js';
+import {mountPalettes,initializePalette} from './themes.js';
 
 const $=s=>document.querySelector(s);
 const paths={home:'m3 11 9-8 9 8v10H3Zm6 10v-8h6v8',shelf:'M4 3v18m5-18v18m5-18v18m4-17 3 16M2 21h20',browse:'M3 4h7a3 3 0 0 1 3 3v14a5 5 0 0 0-5-2H3Zm18 0h-5a3 3 0 0 0-3 3v14a5 5 0 0 1 5-2h3Z',settings:'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6',plus:'M12 4v16M4 12h16'};
 function svg(name){const node=document.createElementNS('http://www.w3.org/2000/svg','svg');node.setAttribute('viewBox','0 0 24 24');node.setAttribute('aria-hidden','true');const path=document.createElementNS(node.namespaceURI,'path');path.setAttribute('d',paths[name]);node.append(path);return node;}
 export function mountLibraryExperience({mobile,t,status,refresh,openBook,readSample,addSample}){
+  if(mobile)initializePalette();
   const selected=new Set();let items=[],busy=false,page='home';const labels=[];
   const el=(tag,className,parent)=>{const node=document.createElement(tag);if(className)node.className=className;if(parent)parent.append(node);return node;};
   const text=(node,en,id)=>{labels.push({node,en,id});node.textContent=t(en,id);return node;};
@@ -16,7 +18,7 @@ export function mountLibraryExperience({mobile,t,status,refresh,openBook,readSam
   const continueSection=el('section','continue-section',home);text(el('h2','',continueSection),'Continue reading','Lanjut membaca');const continueList=el('div','continue-list',continueSection);
   const homeCatalog=el('section','catalog-section',home);text(el('h2','',homeCatalog),'Sample reading','Bacaan contoh');
   const browse=el('section','app-page browse-page',main);browse.dataset.page='browse';text(el('h2','',browse),'Explore','Jelajah');text(el('p','section-description',browse),'Read a sample, or download it into your private shelf.','Baca contoh, atau unduh ke rak pribadimu.');
-  function catalog(parent){const list=el('div','catalog-list',parent);for(const sample of samples){const card=el('article','catalog-book',list);const image=el('img','',card);image.src=sample.cover;image.alt='';image.loading='lazy';const copy=el('div','',card);el('h3','',copy).textContent=sample.title;const description=el('p','',copy);labels.push({node:description,en:sample.description.en,id:sample.description.id});description.textContent=t(sample.description.en,sample.description.id);const actions=el('div','catalog-actions',copy);action('Read sample','Baca contoh',()=>readSample(sample),actions);action('Save offline','Simpan offline',()=>addSample(sample),actions);}return list;}
+  function catalog(parent){const list=el('div','catalog-list',parent);for(const sample of samples){const card=el('article','catalog-book',list);const image=el('img','',card);image.src=sample.cover;image.alt='';image.loading='lazy';const copy=el('div','',card);el('h3','',copy).textContent=sample.title;const meta=el('small','catalog-meta',copy);meta.textContent=[sample.metadata?.author,sample.metadata?.year].filter(Boolean).join(' · ');action('Book information','Informasi buku',()=>showBookInfo(sample.metadata,{t,format:sample.format}),copy).classList.add('catalog-info');const description=el('p','',copy);labels.push({node:description,en:sample.description.en,id:sample.description.id});description.textContent=t(sample.description.en,sample.description.id);const actions=el('div','catalog-actions',copy);action('Read sample','Baca contoh',()=>readSample(sample),actions);action('Save offline','Simpan offline',()=>addSample(sample),actions);}return list;}
   catalog(homeCatalog);catalog(browse);
   // Remove obsolete five-cover placeholders. Full novels are a later content phase.
   const empty=$('#empty');empty.querySelector('img').replaceWith(svg('plus'));const emptyAdd=action('Add your first book','Tambahkan buku pertama',()=>$('#books').click(),empty);emptyAdd.classList.add('empty-add');$('#sample').hidden=true;

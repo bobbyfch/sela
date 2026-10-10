@@ -28,12 +28,12 @@ test('PDF cover is a locally rendered thumbnail and sample has twelve navigable 
 });
 
 test('concurrent inline readers keep page scrolling and scope keyboard navigation to focus',async({page})=>{
- await page.goto('/');await page.evaluate(async()=>{await SelaReady;for(const id of ['one','two']){const host=document.createElement('div');host.id=id;host.style.height='520px';document.body.append(host);const r=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,language:'en',duration:0});window[id]=r;await r.open();}});
+ await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.evaluate(async()=>{await SelaReady;for(const id of ['one','two']){const host=document.createElement('div');host.id=id;host.style.height='520px';document.body.append(host);const r=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,language:'en',duration:0});window[id]=r;await r.open();}});
  await expect(page.locator('.sela-inline')).toHaveCount(2);expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');await expect(page.locator('#one .sela-inline')).not.toHaveAttribute('aria-modal','true');
  await page.locator('#one .library-reader-close').focus();await page.keyboard.press('ArrowRight');await expect(page.locator('#one .library-reader-page-form input')).toHaveValue('2');await expect(page.locator('#two .library-reader-page-form input')).toHaveValue('1');
  await page.locator('#one .library-reader-close').click();await expect(page.locator('#one .sela-inline')).toHaveCount(0);await expect(page.locator('#two .sela-inline')).toHaveCount(1);
 });
 
 test('Pages is viewer-only and provides inline presentation',async({page})=>{
- await page.goto('/');await expect(page.locator('#open-shelf')).toHaveCount(0);await page.locator('#demo-presentation').selectOption('inline');await page.locator('.launch-reader').click();await expect(page.locator('#embedded-reader .sela-inline')).toBeVisible();expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');
+ await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await expect(page.locator('#open-shelf')).toHaveCount(0);await page.locator('#demo-presentation').selectOption('inline');await page.locator('.launch-reader').click();await expect(page.locator('#embedded-reader .sela-inline')).toBeVisible();expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');
 });

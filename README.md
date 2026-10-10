@@ -16,7 +16,7 @@
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
 
-Sela Reader uses its own app reading interface: a compact navigation dock, page scrubber and responsive settings sheet on phones or side panel on larger screens. Choose Limaraya, Paper, Ink or Rose palettes independently of light/dark/system appearance. Reading modes, fit, contents, search, notes and narration share document services with Viewer without adding app UI to the CDN bundle. Screen wake lock is optional where the browser supports it.
+Sela Reader uses its own app reading interface: a compact navigation dock, page scrubber and responsive settings sheet on phones or side panel on larger screens. Choose Forest, Paper, Ink or Rose palettes independently of light/dark/system appearance. Reading modes, fit, contents, search, notes and narration share document services with Viewer. CDN integrations can opt into the same app interface using `ui: 'app'`; its module and styles load only on demand. Screen wake lock is optional where the browser supports it.
 
 ## Reader + Viewer
 
@@ -26,7 +26,7 @@ Sela Reader uses its own app reading interface: a compact navigation dock, page 
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
-> Reading and library features are included in 1.3.2. Cloud backup sharing is manual; automatic account sync is not configured.
+> Reading and library features are included in 1.4.0. Cloud backup sharing is manual; automatic account sync is not configured.
 
 ## ✨ Why Sela?
 
@@ -46,11 +46,13 @@ Sela Reader uses its own app reading interface: a compact navigation dock, page 
 
 | Module | Gzip size | Loaded when |
 | --- | ---: | --- |
-| Main interface | ~26.6 KiB | Main script requested |
+| Main interface | ~26.9 KiB | Main script requested |
 | Scoped CSS | ~3.9 KiB | First open |
-| EPUB / CBZ adapter (includes fflate) | ~10.7 KiB | EPUB or CBZ selected |
+| EPUB / CBZ adapter (includes fflate) | ~11.5 KiB | EPUB or CBZ selected |
 | Reading tools: contents, search, notes, TTS | ~9.6 KiB | Tools first opened |
-| Plain text / Markdown / HTML / FB2 | ~3.0 KiB | Text format selected |
+| Plain text / Markdown / HTML / FB2 | ~3.5 KiB | Text format selected |
+| App-style Viewer UI | ~6.8 KiB JS + ~2.3 KiB CSS | Only with `ui: 'app'` |
+| Publishing metadata | ~1.4 KiB | Metadata requested (app library imports it) |
 | DjVu adapter | ~1.4 KiB | DjVu selected; external decoder also needed |
 | PDF.js + worker (modern) | ~491 KiB combined | PDF selected; fonts/CMaps may load separately |
 
@@ -75,6 +77,23 @@ await reader.open();
 ```
 
 Set `format: 'epub'`, `'cbz'` or `'djvu'` explicitly for Blob URLs, byte data and extensionless endpoints. DjVu also requires `djvujsSrc`; its GPL-2.0 decoder is not part of the MIT bundle. CBR/RAR, MOBI/AZW, DOCX and DRM are not supported in this release. [Full format guide](docs/formats.md).
+
+## 🔎 Book information & reading cards
+
+Reader shows title, author, publication year, publisher, language, ISBN/identifier, description, subjects and rights when present. PDF metadata, EPUB Dublin Core, ComicInfo and FB2 are read locally; library information can be edited and survives backup/restore. Missing fields remain unknown—PDF file creation time is not treated as a publication date.
+
+Saved page bookmarks appear under **Contents & bookmarks → Your bookmarks**. Tap **Screenshot & quote** in the app dock to create a 1080 × 1350 PNG with a passage or current PDF/comic page, title, author, year and page reference. Prepare the preview, then share it using your device’s file-sharing menu or download the PNG. Text books support quote cards; page screenshots require PDF/image pages. Only share passages you have permission to share.
+
+```js
+const reader = new Sela({
+  url: '/book.pdf', ui: 'app', palette: 'forest', language: 'en',
+  metadata: { author: 'Author name', year: '2026' }
+});
+await reader.open();
+console.log(await reader.getMetadata());
+```
+
+The default remains `ui: 'classic'`. App controls also work with inline presentation; palettes are scoped to the viewer and do not change your website theme. With `autoStyles: false`, include both `sela.min.css` and `sela.app.css` yourself.
 
 ## 🎛️ Read, tweak, repeat
 
@@ -111,7 +130,7 @@ The current sample has Read / Save offline actions. New novels are a later conte
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.3.2**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.4.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 

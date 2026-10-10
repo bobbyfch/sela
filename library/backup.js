@@ -1,3 +1,4 @@
+import {cleanMetadata} from '../dist/js/sela.metadata.js';
 import {listBooks,getFile,restoreBooks} from './storage.js';
 const prefix='sela-library:';
 const encoder=new TextEncoder();
@@ -51,7 +52,7 @@ export async function restoreLibrary(file){
     // Merge new books; existing books and their newer notes are kept intact.
     if(existing.has(b.id))continue;
     const book={id:b.id,format:b.format,filename:b.filename,name:b.name,size:bytes.length,saved:Number(b.saved)||Date.now(),opened:Number(b.opened)||0,favorite:!!b.favorite,completed:!!b.completed,tags:Array.isArray(b.tags)?b.tags.filter(t=>typeof t==='string').slice(0,30).map(t=>t.slice(0,40)):[]};
-    book.progress=Math.max(0,Number(b.progress)||0);book.total=Math.max(0,Number(b.total)||0);
+    book.metadata=cleanMetadata(b.metadata);book.progress=Math.max(0,Number(b.progress)||0);book.total=Math.max(0,Number(b.total)||0);
     records.push({book,bytes:bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),type:'application/octet-stream'});reading.push({id:b.id,values:validated});
   }
   let defaults=null;if(manifest.preferences!==null&&manifest.preferences!==undefined){if(typeof manifest.preferences!=='string'||manifest.preferences.length>10000)throw Error('Invalid defaults');defaults=JSON.parse(manifest.preferences);if(!defaults||typeof defaults!=='object'||Array.isArray(defaults))throw Error('Invalid defaults');}

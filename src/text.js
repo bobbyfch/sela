@@ -1,6 +1,7 @@
 import { readBytes } from './bytes.js';
 import { bindZoomGestures } from './gestures.js';
 import { captureTextPosition, restoreTextPosition } from './preferences.js';
+import {fb2Metadata,cleanMetadata} from './book-metadata.js';
 
 const allowed = new Set('p div span h1 h2 h3 h4 h5 h6 blockquote ul ol li em strong b i u s sub sup br hr pre code table thead tbody tr td th figure figcaption a section article'.split(' '));
 // Safe reflow adapter. Publisher scripts, styles, remote media and active HTML never run.
@@ -20,11 +21,12 @@ export class TextBook {
       this.article = document.createElement('article');
       if (this.opts.format === 'html') {
         const doc = new DOMParser().parseFromString(source, 'text/html'); this.language = doc.documentElement.lang;
+        this.metadata=cleanMetadata({title:doc.title,author:doc.querySelector('meta[name=author]')?.content,description:doc.querySelector('meta[name=description]')?.content,language:this.language});
         for (const child of doc.body.childNodes) this.article.appendChild(this.sanitize(child));
       } else if (this.opts.format === 'fb2') {
         const doc = new DOMParser().parseFromString(source, 'application/xml');
         if (doc.querySelector('parsererror') || doc.documentElement.localName !== 'FictionBook') throw new Error('Invalid FictionBook 2 XML');
-        this.language = doc.getElementsByTagNameNS('*', 'lang')[0]?.textContent;
+        this.metadata=fb2Metadata(doc);this.language = doc.getElementsByTagNameNS('*', 'lang')[0]?.textContent;
         for (const body of doc.getElementsByTagNameNS('*', 'body')) this.article.appendChild(this.sanitize(body, true));
       } else {
         let fence = null;

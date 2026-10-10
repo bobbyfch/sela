@@ -6,14 +6,14 @@
 
 Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Dua produk dengan satu mesin baca ringan: Reader sebagai web app perpustakaan pribadi di desktop, tablet dan ponsel, serta Viewer CDN untuk website.
 
-[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.3](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
+[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.4](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
 
 [![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
 
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
 
-Sela Reader memiliki antarmuka baca aplikasi tersendiri: navigasi ringkas, penggeser halaman, serta panel pengaturan bawah di ponsel dan panel samping di layar besar. Pilih palet Limaraya, Kertas, Tinta, atau Mawar, terpisah dari tampilan terang/gelap/sistem. Mesin dokumen dan layanan isi buku, pencarian, catatan, serta narasi dibagi dengan Viewer tanpa memasukkan UI aplikasi ke bundle CDN. Penjaga layar menyala tersedia jika didukung browser.
+Sela Reader memiliki antarmuka baca aplikasi tersendiri: navigasi ringkas, penggeser halaman, serta panel pengaturan bawah di ponsel dan panel samping di layar besar. Pilih palet Hutan, Kertas, Tinta, atau Mawar, terpisah dari tampilan terang/gelap/sistem. Mesin dokumen dan layanan isi buku, pencarian, catatan, serta narasi dibagi dengan Viewer dengan opsi `ui: 'app'` pada CDN; module tambahan dimuat saat dipakai. Penjaga layar menyala tersedia jika didukung browser.
 
 ## Reader + Viewer
 
@@ -39,7 +39,7 @@ Core sekitar **26,6 KiB gzip**; CSS sekitar **3,9 KiB**. Adapter EPUB/CBZ sekita
 
 PDF, EPUB, CBZ, TXT, Markdown dasar, HTML aman, FB2 berbasis teks, serta DjVu dengan decoder eksternal. PDF pindai dan komik tidak punya teks untuk pencarian/TTS tanpa OCR. PDF punya transkrip teks, tetapi belum ada text layer yang sejajar atau highlight geometris. EPUB memakai navigasi bab, bukan pagination CFI/fidelitas layout penerbit. CBR/RAR, MOBI/AZW, DOCX dan DRM belum didukung. [Batas format](docs/formats.md).
 
-## 🚀 Pasang Sela 1.3
+## 🚀 Pasang Sela 1.4
 
 [![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer)
 
@@ -47,7 +47,7 @@ Pilih **Reader** untuk perpustakaan pribadi atau **Viewer** untuk website/framew
 
 Viewer tidak memerlukan Bootstrap/jQuery. Host embed harus memiliki tinggi; shortcut hanya aktif saat fokus berada di dalam reader. `destroy()` ketika komponen dilepas. Belum diterbitkan ke npm registry; paket dapat dipasang melalui tag GitHub. Browser lama memakai compatibility entry dengan fallback ke PDF asli.
 
-Repo, Pages dan CDN memakai Sela; rilis saat ini **1.3.2**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
+Repo, Pages dan CDN memakai Sela; rilis saat ini **1.4.0**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
 
 ## 📚 Sela Reader — perpustakaan pribadi
 
@@ -96,3 +96,11 @@ Jika Sela membuat halaman proyekmu lebih nyaman dibaca, sebuah ⭐ membantu oran
 ## Backup cloud
 
 Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Drive/OneDrive tersedia sebagai tautan unggah manual. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.
+
+## Info buku dan kartu bacaan
+
+Reader menampilkan judul, penulis, tahun terbit, penerbit, bahasa, ISBN/identitas, deskripsi, topik dan hak penggunaan bila tersedia. Metadata PDF, EPUB, ComicInfo dan FB2 dibaca lokal; info buku di rak bisa diedit dan ikut backup/restore. Tanggal pembuatan file PDF bukan tahun terbit.
+
+Penanda halaman ada di **Daftar isi & penanda → Penandamu**. Tombol **Screenshot & kutipan** membuat PNG 1080 × 1350 dari kutipan atau halaman PDF/komik, lengkap dengan judul, penulis, tahun dan nomor halaman. Buat pratinjau dulu, lalu unduh PNG atau gunakan menu berbagi perangkat jika didukung. Buku teks memakai kartu kutipan.
+
+Viewer CDN mendukung `ui: 'app'` dan `palette: 'forest' | 'paper' | 'ink' | 'rose'`. Default tetap klasik. Module app dimuat saat dipakai, termasuk pada embed; palet tidak mengubah tema website. `await reader.getMetadata()` membaca info buku, sedangkan `metadata: {...}` menyediakan pelengkapnya. Untuk `autoStyles: false`, muat `sela.min.css` dan `sela.app.css` sendiri.

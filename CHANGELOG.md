@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.0 — 2026-10-10
+
+- Optional app-style CDN interface (`ui: app`), including inline embeds and isolated palettes.
+- Publishing metadata extraction, book info panels, editable library metadata and backup preservation.
+- Local quote cards and PDF/comic screenshots with credited PNG download and supported device sharing.
+- Single close control in reading tools; clear personal bookmark section.
+- Compact responsive home, portrait sample covers, aligned sample actions and Forest palette naming.
+- Refined public product cards, lightweight motion and a relocated collapsible Viewer playground.
+
+
 ## 1.3.2 — 2026-10-10
 
 - Independently constructed Reader app chrome: touch navigation dock, page scrubber, responsive settings sheet/sidebar, and direct contents/search/narration actions. Viewer CDN retains its own interface.

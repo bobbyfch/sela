@@ -1,5 +1,9 @@
 export type SelaMode = 'book' | 'single' | 'scroll' | 'webtoon' | 'manga';
 export interface SelaOptions {
+  /** App-style controls load as an optional module. Classic remains the default. */
+  ui?: 'classic' | 'app';
+  palette?: 'forest' | 'paper' | 'ink' | 'rose';
+  metadata?: BookMetadata;
   /** Inline embeds need a connected host with an explicit height. */
   presentation?: 'overlay' | 'inline';
   container?: HTMLElement | string;
@@ -100,10 +104,17 @@ export declare class Sela extends EventTarget {
   back(): this;
   showTools(): Promise<unknown>;
   getText(page?: number): Promise<string>;
+  getMetadata(): Promise<BookMetadata>;
   toggleFullscreen(): this;
   setFilter(value: NonNullable<SelaOptions['filter']>): this;
   setBrightness(value: number): this;
   setDim(value: boolean): this;
+}
+export interface BookMetadata {
+  title?: string; author?: string; publisher?: string; publicationDate?: string;
+  year?: string; language?: string; identifier?: string; isbn?: string;
+  description?: string; subjects?: string; rights?: string; series?: string;
+  edition?: string; pageCount?: number; creationDate?: string;
 }
 export declare const VERSION: string;
 export { Sela as Flippy };

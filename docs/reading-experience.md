@@ -1,10 +1,10 @@
 # Reading, collections and backups
 
-Available in Sela Reader 1.3.2. The universal app has an independently built reading UI for phone, tablet and desktop. Its back/title bar, navigation dock, scrubber and reading-settings sheet/sidebar are app-owned; document engines and optional tools services are shared with Viewer. The CDN viewer keeps its integration interface and does not load app modules.
+Available in Sela Reader 1.4.0. The universal app has an independently built reading UI for phone, tablet and desktop. Its back/title bar, navigation dock, scrubber and reading-settings sheet/sidebar are app-owned; document engines and optional tools services are shared with Viewer. The CDN viewer keeps its classic integration interface by default; `ui: 'app'` lazily loads the same app controls, with palettes scoped to the viewer. Available in 1.4.0.
 
 ## Reader app
 
-Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Four persistent palettes (Limaraya, Paper, Ink, Rose) are independent of the light/dark/system preference in Settings. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
+Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Four persistent palettes (Forest, Paper, Ink, Rose) are independent of the light/dark/system preference in Settings. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
 
 On phones the panel opens from the bottom; tablet/desktop use a side panel. The book occupies the reading canvas with app controls hidden by a center tap. Optional screen wake lock is available only where supported and permitted; it is released when hidden or closed. No native volume-key or forced rotation claim is made.
 
@@ -70,3 +70,9 @@ Settings → Download full backup exports a ZIP with original files, titles, col
 Restore validates archive sizes, file hashes and metadata before a single IndexedDB transaction. It adds missing books and keeps existing books and their newer notes. Storage failures are reported; if localStorage cannot accept reading data, retain the backup and free browser storage. No cloud sync or automatic transfer between browsers or devices occurs.
 
 Storage usage is an estimate. Requesting persistent storage is optional and can be declined by the browser. Clearing data or browser eviction can remove the library, so keep backups outside the browser. Offline shell caching includes the shared library modules; sample downloads and optional format assets still need an initial online visit. Older browsers retain the basic fallback rather than the modern PWA.
+
+## Book information and sharing
+
+Book information is available in sample cards, library cards and the reader settings. Embedded publishing metadata is optional; edits are local and included in full backups. `getMetadata()` returns the normalized fields. PDF creation time is kept separately, never guessed as a publication date.
+
+Personal page bookmarks appear in Contents & bookmarks → Your bookmarks. Screenshot & quote in the reading dock prepares a local 1080 × 1350 PNG with title, author, year and page credit. Page images are supported for PDF/comic pages; text books use editable passages. File sharing depends on browser/OS support and a fresh tap after preview preparation; PNG download is always the fallback.
