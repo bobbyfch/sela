@@ -1,11 +1,11 @@
 # Install Sela 1.2
 
-[Choose Viewer, Home or Bookshelf on the public page](https://bobbyfch.github.io/sela/#products) · [Download extension](https://github.com/bobbyfch/sela/releases/latest) · [Browser guide](offline-extension.md) · [Mobile Bookshelf](pwa.md)
+[Choose Reader or Viewer](https://bobbyfch.github.io/sela/#products) · [Install Reader web app](pwa.md)
 
 ## Quick start
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.3.0/dist/js/sela.min.js"></script>
 <button id="read" type="button">Read PDF</button>
 <script>
 const reader = new Sela({
@@ -22,15 +22,15 @@ document.querySelector('#read').addEventListener('click', () => {
 CSS loads automatically on first open. For explicit loading/CSP:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.3.0/dist/css/sela.min.css">
 ```
 
-Pin releases in production. New CDN: `bobbyfch/sela@v1.2.0`; historical FlippyPDF tags are not rewritten. [Migration](docs/migration.md).
+Pin releases in production. New CDN: `bobbyfch/sela@v1.3.0`; historical FlippyPDF tags are not rewritten. [Migration](docs/migration.md).
 
 ### ESM / TypeScript
 
 ```sh
-npm install github:bobbyfch/sela#v1.2.0
+npm install github:bobbyfch/sela#v1.3.0
 ```
 
 ```ts
@@ -49,7 +49,7 @@ Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: se
 Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.compat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.3.0/dist/js/sela.compat.js"></script>
 <script>
 document.getElementById('read').onclick = function () {
   var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };

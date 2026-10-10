@@ -1,27 +1,29 @@
 <p align="center"><img src="logo.svg" width="88" alt="Sela open-book emblem"></p>
-<h1 align="center">Sela</h1>
-<p align="center"><strong>A place between. A story within. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
+<h1 align="center">Sela Reader</h1>
+<p align="center"><strong>Your books. Anywhere. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
 <p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/bobbyfch/sela?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
 
 [Live playground](https://bobbyfch.github.io/sela/) · [Bahasa Indonesia](README.id.md) · [Integrations](docs/integrations.md) · [Formats](docs/formats.md) · [Browser support](docs/compatibility.md) · [Changelog](CHANGELOG.md)
 
-**Sela** means an interval: a space between things, and a moment to make room for a story. It is a lightweight reading interface for your website. **No Bootstrap, jQuery or icon font required.** PDF.js loads only for PDFs; EPUB and CBZ use a separate lazy adapter. Optional DjVu integration uses an externally supplied decoder.
+**Sela** means an interval: a space between things, and a moment to make room for a story. Open Sela Reader: your private offline bookshelf on desktop, tablet and phone, installable from your browser. Sela Viewer is the lightweight CDN foundation for websites. **No Bootstrap, jQuery or icon font required.** PDF.js loads only for PDFs; EPUB and CBZ use a separate lazy adapter. Optional DjVu integration uses an externally supplied decoder.
 
 🇮🇩 [Baca panduan lengkap dalam Bahasa Indonesia →](README.id.md)
 
 [![Sela live book reader](site/preview-reader.jpg)](https://bobbyfch.github.io/sela/)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/install-Sela_Home-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
 
-[![Install Bookshelf mobile](https://img.shields.io/badge/install-Bookshelf_mobile-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
+[![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
-## Three ways to use Sela
+## Reader + Viewer
 
-| Viewer | Home | Bookshelf |
-| --- | --- | --- |
-| CDN reader for websites / frameworks | Desktop new-tab extension + widgets + books | Mobile web app + bottom bar + local books |
+| Sela Reader | Sela Viewer |
+| --- | --- |
+| Installable web app: desktop, tablet and phone; private local library | Lightweight CDN / ESM plugin for websites and frameworks |
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
+
+> Reading and library features are included in 1.3.0. Cloud backup sharing is manual; automatic account sync is not configured.
 
 ## ✨ Why Sela?
 
@@ -41,11 +43,11 @@
 
 | Module | Gzip size | Loaded when |
 | --- | ---: | --- |
-| Main interface | ~23.9 KiB | Main script requested |
-| Scoped CSS | ~3.4 KiB | First open |
-| EPUB / CBZ adapter (includes fflate) | ~6.8 KiB | EPUB or CBZ selected |
-| Reading tools: contents, search, notes, TTS | ~6 KiB | Tools first opened |
-| Plain text / Markdown / HTML / FB2 | ~2.5 KiB | Text format selected |
+| Main interface | ~26.6 KiB | Main script requested |
+| Scoped CSS | ~3.9 KiB | First open |
+| EPUB / CBZ adapter (includes fflate) | ~10.7 KiB | EPUB or CBZ selected |
+| Reading tools: contents, search, notes, TTS | ~9.6 KiB | Tools first opened |
+| Plain text / Markdown / HTML / FB2 | ~3.0 KiB | Text format selected |
 | DjVu adapter | ~1.4 KiB | DjVu selected; external decoder also needed |
 | PDF.js + worker (modern) | ~491 KiB combined | PDF selected; fonts/CMaps may load separately |
 
@@ -92,35 +94,29 @@ Use the Appearance tab for twelve page filters, document brightness and dimmed c
 
 ## 🎧 Listen, find, keep
 
-Open **Reading tools** in the reader header (six keyboard-accessible icon tabs: contents, search, appearance, voice, notes, text), or call `await reader.showTools()`. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work.
+Open **Reading tools** in the reader header (seven keyboard-accessible icon tabs: mode, contents, search, appearance, voice, notes, text), or call `await reader.showTools()`. Change modes and fit while reading, save global/per-book preferences, adjust text typography, and use low power or manual crop. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work. [Reading API, highlights, optional audio adapter and backup](docs/reading-experience.md).
 
 **TTS uses the Web Speech API:** no Sela API key, paid SDK, server or model download. Local voices are selected by default; enable online voices explicitly if desired. Voices/languages come from the browser/OS. Remote voices may send narration text to their provider; local voice availability, audible quality, pause/resume and background playback vary. No guaranteed free third-party voice service or Indonesian voice is promised. Speech is chunked, user-started and cancelled on manual navigation or close. Optional continuous narration advances pages/chapters.
 
 Write page/chapter notes; export/import a versioned JSON file with notes and personal bookmarks. Import merges the current book's notes by page/chapter number: use the same document edition. Notes are not geometric PDF highlights. EPUB chapter and relative scroll position resume on reopen; stable EPUB CFI locations are future work.
 
-## 🏡 Sela Home — your desktop new tab
+## 📚 Sela Reader — your private reading room
 
-A private bookshelf, clock/calendar, coffee pause, original offline quotes and optional city weather. Install the **New Tab** extension on supported Windows/macOS/Linux browsers. Standard is a compatibility edition. Safari is not packaged. Search, sort, favorites, format/status filters and shelf/grid/list views are included.
+A local library with Home, Shelf, Explore and Settings, collections, favorites, sorting, grid/list views and ZIP backup. Open the web app on desktop, tablet or phone; install through the browser menu when supported. Touch devices get bottom navigation; wide screens get a side rail. Theme, language and backup live in Settings. You can bookmark the app or set its URL as your browser home page; no browser extension is required.
 
-[Choose a product](https://bobbyfch.github.io/sela/#products) · [Home installation](docs/offline-extension.md)
-
-## 📱 Sela Bookshelf — mobile app
-
-A persistent local library with a bottom bar, mobile reader, sorting, filters, favorites and shelf/grid/list layouts. Open Pages on your phone/tablet → Bookshelf → Add to Home Screen / Install. Desktop gets a device notice. Older phones have a basic PDF-link fallback; iPhone 4 cannot run a full modern offline PWA. Five example covers are prepared, including four clearly labeled text placeholders.
-
-[Mobile setup and limits](docs/pwa.md)
+The current sample has Read / Save offline actions. New novels are a later content phase. Cloud backup uses manual export/share and restore, not automatic account sync. [Installation and offline limits](docs/pwa.md).
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.2.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.3.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 
 ## Quick start
 
-[![CDN / self-hosted viewer](https://img.shields.io/badge/install-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](docs/install.md) [![Browser extension](https://img.shields.io/badge/download-Chromium_%2F_Firefox-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension)
+[![CDN / self-hosted viewer](https://img.shields.io/badge/install-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](docs/install.md)
 
-Choose **Viewer** for websites/frameworks, **Home** for desktop new tabs, or **Bookshelf** for the mobile app. [Public installation routes](https://bobbyfch.github.io/sela/#products) · [Viewer code](docs/install.md) · [Home setup](docs/offline-extension.md) · [Mobile setup](docs/pwa.md).
+Choose **Reader** for a personal library, or **Viewer** for embedding in a website. [Open the app](https://bobbyfch.github.io/sela/mobile/) · [Viewer installation](docs/install.md).
 
 ## Reading API
 
@@ -165,4 +161,9 @@ If Sela makes your project easier to read, a ⭐ helps others find it. Bug repor
 
 Sela prints a one-time console credit when opened and includes a small source link in the viewer. These are credits, not a promise of search ranking. [Portfolio](https://bobbyfajarc.github.io/) · [Instagram](https://instagram.com/bobby.fch) · [LinkedIn](https://www.linkedin.com/in/bobbyfajarc/) · [GitHub](https://github.com/bobbyfch).
 
-Music is planned separately for the extension: local user-selected audio needs no service API, while Spotify playback requires Premium. [Music options and limits](docs/offline-extension.md#music-a-later-phase).
+A built-in music player is a future content feature. Optional host-provided audio narration adapters do not include a service or API key.
+
+
+## Cloud backup
+
+Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to send it through the phone share sheet to an installed cloud app. Google Drive and OneDrive links are provided for manual upload. Restore imports the downloaded ZIP without replacing existing books or newer notes. No automatic account sync or OAuth credentials are configured.

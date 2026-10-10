@@ -26,4 +26,4 @@ SEO: static crawlable content, canonical/description/Open Graph/Twitter tags, So
 
 ## Product-specific device limits
 
-Viewer supports any capable host browser. Home installation is desktop-only (Windows/macOS/Linux/ChromeOS signals), with Chromium and Firefox packages; Safari is not packaged. Bookshelf install entry is phone/tablet-only and recognizes touch-enabled iPadOS desktop user agents. Device checks are UX routing and can be spoofed. An old iPhone 4 only gets the basic page/PDF link, not a modern persistent PWA. Mobile offline bookshelf is tested with a Chromium service worker and modern Android user-agent emulation. No physical ancient iPhone/Android device guarantee is made.
+Reader is available on all supported desktop, tablet and phone browsers. Installation depends on browser PWA capabilities; there are no OS gates. Bottom navigation adapts to a side rail on wide screens. Old devices receive basic PDF links; iPhone 4 cannot run a modern offline PWA. Automated browser emulation does not establish support on every physical device. Browser-extension distribution is discontinued; historical package validation above describes earlier releases.

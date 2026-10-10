@@ -1,4 +1,5 @@
 import { FILTERS, FILTER_LABELS, applyAppearance } from './appearance.js';
+import { MODES, readingPreferences, storePreferences, captureTextPosition, restoreTextPosition, applyTypography } from './preferences.js';
 export function createReader(global, engine) {
     'use strict';
 
@@ -69,11 +70,13 @@ export function createReader(global, engine) {
         if (!active) return;
         var state = active;
         active = null;
+        state.rejectMode?.(new DOMException('Reader closed','AbortError'));
+        state.resizeObserver?.disconnect();
         document.removeEventListener('keydown', state.onKey);
         if (state.thumbObserver) state.thumbObserver.disconnect();
         state.thumbQueue = [];
         if (state.thumbTasks) state.thumbTasks.forEach(function (task) { task.cancel(); });
-        if(state.book?.getText){save(state.locationKey,{page:state.book.currentPage(),ratio:state.book.container.scrollTop/Math.max(1,state.book.container.scrollHeight-state.book.container.clientHeight)});}
+        if(state.book?.getText){save(state.locationKey,captureTextPosition(state.book.container));}
         state.tools?.destroy();
         if(state.orientationLocked)global.screen.orientation?.unlock?.();
         if(document.fullscreenElement === state.shell)document.exitFullscreen?.().catch(()=>{});
@@ -115,6 +118,7 @@ export function createReader(global, engine) {
             locationKey:key+':location',
             marksKey:key+':marks',
             notesKey:key+':notes',
+            preferencesKey:key+':preferences',
             options: options,
             inline: options.presentation === 'inline',
             trigger: options.trigger || document.activeElement,
@@ -137,7 +141,7 @@ export function createReader(global, engine) {
         overlay.className = 'library-reader-overlay is-entering';
         if (state.inline) overlay.classList.add('sela-inline');
         overlay.dataset.flippyTheme = options.theme || 'auto';
-        overlay.dataset.paper = options.paperTexture ? 'true' : 'false';
+        overlay.dataset.paper = options.paperTexture&&!options.lowPower ? 'true' : 'false';
         var filters = FILTERS;
         applyAppearance(overlay,options);
         if (options.zIndex) overlay.style.zIndex = String(options.zIndex);
@@ -192,8 +196,7 @@ export function createReader(global, engine) {
         });
         filter.value = options.filter || 'none';
         filter.addEventListener('change', function () {
-            options.filter = filter.value;
-            applyAppearance(overlay,options);
+            state.setPreferences({filter:filter.value});
         });
         var filterControl=document.createElement('label');filterControl.className='sela-filter-control library-reader-button';filterControl.title=options.language==='en'?'Reading filter':'Filter baca';filterControl.appendChild(makeIcon('palette'));filterControl.appendChild(filter);actions.appendChild(filterControl);
         var fullscreenButton=button(options.language==='en'?'Fullscreen':'Layar penuh',null,'fullscreen');
@@ -245,11 +248,37 @@ export function createReader(global, engine) {
         content.appendChild(sidebar);
         shell.appendChild(content);
         var toolsHost=document.createElement('aside');toolsHost.className='sela-tools';toolsHost.hidden=true;content.appendChild(toolsHost);
-        state.setAppearance=function(values){Object.assign(options,values);filter.value=options.filter||'none';applyAppearance(overlay,options);};
-        var toolsPromise;
+        state.setAppearance=function(values){Object.assign(options,readingPreferences(values));filter.value=options.filter||'none';applyAppearance(overlay,options);state.savePreferences?.();};
+        state.history=[];
+        state.remember=function(){if(!state.book)return;state.history.push({page:state.book.currentPage(),location:state.book.getText?captureTextPosition(bookHost):null});if(state.history.length>30)state.history.shift();};
+        state.navigate=function(page){state.remember();state.book.goTo(page);};
+        state.back=function(){var previous=state.history.pop();if(previous){state.book.goTo(previous.page);restoreTextPosition(bookHost,previous.location);}};
+        state.savePreferences=function(){var values=readingPreferences(options);if(options.persistPreferences)storePreferences(key+':preferences',values);options.onPreferences?.(values);overlay.dispatchEvent(new Event('sela:preferences'));};
+        state.setPreferences=function(values){Object.assign(options,readingPreferences(values));state.setAppearance(values);if(state.book?.getText)applyTypography(bookHost,options);overlay.dataset.paper=String(!!options.paperTexture&&!options.lowPower);if(state.book?.opts){state.book.opts.maxScale=options.lowPower?1:(options.normalQuality?.maxScale||1.75);state.book.opts.maxCanvasPixels=options.lowPower?1000000:(options.normalQuality?.maxCanvasPixels||2500000);state.book.opts.duration=options.lowPower||global.matchMedia('(prefers-reduced-motion: reduce)').matches?0:(options.normalQuality?.duration??560);}state.savePreferences();};
+        state.setFit=function(value){options.fit=value;state.book?.setFit?.(value);state.savePreferences();};
+        state.setMode=function(mode){
+            if(!MODES.includes(mode))return Promise.reject(new TypeError('Unknown reading mode'));
+            if(state.switching)return Promise.reject(new Error(options.language==='en'?'Wait for the mode change.':'Tunggu perubahan mode selesai.'));
+            if(state.book.getText){if(!['single','scroll'].includes(mode))return Promise.reject(new Error(options.language==='en'?'Text books support single chapter or continuous scroll.':'Buku teks mendukung satu bab atau gulir berkelanjutan.'));state.book.setReadingMode?.(mode);options.mode=mode;state.savePreferences();return Promise.resolve();}
+            if(mode===options.mode)return Promise.resolve();
+            var page=state.book.currentPage(),pdf=state.book.pdf,task=state.book.loadingTask;
+            if(!pdf)return Promise.reject(new Error('Document is not ready'));
+            toolsGeneration++;state.tools?.destroy();state.tools=null;toolsPromise=null;toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');
+            if(state.thumbObserver)state.thumbObserver.disconnect();state.thumbTasks.forEach(function(t){t.cancel();});state.thumbQueue=[];state.thumbsBuilt=false;thumbsList.replaceChildren();
+            state.book.destroy(true);options.mode=mode;state.switching=true;
+            var originalLib=options.pdfjsLib;
+            return new Promise(function(resolve,reject){
+                state.resolveMode=function(){state.switching=false;state.resolveMode=null;state.rejectMode=null;state.savePreferences();resolve();};
+                state.rejectMode=reject;
+                try{state.book=options.createEngine(mode).create(bookHost,{...options,startPage:page,pdfjsLib:{getDocument:function(){return {promise:Promise.resolve(pdf),destroy:()=>task.destroy()};}},readingDirection:mode==='manga'?'rtl':'ltr',displayMode:mode==='single'?'single':'auto'});}
+                catch(error){state.switching=false;options.pdfjsLib=originalLib;task?.destroy();reject(error);}
+            });
+        };
+        var toolsPromise,toolsGeneration=0;
         function loadTools(){
+            var generation=toolsGeneration;
             if(!toolsPromise)toolsPromise=import(/* webpackIgnore: true */ /* @vite-ignore */ options.toolsUrl).then(function(module){
-                if(active!==state)throw new DOMException('Reader closed','AbortError');
+                if(active!==state||generation!==toolsGeneration)throw new DOMException('Reader changed','AbortError');
                 state.getText=function(page){return module.pageText(state.book,page);};
                 state.tools=module.mountTools(state,toolsHost);return state.tools;
             }).catch(function(error){toolsPromise=null;if(active===state)notice.textContent=error.message;throw error;});
@@ -257,8 +286,8 @@ export function createReader(global, engine) {
         }
         state.getText=function(page){return loadTools().then(function(){return state.getText(page);});};
         state.showTools=function(){sidebar.hidden=true;marksButton.setAttribute('aria-expanded','false');toolsHost.hidden=false;toolsButton.setAttribute('aria-expanded','true');return loadTools();};
-        state.hideTools=function(){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();toolsButton.focus();};
-        toolsButton.addEventListener('click',function(){if(toolsHost.hidden)state.showTools().catch(function(){});else{toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();}});
+        state.hideTools=function(){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');toolsButton.focus();};
+        toolsButton.addEventListener('click',function(){if(toolsHost.hidden)state.showTools().catch(function(){});else{toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');}});
 
         var footer = document.createElement('footer');
         footer.className = 'library-reader-footer';
@@ -292,6 +321,8 @@ export function createReader(global, engine) {
         footer.appendChild(progress);
         footer.appendChild(pageForm);
         footer.appendChild(bookmarkButton);
+        var backButton=button(options.language==='en'?'Back to previous position':'Kembali ke posisi sebelumnya',null,'open');backButton.classList.add('sela-back');backButton.addEventListener('click',state.back);footer.appendChild(backButton);
+        var positionLabel=document.createElement('output');positionLabel.className='sela-position-label';footer.appendChild(positionLabel);
         var credit=document.createElement('a');credit.className='sela-credit';credit.href='https://github.com/bobbyfch/sela';credit.target='_blank';credit.rel='noopener';credit.textContent='Sela';credit.title='Sela by Bobby Fajar Christian';footer.appendChild(credit);
         shell.appendChild(footer);
 
@@ -306,7 +337,7 @@ export function createReader(global, engine) {
             marks.forEach(function (page) {
                 var item = button(t("Buka halaman ") + page, 'library-reader-bookmark-item', 'page', String(page));
                 item.addEventListener('click', function () {
-                    if (state.book) state.book.goTo(page);
+                    if (state.book) state.navigate(page);
                     sidebar.hidden = true;
                     marksButton.setAttribute('aria-expanded', 'false');
                 });
@@ -325,6 +356,7 @@ export function createReader(global, engine) {
             state.current = Math.max(1, Math.min(state.pages || 1, Number(page) || 1));
             pageInput.value = String(state.current);
             progress.value = String(state.current);
+            positionLabel.textContent=state.pageLabels?.[state.current-1] || '';
             save(key + ':page', state.current);
             updateMarks();
             if (state.currentThumb) state.currentThumb.removeAttribute('aria-current');
@@ -401,7 +433,7 @@ export function createReader(global, engine) {
                     item.appendChild(canvas);
                     item.appendChild(caption);
                     item.addEventListener('click', function () {
-                        state.book.goTo(number);
+                        state.navigate(number);
                         sidebar.hidden = true;
                         marksButton.setAttribute('aria-expanded', 'false');
                     });
@@ -435,6 +467,8 @@ export function createReader(global, engine) {
         }
 
         function fallback(error) {
+            state.rejectMode?.(error || new Error('Could not change reading mode'));
+            state.rejectMode=null;state.resolveMode=null;state.switching=false;
             if (state.thumbObserver) state.thumbObserver.disconnect();
             state.thumbQueue = [];
             if (state.book) state.book.destroy();
@@ -464,9 +498,10 @@ export function createReader(global, engine) {
 
         state.onKey = function (event) {
             if (state.inline && !overlay.contains(event.target)) return;
+            if(event.altKey&&event.key==='ArrowLeft'&&state.book){event.preventDefault();state.back();return;}
             if(!event.defaultPrevented&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'&&state.book){event.preventDefault();state.showTools().then(function(){state.tools.selectTab('search');toolsHost.querySelector('input[type=search]').focus();}).catch(function(){});return;}
             if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
-            if (event.key === 'Escape') { event.preventDefault(); if(!help.hidden)toggleHelp();else if(!toolsHost.hidden){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();toolsButton.focus();}else close(); return; }
+            if (event.key === 'Escape') { event.preventDefault(); if(!help.hidden)toggleHelp();else if(!toolsHost.hidden){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');toolsButton.focus();}else close(); return; }
             if (!/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) && !event.target.isContentEditable && state.book) {
                 var book=state.book, rtl=options.mode==='manga'||options.readingDirection==='rtl';
                 var key=event.key;
@@ -487,7 +522,7 @@ export function createReader(global, engine) {
         closeButton.addEventListener('click', function () { close(); });
         overlay.addEventListener('click', function (event) { if (!state.inline && event.target === overlay) close(); });
         marksButton.addEventListener('click', function () {
-            toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');state.tools?.stop();
+            toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');
             sidebar.hidden = !sidebar.hidden;
             marksButton.setAttribute('aria-expanded', sidebar.hidden ? 'false' : 'true');
             if (!sidebar.hidden) buildThumbs();
@@ -515,14 +550,19 @@ export function createReader(global, engine) {
             // The arrow doubles as Next when the input still shows the current
             // page. Otherwise it opens the page the user entered.
             if (page === state.book.currentPage()) state.book.next();
-            else state.book.goTo(page);
+            else state.navigate(page);
         });
         progress.addEventListener('change', function () {
-            if (state.book) state.book.goTo(Number(progress.value));
+            if (state.book) state.navigate(Number(progress.value));
         });
+        progress.addEventListener('input',function(){positionLabel.textContent=progress.title=(state.pageLabels?.[Number(progress.value)-1]||progress.value)+' / '+state.pages;progress.setAttribute('aria-valuetext',progress.title);});
         bookHost.addEventListener('flipbook:ready', function (event) {
             if (active !== state) return;
             state.pages = event.detail.pages;
+            if(state.inline)state.book.toggleFullscreen=function(){var result=document.fullscreenElement===shell?document.exitFullscreen?.():shell.requestFullscreen?.();result?.catch(function(){notice.textContent='Fullscreen unavailable';});};
+            if(state.book.getText){if(!['single','scroll'].includes(options.mode))options.mode='single';state.book.setReadingMode?.(options.mode);applyTypography(bookHost,options);}
+            state.book.setFit?.(options.fit || 'page');
+            Promise.resolve(state.book.pdf?.getPageLabels?.()).then(function(labels){if(active===state){state.pageLabels=labels;updatePage(state.current);}}).catch(function(){});
             toolsButton.disabled=false;
             progress.max = String(state.pages);
             progress.disabled = false;
@@ -531,8 +571,9 @@ export function createReader(global, engine) {
             updatePage(state.book.currentPage());
             if (!sidebar.hidden) buildThumbs();
             if (document.activeElement === closeButton) bookHost.focus();
-            if(state.book.getText&&!options.startPage){var location=read(key+':location',null);if(location&&location.page===state.book.currentPage()&&Number.isFinite(location.ratio))state.book.container.scrollTop=Math.max(0,Math.min(1,location.ratio))*(state.book.container.scrollHeight-state.book.container.clientHeight);}
-            if (options.onReady) options.onReady(state);
+            if(state.book.getText&&!options.startPage){var location=read(key+':location',null);if(location&&location.page===state.book.currentPage())restoreTextPosition(bookHost,location);}
+            if(state.resolveMode)state.resolveMode();else if (options.onReady) options.onReady(state);
+            if(read(key+':highlights',null))loadTools().catch(function(){});
         });
         bookHost.addEventListener('flipbook:pagechange', function (event) {
             if (active !== state) return;
@@ -557,6 +598,14 @@ export function createReader(global, engine) {
         document.addEventListener('keydown', state.onKey);
         active = state;
         state.overlay = overlay;
+        var tap;
+        bookHost.addEventListener('pointerdown',function(event){if(event.isPrimary)tap={x:event.clientX,y:event.clientY,time:Date.now()};else tap=null;});
+        bookHost.addEventListener('pointerup',function(event){if(!tap||Date.now()-tap.time>350||Math.hypot(event.clientX-tap.x,event.clientY-tap.y)>8)return;tap=null;if(event.target.closest('button,input,select,a')||global.getSelection()?.toString())return;var rect=bookHost.getBoundingClientRect();if(event.clientX>rect.left+rect.width*.35&&event.clientX<rect.left+rect.width*.65)overlay.classList.toggle('sela-controls-hidden');});
+        bookHost.addEventListener('dblclick',function(event){if(event.target.closest('button,input,select,a')||global.getSelection()?.toString())return;event.preventDefault();state.book?.setZoom(state.book.zoom>1.1?1:2);});
+        overlay.addEventListener('focusin',function(){overlay.classList.remove('sela-controls-hidden');});
+        bookHost.addEventListener('click',function(event){if(event.composedPath().some(node=>node.tagName==='A'))state.remember();},true);
+        var lastLocation;
+        if(global.ResizeObserver){state.resizeObserver=new ResizeObserver(function(){if(state.book?.getText){if(lastLocation)restoreTextPosition(bookHost,lastLocation);lastLocation=captureTextPosition(bookHost);}});state.resizeObserver.observe(bookHost);bookHost.addEventListener('scroll',function(){if(state.book?.getText){lastLocation=captureTextPosition(bookHost);save(state.locationKey,lastLocation);}}, {passive:true});}
         if (!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
             global.requestAnimationFrame(function () {
                 if (active === state) overlay.classList.remove('is-entering');

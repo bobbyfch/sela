@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Sela Bookshelf",
-  "short_name": "Bookshelf",
-  "description": "A private mobile bookshelf and reader.",
+  "name": "Sela Reader",
+  "short_name": "Sela",
+  "description": "Your private library on desktop, tablet and phone. Read books, comics and documents.",
   "start_url": "./?installed=1",
   "scope": "./",
   "display": "standalone",

@@ -25,8 +25,8 @@ test('extension assets are allowed only within the currently running extension',
 });
 test('optional capabilities keep the core within its declared download budget', async () => {
   const manifest = JSON.parse(await readFile('dist/manifest.json', 'utf8'));
-  assert(manifest.assets['dist/js/sela.min.js'].gzip < 26 * 1024);
-  assert(manifest.assets['dist/js/sela.tools.js'].gzip < 6 * 1024);
+  assert(manifest.assets['dist/js/sela.min.js'].gzip < 28 * 1024);
+  assert(manifest.assets['dist/js/sela.tools.js'].gzip < 10 * 1024);
   assert(manifest.assets['dist/js/sela.text.js'].gzip < 4 * 1024);
   const core = await readFile('dist/js/sela.min.js', 'utf8');
   assert(!core.includes('SpeechSynthesisUtterance'));

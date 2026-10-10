@@ -9,8 +9,8 @@ test('mobile PWA registration stays within its project subfolder',async({page})=
  expect(await page.evaluate(()=>window.registration)).toEqual({url:'http://127.0.0.1:4173/nested/mobile/sw.js',scope:'http://127.0.0.1:4173/nested/mobile/'});
 });
 test('mobile app persists local books offline outside service-worker caches',async({page,context,browserName})=>{
- test.skip(browserName!=='chromium','Service-worker offline scenario is verified on Chromium');await page.goto('/mobile/');await expect(page.locator('#mobile-offline-status')).toContainText('Bookshelf ready');await page.reload();
+ test.skip(browserName!=='chromium','Service-worker offline scenario is verified on Chromium');await page.goto('/mobile/');await expect(page.locator('#mobile-offline-status')).toContainText('Bookshelf ready');await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();
  await page.locator('#books').setInputFiles({name:'private-note.txt',mimeType:'text/plain',buffer:Buffer.from('Local mobile note survives offline.')});await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('#books')).toBeEnabled();
- await context.setOffline(true);await page.reload();await expect(page.locator('.book')).toHaveCount(1);await page.getByRole('button',{name:'Read private-note',exact:true}).click();await expect(page.locator('.flippy-epub article')).toContainText('survives offline');
+ await context.setOffline(true);await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();await expect(page.locator('.book')).toHaveCount(1);await page.getByRole('button',{name:'Read private-note',exact:true}).click();await expect(page.locator('.flippy-epub article')).toContainText('survives offline');
  const keys=await page.evaluate(async()=>{const names=await caches.keys();return(await Promise.all(names.map(async name=>(await(await caches.open(name)).keys()).map(r=>r.url)))).flat();});expect(keys.some(url=>url.includes('private-note')||url.startsWith('blob:'))).toBe(false);
 });

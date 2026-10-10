@@ -1,13 +1,10 @@
-# Three products, one reader
+# Sela Reader + Sela Viewer
 
-| Product | Purpose | Install | Devices |
-| --- | --- | --- | --- |
-| Sela Viewer | Embed a document reader; CDN, ESM, TypeScript | Copy versioned script / framework integration | Any supported browser / OS |
-| Sela Home | Desktop new-tab dashboard, bookshelf and Viewer | New Tab extension ZIP | Windows/macOS/Linux: Chrome, Edge, Brave, Chromium or Firefox |
-| Sela Bookshelf | Mobile library and reading app, bottom navigation | Browser → Add to Home Screen / Install | Android, iPhone/iPad with capability fallback |
+Sela has two products.
 
-[Choose from the public page](https://bobbyfch.github.io/sela/#products). Home Standard is retained only as a compatibility package; Home New Tab is the recommended edition. New-tab override is separate from browser startup/homepage preferences. Set the public Pages route as a bookmark; use the extension to replace new tabs. Safari extensions require a signed Xcode/native package and are not shipped. Mobile extensions are not an installation route supported by this release.
+- **Reader**: a private, installable web app for desktop, tablet and phone. Home, Shelf, Explore and Settings are app screens, with local books, collections, favorites and full ZIP backup. Wide layouts use a side rail; phones use bottom navigation.
+- **Viewer**: a lightweight CDN/ESM plugin for websites and frameworks, inline or fullscreen. It shares the document engine, without the app library or navigation.
 
-Home adds a local clock/calendar, coffee pause, rotating original EN/ID quotes and optional city weather. No quotes API or GPS is required. Weather is enabled by entering a city; Open-Meteo receives that city and selected city coordinates. Extension origin permission is requested only on that action. Successful conditions are cached locally; cached information is labeled. Disable weather clears preferences. The hosted free API is non-commercial and rate-limited; commercial redistribution must arrange a suitable plan or self-hosting. [Open-Meteo pricing](https://open-meteo.com/en/pricing), [data attribution](https://open-meteo.com/).
+[Open Reader](https://bobbyfch.github.io/sela/mobile/) · [Install the web app](pwa.md) · [Embed Viewer](install.md).
 
-Both shelves have title search, newest/last-read/title sorting, format/status/favorites filters, shelf/grid/list views, rename, export, remove/undo and local covers. They do not synchronize across extension and web origins. See [Home installation](offline-extension.md), [Bookshelf mobile](pwa.md), [Viewer code](install.md).
+Browser-extension distribution is discontinued. Existing extension releases are historical; Reader can be bookmarked or selected as your browser home/start page. A browser new-tab override requires browser support and is not promised by the web app.

@@ -1,1 +1,0 @@
-(function(){if(!window.SelaPlatform.desktop){var app=document.getElementById('home-app');app.setAttribute('hidden','');var notice=document.getElementById('home-device-notice');notice.removeAttribute('hidden');}})();

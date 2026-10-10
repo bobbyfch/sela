@@ -1,20 +1,13 @@
 # Security, attribution and distribution
 
-Sela is open source under MIT. Copyright and upstream notices must be retained. Code exposes an author/version console attribution, and official bundles include a license banner. `dist/manifest.json` records asset SHA-256 hashes; releases include `SHA256SUMS.txt` for the four extension ZIPs. These establish provenance; they do not make JavaScript impossible to copy. Compare a downloaded ZIP using `Get-FileHash -Algorithm SHA256` on Windows or `sha256sum -c SHA256SUMS.txt` on Linux; checksums detect corruption, not a compromised publisher account.
-
-Browser-delivered JavaScript, CSS and extension ZIPs can be inspected. Obfuscation, encryption with a client-side key, domain checks and watermark strings do not prevent cloning. Automatic redirects on third-party domains would also break legitimate self-hosting, localhost, intranet and framework integrations. Sela deliberately does not redirect or collect usage telemetry. A CDN cache cannot recall bytes that were already public.
+Sela is MIT open source. Retain copyright and upstream notices. Bundles include a license banner and console attribution; `dist/manifest.json` records asset SHA-256 hashes. Browser-delivered code can be inspected and copied. Encryption with a client-side key or domain redirects would not prevent cloning and would break legitimate self-hosting.
 
 ## Local data
 
-Books are stored as byte buffers in IndexedDB on the Home extension origin or Bookshelf Pages origin. This is **not application-level encryption at rest**. Browser/OS protections apply, but someone with access to the unlocked profile may read data. Use device encryption and retain originals. A future passphrase vault would need authenticated encryption, careful key handling, backups and a recovery design; no such vault is claimed here.
+Reader stores book bytes in IndexedDB on the website origin. This is not application-level encryption at rest. Browser/OS protections apply; retain original files and full ZIP backups. Clearing browser data or storage eviction may remove the shelf. Manual Drive/OneDrive upload is controlled by the user; no automatic cloud account sync exists.
 
-## Active content and permissions
+## Document handling
 
-PDF.js runs with `isEvalSupported: false`. HTML/EPUB input is sanitized, external embedded resources and active scripts are removed. Archive entries, expanded size and book imports are bounded. These safeguards do not replace browser sandboxing or security updates.
+PDF.js uses `isEvalSupported: false`. EPUB/HTML scripts and external embedded resources are removed; archives and imports have size/count limits. These safeguards complement browser sandboxing. The optional release checker uses the public GitHub API without credentials or document content and constructs official release URLs. It never executes remote replacement code. Web app code updates through the service worker lifecycle; close app windows and reopen after an update is ready.
 
-Extension scripts and reading engines are bundled, with `script-src 'self'; object-src 'none'`. Mandatory permissions: `contextMenus`, `storage` (update preference/result), and `alarms` (daily stable-release notification). Remote book access is optional and scoped to the selected origin. The release check uses only the public GitHub releases API with credentials omitted; no book content is sent. Scheduled checks can be disabled.
-
-The update checker validates stable semantic versions and constructs the official release URL itself. It never executes downloaded code, automatically installs ZIPs, or silently changes extension identity. Chrome/Edge store distribution and signed Firefox distribution are the standard paths to automatic code updates. Current ZIPs are unsigned development builds.
-
-## Three-product storage and OS routing
-Viewer does not acquire a bookshelf. Home stores books on its extension origin; Bookshelf mobile stores books in Pages-origin IndexedDB. OS routing is a convenience guard, not security enforcement. Optional Home weather sends a city only when enabled; cached quotes are local. No location permission or GPS is requested.
+Reader and Viewer share the document engine, while Viewer has no personal bookshelf. No analytics or document upload is implemented. Public landing-page language selection may query country.is unless `?geo=off`; app and embed do not perform that lookup. Historical browser-extension releases are no longer distributed in current versions.

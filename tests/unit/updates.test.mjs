@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import '../../extension/updates.js';
+import '../../library/updates.js';
 import {brightness} from '../../src/appearance.js';
 test('release checker compares stable semver and rejects untrusted release metadata',async()=>{
  assert.equal(SelaUpdates.newer('v1.10.0','1.9.9'),true);assert.equal(SelaUpdates.newer('v1.1.0','1.1.0'),false);assert.equal(SelaUpdates.newer('v1.2.0-beta','1.1.0'),false);

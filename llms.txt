@@ -1,19 +1,16 @@
-# Sela 1.2
+# Sela Reader 1.3
 
-Three products sharing one lightweight reader: Viewer CDN for websites/frameworks; Home desktop new-tab extension with bookshelf, clock/calendar, coffee, original offline quotes and optional city weather; Bookshelf mobile app installed through Add to Home Screen with a bottom bar and IndexedDB library. Start at https://bobbyfch.github.io/sela/#products.
+Two products: Reader is a private installable web app on desktop, tablet and phone. Viewer is a lightweight CDN/ESM plugin for websites/frameworks, inline or fullscreen. Browser-extension distribution is discontinued.
 
-Home packages: Chromium/Firefox New Tab recommended, Standard compatibility. Safari signing/package is not available. Mobile: Android/iPhone/iPad with modern browser capabilities; iPhone 4 only basic page/PDF links, not full PWA. OS install routing is a UX guard, not tamper-proof enforcement.
+Reader has Home, Shelf, Explore and Settings; local IndexedDB books, collections, favorites, sorting, format/status filters, grid/list views and full ZIP backup. Bottom navigation on phones, side rail on wide screens. Theme/language in Settings. Cloud backup is manual export/share/upload and restore; no automatic account sync. Sample books are saved explicitly; originals should be retained because browser storage can be evicted.
 
-PDF (lazy PDF.js), EPUB, CBZ, TXT/MD/sanitized HTML/text FB2. Optional external GPL DjVu decoder; CBR/MOBI/AZW/DOCX/DRM unsupported. Search, embedded outlines, browser TTS, notes, filters/brightness/dim; no PDF aligned text layer, EPUB CFI, OCR or synchronization.
+PDF (lazy PDF.js), EPUB, CBZ, TXT/MD/sanitized HTML/text FB2. Optional external GPL DjVu decoder; CBR/MOBI/AZW/DOCX/DRM unsupported. Search, embedded outlines, browser TTS, notes, filters/brightness/dim; no PDF aligned text layer, EPUB CFI or OCR. Browser/OS voices vary; no voice-service key required.
 
-Both shelves: search, newest/title/last-read sorts, format/status/favorites filters, shelf/grid/list modes, original export, rename/remove/undo. Five example covers: one full novelet, four labeled text layout placeholders. Books saved explicitly in IndexedDB, not uploaded or stored in service-worker asset cache. Browser eviction is possible. Preserve originals.
+Main Viewer interface ~26.6 KiB gzip, excluding decoder, document and optional modules. No Bootstrap/jQuery or UI framework dependency. Web app installation depends on browser capabilities. Old browsers receive original PDF links; iPhone 4 cannot run the full offline app. Physical device validation remains outstanding.
 
-Home weather: Open-Meteo free hosted endpoint is non-commercial, opt-in city, no GPS, attribution, optional extension permission. Quotes are original local EN/ID copy.
-
-Install: https://github.com/bobbyfch/sela/blob/main/docs/install.md
+Web app: https://bobbyfch.github.io/sela/mobile/
 Products: https://github.com/bobbyfch/sela/blob/main/docs/products.md
-Mobile: https://github.com/bobbyfch/sela/blob/main/docs/pwa.md
-Home: https://github.com/bobbyfch/sela/blob/main/docs/offline-extension.md
-Security: https://github.com/bobbyfch/sela/blob/main/docs/security.md
-Pinned CDN: https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.min.js
+App installation: https://github.com/bobbyfch/sela/blob/main/docs/pwa.md
+Viewer installation: https://github.com/bobbyfch/sela/blob/main/docs/install.md
+Pinned CDN: https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.3.0/dist/js/sela.min.js
 FlippyPDF main preserves v1.0.0 assets and directs new users to Sela. Historical CDN caches cannot be recalled.

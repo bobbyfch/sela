@@ -7,7 +7,7 @@ export class Webtoon {
     this.destroyed = false; this.jobs = []; this.running = 0; this.slots = []; this.visible = new Set();
     container.classList.add('flippy-webtoon');
     container.tabIndex = 0;
-    container.style.setProperty('--flippy-page-gap', `${opts.pageGap ?? 0}px`);
+    container.style.setProperty('--flippy-page-gap', `${opts.mode === 'scroll' ? (opts.pageGap || 16) : (opts.pageGap ?? 0)}px`);
     this.removeGestures = bindZoomGestures(container, this, opts);
     this.onKey = e => {
       if (e.ctrlKey || e.metaKey || e.altKey || e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
@@ -54,6 +54,8 @@ export class Webtoon {
         this.slots.push({ el, canvas, page: i, version: 0 }); fragment.appendChild(el);
       }
       this.container.appendChild(fragment);
+      this.endSpacer=document.createElement('div');this.endSpacer.setAttribute('aria-hidden','true');this.container.appendChild(this.endSpacer);
+      this.fit();
       this.observer = new IntersectionObserver(entries => {
         for (const entry of entries) {
           const slot = this.slots[Number(entry.target.dataset.page) - 1];
@@ -61,21 +63,19 @@ export class Webtoon {
           else { this.visible.delete(slot); this.free(slot); }
         }
       }, { root: this.container, rootMargin: '600px' });
-      this.pageObserver = new IntersectionObserver(entries => {
-        for (const entry of entries) if (entry.isIntersecting && entry.intersectionRatio >= .25) this.updatePage(Number(entry.target.dataset.page));
-      }, { root: this.container, threshold: [.25, .5] });
+      this.pageObserver = new IntersectionObserver(() => this.onScroll?.(), { root: this.container, threshold: [.25, .5] });
       this.slots.forEach(slot => { this.observer.observe(slot.el); this.pageObserver.observe(slot.el); });
       this.onScroll = () => {
         cancelAnimationFrame(this.scrollFrame);
         this.scrollFrame = requestAnimationFrame(() => {
-          const center = this.container.getBoundingClientRect().top + this.container.clientHeight / 2;
+          const center = this.container.getBoundingClientRect().top + 32;
           let closest, distance = Infinity;
-          for (const slot of this.visible) { const r = slot.el.getBoundingClientRect(); const d = Math.abs(r.top + r.height / 2 - center); if (d < distance) { closest = slot; distance = d; } }
+          for (const slot of this.visible) { const r = slot.el.getBoundingClientRect(); const d = r.top<=center&&r.bottom>center?0:Math.min(Math.abs(r.top-center),Math.abs(r.bottom-center)); if (d < distance) { closest = slot; distance = d; } }
           if (closest) this.updatePage(closest.page);
         });
       };
       this.container.addEventListener('scroll', this.onScroll, { passive: true });
-    this.ro = new ResizeObserver(() => { this.visible.forEach(slot => { this.free(slot); this.queue(slot); }); }); this.ro.observe(this.container);
+    this.ro = new ResizeObserver(() => { this.fit(); this.visible.forEach(slot => { this.free(slot); this.queue(slot); }); }); this.ro.observe(this.container);
     this.slots.forEach(slot => this.ro.observe(slot.el));
       this.goTo(this.opts.startPage || 1);
       this.emit('ready', { pages: this.numPages });
@@ -116,18 +116,26 @@ export class Webtoon {
   currentPage() { return this.page; }
   next() { this.goTo(this.page + 1); }
   prev() { this.goTo(this.page - 1); }
-  setZoom(value) { this.zoom = Math.max(.5, Math.min(3, Number(value) || 1)); this.container.style.setProperty('--flippy-page-width', `${Math.round(Math.min(760,this.container.clientWidth-40) * this.zoom)}px`); this.container.style.setProperty('--flippy-page-max',this.zoom>1?'none':'100%'); this.emit('zoomchange',{zoom:this.zoom}); }
+  setZoom(value) { this.zoom = Math.max(.5, Math.min(3, Number(value) || 1)); this.fit(); this.emit('zoomchange',{zoom:this.zoom}); }
+  fit() {
+    if(this.endSpacer)this.endSpacer.style.height=this.container.clientHeight+'px';
+    const width = Math.max(80, this.container.clientWidth - 24);
+    const value = this.opts.fit === 'width' ? width : this.opts.fit === 'original' ? 760 : Math.min(width, Math.max(80, this.container.clientHeight - 60) / (this.aspect || 1.4));
+    this.container.style.setProperty('--flippy-page-width', `${Math.round(value * this.zoom)}px`);
+    this.container.style.setProperty('--flippy-page-max',this.zoom>1||this.opts.fit==='original'?'none':'100%');
+  }
+  setFit(value) { this.opts.fit=value; this.zoom=1; this.fit(); }
   zoomIn() { this.setZoom(this.zoom + .25); }
   zoomOut() { this.setZoom(this.zoom - .25); }
   toggleFullscreen() { if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {}); else this.container.requestFullscreen?.().catch(() => {}); }
-  destroy() {
+  destroy(preserveDocument) {
     if (this.destroyed) return; this.destroyed = true; this.jobs = [];
     this.observer?.disconnect(); this.pageObserver?.disconnect(); this.ro?.disconnect();
     this.removeGestures?.();
     cancelAnimationFrame(this.scrollFrame);
     this.slots.forEach(slot => this.free(slot));
-    this.loadingTask?.destroy().catch(() => {});
+    if (!preserveDocument) this.loadingTask?.destroy().catch(() => {});
     this.container.removeEventListener('keydown', this.onKey); this.container.removeEventListener('scroll', this.onScroll);
-    this.container.replaceChildren(); this.pdf = null;
+    this.container.replaceChildren(); this.container.classList.remove('flippy-webtoon'); this.pdf = null;
   }
 }

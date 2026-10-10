@@ -1,16 +1,16 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "pdfjs": "4.10.38",
   "assets": {
     "dist/js/flippy.min.js": {
-      "bytes": 79260,
-      "gzip": 24448,
-      "sha256": "e76e418332d5ab938235e08b8a29679184f47d299c5e753e9e42a4eb37347fae"
+      "bytes": 88454,
+      "gzip": 27262,
+      "sha256": "018c99f2dd9468a7039c1284b91e39ef018050e941f6503c1b9531e441b802c1"
     },
     "dist/js/flippy.esm.js": {
-      "bytes": 79348,
-      "gzip": 24491,
-      "sha256": "ea79186c58b956376402234505f73a5630365882f62b48d42f1b5e80f4a9dbbc"
+      "bytes": 88542,
+      "gzip": 27314,
+      "sha256": "9c3cacfcfe28556687f671ba668d9af3f9bdaeb476ea67283e6be9ac9fd144f1"
     },
     "dist/js/flippy.compat.js": {
       "bytes": 1604,
@@ -18,24 +18,24 @@
       "sha256": "5c8d309d874a3847db8ecaa8bd9aa1f7b05ff8e3aaf47d12cf3b37461dc6aa33"
     },
     "dist/js/flippy.archive.js": {
-      "bytes": 15714,
-      "gzip": 6888,
-      "sha256": "d3e465ea7ea250fbb7f0f038c038fad08bf6d26480ab5a528dc099203ed4ba64"
+      "bytes": 25269,
+      "gzip": 10968,
+      "sha256": "8d3c98fefb336360f8df519eb230e608df86dea07317f3b0d44e28b4168f2ac9"
     },
     "dist/js/flippy.djvu.js": {
       "bytes": 2942,
-      "gzip": 1425,
-      "sha256": "38795190a15565f0f7a8d11370cd41a5f27a649795f5ac4ac15d39f2d400f864"
+      "gzip": 1424,
+      "sha256": "64144400f89b7c41a4ac1d24c0fcaa298087989b1aa9ac421d2c4b851f0d15d6"
     },
     "dist/js/sela.min.js": {
-      "bytes": 79260,
-      "gzip": 24448,
-      "sha256": "e76e418332d5ab938235e08b8a29679184f47d299c5e753e9e42a4eb37347fae"
+      "bytes": 88454,
+      "gzip": 27262,
+      "sha256": "018c99f2dd9468a7039c1284b91e39ef018050e941f6503c1b9531e441b802c1"
     },
     "dist/js/sela.esm.js": {
-      "bytes": 79348,
-      "gzip": 24491,
-      "sha256": "ea79186c58b956376402234505f73a5630365882f62b48d42f1b5e80f4a9dbbc"
+      "bytes": 88542,
+      "gzip": 27314,
+      "sha256": "9c3cacfcfe28556687f671ba668d9af3f9bdaeb476ea67283e6be9ac9fd144f1"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1604,
@@ -43,34 +43,34 @@
       "sha256": "5c8d309d874a3847db8ecaa8bd9aa1f7b05ff8e3aaf47d12cf3b37461dc6aa33"
     },
     "dist/js/sela.archive.js": {
-      "bytes": 15714,
-      "gzip": 6888,
-      "sha256": "d3e465ea7ea250fbb7f0f038c038fad08bf6d26480ab5a528dc099203ed4ba64"
+      "bytes": 25269,
+      "gzip": 10968,
+      "sha256": "8d3c98fefb336360f8df519eb230e608df86dea07317f3b0d44e28b4168f2ac9"
     },
     "dist/js/sela.djvu.js": {
       "bytes": 2942,
-      "gzip": 1425,
-      "sha256": "38795190a15565f0f7a8d11370cd41a5f27a649795f5ac4ac15d39f2d400f864"
+      "gzip": 1424,
+      "sha256": "64144400f89b7c41a4ac1d24c0fcaa298087989b1aa9ac421d2c4b851f0d15d6"
     },
     "dist/js/sela.tools.js": {
-      "bytes": 14271,
-      "gzip": 6142,
-      "sha256": "9f4a7c08d64b479e994ce79060e9f931b2a12dc15216dcad6ca8dd24f21d32fe"
+      "bytes": 24868,
+      "gzip": 9845,
+      "sha256": "57b4116eb20978db0e63f36ab6fa645e67eee8e3f6a06cc9b321e53a26dae56b"
     },
     "dist/js/sela.text.js": {
-      "bytes": 5928,
-      "gzip": 2564,
-      "sha256": "5f16ac0ff65cda7697334d3e881caa43e7af9a0ef4a1d1e55a2e214a98d7976e"
+      "bytes": 7501,
+      "gzip": 3103,
+      "sha256": "ff4fae0abfcd070dddd703de6d5848fff369649a4077bb77a6498d52ad8a6142"
     },
     "dist/css/sela.min.css": {
-      "bytes": 13209,
-      "gzip": 3430,
-      "sha256": "2a07172c47ef000424c6fdd92e623aac645356c84b17f0596f644bcf243dce5c"
+      "bytes": 15983,
+      "gzip": 3988,
+      "sha256": "1a7c75e8adf7a7d2e53b5b0576bae4b9b456a19c2691346f3ea8425fb8b3c95a"
     },
     "dist/css/flippy.min.css": {
-      "bytes": 13209,
-      "gzip": 3430,
-      "sha256": "2a07172c47ef000424c6fdd92e623aac645356c84b17f0596f644bcf243dce5c"
+      "bytes": 15983,
+      "gzip": 3988,
+      "sha256": "1a7c75e8adf7a7d2e53b5b0576bae4b9b456a19c2691346f3ea8425fb8b3c95a"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

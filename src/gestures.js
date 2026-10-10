@@ -12,17 +12,19 @@ export function bindZoomGestures(container, owner, options) {
     if (event.pointerType !== 'touch' || event.target.closest('button,input,select,a')) return;
     pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if (pointers.size === 2) pinch = { distance: Math.max(1,distance()), zoom: owner.zoom };
+    if (pointers.size === 2) container.style.touchAction = 'none';
   };
   const move = event => {
     if (!pointers.has(event.pointerId)) return;
     pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if (pinch && pointers.size === 2) { event.preventDefault(); owner.setZoom(pinch.zoom*distance()/pinch.distance); }
   };
-  const up = event => { pointers.delete(event.pointerId); if(pointers.size<2) pinch=null; };
+  const up = event => { pointers.delete(event.pointerId); if(pointers.size<2){pinch=null;container.style.touchAction='';} };
   container.addEventListener('wheel',wheel,{passive:false});
   container.addEventListener('pointerdown',down); container.addEventListener('pointermove',move,{passive:false});
   container.addEventListener('pointerup',up); container.addEventListener('pointercancel',up);
   return () => {
+    container.style.touchAction='';
     container.removeEventListener('wheel',wheel);container.removeEventListener('pointerdown',down);container.removeEventListener('pointermove',move);
     container.removeEventListener('pointerup',up);container.removeEventListener('pointercancel',up);pointers.clear();
   };

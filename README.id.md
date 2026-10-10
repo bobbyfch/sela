@@ -1,22 +1,22 @@
 <p align="center"><img src="logo.svg" width="88" alt="Lambang buku terbuka Sela"></p>
 
-# Sela 📖
+# Sela Reader 📖
 
-**Di antara waktu. Di dalam cerita.**
+**Buku-bukumu. Selalu dekat.**
 
-Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Tiga produk dengan satu mesin baca ringan: Viewer CDN untuk website, Home untuk new tab desktop, dan Bookshelf sebagai app mobile.
+Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, membuka halaman, dan menemukan jalan pulang. Dua produk dengan satu mesin baca ringan: Reader sebagai web app perpustakaan pribadi di desktop, tablet dan ponsel, serta Viewer CDN untuk website.
 
-[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.2](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
+[English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis 1.3](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Download extension](https://img.shields.io/badge/install-Sela_Home-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/github/v/release/bobbyfch/sela?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases/latest)
 
-[![Install Bookshelf mobile](https://img.shields.io/badge/install-Bookshelf_mobile-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
+[![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
-## Tiga cara memakai Sela
+## Reader + Viewer
 
-| Viewer | Home | Bookshelf |
-| --- | --- | --- |
-| Reader CDN untuk website / framework | Extension new tab desktop + widget + buku | Web app mobile + bottom bar + buku lokal |
+| Sela Reader | Sela Viewer |
+| --- | --- |
+| Installable web app: desktop, tablet and phone; private local library | Lightweight CDN / ESM plugin for websites and frameworks |
 
 [Pilih / pasang lewat halaman publik](https://bobbyfch.github.io/sela/#products) · [Panduan produk](docs/products.md)
 
@@ -32,31 +32,27 @@ Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, m
 | 📝 Catatan per halaman/bab, ekspor/impor JSON | Byte data, header autentikasi, kredensial, password PDF |
 | 🤏 Zoom tombol, Ctrl-wheel, pinch trackpad/touch | Batas canvas, reduced motion, fallback PDF browser lama |
 
-Core sekitar **23,9 KiB gzip**; CSS sekitar **3,4 KiB**. Adapter EPUB/CBZ sekitar **6,7 KiB**, alat baca **6 KiB**, adapter teks **2,5 KiB**, semuanya terpisah. PDF.js + worker modern sekitar **491 KiB gzip**, belum termasuk font/CMap dan dokumen. Ukuran core bukan ukuran keseluruhan aplikasi atau buku.
+Core sekitar **26,6 KiB gzip**; CSS sekitar **3,9 KiB**. Adapter EPUB/CBZ sekitar **10,7 KiB**, alat baca **9,6 KiB**, adapter teks **3,0 KiB**, semuanya terpisah. PDF.js + worker modern sekitar **491 KiB gzip**, belum termasuk font/CMap dan dokumen. Ukuran core bukan ukuran keseluruhan aplikasi atau buku.
 
 PDF, EPUB, CBZ, TXT, Markdown dasar, HTML aman, FB2 berbasis teks, serta DjVu dengan decoder eksternal. PDF pindai dan komik tidak punya teks untuk pencarian/TTS tanpa OCR. PDF punya transkrip teks, tetapi belum ada text layer yang sejajar atau highlight geometris. EPUB memakai navigasi bab, bukan pagination CFI/fidelitas layout penerbit. CBR/RAR, MOBI/AZW, DOCX dan DRM belum didukung. [Batas format](docs/formats.md).
 
-## 🚀 Pasang Sela 1.2
+## 🚀 Pasang Sela 1.3
 
-[![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Unduh extension](https://img.shields.io/badge/unduh-extension_rak_buku-236947?style=for-the-badge&logo=googlechrome&logoColor=white)](https://bobbyfch.github.io/sela/#install-extension)
+[![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer)
 
-Pilih **Viewer** untuk website/framework, **Home** untuk new tab desktop, atau **Bookshelf** untuk app mobile. [Pintu masuk publik](https://bobbyfch.github.io/sela/#products) · [Kode Viewer](docs/install.md) · [Pasang Home](docs/offline-extension.md) · [Pasang Bookshelf](docs/pwa.md).
+Pilih **Reader** untuk perpustakaan pribadi atau **Viewer** untuk website/framework. [Buka app](https://bobbyfch.github.io/sela/mobile/) · [Kode Viewer](docs/install.md) · [Pasang app](docs/pwa.md).
 
 Viewer tidak memerlukan Bootstrap/jQuery. Host embed harus memiliki tinggi; shortcut hanya aktif saat fokus berada di dalam reader. `destroy()` ketika komponen dilepas. Belum diterbitkan ke npm registry; paket dapat dipasang melalui tag GitHub. Browser lama memakai compatibility entry dengan fallback ke PDF asli.
 
-Repo, Pages dan CDN memakai Sela; rilis saat ini **1.2.0**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
+Repo, Pages dan CDN memakai Sela; rilis saat ini **1.3.0**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
 
-## 🏡 Sela Home — new tab desktop
+## 📚 Sela Reader — perpustakaan pribadi
 
-Rak pribadi, jam/tanggal, jeda kopi, kutipan offline dan cuaca kota opsional. Pasang extension **New Tab** di browser Windows/macOS/Linux yang didukung. Standard hanya edisi kompatibilitas. Safari belum dipaketkan. Pencarian, sorting, favorit, filter format/status dan tampilan shelf/grid/list tersedia.
+Web app untuk desktop, tablet dan ponsel. Beranda, Rak, Jelajah dan Pengaturan; koleksi/tag, favorit, sorting, filter, grid/list serta backup ZIP lengkap. Navigasi bawah di ponsel dan sisi kiri di desktop. Tema dan bahasa ada di Pengaturan. Buka app → menu browser → Pasang / Tambahkan ke Layar Utama. Tanpa browser extension; URL app dapat dijadikan bookmark atau halaman awal.
 
-[Pilih produk](https://bobbyfch.github.io/sela/#products) · [Instal Home](docs/offline-extension.md)
+Contoh saat ini bisa dibaca atau disimpan offline. Novel baru dikerjakan pada fase konten berikutnya. Browser lama memperoleh tautan PDF; iPhone 4 tidak mendukung PWA modern lengkap. [Instalasi dan batas offline](docs/pwa.md).
 
-## 📱 Sela Bookshelf — app mobile
-
-Rak lokal persisten, bottom bar, reader mobile, sorting, filter, favorit dan tampilan shelf/grid/list. Buka Pages di ponsel/tablet → Bookshelf → Tambahkan ke Layar Utama / Install. Desktop mendapat pemberitahuan perangkat. Ponsel lama memperoleh fallback tautan PDF; iPhone 4 tidak bisa menjalankan PWA offline modern lengkap. Lima contoh sampul disiapkan, empat di antaranya placeholder teks berlabel jelas.
-
-[Panduan dan batas mobile](docs/pwa.md)
+Mode baca, fit halaman/lebar, preferensi global/per buku, typography, pangkas margin dan hemat daya tersedia. TTS memakai suara browser/OS, timer tidur dan pemutar kecil. [Panduan bacaan](docs/reading-experience.md).
 
 ## 🎧 Dengarkan, cari, simpan
 
@@ -85,10 +81,15 @@ Field yang sedang diedit tidak mengambil shortcut baca. `pageGap:0` membuat webt
 
 Kode MIT. Mesin halaman PDFlipbook MIT, PDF.js Apache-2.0, fflate MIT; decoder DjVu eksternal GPL-2.0. [Atribusi](THIRD_PARTY_NOTICES.md). Belum ada klaim setara/lebih cepat daripada Readest atau foliate-js, atau dukungan penuh setiap OS/browser. [Riset dan roadmap](docs/roadmap.md) · [Kompatibilitas](docs/compatibility.md).
 
-Musik menjadi fase berikutnya, terutama extension. Audio lokal pilihan pengguna bisa gratis tanpa API layanan; Spotify playback memerlukan Premium. Belum ada pemutar musik dalam 1.0. [Opsi musik](docs/offline-extension.md#music-a-later-phase).
+Pemutar musik lokal belum menjadi fitur bawaan; adapter audio backend opsional dapat diintegrasikan oleh host.
 
-Web publik memakai lookup negara IP country.is pada kunjungan pertama: ID→Indonesia, lainnya→English; pilihan manual menang, kegagalan kembali ke bahasa browser. `?geo=off` menonaktifkan lookup. Embed dan extension tidak melakukan geolokasi. Tidak ada unggahan dokumen atau analytics Sela.
+Web publik memakai lookup negara IP country.is pada kunjungan pertama: ID→Indonesia, lainnya→English; pilihan manual menang, kegagalan kembali ke bahasa browser. `?geo=off` menonaktifkan lookup. Embed dan app Reader tidak melakukan geolokasi. Tidak ada unggahan dokumen atau analytics Sela.
 
 Sela mencetak kredit satu kali di console ketika reader dibuka dan memiliki tautan kecil ke sumber. Atribusi tidak menjamin backlink terindeks atau peringkat SEO. Dibuat oleh **Bobby Fajar Christian**: [Portfolio](https://bobbyfajarc.github.io/) · [Instagram](https://instagram.com/bobby.fch) · [LinkedIn](https://www.linkedin.com/in/bobbyfajarc/) · [GitHub](https://github.com/bobbyfch).
 
 Jika Sela membuat halaman proyekmu lebih nyaman dibaca, sebuah ⭐ membantu orang lain menemukannya.
+
+
+## Backup cloud
+
+Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Drive/OneDrive tersedia sebagai tautan unggah manual. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.

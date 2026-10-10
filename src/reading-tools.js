@@ -1,5 +1,7 @@
 // Optional reading utilities: loaded only when the reader's tools are opened.
 import { FILTER_LABELS, brightness } from './appearance.js';
+import { storePreferences, readStored } from './preferences.js';
+import {decorateHighlights} from './highlights.js';
 let toolsCount=0;
 export async function pageText(book, page) {
   if (book.getText) return (await book.getText(page)).slice(0, 1000000);
@@ -35,7 +37,8 @@ export function mountTools(state, host) {
   let expectedSpeechPage = 0;
   let destroyed = false, searchRun = 0, textRun = 0, speechRun = 0, speaking = false, paused = false;
   const synth = window.speechSynthesis;
-  const capable = !!(synth && window.SpeechSynthesisUtterance);
+  const capable = !!((synth && window.SpeechSynthesisUtterance) || typeof options.speechAdapter==='function');
+  let audio,voiceAbort,audioUrl;
   const textCapable = !!(book.getText || (options.format === 'pdf' && book.pdf));
   let pane=host;
   const element = (tag, text, parent = pane) => { const el = document.createElement(tag); if (text) el.textContent = text; parent.appendChild(el); return el; };
@@ -55,13 +58,27 @@ export function mountTools(state, host) {
     b.addEventListener('keydown',event=>{const names=[...tabs.keys()];let at=names.indexOf(key);if(event.key==='ArrowRight')at=(at+1)%names.length;else if(event.key==='ArrowLeft')at=(at+names.length-1)%names.length;else if(event.key==='Home')at=0;else if(event.key==='End')at=names.length-1;else return;event.preventDefault();selectTab(names[at],true);});pane=panel;
   }
   const notice = element('p',null,host); notice.className='sela-tools-status';notice.setAttribute('role', 'status');
+  section('mode',label('Reading mode','Mode baca'),'appearance');
+  const modeLabel=element('label',label('Reading mode','Mode baca'));
+  const mode=element('select',null,modeLabel);mode.setAttribute('aria-label',label('Reading mode','Mode baca'));
+  const choices=book.getText?[['single','Chapter','Bab'],['scroll','Continuous scroll','Gulir berkelanjutan']]:[['single','Single page','Satu halaman'],['book','Book spread','Buku dua halaman'],['scroll','Continuous scroll','Gulir berkelanjutan'],['webtoon','Webtoon · no gap','Webtoon · tanpa celah'],['manga','Manga · right to left','Manga · kanan ke kiri']];
+  choices.forEach(([value,en,indo])=>{const opt=element('option',label(en,indo),mode);opt.value=value;});mode.value=options.mode;
+  mode.onchange=async()=>{mode.disabled=true;try{await state.setMode(mode.value);}catch(error){notice.textContent=error.message;mode.value=options.mode;}finally{mode.disabled=false;}};
+  if(!book.getText){const fitLabel=element('label',label('Fit','Ukuran halaman'));const fit=element('select',null,fitLabel);fit.setAttribute('aria-label',label('Fit','Ukuran halaman'));[['page','Fit page','Pas halaman'],['width','Fit width','Pas lebar'],['original','Original size','Ukuran asli']].forEach(([value,en,indo])=>{const opt=element('option',label(en,indo),fit);opt.value=value;});fit.value=options.fit||'page';fit.onchange=()=>state.setFit(fit.value);}
+  action(label('Back to previous position','Kembali ke posisi sebelumnya'),state.back);
+  action(label('Fullscreen','Layar penuh'),()=>book.toggleFullscreen());
+  action(label('Rotate screen','Putar layar'),()=>state.overlay.querySelector('[aria-label="Rotate screen"],[aria-label="Putar layar"]')?.click());
+  action(label('Use these settings for all books','Gunakan pengaturan ini untuk semua buku'),()=>{if(storePreferences((options.storagePrefix||'flippy:')+'preferences',options))notice.textContent=label('Defaults saved. Per-book choices take priority.','Default disimpan. Pilihan per buku tetap diutamakan.');else notice.textContent=label('Settings could not be saved.','Pengaturan belum dapat disimpan.');});
+  action(label('Reset this book’s settings','Reset pengaturan buku ini'),async()=>{try{localStorage.removeItem(state.preferencesKey);const defaults={filter:'none',brightness:1,dim:false,fontFamily:'serif',fontSize:19,lineHeight:1.8,textMargin:28,textAlign:'start',cropMargin:0,paperTexture:false,lowPower:false,...readStored((options.storagePrefix||'flippy:')+'preferences')};const desired=defaults.mode||(book.getText?'single':'book');delete defaults.mode;state.setPreferences(defaults);state.setFit(defaults.fit||'page');await state.setMode(book.getText&&!['single','scroll'].includes(desired)?'single':desired);}catch(e){notice.textContent=e.message;}});
   section('contents',label('Contents','Daftar isi'),'contents');
   element('h3', label('Contents', 'Daftar isi'));
   const toc = element('nav'); toc.setAttribute('aria-label', label('Document contents', 'Daftar isi dokumen'));
   let outlineCount = 0;
+  function activeContents(){const entries=[...toc.querySelectorAll('[data-page]')].filter(b=>+b.dataset.page<=book.currentPage()).sort((a,b)=>+b.dataset.page-+a.dataset.page);for(const b of toc.querySelectorAll('button')){if(b===entries[0])b.setAttribute('aria-current','location');else b.removeAttribute('aria-current');}}
   async function navigate(item) {
     stop();
     try {
+      state.remember();
       if (book.goToLocation) book.goToLocation(item);
       else {
         let dest = typeof item.dest === 'string' ? await book.pdf.getDestination(item.dest) : item.dest;
@@ -77,6 +94,8 @@ export function mountTools(state, host) {
       if (++outlineCount > 2000) break;
       const b = action(item.title || item.label || '…', () => navigate(item), parent);
       b.className = 'sela-toc-item'; b.style.paddingInlineStart = `${8 + depth * 12}px`;
+      if(item.page)b.dataset.page=item.page;
+      else if(book.pdf&&outlineCount<=200)Promise.resolve().then(async()=>{const dest=typeof item.dest==='string'?await book.pdf.getDestination(item.dest):item.dest;if(!Array.isArray(dest)||!dest.length)return;const page=typeof dest[0]==='number'?dest[0]+1:await book.pdf.getPageIndex(dest[0])+1;if(!destroyed){b.dataset.page=page;activeContents();}}).catch(()=>{});
       if (!item.dest && !item.page) b.disabled = true;
       renderOutline(item.items || item.children, parent, depth + 1);
     }
@@ -84,6 +103,7 @@ export function mountTools(state, host) {
   Promise.resolve().then(() => book.getOutline ? book.getOutline() : book.pdf?.getOutline?.()).then(items => {
     if (destroyed) return;
     renderOutline(items, toc);
+    activeContents();
     if (!outlineCount) element('p', label('No embedded contents or bookmarks.', 'Dokumen ini tidak memiliki daftar isi atau penanda bawaan.'), toc);
   }).catch(() => { if (!destroyed) element('p', label('Contents unavailable.', 'Daftar isi tidak tersedia.'), toc); });
 
@@ -106,7 +126,7 @@ export function mountTools(state, host) {
         const content = await pageText(book, page);
         if (destroyed || run !== searchRun) return;
         const at = content.toLocaleLowerCase().indexOf(needle);
-        if (at !== -1) { found++; action(`${page} · ${content.slice(Math.max(0, at - 35), at + needle.length + 80)}`, () => { stop(); book.goTo(page); showText(); }, results); }
+        if (at !== -1) { found++; action(`${page} · ${content.slice(Math.max(0, at - 35), at + needle.length + 80)}`, () => { stop(); state.navigate(page); showText(); }, results); }
         await new Promise(resolve => setTimeout(resolve, 0));
       }
       if (!destroyed && run === searchRun) notice.textContent = `${found}${found === 100 ? '+' : ''} ` + label('matching pages / chapters.', 'halaman / bab cocok.');
@@ -121,6 +141,13 @@ export function mountTools(state, host) {
   const dimLabel=element('label');const dim=element('input',null,dimLabel);dim.type='checkbox';dimLabel.appendChild(document.createTextNode(label(' Dim reader controls',' Redupkan kontrol reader')));
   filter.onchange=()=>state.setAppearance({filter:filter.value});bright.oninput=()=>state.setAppearance({brightness:brightness(bright.value)});dim.onchange=()=>state.setAppearance({dim:dim.checked});
   action(label('Reset appearance','Reset tampilan'),()=>state.setAppearance({filter:'none',brightness:1,dim:false}));
+  const paperLabel=element('label');const paper=element('input',null,paperLabel);paper.type='checkbox';paper.checked=!!options.paperTexture;paperLabel.append(document.createTextNode(label(' Paper texture',' Tekstur kertas')));paper.onchange=()=>state.setPreferences({paperTexture:paper.checked});
+  const powerLabel=element('label');const power=element('input',null,powerLabel);power.type='checkbox';power.checked=!!options.lowPower;powerLabel.append(document.createTextNode(label(' Low power · fewer effects, lower resolution',' Hemat daya · kurangi efek dan resolusi')));power.onchange=()=>state.setPreferences({lowPower:power.checked});
+  if(!book.getText){const cropLabel=element('label',label('Crop page margins','Pangkas margin halaman'));const crop=element('input',null,cropLabel);crop.type='range';crop.min='0';crop.max='15';crop.value=options.cropMargin||0;crop.setAttribute('aria-label',label('Crop page margins','Pangkas margin halaman'));const amount=element('output',crop.value+'%',cropLabel);crop.oninput=()=>{amount.textContent=crop.value+'%';state.setPreferences({cropMargin:+crop.value});};}
+  else {
+    for(const [key,en,indo,items] of [['fontFamily','Text font','Font teks',[['serif','Serif'],['sans','Sans serif'],['mono','Monospace']]],['textAlign','Text alignment','Perataan teks',[['start',label('Left / start','Kiri / awal')],['justify',label('Justified','Rata kanan-kiri')]]]]){const l=element('label',label(en,indo));const select=element('select',null,l);select.setAttribute('aria-label',label(en,indo));items.forEach(([value,title])=>{const opt=element('option',title,select);opt.value=value;});select.value=options[key]||(key==='fontFamily'?'serif':'start');select.onchange=()=>state.setPreferences({[key]:select.value});}
+    for(const [key,en,indo,min,max,step,defaultValue] of [['fontSize','Text size','Ukuran teks',12,36,1,19],['lineHeight','Line spacing','Spasi baris',1.2,2.4,.1,1.8],['textMargin','Text margins','Margin teks',0,64,2,28]]){const l=element('label',label(en,indo));const input=element('input',null,l);input.type='range';Object.assign(input,{min,max,step,value:options[key]??defaultValue});input.setAttribute('aria-label',label(en,indo));const output=element('output',String(input.value),l);input.oninput=()=>{output.textContent=input.value;state.setPreferences({[key]:+input.value});};}
+  }
   element('p',label('Filters change the displayed page only. Brightness is a visual adjustment, not a device setting or medical color correction.','Filter hanya mengubah tampilan halaman. Kecerahan ini bukan pengaturan perangkat atau koreksi warna medis.'));
   function syncAppearance(){filter.value=options.filter||'none';bright.value=String(options.brightness??1);brightValue.textContent=Math.round(Number(bright.value)*100)+'%';dim.checked=!!options.dim;}
   state.overlay.addEventListener('sela:appearance',syncAppearance);syncAppearance();
@@ -134,7 +161,8 @@ export function mountTools(state, host) {
   let available = [];
   function updateVoices() {
     const selected = voices.value;
-    available = capable ? synth.getVoices().filter(v => !localOnly.checked || v.localService) : [];
+    available = (synth?.getVoices()||[]).filter(v => !localOnly.checked || v.localService);
+    if(!localOnly.checked&&typeof options.speechAdapter==='function')available.push({name:'Sela custom adapter',lang:book.language||(id?'id-ID':'en-US'),localService:false,adapter:true});
     voices.replaceChildren();
     available.forEach((voice, index) => { const opt = element('option', `${voice.name} · ${voice.lang} · ${voice.localService ? label('local', 'lokal') : label('online', 'daring')}`, voices); opt.value = String(index); });
     const lang = book.language || (id ? 'id' : 'en');
@@ -150,15 +178,18 @@ export function mountTools(state, host) {
   const controls = element('div'); controls.className = 'sela-speech-controls';
   const autoLabel = element('label'); const auto = element('input', null, autoLabel); auto.type = 'checkbox'; autoLabel.appendChild(document.createTextNode(label(' Continue to next page / chapter', ' Lanjut ke halaman / bab berikutnya')));
   const voicePane=pane;
+  const timerLabel=element('label',label('Sleep timer','Timer tidur'),voicePane);const timer=element('select',null,timerLabel);timer.setAttribute('aria-label',label('Sleep timer','Timer tidur'));for(const minutes of [0,5,15,30,60]){const opt=element('option',minutes?minutes+' '+label('minutes','menit'):label('Off','Mati'),timer);opt.value=String(minutes);}let sleepTimeout;timer.onchange=()=>{clearTimeout(sleepTimeout);if(+timer.value)sleepTimeout=setTimeout(()=>{stop();notice.textContent=label('Sleep timer finished.','Timer tidur selesai.');},+timer.value*60000);};
   section('notes',label('Your notes','Catatanmu'),'notes');
   element('h3',label('Your notes','Catatanmu'));
   let notes={};try{notes=JSON.parse(localStorage.getItem(state.notesKey)||'{}');if(!notes||Array.isArray(notes)||typeof notes!=='object')notes={};}catch{}
+  const highlightKey=state.notesKey.replace(/:notes$/,':highlights');let highlights=readStored(highlightKey);if(!highlights||typeof highlights!=='object'||Array.isArray(highlights))highlights={};
+  function drawHighlights(){const quotes=Array.isArray(highlights[book.currentPage()])?highlights[book.currentPage()]:[];decorateHighlights(transcript,quotes);for(const section of book.container.querySelectorAll('.flippy-epub-chapter')){const page=Number(section.dataset.page)||1;decorateHighlights(section.shadowRoot?.querySelector('article')||section.querySelector('article'),Array.isArray(highlights[page])?highlights[page]:[]);}}
   const note=element('textarea');note.maxLength=10000;note.rows=4;note.setAttribute('aria-label',label('Note for this page / chapter','Catatan halaman / bab ini'));
   function loadNote(){note.value=typeof notes[book.currentPage()]==='string'?notes[book.currentPage()]:'';}
   function saveNotes(){try{localStorage.setItem(state.notesKey,JSON.stringify(notes));}catch{notice.textContent=label('Notes could not be saved on this browser. Export a copy.','Catatan tidak dapat disimpan di browser ini. Ekspor salinannya.');}}
   note.addEventListener('input',()=>{notes[book.currentPage()]=note.value;saveNotes();});loadNote();
   action(label('Export notes & bookmarks','Ekspor catatan & penanda'),()=>{
-    const url=URL.createObjectURL(new Blob([JSON.stringify({version:1,title:options.title||'',marks:state.marks,notes},null,2)],{type:'application/json'}));
+    const url=URL.createObjectURL(new Blob([JSON.stringify({version:1,title:options.title||'',marks:state.marks,notes,highlights},null,2)],{type:'application/json'}));
     const link=document.createElement('a');link.href=url;link.download='sela-reading-notes.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
   const importLabel=element('label',label('Import notes & bookmarks','Impor catatan & penanda'));const input=element('input',null,importLabel);input.type='file';input.accept='.json,application/json';
@@ -168,40 +199,52 @@ export function mountTools(state, host) {
     if(data.version!==1||!Array.isArray(data.marks)||!data.notes||typeof data.notes!=='object'||Array.isArray(data.notes))throw new Error('Invalid notes file');
     const imported=Object.entries(data.notes);if(imported.length>2000||imported.some(([key,value])=>!Number.isInteger(+key)||+key<1||+key>book.numPages||typeof value!=='string'||value.length>10000))throw new Error('Invalid note locations or text');
     if(data.marks.length>2000||data.marks.some(page=>!Number.isInteger(page)||page<1||page>book.numPages))throw new Error('Invalid bookmarks');
+    if(data.highlights){const entries=Object.entries(data.highlights);if(Array.isArray(data.highlights)||typeof data.highlights!=='object'||entries.length>2000||entries.some(([page,quotes])=>!Number.isInteger(+page)||+page<1||+page>book.numPages||!Array.isArray(quotes)||quotes.length>100||quotes.some(q=>typeof q!=='string'||q.length>10000)))throw Error('Invalid highlights');highlights={...highlights,...data.highlights};try{localStorage.setItem(highlightKey,JSON.stringify(highlights));}catch{}drawHighlights();}
     state.marks=Array.from(new Set([...state.marks,...data.marks]));notes={...notes,...Object.fromEntries(imported)};saveNotes();
     try{localStorage.setItem(state.marksKey,JSON.stringify(state.marks));}catch{}state.updateMarks();loadNote();notice.textContent=label('Notes imported.','Catatan diimpor.');
   }catch(error){if(!destroyed)notice.textContent=error.message;}});
   section('text',label('Document text','Teks dokumen'),'text');
   element('h3',label('Document text','Teks dokumen'));
   const transcript = element('div'); transcript.className = 'sela-transcript'; transcript.tabIndex = 0; transcript.setAttribute('aria-label', label('Selectable document text', 'Teks dokumen yang dapat dipilih'));
-  function stop() { speechRun++; if (speaking) synth?.cancel(); speaking = false; paused = false; setActionIcon(pause,'pause',label('Pause','Jeda')); }
+  let selectedText='';
+  transcript.addEventListener('pointerup',()=>{const selection=window.getSelection();if(selection&&transcript.contains(selection.anchorNode))selectedText=selection.toString().slice(0,10000);});
+  action(label('Save selected quote to notes','Simpan kutipan pilihan ke catatan'),()=>{const text=selectedText||window.getSelection()?.toString();if(!text?.trim())return;const page=book.currentPage();notes[page]=((notes[page]||'')+'\n\n“'+text.trim()+'”').trim().slice(0,10000);saveNotes();loadNote();notice.textContent=label('Quote saved in your page notes.','Kutipan disimpan dalam catatan halaman.');});
+  action(label('Highlight selected text','Sorot teks pilihan'),()=>{const quote=(selectedText||window.getSelection()?.toString()||'').trim().slice(0,10000);if(!quote)return;const page=book.currentPage();highlights[page]=[...new Set([...(highlights[page]||[]),quote])].slice(0,100);try{localStorage.setItem(highlightKey,JSON.stringify(highlights));}catch{notice.textContent=label('Highlight could not be saved.','Sorotan belum dapat disimpan.');}drawHighlights();});
+  action(label('Clear highlights on this page','Hapus sorotan halaman ini'),()=>{delete highlights[book.currentPage()];try{localStorage.setItem(highlightKey,JSON.stringify(highlights));}catch{}drawHighlights();});
+  action(label('Listen to selected text','Dengarkan teks pilihan'),()=>void narrate(selectedText||window.getSelection()?.toString()));
+  function stop() { speechRun++;voiceAbort?.abort();voiceAbort=null;audio?.pause();audio=null;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=null; if (speaking) synth?.cancel(); speaking = false; paused = false; if(mini)mini.hidden=true;setActionIcon(pause,'pause',label('Pause','Jeda')); }
   async function showText() {
     const run = ++textRun;
-    try { const text = await pageText(book, book.currentPage()); if (destroyed || run !== textRun) return; transcript.textContent = text || label('No extractable text. Scanned pages need OCR; comics are images.', 'Tidak ada teks yang dapat diambil. Halaman pindai perlu OCR; komik berupa gambar.'); }
+    try { const text = await pageText(book, book.currentPage()); if (destroyed || run !== textRun) return; transcript.textContent = text || label('No extractable text. Scanned pages need OCR; comics are images.', 'Tidak ada teks yang dapat diambil. Halaman pindai perlu OCR; komik berupa gambar.');drawHighlights(); }
     catch (error) { if (!destroyed && run === textRun) transcript.textContent = error.message; }
   }
-  async function narrate() {
+  let speechPosition=null;
+  async function narrate(selection) {
+    selection=typeof selection==='string'?selection:null;
     stop(); const run = speechRun;
     const voice = available[+voices.value]; if (!voice) return;
-    book.setDisplayMode?.('single');
     speaking = true;
+    mini.hidden=false;
     // Start from an explicit click. Short utterances avoid browser long-speech limits.
     async function speakPage(page = book.currentPage()) {
-      expectedSpeechPage = page; const text = await pageText(book, page);
+      expectedSpeechPage = page; const text = typeof selection==='string'&&selection.trim()?selection:await pageText(book, page);
       if (destroyed || run !== speechRun) return;
       if (!text.trim()) { stop(); notice.textContent = label('This page has no extractable text.', 'Halaman ini tidak memiliki teks yang dapat dibaca.'); return; }
       transcript.textContent = text;
-      const chunks = speechChunks(text); let index = 0;
+      const chunks = speechChunks(text); let index = speechPosition?.page===page&&speechPosition?.text===text?speechPosition.index:0;
       function next() {
         if (destroyed || run !== speechRun) return;
         if (index >= chunks.length) {
-          if (auto.checked && page < book.numPages) { advancing = true; expectedSpeechPage = page + 1; book.goTo(page + 1); advancing = false; speakPage(page + 1).catch(fail); }
-          else { speaking = false; notice.textContent = label('Narration finished.', 'Bacaan selesai.'); }
+          speechPosition=null;
+          if (!selection&&auto.checked && page < book.numPages) { advancing = true; expectedSpeechPage = page + 1; book.goTo(page + 1); advancing = false; speakPage(page + 1).catch(fail); }
+          else { speaking = false;mini.hidden=true; notice.textContent = label('Narration finished.', 'Bacaan selesai.'); }
           return;
         }
-        const chunk = chunks[index++]; const utterance = new SpeechSynthesisUtterance(chunk);
+        speechPosition={page,text,index};const chunk = chunks[index++];
+        if(voice.adapter){voiceAbort=new AbortController();options.speechAdapter(chunk,{language:voice.lang,rate:+rate.value,signal:voiceAbort.signal}).then(blob=>{if(destroyed||run!==speechRun)return;if(!(blob instanceof Blob)||!blob.type.startsWith('audio/')||blob.size>20*1048576)throw Error('Speech adapter must return an audio Blob up to 20 MiB');if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(blob);audio=new Audio(audioUrl);audio.onended=()=>{if(run===speechRun){speechPosition.index=index;next();}};audio.onerror=()=>fail(new Error('Narration audio unavailable'));return audio.play();}).catch(fail);notice.textContent=chunk;return;}
+        const utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice; utterance.lang = voice.lang; utterance.rate = +rate.value;
-        utterance.onend = next; utterance.onerror = event => { if (run === speechRun && !destroyed) { stop(); notice.textContent = label('Narration unavailable: ', 'Narasi tidak tersedia: ') + event.error; } };
+        utterance.onend = ()=>{if(run===speechRun&&speechPosition)speechPosition.index=index;next();}; utterance.onerror = event => { if (run === speechRun && !destroyed) { stop(); notice.textContent = label('Narration unavailable: ', 'Narasi tidak tersedia: ') + event.error; } };
         notice.textContent = chunk; synth.speak(utterance);
       }
       next();
@@ -210,16 +253,22 @@ export function mountTools(state, host) {
     speakPage().catch(fail);
   }
   const play = action(label('Listen', 'Dengarkan'), narrate, controls);
-  const pause = action(label('Pause', 'Jeda'), () => { if (!speaking) return; paused = !paused; if (paused) synth.pause(); else synth.resume(); setActionIcon(pause,paused?'play':'pause',paused?label('Resume','Lanjutkan'):label('Pause','Jeda')); }, controls);
+  const pause = action(label('Pause', 'Jeda'), () => { if (!speaking) return; paused = !paused; if(audio){if(paused)audio.pause();else audio.play().catch(e=>notice.textContent=e.message);}else if (paused) synth?.pause(); else synth?.resume(); setActionIcon(pause,paused?'play':'pause',paused?label('Resume','Lanjutkan'):label('Pause','Jeda')); }, controls);
   action(label('Stop', 'Hentikan'), stop, controls);
+  action(label('Previous passage','Bagian sebelumnya'),()=>{if(speechPosition)speechPosition.index=Math.max(0,speechPosition.index-1);void narrate();},controls);
+  action(label('Next passage','Bagian berikutnya'),()=>{if(speechPosition)speechPosition.index++;void narrate();},controls);
+  const mini=document.createElement('div');mini.className='sela-speech-mini';mini.hidden=true;mini.setAttribute('role','group');mini.setAttribute('aria-label',label('Narration player','Pemutar narasi'));state.overlay.append(mini);
+  const miniPause=action(label('Pause / resume','Jeda / lanjutkan'),()=>pause.click(),mini);setActionIcon(miniPause,'pause',miniPause.textContent);
+  const miniStop=action(label('Stop narration','Hentikan narasi'),stop,mini);setActionIcon(miniStop,'stop',miniStop.textContent);
+  const miniSettings=action(label('Voice settings','Pengaturan suara'),()=>{state.showTools();selectTab('voice');},mini);setActionIcon(miniSettings,'voice',miniSettings.textContent);
   element('p', label('Uses browser / OS voices, without a Sela API key or subscription. Online voices may send text to their provider. Voice availability and pause/background behavior vary by device.', 'Memakai suara browser / OS, tanpa kunci API atau langganan Sela. Suara daring dapat mengirim teks ke penyedianya. Pilihan suara serta jeda dan bacaan di latar bergantung pada perangkat.'),voicePane);
   if (!capable) notice.textContent = label('Speech synthesis is unavailable in this browser.', 'Browser ini tidak menyediakan narasi suara.');
   localOnly.addEventListener('change', () => { stop(); updateVoices(); });
   voices.addEventListener('change', stop); rate.addEventListener('change', stop);
   synth?.addEventListener?.('voiceschanged', updateVoices); updateVoices(); showText();
   let advancing = false;
-  const onPage = () => { if (!advancing && (!speaking || book.currentPage() !== expectedSpeechPage)) stop(); loadNote();showText(); };
+  const onPage = () => { if (!advancing && (!speaking || book.currentPage() !== expectedSpeechPage)){stop();speechPosition=null;} loadNote();showText();activeContents(); };
   book.container.addEventListener('flipbook:pagechange', onPage);
   selectTab('contents');
-  return { stop, selectTab, destroy() { destroyed = true; searchRun++; textRun++; stop(); state.overlay.removeEventListener('sela:appearance',syncAppearance);synth?.removeEventListener?.('voiceschanged', updateVoices); book.container.removeEventListener('flipbook:pagechange', onPage); host.replaceChildren(); } };
+  return { stop, selectTab, destroy() { destroyed = true; searchRun++; textRun++; stop();mini.remove();clearTimeout(sleepTimeout); state.overlay.removeEventListener('sela:appearance',syncAppearance);synth?.removeEventListener?.('voiceschanged', updateVoices); book.container.removeEventListener('flipbook:pagechange', onPage); host.replaceChildren(); } };
 }

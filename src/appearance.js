@@ -18,5 +18,7 @@ export function applyAppearance(overlay,options) {
   overlay.style.setProperty('--flippy-page-filter',options.filter==='none'||!options.filter?'brightness(1)':FILTERS[options.filter]);
   overlay.style.setProperty('--sela-brightness',brightness(options.brightness));
   overlay.dataset.dim=String(!!options.dim);
+  const crop=Math.max(0,Math.min(15,Number(options.cropMargin)||0));
+  overlay.style.setProperty('--sela-crop-scale',String(1/(1-crop/50)));
   overlay.dispatchEvent(new Event('sela:appearance'));
 }

@@ -227,3 +227,32 @@
 @media(max-width:720px){.sela-tools{position:absolute;inset:0 0 0 auto;width:min(420px,100%);z-index:95;padding-inline:16px;box-shadow:-10px 0 40px #0005}.sela-tool-tabs{gap:4px}.sela-tools .sela-tool-icon{min-width:0;min-height:44px}.library-reader-actions{flex-wrap:wrap;justify-content:flex-start}.library-reader-close{margin-inline-start:auto}}
 
 .sela-tools textarea{display:block;max-width:100%;width:100%;font:inherit;background:var(--flippy-bg);color:var(--flippy-fg);border:1px solid var(--flippy-border);border-radius:7px;padding:8px;resize:vertical}
+
+/* Reader controls share one layout in embeds, Home and Bookshelf. */
+.sela-tool-tabs{grid-template-columns:repeat(7,minmax(0,1fr))}
+.library-reader-header,.library-reader-footer{transition:opacity .18s ease}
+.sela-controls-hidden .library-reader-header,.sela-controls-hidden .library-reader-footer{opacity:0;pointer-events:none}
+.sela-controls-hidden .flippy-webtoon-tools,.sela-controls-hidden .fb-toolbar,.sela-controls-hidden .fb-counter{opacity:0;pointer-events:none}
+.sela-back svg{transform:rotate(180deg)}.sela-position-label{font-size:12px;min-width:0;color:var(--flippy-muted)}
+.fb-face{overflow:hidden}.fb-face canvas,.flippy-webtoon-page canvas{transform:scale(var(--sela-crop-scale,1));transform-origin:center}
+.flippy-webtoon-page{overflow:hidden;touch-action:pan-y}
+.flippy-epub-chapter{touch-action:pan-y}
+@media(max-width:720px){
+ .library-reader-overlay{padding:0}.library-reader-shell{width:100%;height:100%;max-height:none;border-radius:0;height:100dvh}
+ .library-reader-header{padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;gap:6px}
+ .library-reader-title{font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .library-reader-actions{width:auto;gap:4px;flex-wrap:nowrap}
+ .library-reader-actions>button:not(.library-reader-close):not([aria-label="Reading tools"]):not([aria-label="Alat baca"]),.library-reader-actions>.sela-filter-control,.library-reader-actions>a{display:none}
+ .library-reader-actions .library-reader-button{width:44px;height:44px;min-height:44px}
+ .library-reader-footer{padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));gap:6px}
+ .library-reader-page-form input{width:48px;font-size:16px}.library-reader-footer .sela-credit{display:none}
+ .sela-tools{inset:auto 0 0;max-height:88%;width:100%;border-radius:22px 22px 0 0;padding:0 16px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--flippy-border);border-inline-start:0;box-shadow:0 -16px 50px #0006}
+ .sela-tools-top{position:sticky;top:0;z-index:3;background:var(--flippy-panel)}.sela-tool-tabs{position:sticky;top:60px;gap:4px}
+ .sela-tools button.sela-tool-icon{padding:8px;display:flex;align-items:center;justify-content:center}.sela-tools svg{width:20px;height:20px}
+ .flippy-webtoon{padding:12px}.flippy-webtoon-tools{display:none}
+ .sela-inline .library-reader-shell{height:100%;border-radius:inherit}
+}
+
+.sela-speech-mini{position:absolute;z-index:20;bottom:80px;right:12px;display:flex;gap:4px;max-width:calc(100% - 24px);padding:8px;border-radius:16px;background:var(--flippy-panel,#202923);color:var(--flippy-fg,#fff);box-shadow:0 8px 28px #0004}.sela-speech-mini button{font:inherit;font-size:12px;min-height:44px;border:0;border-radius:10px;padding:8px;background:transparent;color:inherit}.sela-speech-mini[hidden]{display:none}
+
+.sela-toc-item[aria-current=location]{background:#63a47f26;box-shadow:inset 3px 0 #63a47f}

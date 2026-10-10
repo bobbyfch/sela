@@ -429,6 +429,7 @@ export function createBookEngine(global) {
     }).then(function (page) {
       if (self.destroyed || !page) return;
       var vp = page.getViewport({ scale: 1 });
+      self.originalWidth = vp.width;
       self.aspect = vp.height / vp.width;
       self._buildSheets();
       self.status.remove();
@@ -639,6 +640,7 @@ export function createBookEngine(global) {
       if (self.destroyed) return;
       self._layout();
       clearTimeout(self._roT);
+      if(self.opts.fit)self.setFit(self.opts.fit);
       self._roT = setTimeout(function () {
         if (self.destroyed) return;   // guard: destroy() may land in the gap
         self._renderWindow();
@@ -1475,6 +1477,12 @@ export function createBookEngine(global) {
     this._applyResting();
     this._renderWindow();
   };
+  PDFlipbook.prototype.setFit = function (value) {
+    this.opts.fit=value;
+    var width = Math.max(50, this.container.clientWidth - this.opts.padding * 2);
+    var zoom = value === 'width' ? width / Math.max(1, this._bookW()) : value === 'original' ? (this.originalWidth || this.pageW) / Math.max(1, this.pageW) : 1;
+    this.setZoom(Math.max(1,zoom));
+  };
 
   PDFlipbook.prototype.toggleFullscreen = function () {
     var c = this.container;
@@ -1638,7 +1646,7 @@ export function createBookEngine(global) {
 
   /* ---------- Teardown ---------- */
 
-  PDFlipbook.prototype.destroy = function () {
+  PDFlipbook.prototype.destroy = function (preserveDocument) {
     if (this.destroyed) return;   // idempotent
     this.destroyed = true;
     this.queuedTurn = null;
@@ -1650,11 +1658,11 @@ export function createBookEngine(global) {
     clearTimeout(this._zoomT);
     clearTimeout(this._fsT);
     clearTimeout(this._roT);
-    if (this.loadingTask) {
+    if (this.loadingTask && !preserveDocument) {
       this.loadingTask.destroy().catch(function () {});
       this.loadingTask = null;
     }
-    if (this.pdf) {
+    if (this.pdf && !preserveDocument) {
       try {
         var dp = this.pdf.destroy();
         if (dp && dp.catch) dp.catch(function () {});

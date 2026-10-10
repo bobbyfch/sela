@@ -1,8 +1,11 @@
-import { unzipSync } from 'fflate';
+import { unzipSync, zipSync } from 'fflate';
 import { bindZoomGestures } from './gestures.js';
+import { captureTextPosition, restoreTextPosition } from './preferences.js';
 
 import { readBytes } from './bytes.js';
 export { readBytes } from './bytes.js';
+export function createBackupArchive(entries) { return zipSync(entries,{level:0}); }
+export function readBackupArchive(bytes) { let total=0,count=0;return unzipSync(bytes,{filter:file=>{if(++count>500||file.originalSize>64*1048576||(total+=file.originalSize)>128*1048576||file.name.startsWith('/')||file.name.split('/').includes('..'))throw Error('Backup exceeds safety limits');return true;}}); }
 export function extractArchive(bytes) {
   let total=0,count=0;
   return unzipSync(bytes,{filter:file=>{
@@ -43,11 +46,11 @@ export class Epub {
     if(this.chapters.reduce((size,name)=>size+this.files[name].length,0)>16*1024*1024)throw new Error('EPUB chapter text exceeds 16 MiB');
     this.slots=this.chapters.map((name,i)=>{const el=document.createElement('section');el.className='flippy-epub-chapter';el.dataset.page=i+1;
       const shadow=el.attachShadow({mode:'open'});const style=document.createElement('style');
-      style.textContent=':host{display:block}article{font-family:Georgia,serif;font-size:var(--flippy-text-size,19px);line-height:1.8;color:var(--flippy-fg);overflow-wrap:anywhere}img{max-width:100%;height:auto}h1,h2,h3{line-height:1.25}pre{white-space:pre-wrap}a{color:inherit}table{max-width:100%}';
+      style.textContent=':host{display:block}article{font-family:var(--sela-text-font,Georgia,serif);font-size:var(--flippy-text-size,19px);line-height:var(--sela-line-height,1.8);text-align:var(--sela-text-align,start);color:var(--flippy-fg);overflow-wrap:anywhere}img{max-width:100%;height:auto}h1,h2,h3{line-height:1.25}pre{white-space:pre-wrap}a{color:inherit}table{max-width:100%}';
       shadow.appendChild(style);const article=document.createElement('article');const doc=new DOMParser().parseFromString(text(this.files[name]),'text/html');
       for(const child of doc.body.childNodes)article.appendChild(this.sanitize(child,name));shadow.appendChild(article);return el;});
     this.container.append(...this.slots);this.goTo(this.opts.startPage||1);
-    if(this.opts.mode==='webtoon'){this.observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting)this.updatePage(+entry.target.dataset.page);},{root:this.container,threshold:.25});this.slots.forEach(el=>this.observer.observe(el));}
+    this.setReadingMode(['webtoon','scroll'].includes(this.opts.mode)?'scroll':'single');
     this.emit('ready',{pages:this.numPages});
   }catch(error){if(!this.destroyed)this.emit('error',{error});}}
   sanitize(node,base){
@@ -81,12 +84,15 @@ export class Epub {
   getText(n){const article=this.slots?.[n-1]?.shadowRoot.querySelector('article');const walk=node=>node.nodeType===3?node.textContent:Array.from(node.childNodes).map(walk).join('')+(/^(P|DIV|H[1-6]|LI|BLOCKQUOTE|BR|TR)$/.test(node.nodeName)?'\n':'');return article?walk(article):'';}
   goToLocation(item){if(!item.page)return;this.goTo(item.page);if(item.anchor){const target=this.slots[item.page-1]?.shadowRoot.getElementById(item.anchor);target?.scrollIntoView({block:'start',behavior:'instant'});}}
   updatePage(n){if(n!==this.page){this.page=n;this.emit('pagechange',{page:n});}}
-  goTo(n){n=Math.max(1,Math.min(this.numPages||1,Math.trunc(+n)||1));this.slots?.forEach((el,i)=>{el.hidden=this.opts.mode!=='webtoon'&&i!==n-1;});this.slots?.[n-1]?.scrollIntoView({block:'start',behavior:'instant'});this.updatePage(n);}
+  goTo(n){n=Math.max(1,Math.min(this.numPages||1,Math.trunc(+n)||1));this.slots?.forEach((el,i)=>{el.hidden=!['webtoon','scroll'].includes(this.opts.mode)&&i!==n-1;});this.slots?.[n-1]?.scrollIntoView({block:'start',behavior:'instant'});this.updatePage(n);}
+  setReadingMode(mode){const location=captureTextPosition(this.container);this.opts.mode=mode;this.observer?.disconnect();this.goTo(this.page);restoreTextPosition(this.container,location);if(!this.readerScroll){this.readerScroll=()=>{cancelAnimationFrame(this.readerFrame);this.readerFrame=requestAnimationFrame(()=>{if(this.destroyed||this.opts.mode!=='scroll')return;const top=this.container.getBoundingClientRect().top+32;const active=this.slots.find(el=>el.getBoundingClientRect().bottom>top);if(active)this.updatePage(+active.dataset.page);});};this.container.addEventListener('scroll',this.readerScroll,{passive:true});}if(mode==='scroll'){this.observer=new IntersectionObserver(this.readerScroll,{root:this.container,threshold:.25});this.slots.forEach(el=>this.observer.observe(el));}}
+  getLocation(){return captureTextPosition(this.container);}
+  restoreLocation(location){this.goTo(location.page);restoreTextPosition(this.container,location);}
   currentPage(){return this.page;}next(){this.goTo(this.page+1);}prev(){this.goTo(this.page-1);}
-  setZoom(n){this.zoom=Math.max(.65,Math.min(2.5,+n||1));this.container.style.setProperty('--flippy-text-size',`${19*this.zoom}px`);this.emit('zoomchange',{zoom:this.zoom});}
+  setZoom(n){const location=captureTextPosition(this.container);this.zoom=Math.max(.65,Math.min(2.5,+n||1));this.container.style.setProperty('--flippy-text-size',`${(this.opts.fontSize||19)*this.zoom}px`);restoreTextPosition(this.container,location);this.emit('zoomchange',{zoom:this.zoom});}
   zoomIn(){this.setZoom(this.zoom+.15);}zoomOut(){this.setZoom(this.zoom-.15);}
   toggleFullscreen(){if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});else this.container.requestFullscreen?.().catch(()=>{});}
-  destroy(){this.destroyed=true;this.abort.abort();this.observer?.disconnect();this.removeGestures();this.urls.forEach(url=>URL.revokeObjectURL(url));this.files=null;this.container.replaceChildren();}
+  destroy(){this.destroyed=true;this.abort.abort();this.observer?.disconnect();cancelAnimationFrame(this.readerFrame);this.container.removeEventListener('scroll',this.readerScroll);this.removeGestures();this.urls.forEach(url=>URL.revokeObjectURL(url));this.files=null;this.container.replaceChildren();}
 }
 
 export function cbzLibrary(){return {getDocument(options){

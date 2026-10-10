@@ -1,5 +1,6 @@
 import { readBytes } from './bytes.js';
 import { bindZoomGestures } from './gestures.js';
+import { captureTextPosition, restoreTextPosition } from './preferences.js';
 
 const allowed = new Set('p div span h1 h2 h3 h4 h5 h6 blockquote ul ol li em strong b i u s sub sup br hr pre code table thead tbody tr td th figure figcaption a section article'.split(' '));
 // Safe reflow adapter. Publisher scripts, styles, remote media and active HTML never run.
@@ -38,9 +39,9 @@ export class TextBook {
       const headings = [...this.article.querySelectorAll('h1,h2,h3,h4,h5,h6')];
       headings.forEach((el, i) => { el.id ||= 'sela-heading-' + i; });
       this.outline = headings.slice(0, 2000).map(el => ({ title: el.textContent, page: 1, anchor: el.id }));
-      const section = document.createElement('section'); section.className = 'flippy-epub-chapter';
+      const section = document.createElement('section'); section.className = 'flippy-epub-chapter';section.dataset.page='1';
       const shadow = section.attachShadow({ mode: 'open' }); const style = document.createElement('style');
-      style.textContent = 'article{font:var(--flippy-text-size,19px)/1.8 Georgia,serif;color:var(--flippy-fg);overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}pre{white-space:pre-wrap}p{white-space:pre-wrap}table{max-width:100%}a{color:inherit}';
+      style.textContent = 'article{font-size:var(--flippy-text-size,19px);line-height:var(--sela-line-height,1.8);font-family:var(--sela-text-font,Georgia,serif);text-align:var(--sela-text-align,start);color:var(--flippy-fg);overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}pre{white-space:pre-wrap}p{white-space:pre-wrap}table{max-width:100%}a{color:inherit}';
       shadow.append(style, this.article); this.container.append(section); this.numPages = 1;
       this.emit('ready', { pages: 1 });
     } catch (error) { if (!this.destroyed) this.emit('error', { error }); }
@@ -62,7 +63,10 @@ export class TextBook {
   getText() { return this.article?.innerText || this.article?.textContent || ''; }
   goToLocation(item) { this.article?.querySelectorAll('[id]').forEach(el => { if (el.id === item.anchor) el.scrollIntoView({ block: 'start', behavior: 'instant' }); }); }
   currentPage() { return 1; } goTo() {} next() {} prev() {}
-  setZoom(value) { this.zoom = Math.max(.65, Math.min(2.5, +value || 1)); this.container.style.setProperty('--flippy-text-size', `${19 * this.zoom}px`); this.emit('zoomchange', { zoom: this.zoom }); }
+  setReadingMode(mode) { this.opts.mode=mode; }
+  getLocation() { return captureTextPosition(this.container); }
+  restoreLocation(location) { restoreTextPosition(this.container,location); }
+  setZoom(value) { const location=this.getLocation();this.zoom = Math.max(.65, Math.min(2.5, +value || 1)); this.container.style.setProperty('--flippy-text-size', `${(this.opts.fontSize||19) * this.zoom}px`);this.restoreLocation(location); this.emit('zoomchange', { zoom: this.zoom }); }
   zoomIn() { this.setZoom(this.zoom + .15); } zoomOut() { this.setZoom(this.zoom - .15); }
   toggleFullscreen() { if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {}); else this.container.requestFullscreen?.().catch(() => {}); }
   destroy() { this.destroyed = true; this.abort.abort(); this.removeGestures(); this.container.replaceChildren(); }

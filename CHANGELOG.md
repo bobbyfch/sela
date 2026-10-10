@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.0 — 2026-10-10
+
+- Reader-first public page, original pastel hero and cover/upload grid.
+- Mobile appearance, language and install controls in Settings; manual cloud backup sharing.
+- Two products: universal installable Reader web app and embeddable Viewer. Browser-extension distribution discontinued; desktop installation enabled.
+- Story planning moved out of the reader repository.
+
+- Four mobile screens, separated catalog and personal shelf, clear device-routing feedback and centered flag controls.
+- Live reading modes reuse the loaded document; fit, typography, preferences, printed page labels, history, manual crop and low power.
+- Collections, finished status, batch actions/undo, storage estimates and validated full ZIP backups.
+- Selected-text highlights/quotes, TTS passage controls, sleep timer, mini player and optional backend audio adapter.
+- Offline shell includes new library modules; Reader includes the sample cover. Full novels remain deferred.
+
 ## 1.2.0 — 2026-10-09
 
 - Three products: Viewer CDN, Home desktop new-tab extension and Bookshelf mobile web app.

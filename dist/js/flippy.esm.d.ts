@@ -1,4 +1,4 @@
-export type SelaMode = 'book' | 'single' | 'webtoon' | 'manga';
+export type SelaMode = 'book' | 'single' | 'scroll' | 'webtoon' | 'manga';
 export interface SelaOptions {
   /** Inline embeds need a connected host with an explicit height. */
   presentation?: 'overlay' | 'inline';
@@ -9,6 +9,18 @@ export interface SelaOptions {
   title?: string;
   language?: 'en' | 'id' | 'auto';
   mode?: SelaMode;
+  fit?: 'page' | 'width' | 'original';
+  persistPreferences?: boolean;
+  lowPower?: boolean;
+  fontSize?: number;
+  lineHeight?: number;
+  textMargin?: number;
+  cropMargin?: number;
+  fontFamily?: 'serif' | 'sans' | 'mono';
+  textAlign?: 'start' | 'justify';
+  onPreferences?: (preferences: Partial<SelaOptions>) => void;
+  /** Optional audio provider. Enable online voices explicitly; keep API secrets on your server. */
+  speechAdapter?: (text: string, options: { language: string; rate: number; signal: AbortSignal }) => Promise<Blob>;
   format?: 'auto' | 'pdf' | 'epub' | 'cbz' | 'djvu' | 'txt' | 'md' | 'html' | 'fb2';
   djvujsSrc?: string;
   djvuIntegrity?: string;
@@ -82,6 +94,10 @@ export declare class Sela extends EventTarget {
   zoomIn(): this;
   zoomOut(): this;
   setZoom(value: number): this;
+  setMode(mode: SelaMode): Promise<this>;
+  setFit(value: NonNullable<SelaOptions['fit']>): this;
+  setTypography(values: Pick<SelaOptions, 'fontSize' | 'lineHeight' | 'textMargin' | 'fontFamily' | 'textAlign'>): this;
+  back(): this;
   showTools(): Promise<unknown>;
   getText(page?: number): Promise<string>;
   toggleFullscreen(): this;

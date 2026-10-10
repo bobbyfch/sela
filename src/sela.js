@@ -3,9 +3,10 @@ import { createBookEngine } from './book-engine.js';
 import { createReader } from './reader.js';
 import { Webtoon } from './webtoon.js';
 import { FILTERS, brightness, applyAppearance } from './appearance.js';
+import { MODES, readingPreferences, readStored } from './preferences.js';
 export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.2.0';
+export const VERSION = '1.3.0';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;
@@ -37,7 +38,7 @@ export function createSelaClass(defaultAssetBase) {
       super();
       this.options = { mode: 'book', theme: 'auto', ...options };
       if (options.presentation && !['overlay', 'inline'].includes(options.presentation)) throw new TypeError('presentation must be overlay or inline');
-      if (!['book', 'single', 'webtoon', 'manga'].includes(this.options.mode)) throw new TypeError('mode must be book, single, webtoon or manga');
+      if (!MODES.includes(this.options.mode)) throw new TypeError('mode must be book, single, scroll, webtoon or manga');
       if (this.options.filter && !Object.prototype.hasOwnProperty.call(FILTERS, this.options.filter)) throw new TypeError('Unknown reading filter');
       this.options.brightness=brightness(this.options.brightness);
       if (this.options.readingDirection && !['ltr', 'rtl'].includes(this.options.readingDirection)) throw new TypeError('readingDirection must be ltr or rtl');
@@ -63,6 +64,11 @@ export function createSelaClass(defaultAssetBase) {
       const win = window;
       this._reader?.close(true);
       const options = { ...this.options };
+      if (options.persistPreferences) {
+        const prefix = options.storagePrefix || 'flippy:';
+        const key = prefix + String(options.id || options.url || options.pdfUrl || 'bytes');
+        Object.assign(options, readingPreferences(readStored(prefix+'preferences')), readingPreferences(readStored(key+':preferences')));
+      }
       if (options.presentation === 'inline') {
         options.container = typeof options.container === 'string' ? win.document.querySelector(options.container) : options.container;
         if (!options.container || options.container.ownerDocument !== win.document || !options.container.isConnected) throw new TypeError('Inline presentation requires a connected container');
@@ -77,6 +83,8 @@ export function createSelaClass(defaultAssetBase) {
       options.pageGap = Math.max(0, Math.min(80, Number(options.pageGap)||0));
       options.maxScale = Math.max(.5, Math.min(3, Number(options.maxScale || options.scale) || 1.75));
       options.maxCanvasPixels = Math.max(250000, Math.min(8000000, Number(options.maxCanvasPixels) || 2500000));
+      options.normalQuality={maxScale:options.maxScale,maxCanvasPixels:options.maxCanvasPixels,duration:options.duration??560};
+      if (options.lowPower) { options.maxScale = Math.min(1, options.maxScale); options.maxCanvasPixels = Math.min(1000000, options.maxCanvasPixels); options.duration = 0; }
       if (options.duration !== undefined) options.duration = Math.max(0, Math.min(1500, Number(options.duration) || 0));
       if (!options.pdfUrl && !options.url && !options.data) throw new TypeError('pdfUrl or data is required');
       if (options.pdfUrl || options.url) options.url = safeUrl(options.pdfUrl || options.url, win.location.href);
@@ -107,7 +115,9 @@ export function createSelaClass(defaultAssetBase) {
         options.pdfjsLib = lib;
         options.toolsUrl = new URL('js/sela.tools.js',base).href;
         if (!bookEngines.has(win)) bookEngines.set(win, createBookEngine(win));
-        const engine = lib.epub ? {create:(el,opts)=>new lib.epub(el,opts)} : options.mode === 'webtoon' ? { create: (el, opts) => new Webtoon(el, opts) } : bookEngines.get(win);
+        options.createEngine = mode => lib.epub ? {create:(el,opts)=>new lib.epub(el,opts)} : ['webtoon','scroll'].includes(mode) ? { create: (el, opts) => new Webtoon(el, opts) } : bookEngines.get(win);
+        options.onPreferences = values => { Object.assign(this.options, values);this.options.onPreferences?.(values); this._event('preferenceschange', values); };
+        const engine = options.createEngine(options.mode);
         this._reader = createReader(win, engine);
         return await new Promise((resolve, reject) => {
           this._rejectReady = reject;
@@ -156,6 +166,21 @@ export function createSelaClass(defaultAssetBase) {
     zoomOut() { this.book?.zoomOut(); return this; }
     setZoom(value) { this.book?.setZoom(value); return this; }
     get zoom() { return this.book?.zoom || 1; }
+    setMode(mode) {
+      if (!MODES.includes(mode)) return Promise.reject(new TypeError('Unknown reading mode'));
+      const state = this._reader?.getState();
+      if (!state?.book) { this.options.mode = mode; return Promise.resolve(this); }
+      return state.setMode(mode).then(() => { this.options.mode = mode; return this; });
+    }
+    setFit(value) {
+      if (!['page','width','original'].includes(value)) throw new TypeError('Unknown fit mode');
+      this.options.fit = value; this._reader?.getState()?.setFit(value); return this;
+    }
+    setTypography(values) {
+      const valid = readingPreferences(values);
+      Object.assign(this.options, valid); this._reader?.getState()?.setPreferences(valid); return this;
+    }
+    back() { this._reader?.getState()?.back(); return this; }
     showTools() { return this._reader?.getState()?.showTools?.() || Promise.reject(new Error('Open the reader first')); }
     getText(page = this.currentPage()) { return this._reader?.getState()?.getText?.(page) || Promise.resolve(''); }
     toggleFullscreen() { this.book?.toggleFullscreen(); return this; }

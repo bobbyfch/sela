@@ -5,6 +5,7 @@ async function database(){
   req.onupgradeneeded=()=>{req.result.createObjectStore('books',{keyPath:'id'});req.result.createObjectStore('files',{keyPath:'id'});};
   req.onsuccess=()=>{req.result.onversionchange=()=>{req.result.close();pending=null;};resolve(req.result);};
   req.onerror=()=>{pending=null;reject(req.error);};
+  req.onblocked=()=>{pending=null;reject(new Error('Close other Sela tabs, then try again.'));};
  });return pending;
 }
 export async function listBooks(){const db=await database();return new Promise((resolve,reject)=>{const r=db.transaction('books').objectStore('books').getAll();r.onsuccess=()=>resolve(r.result.map(book=>({...book,cover:book.coverBytes?new Blob([book.coverBytes],{type:book.coverType}):book.cover})));r.onerror=()=>reject(r.error);});}
@@ -28,3 +29,6 @@ export async function importBook(file){
  const book={id:hash,name:file.name.replace(/\.[^.]+$/,''),filename:file.name,format,size:file.size,saved:Date.now(),opened:0};
  await writeBook(book,file);return {book,duplicate:false};
 }
+
+// One transaction: validated restores either finish together or leave the shelf intact.
+export async function restoreBooks(records){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['books','files'],'readwrite');for(const {book,bytes,type} of records){tx.objectStore('books').put(book);tx.objectStore('files').put({id:book.id,bytes,type});}tx.oncomplete=resolve;tx.onerror=tx.onabort=()=>reject(tx.error||new Error('Restore failed; free browser storage and retry.'));});}
