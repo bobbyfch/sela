@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 test('story card opens reader; upload, live mode/filter/gap and global shortcuts',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
-  await page.locator('[data-story-open]').click();
+  await page.locator('.trial-book[data-story-open]').click();
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
   await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
   await page.getByRole('button',{name:'Close reader',exact:true}).focus();
@@ -82,7 +82,7 @@ test('wheel zoom, touch pinch and cancellation leave no active pointer state',as
 });
 
 test('mobile live settings stay in viewport; book zoom and editable shortcuts',async({page})=>{
-  await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.locator('[data-story-open]').click();
+  await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.locator('.trial-book[data-story-open]').click();
   await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
   await page.locator('.flippy-demo-settings summary').click();
   const panel=await page.locator('.flippy-demo-panel').boundingBox();expect(panel.x).toBeGreaterThanOrEqual(0);expect(panel.x+panel.width).toBeLessThanOrEqual(375);expect(panel.y+panel.height).toBeLessThanOrEqual(812);
