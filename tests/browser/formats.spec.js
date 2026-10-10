@@ -6,8 +6,8 @@ test('story card opens reader; upload, live mode/filter/gap and global shortcuts
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
   await page.locator('.trial-book[data-story-open]').click();
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
-  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
-  await page.getByRole('button',{name:'Close reader',exact:true}).focus();
+  await expect(page.locator('.app-page-seek')).toBeEnabled();
+  await page.getByRole('button',{name:'Back to library',exact:true}).focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
   await page.keyboard.press('?');await expect(page.locator('.flippy-shortcuts')).toBeVisible();
@@ -16,19 +16,18 @@ test('story card opens reader; upload, live mode/filter/gap and global shortcuts
   await page.keyboard.press('+');
   await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
   await page.keyboard.press('0');await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1)');
-  await page.locator('.flippy-demo-settings summary').click();
-  await page.locator('.flippy-demo-panel select').nth(1).selectOption('webtoon');
+  await page.getByRole('button',{name:'Reader settings',exact:true}).click();
+  await page.getByLabel('Reading mode',{exact:true}).selectOption('webtoon');
   await expect(page.locator('.flippy-webtoon')).toBeVisible();
-  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
-  await page.locator('.flippy-demo-settings summary').click();
-  await page.locator('.flippy-demo-panel select').nth(3).selectOption('grayscale');
+  await expect(page.locator('.app-page-seek')).toBeEnabled();
+  await page.getByLabel('Page filter',{exact:true}).selectOption('grayscale');
   await expect.poll(()=>page.locator('.flippy-webtoon-page canvas').first().evaluate(el=>getComputedStyle(el).filter)).toBe('grayscale(1) brightness(1)');
-  await page.locator('.flippy-demo-settings summary').click();
+  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();
   const positions=await page.locator('.flippy-webtoon-page').evaluateAll(nodes=>nodes.slice(0,2).map(el=>({top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom})));
   expect(Math.abs(positions[1].top-positions[0].bottom)).toBeLessThan(1);
   await page.keyboard.press('Escape');await expect(page.locator('.library-reader-overlay')).toHaveCount(0);await page.locator('#pdf-file').setInputFiles({name:'story.epub',mimeType:'application/epub+zip',buffer:await readFile('example/yang-tidak-ikut-pulang.epub')});
   await expect(page.locator('#file-name')).toContainText('story.epub');await page.locator('.launch-reader').click();
-  await expect(page.locator('.flippy-epub')).toBeVisible();await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','12');
+  await expect(page.locator('.flippy-epub')).toBeVisible();await expect(page.locator('.app-page-seek')).toHaveAttribute('max','12');
   await expect(page.locator('.library-reader-overlay a[download]')).toHaveAttribute('download','story.epub');
   await page.keyboard.press('Escape');await page.locator('#clear-file').click();await expect(page.locator('.file-selection')).toBeHidden();
   expect(errors).toEqual([]);
@@ -63,7 +62,7 @@ test('CBZ actual raster pages in book and seamless webtoon',async({page})=>{
 test('DjVu real optional GPL decoder and worker, without PDF.js download',async({page})=>{
   test.setTimeout(60000);const requests=[];page.on('request',r=>requests.push(r.url()));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);
   await page.locator('#sample').selectOption('djvu');await page.locator('.launch-reader').click();
-  await expect(page.locator('.library-reader-footer input[type=range]')).toHaveAttribute('max','1',{timeout:30000});
+  await expect(page.locator('.app-page-seek')).toHaveAttribute('max','1',{timeout:30000});
   await expect.poll(()=>page.locator('.fb-sheet canvas').first().evaluate(c=>c.width>0&&c.getContext('2d').getImageData(20,20,1,1).data[3]>0)).toBe(true);
   expect(requests.some(url=>url.includes('vendor/pdfjs'))).toBe(false);
 });
@@ -83,11 +82,11 @@ test('wheel zoom, touch pinch and cancellation leave no active pointer state',as
 
 test('mobile live settings stay in viewport; book zoom and editable shortcuts',async({page})=>{
   await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('.developer-playground').evaluate(el=>el.open=true);await page.locator('.trial-book[data-story-open]').click();
-  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
-  await page.locator('.flippy-demo-settings summary').click();
-  const panel=await page.locator('.flippy-demo-panel').boundingBox();expect(panel.x).toBeGreaterThanOrEqual(0);expect(panel.x+panel.width).toBeLessThanOrEqual(375);expect(panel.y+panel.height).toBeLessThanOrEqual(812);
+  await expect(page.locator('.app-page-seek')).toBeEnabled();
+  await page.getByRole('button',{name:'Reader settings',exact:true}).click();
+  const panel=await page.locator('.app-reading-settings').first().boundingBox();expect(panel.x).toBeGreaterThanOrEqual(0);expect(panel.x+panel.width).toBeLessThanOrEqual(375);expect(panel.y+panel.height).toBeLessThanOrEqual(812);
   await page.screenshot({path:'test-results/mobile-live-settings.png'});
-  await page.locator('.flippy-demo-settings summary').click();
+  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();
   await page.locator('.fb-root').dispatchEvent('wheel',{deltaY:-80,ctrlKey:true});expect(await page.evaluate(()=>document.querySelector('.fb-stage').style.transform)).not.toContain('scale(1)');
   const field=page.locator('.library-reader-page-form input');await field.focus();await page.keyboard.press('End');await expect(field).toHaveValue('1');
   await page.locator('.fb-root').focus();await page.keyboard.press('0');await page.keyboard.press('+');expect(await page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');

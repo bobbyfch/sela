@@ -39,7 +39,7 @@ Core sekitar **26,6 KiB gzip**; CSS sekitar **3,9 KiB**. Adapter EPUB/CBZ sekita
 
 PDF, EPUB, CBZ, TXT, Markdown dasar, HTML aman, FB2 berbasis teks, serta DjVu dengan decoder eksternal. PDF pindai dan komik tidak punya teks untuk pencarian/TTS tanpa OCR. PDF punya transkrip teks, tetapi belum ada text layer yang sejajar atau highlight geometris. EPUB memakai navigasi bab, bukan pagination CFI/fidelitas layout penerbit. CBR/RAR, MOBI/AZW, DOCX dan DRM belum didukung. [Batas format](docs/formats.md).
 
-## 🚀 Pasang Sela 1.4
+## 🚀 Pasang Sela
 
 [![Pasang viewer](https://img.shields.io/badge/pasang-CDN_%2F_self--hosted-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer)
 
@@ -47,19 +47,19 @@ Pilih **Reader** untuk perpustakaan pribadi atau **Viewer** untuk website/framew
 
 Viewer tidak memerlukan Bootstrap/jQuery. Host embed harus memiliki tinggi; shortcut hanya aktif saat fokus berada di dalam reader. `destroy()` ketika komponen dilepas. Belum diterbitkan ke npm registry; paket dapat dipasang melalui tag GitHub. Browser lama memakai compatibility entry dengan fallback ke PDF asli.
 
-Repo, Pages dan CDN memakai Sela; rilis saat ini **1.4.1**, dimulai dari 1.0.0. FlippyPDF dipensiunkan; migrasikan integrasi aktif ke Sela. Cache CDN publik tidak bisa ditarik kembali. Rilis v3 lama sudah dihapus dengan backup pemulihan lokal. Alias `Flippy` dan berkas dist lama hanya untuk migrasi. [Panduan migrasi](docs/migration.md).
+Gunakan aset `sela.*` dan pin tag rilis untuk produksi. Alias `Flippy` tetap tersedia untuk migrasi. [Panduan migrasi](docs/migration.md).
 
 ## 📚 Sela Reader — perpustakaan pribadi
 
 Web app untuk desktop, tablet dan ponsel. Beranda, Rak, Jelajah dan Pengaturan; koleksi/tag, favorit, sorting, filter, grid/list serta backup ZIP lengkap. Navigasi bawah di ponsel dan sisi kiri di desktop. Tema dan bahasa ada di Pengaturan. Buka app → menu browser → Pasang / Tambahkan ke Layar Utama. Tanpa browser extension; URL app dapat dijadikan bookmark atau halaman awal.
 
-Contoh saat ini bisa dibaca atau disimpan offline. Novel baru dikerjakan pada fase konten berikutnya. Browser lama memperoleh tautan PDF; iPhone 4 tidak mendukung PWA modern lengkap. [Instalasi dan batas offline](docs/pwa.md).
+Contoh saat ini bisa dibaca atau disimpan offline. Browser lama memperoleh tautan PDF; iPhone 4 tidak mendukung PWA modern lengkap. [Instalasi dan batas offline](docs/pwa.md).
 
 Mode baca, fit halaman/lebar, preferensi global/per buku, typography, pangkas margin dan hemat daya tersedia. TTS memakai suara browser/OS, timer tidur dan pemutar kecil. [Panduan bacaan](docs/reading-experience.md).
 
 ## 🎧 Dengarkan, cari, simpan
 
-Tombol **Alat baca** membuka daftar isi/outline, pencarian, transkrip, TTS dan catatan. Narasi menggunakan Web Speech API dan suara browser/OS: tanpa API key atau langganan Sela. Suara lokal diprioritaskan. Suara daring dapat mengirim teks ke penyedia dan harus diaktifkan secara sadar. Suara Indonesia, pause/resume dan bacaan latar bergantung pada perangkat; tidak dijanjikan suara tertentu.
+Tombol **Daftar isi & penanda** membuka daftar isi/outline, pencarian, transkrip, TTS dan catatan. Narasi menggunakan Web Speech API dan suara browser/OS: tanpa API key atau langganan Sela. Suara lokal diprioritaskan. Suara daring dapat mengirim teks ke penyedia dan harus diaktifkan secara sadar. Suara Indonesia, pause/resume dan bacaan latar bergantung pada perangkat; tidak dijanjikan suara tertentu.
 
 Bookmark PDF mengarah ke halaman; EPUB memakai nav/NCX dan jangkar. Search berjalan bertahap, bisa dibatalkan, maksimal 100 halaman/bab yang cocok. Catatan lokal bisa diekspor/impor JSON; gunakan edisi dokumen yang sama. Catatan belum berupa highlight posisi teks. Progress EPUB menyimpan bab dan posisi scroll relatif.
 
@@ -82,7 +82,7 @@ Field yang sedang diedit tidak mengambil shortcut baca. `pageGap:0` membuat webt
 
 ## 🌱 Terbuka dan jujur
 
-Kode MIT. Mesin halaman PDFlipbook MIT, PDF.js Apache-2.0, fflate MIT; decoder DjVu eksternal GPL-2.0. [Atribusi](THIRD_PARTY_NOTICES.md). Belum ada klaim setara/lebih cepat daripada Readest atau foliate-js, atau dukungan penuh setiap OS/browser. [Riset dan roadmap](docs/roadmap.md) · [Kompatibilitas](docs/compatibility.md).
+Kode MIT. Mesin halaman PDFlipbook MIT, PDF.js Apache-2.0, fflate MIT; decoder DjVu eksternal GPL-2.0. [Atribusi](THIRD_PARTY_NOTICES.md). Belum ada klaim setara/lebih cepat daripada Readest atau foliate-js, atau dukungan penuh setiap OS/browser. [Kompatibilitas](docs/compatibility.md).
 
 Pemutar musik lokal belum menjadi fitur bawaan; adapter audio backend opsional dapat diintegrasikan oleh host.
 
@@ -95,7 +95,7 @@ Jika Sela membuat halaman proyekmu lebih nyaman dibaca, sebuah ⭐ membantu oran
 
 ## Backup cloud
 
-Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Drive/OneDrive tersedia sebagai tautan unggah manual. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.
+Pengaturan → Unduh backup lengkap menyimpan buku dan data baca sebagai ZIP. Bagikan backup menyiapkan arsip; ketuk lagi untuk membagikannya lewat menu ponsel ke app cloud. Koneksi Drive/OneDrive opsional dapat mengimpor berkas pilihan setelah konfigurasi OAuth. Restore menambahkan buku tanpa menimpa buku atau catatan yang ada. Sinkronisasi akun otomatis belum tersedia.
 
 ## Info buku dan kartu bacaan
 
@@ -103,4 +103,12 @@ Reader menampilkan judul, penulis, tahun terbit, penerbit, bahasa, ISBN/identita
 
 Penanda halaman ada di **Daftar isi & penanda → Penandamu**. Tombol **Screenshot & kutipan** membuat PNG 1080 × 1350 dari kutipan atau halaman PDF/komik, lengkap dengan judul, penulis, tahun dan nomor halaman. Buat pratinjau dulu, lalu unduh PNG atau gunakan menu berbagi perangkat jika didukung. Buku teks memakai kartu kutipan.
 
-Viewer CDN mendukung `ui: 'app'` dan `palette: 'forest' | 'paper' | 'ink' | 'rose'`. Default tetap klasik. Module app dimuat saat dipakai, termasuk pada embed; palet tidak mengubah tema website. `await reader.getMetadata()` membaca info buku, sedangkan `metadata: {...}` menyediakan pelengkapnya. Untuk `autoStyles: false`, muat `sela.min.css` dan `sela.app.css` sendiri.
+Viewer CDN mendukung `ui: 'app'` dan `palette: 'forest' | 'paper' | 'ink' | 'rose'`. Tampilan app menjadi antarmuka tunggal. Module tampilannya dimuat saat reader dibuka, termasuk pada embed; palet tidak mengubah tema website. `await reader.getMetadata()` membaca info buku, sedangkan `metadata: {...}` menyediakan pelengkapnya. Untuk `autoStyles: false`, muat `sela.min.css` dan `sela.app.css` sendiri.
+
+## Tampilan dan sumber buku
+
+Reader dan Viewer CDN memakai satu antarmuka responsif: ikon navigasi, penanda, pratinjau halaman, tema sistem/terang/gelap dan palet **Rimba, Lontar, Nila, Seroja**. Tidak perlu memilih tampilan klasik atau app. `ui: 'classic'` lama menjadi alias antarmuka terbaru.
+
+**Jelajah → Cari buku terbuka** menyediakan pencarian Open Library dan Project Gutenberg. Akses baca/pinjam mengikuti penyedia; domain publik mengikuti negara pembaca. Unduh buku yang tersedia lalu simpan ke rak lokal.
+
+**Pengaturan → Hubungkan penyimpanan cloud** mengimpor berkas pilihan dari Google Drive atau OneDrive pribadi. Daftarkan aplikasi OAuth sendiri lalu isi ID publiknya dan izinkan akses akun. Token hanya berada di memori. Fitur ini bukan sinkronisasi otomatis. [Panduan koneksi](docs/cloud.md).

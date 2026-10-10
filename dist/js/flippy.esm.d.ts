@@ -1,6 +1,6 @@
 export type SelaMode = 'book' | 'single' | 'scroll' | 'webtoon' | 'manga';
 export interface SelaOptions {
-  /** App-style controls load as an optional module. Classic remains the default. */
+  /** One responsive interface. 'classic' is a deprecated alias for 'app'. */
   ui?: 'classic' | 'app';
   palette?: 'forest' | 'paper' | 'ink' | 'rose';
   metadata?: BookMetadata;

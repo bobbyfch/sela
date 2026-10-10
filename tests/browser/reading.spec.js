@@ -9,23 +9,24 @@ test('manga arrows, left navigation and filters preserve PDF pixels', async ({ p
     await reader.open();
   });
   await expect(page.locator('.fb-rtl')).toBeVisible();
-  const left = await page.locator('.fb-nav-next').boundingBox();
-  const right = await page.locator('.fb-nav-prev').boundingBox();
+  const left = await page.getByRole('button',{name:'Halaman berikutnya',exact:true}).boundingBox();
+  const right = await page.getByRole('button',{name:'Halaman sebelumnya',exact:true}).boundingBox();
   expect(left.x).toBeLessThan(right.x);
   await page.locator('.fb-root').focus();
   await page.keyboard.press('ArrowLeft');
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(2);
   await page.keyboard.press('ArrowRight');
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(1);
-  await page.locator('.fb-nav-next').click();
+  await page.getByRole('button',{name:'Halaman berikutnya',exact:true}).click();
   await expect.poll(() => page.evaluate(() => reader.currentPage())).toBe(2);
-  await page.locator('.flippy-filter').selectOption('grayscale');
+  await page.getByRole('button',{name:'Pengaturan reader',exact:true}).click();await page.getByLabel('Filter halaman',{exact:true}).selectOption('grayscale');
   await expect.poll(() => page.locator('.fb-sheet canvas').first().evaluate(c => getComputedStyle(c).filter)).toBe('grayscale(1) brightness(1)');
   await page.evaluate(() => reader.setFilter('sepia'));
-  await expect(page.locator('.flippy-filter')).toHaveValue('sepia');
+  await expect(page.getByLabel('Filter halaman',{exact:true})).toHaveValue('sepia');
   expect(await page.locator('.fb-sheet canvas').first().evaluate(c => getComputedStyle(c).scale)).toBe('-1 1');
   await page.evaluate(() => { reader.goTo(4); reader.setFilter('none'); });
   await page.screenshot({ path: 'test-results/manga-spread.png' });
+  await page.keyboard.press('Escape');
   // The mirrored hot-right zone is physically on the left. A tap advances.
   await page.evaluate(() => reader.goTo(1));
   await page.locator('.fb-hot-right').click();
@@ -66,7 +67,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   await page.screenshot({ path: 'test-results/site-mobile-light-en.png', fullPage: true });
   expect(await page.locator('link[rel=canonical]').getAttribute('href')).toBe('https://bobbyfch.github.io/sela/');
   const schema=JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
-  expect(schema.softwareVersion).toBe('1.4.1');
+  expect(schema.softwareVersion).toBe('1.5.0');
   await page.locator('[data-theme-choice=auto]').click();
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(23, 35, 29)');

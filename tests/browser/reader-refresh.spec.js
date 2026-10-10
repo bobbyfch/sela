@@ -1,13 +1,13 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
-test('CDN app interface is optional, works inline, and keeps palettes inside its host',async({page})=>{
+test('CDN app interface is loaded on open, works inline, and keeps palettes inside its host',async({page})=>{
  const requested=[];page.on('request',r=>requested.push(r.url()));await page.goto('/?geo=off');
  expect(requested.some(url=>url.endsWith('/sela.app.js'))).toBe(false);
  await page.evaluate(async()=>{await SelaReady;const host=document.createElement('div');host.id='app-demo-host';host.style.height='560px';document.body.append(host);window.demoReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,ui:'app',mode:'single',language:'en',metadata:{author:'Bobby Fajar Christian',year:'2026'},theme:'light'});await demoReader.open();});
  const app=page.locator('#app-demo-host [data-product-reader=app]');await app.scrollIntoViewIfNeeded();await expect(app.locator('.app-reading-top')).toBeVisible();
  expect((await app.locator('.library-reader-shell').boundingBox()).height).toBeLessThanOrEqual(560);
- await app.getByRole('button',{name:'Reader settings',exact:true}).click();await app.getByRole('button',{name:'Rose',exact:true}).click();await expect(app).toHaveAttribute('data-palette','rose');expect(await page.locator('html').getAttribute('data-palette')).toBeNull();
+ await app.getByRole('button',{name:'Reader settings',exact:true}).click();await app.getByRole('button',{name:'Seroja',exact:true}).click();await expect(app).toHaveAttribute('data-palette','rose');expect(await page.locator('html').getAttribute('data-palette')).toBeNull();
  await app.getByRole('button',{name:'Book information',exact:true}).click();await expect(app.locator('.app-info-panel')).toContainText('Bobby Fajar Christian');await expect(app.locator('.app-info-panel')).toContainText('2026');await page.keyboard.press('Escape');
  await app.getByRole('button',{name:'Bookmark page',exact:true}).click();await app.getByRole('button',{name:'Contents & bookmarks',exact:true}).click();await expect(app.getByRole('button',{name:'Bookmarked page 1',exact:true})).toBeVisible();await expect(app.locator('.sela-tools-top button')).toHaveCount(1);await expect(app.locator('.app-tools-close')).toHaveCount(0);
  await app.getByRole('button',{name:'Bookmark page',exact:true}).click();await expect(app.getByRole('button',{name:'Bookmarked page 1',exact:true})).toHaveCount(0);await expect(app.locator('.app-saved-marks')).toContainText('Tap the bookmark icon');await app.getByRole('button',{name:'Bookmark page',exact:true}).focus();await page.keyboard.press('b');await expect(app.getByRole('button',{name:'Bookmarked page 1',exact:true})).toBeVisible();

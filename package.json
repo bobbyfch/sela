@@ -1,6 +1,6 @@
 {
   "name": "@bobbyfch/sela",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Sela Reader private web app and lightweight framework-independent document Viewer",
   "type": "module",
   "license": "MIT",

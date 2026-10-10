@@ -1,16 +1,16 @@
 # Reading, collections and backups
 
-Available in Sela Reader 1.4.0. The universal app has an independently built reading UI for phone, tablet and desktop. Its back/title bar, navigation dock, scrubber and reading-settings sheet/sidebar are app-owned; document engines and optional tools services are shared with Viewer. The CDN viewer keeps its classic integration interface by default; `ui: 'app'` lazily loads the same app controls, with palettes scoped to the viewer. Available in 1.4.0.
+Reader and Viewer share one responsive reading interface: a title bar, compact navigation dock and settings sheet on phones, or side panel on larger screens. CDN palettes stay inside the viewer. Document engines and tools load as needed.
 
 ## Reader app
 
-Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Four persistent palettes (Forest, Paper, Ink, Rose) are independent of the light/dark/system preference in Settings. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
+Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Four persistent palettes (Rimba, Lontar, Nila, Seroja) are independent of the light/dark/system preference in Settings. The sun icon in the viewer cycles system/light/dark appearance. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
 
 On phones the panel opens from the bottom; tablet/desktop use a side panel. The book occupies the reading canvas with app controls hidden by a center tap. Optional screen wake lock is available only where supported and permitted; it is released when hidden or closed. No native volume-key or forced rotation claim is made.
 
 ## Shared document services
 
-Open Reading tools → Reading mode to change the current document. PDF, CBZ and DjVu support `single`, `book`, `scroll`, `webtoon` and `manga`. Scroll adds a page gap; Webtoon defaults to no gap. Text/EPUB offer single chapter and continuous scroll, with font family, size, line spacing, margins and alignment. PDF text does not reflow.
+Open Reader settings → Reading mode to change the current document. PDF, CBZ and DjVu support `single`, `book`, `scroll`, `webtoon` and `manga`. Scroll adds a page gap; Webtoon defaults to no gap. Text/EPUB offer single chapter and continuous scroll, with font family, size, line spacing, margins and alignment. PDF text does not reflow.
 
 ```js
 const reader = new Sela({
@@ -26,7 +26,7 @@ reader.back();                 // return after a contents/search/bookmark jump
 // reader.setTypography({fontSize: 22, lineHeight: 1.8, fontFamily: 'serif'});
 ```
 
-Use a stable ID per document edition. Saved per-book preferences override global defaults when `persistPreferences` is enabled; Viewer integrations opt in, while Home and Bookshelf enable it. Settings can be saved as defaults or reset for the current book. Core TypeScript declarations include these methods.
+Use a stable ID per document edition. Saved per-book preferences override global defaults when `persistPreferences` is enabled; Viewer integrations opt in, while Home and Shelf enable it. Settings can be saved as defaults or reset for the current book. Core TypeScript declarations include these methods.
 
 Mobile tools open as a bottom panel. Center taps hide/show controls; double-click/tap toggles zoom. Native selection and browser gestures can vary on touch hardware. Fit modes, optional paper grain, manual symmetric margin crop, twelve filters, brightness and dim are display adjustments; originals stay intact. Low power reduces canvas resolution and disables fold animation. Browser reduced-motion preference also disables animation.
 
@@ -57,11 +57,11 @@ new Sela({
 
 Keep credentials, access control, provider consent, quotas and charging on your backend. This example defines an integration contract; it does not deploy an audio service. Audio is fetched only after the reader explicitly chooses the adapter and starts narration.
 
-## Home and Bookshelf
+## Home and Shelf
 
 Reader has four separate screens: Home (continue reading and sample catalog), Shelf (personal books), Explore (read/save a sample), and Settings (defaults, storage, backup). Reader is available on desktop, tablet and phone; browser-extension packages are discontinued. Collections/tags, favorites, unread/started/finished, sorting and shelf/grid/list layouts work in both. Select book checkboxes for batch favorite, finished, collection and remove/undo.
 
-The empty shelf shows an add-book icon. Catalog books join the private shelf only after Save offline. The existing 50-page sample remains; full novels are a separate postponed content phase. Documents are never uploaded by these library features.
+The empty shelf shows an add-book icon. Catalog books join the private shelf only after Save offline. The included 50-page sample can be read immediately or saved to the local shelf. Documents are never uploaded by these library features.
 
 ## Full backup
 
@@ -76,3 +76,7 @@ Storage usage is an estimate. Requesting persistent storage is optional and can 
 Book information is available in sample cards, library cards and the reader settings. Embedded publishing metadata is optional; edits are local and included in full backups. `getMetadata()` returns the normalized fields. PDF creation time is kept separately, never guessed as a publication date.
 
 Personal page bookmarks appear in Contents & bookmarks → Your bookmarks. Screenshot & quote in the reading dock prepares a local 1080 × 1350 PNG with title, author, year and page credit. Page images are supported for PDF/comic pages; text books use editable passages. File sharing depends on browser/OS support and a fresh tap after preview preparation; PNG download is always the fallback.
+
+## Online sources
+
+Explore → Find open books searches Open Library or Project Gutenberg. Source access and copyright restrictions remain in force. Settings → Connect cloud storage imports selected Google Drive or personal OneDrive files after OAuth setup and account consent. See [cloud setup](cloud.md). There is no automatic cloud synchronization.

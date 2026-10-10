@@ -16,7 +16,7 @@
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
 
-Sela Reader uses its own app reading interface: a compact navigation dock, page scrubber and responsive settings sheet on phones or side panel on larger screens. Choose Forest, Paper, Ink or Rose palettes independently of light/dark/system appearance. Reading modes, fit, contents, search, notes and narration share document services with Viewer. CDN integrations can opt into the same app interface using `ui: 'app'`; its module and styles load only on demand. Screen wake lock is optional where the browser supports it.
+Reader and CDN Viewer use **one responsive interface**: icon controls, page navigation, bookmarks, previews and reading settings. Choose **Rimba, Lontar, Nila or Seroja** palettes independently of light/dark/system appearance. Theme switching is available directly inside the viewer. Screen wake lock and orientation lock are optional browser capabilities.
 
 ## Reader + Viewer
 
@@ -26,7 +26,7 @@ Sela Reader uses its own app reading interface: a compact navigation dock, page 
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
-> Reading and library features are included in 1.4.1. Cloud backup sharing is manual; automatic account sync is not configured.
+> Reading and library features are included in 1.5.0. Cloud import is optional and requires your own OAuth registration. ZIP backup sharing is manual; there is no automatic account synchronization.
 
 ## ✨ Why Sela?
 
@@ -40,18 +40,18 @@ Sela Reader uses its own app reading interface: a compact navigation dock, page 
 | 🔖 Bookmarks and saved progress | Lazy PDF.js and bounded canvas sizes |
 | 🎨 12 filters, brightness and dim controls | Compatibility entry with direct-PDF fallback |
 
-[Read **Yang Tidak Ikut Pulang**, an original 50-page Indonesian novelet](https://bobbyfch.github.io/sela/#demo-heading): twelve chapters, four minimalist pencil/pastel illustrations, embedded PDF bookmarks and complete EPUB navigation. Bobby finds a recording that remembers what he has not said. A quiet mystery about a house, borrowed memories and a missing answer. [Story, licensing and illustration prompts](example/story/README.md).
+[Read **Yang Tidak Ikut Pulang**, an original 50-page Indonesian novelet](https://bobbyfch.github.io/sela/#demo-heading): twelve chapters, four minimalist pencil/pastel illustrations, embedded PDF bookmarks and complete EPUB navigation. Bobby finds a recording that remembers what he has not said. A quiet mystery about a house, borrowed memories and a missing answer. [Sample license](example/story/README.md).
 
 ## 🧩 Load only what you read
 
 | Module | Gzip size | Loaded when |
 | --- | ---: | --- |
-| Main interface | ~26.9 KiB | Main script requested |
-| Scoped CSS | ~3.9 KiB | First open |
+| Main entry | ~26.2 KiB | Main script requested |
+| Scoped CSS | ~3.4 KiB | First open |
 | EPUB / CBZ adapter (includes fflate) | ~11.5 KiB | EPUB or CBZ selected |
 | Reading tools: contents, search, notes, TTS | ~9.6 KiB | Tools first opened |
 | Plain text / Markdown / HTML / FB2 | ~3.5 KiB | Text format selected |
-| App-style Viewer UI | ~6.8 KiB JS + ~2.3 KiB CSS | Only with `ui: 'app'` |
+| Responsive reader UI | ~7.9 KiB JS + ~2.8 KiB CSS | Reader opened |
 | Publishing metadata | ~1.4 KiB | Metadata requested (app library imports it) |
 | DjVu adapter | ~1.4 KiB | DjVu selected; external decoder also needed |
 | PDF.js + worker (modern) | ~491 KiB combined | PDF selected; fonts/CMaps may load separately |
@@ -93,7 +93,7 @@ await reader.open();
 console.log(await reader.getMetadata());
 ```
 
-The default remains `ui: 'classic'`. App controls also work with inline presentation; palettes are scoped to the viewer and do not change your website theme. With `autoStyles: false`, include both `sela.min.css` and `sela.app.css` yourself.
+This interface is the default for every reader, including inline embeds. Historical `ui: 'classic'` inputs are accepted as an alias. Palettes are scoped to the viewer and do not change your website theme. With `autoStyles: false`, include both `sela.min.css` and `sela.app.css` yourself.
 
 ## 🎛️ Read, tweak, repeat
 
@@ -116,7 +116,7 @@ Use the Appearance tab for twelve page filters, document brightness and dimmed c
 
 ## 🎧 Listen, find, keep
 
-Open **Reading tools** in the reader header (seven keyboard-accessible icon tabs: mode, contents, search, appearance, voice, notes, text), or call `await reader.showTools()`. Change modes and fit while reading, save global/per-book preferences, adjust text typography, and use low power or manual crop. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work. [Reading API, highlights, optional audio adapter and backup](docs/reading-experience.md).
+Open **Contents & bookmarks**, **Search book**, or **Reader settings → All reading tools** (seven keyboard-accessible icon tabs: mode, contents, search, appearance, voice, notes, text), or call `await reader.showTools()`. Change modes and fit while reading, save global/per-book preferences, adjust text typography, and use low power or manual crop. Embedded PDF bookmarks resolve to their page; EPUB navigation/NCX opens chapters and anchors. Search scans pages sequentially, can be cancelled, and caps results at 100 matching pages. `await reader.getText(page)` returns extractable text. Scans and image comics need external OCR before narration/search can work. [Reading API, highlights, optional audio adapter and backup](docs/reading-experience.md).
 
 **TTS uses the Web Speech API:** no Sela API key, paid SDK, server or model download. Local voices are selected by default; enable online voices explicitly if desired. Voices/languages come from the browser/OS. Remote voices may send narration text to their provider; local voice availability, audible quality, pause/resume and background playback vary. No guaranteed free third-party voice service or Indonesian voice is promised. Speech is chunked, user-started and cancelled on manual navigation or close. Optional continuous narration advances pages/chapters.
 
@@ -126,11 +126,11 @@ Write page/chapter notes; export/import a versioned JSON file with notes and per
 
 A local library with Home, Shelf, Explore and Settings, collections, favorites, sorting, grid/list views and ZIP backup. Open the web app on desktop, tablet or phone; install through the browser menu when supported. Touch devices get bottom navigation; wide screens get a side rail. Theme, language and backup live in Settings. You can bookmark the app or set its URL as your browser home page; no browser extension is required.
 
-The current sample has Read / Save offline actions. New novels are a later content phase. Cloud backup uses manual export/share and restore, not automatic account sync. [Installation and offline limits](docs/pwa.md).
+The current sample has Read / Save offline actions. Cloud backup uses manual export/share and restore, not automatic account sync. [Installation and offline limits](docs/pwa.md).
 
 ## 🌿 Born as Sela 1.0
 
-Sela launched at **1.0.0**; the current release is **1.4.1**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
+Sela launched at **1.0.0**; the current release is **1.5.0**. Project, package, Pages and CDN use Sela. Source: [bobbyfch/sela](https://github.com/bobbyfch/sela). FlippyPDF is retired; migrate active consumers to Sela. Public CDN caches cannot be recalled. The legacy v3 release was removed with a local recovery backup. Legacy API/file aliases remain for migration; new integrations use Sela. Npm registry publication is pending; install from the GitHub tag. [Migration guide](docs/migration.md).
 
 Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
 
@@ -167,17 +167,11 @@ npm run serve
 
 The browser suite covers PDF/EPUB/CBZ/DjVu, real pixels, layouts, RTL, filters, Vue lifecycle, flag/theme controls, mobile settings, archive errors, cancellation and auth headers. CI checks Chromium, Firefox and WebKit; local checks also use Edge. Release checks exercise the viewer and dedicated library; see CI for current results. Platform lists do not imply testing every OS/version or physical devices.
 
-## 🌱 What's next?
-
-[Research & prioritized roadmap](docs/roadmap.md) · [Contributing](CONTRIBUTING.md)
-
-The direction is **one reading interface, optional capabilities, many stacks**. This release implements search/transcripts, document contents, browser narration, page notes and a local shelf. Aligned PDF text layers/highlights, EPUB CFI pagination, MOBI/AZW3, OPDS and synchronization remain roadmap work. Feature parity or performance superiority over Readest/foliate-js is not claimed. Npm-registry distribution is also planned; today's installation uses CDN, GitHub or self-hosted assets.
-
 ## Open source 🌱
 
 MIT © Bobby Fajar Christian. Engine adapted from [PDFlipbook](https://github.com/SympleNZ/PDFlipbook) (MIT), PDF renderer [PDF.js](https://github.com/mozilla/pdf.js) (Apache-2.0), ZIP adapter fflate (MIT). External DjVu.js decoder is GPL-2.0 and is not bundled. [Third-party notices](THIRD_PARTY_NOTICES.md).
 
-If Sela makes your project easier to read, a ⭐ helps others find it. Bug reports are welcome: include a reproducible PDF, browser version, mode and console error.
+If Sela makes your project easier to read, a ⭐ helps others find it. [Contributions](CONTRIBUTING.md) and bug reports are welcome: include a reproducible PDF, browser version, mode and console error.
 
 ## Created by Bobby
 
@@ -189,3 +183,9 @@ A built-in music player is a future content feature. Optional host-provided audi
 ## Cloud backup
 
 Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to send it through the phone share sheet to an installed cloud app. Google Drive and OneDrive links are provided for manual upload. Restore imports the downloaded ZIP without replacing existing books or newer notes. No automatic account sync or OAuth credentials are configured.
+
+## 🌐 Beyond your shelf
+
+In **Explore → Find open books**, search Open Library records or Project Gutenberg’s public-domain catalog. Open Library links preserve the source’s reading/borrowing requirements. Gutenberg downloads may be imported directly when the source permits browser access, or downloaded and added locally. Direct provider links remain available if a catalog API is unavailable. Check copyright rules in your country.
+
+**Settings → Connect cloud storage** offers Google Drive Picker and personal OneDrive import. Register your own application, save its public IDs and approve access when connecting. Tokens stay in memory; books are imported only when selected. No account synchronization is implied. [OAuth setup and privacy](docs/cloud.md).

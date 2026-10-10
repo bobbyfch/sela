@@ -30,11 +30,11 @@ for (const mode of ['book', 'single', 'webtoon', 'manga']) {
     await expect.poll(() => page.evaluate(() => Array.from(testViewer.overlay.querySelectorAll('canvas')).some(canvas => canvas.width > 0 && canvas.getContext('2d').getImageData(30, 30, 1, 1).data[3] > 0))).toBe(true);
     await page.evaluate(() => testViewer.goTo(2));
     await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
-    await page.getByRole('button', { name: 'Tandai halaman ini', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Hapus penanda halaman ini', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await page.getByRole('button', { name: 'Tampilkan penanda dan pratinjau halaman' }).click();
-    await expect(page.locator('.library-reader-sidebar')).toBeVisible();
-    await page.getByRole('button', { name: 'Tutup pembaca', exact: true }).click();
+    await page.getByRole('button', { name: 'Tandai halaman', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Tandai halaman', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', { name: 'Pratinjau halaman' }).click();
+    await expect(page.locator('.app-page-previews')).toBeVisible();
+    await page.getByRole('button', { name: 'Kembali ke rak', exact: true }).click();
     await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
     await page.evaluate(async () => { await testViewer.open(); });
     await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
@@ -121,9 +121,9 @@ test('private endpoint headers, binary data, and host style isolation', async ({
     await testViewer.open();
   });
   expect(auth).toBe('Bearer fixture');
-  const buttonWidth = await page.getByRole('button', { name: 'Tutup pembaca', exact: true }).evaluate(el => el.getBoundingClientRect().width);
+  const buttonWidth = await page.getByRole('button', { name: 'Kembali ke rak', exact: true }).evaluate(el => el.getBoundingClientRect().width);
   expect(buttonWidth).toBeGreaterThanOrEqual(38);
-  const footerDifference = await page.evaluate(() => Math.abs(document.querySelector('.library-reader-footer').getBoundingClientRect().width - document.querySelector('.library-reader-shell').getBoundingClientRect().width));
+  const footerDifference = await page.evaluate(() => Math.abs(document.querySelector('.app-reading-dock').getBoundingClientRect().width - document.querySelector('.library-reader-shell').getBoundingClientRect().width));
   expect(footerDifference).toBeLessThan(1);
   await page.evaluate(() => testViewer.close());
   const result = await page.evaluate(async bytes => {
@@ -140,7 +140,7 @@ test('demo loads no PDF engine until opened and renders the real sample', async 
   await page.reload();
   expect(requests.some(url => url.includes('/vendor/pdfjs/'))).toBe(false);
   await page.getByRole('button', { name: /01 \/ BOOK/ }).click();
-  await expect(page.locator('.library-reader-footer input[type=range]')).toBeEnabled();
+  await expect(page.locator('.app-page-seek')).toBeEnabled();
   await expect.poll(() => page.locator('.library-reader-book canvas').evaluateAll(canvases => canvases.some(c => c.width > 0))).toBe(true);
   await page.screenshot({ path: 'test-results/desktop-real-pdf.png' });
 });

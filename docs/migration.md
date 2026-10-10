@@ -1,18 +1,13 @@
-# Sela 1.0: a fresh identity
+# Migration to Sela
 
-Authoritative source: [bobbyfch/sela](https://github.com/bobbyfch/sela). Demo: [bobbyfch.github.io/sela](https://bobbyfch.github.io/sela/).
+Use `Sela`, `SelaOptions` and the `sela.*` assets. `Flippy` globals/types and `flippy.*` assets remain compatibility aliases. Pin a release tag in production. Historical CDN tags are not rewritten.
 
-Sela starts at **1.0.0** in its own repository and release namespace. FlippyPDF is retired. No new integrations should use its CDN. Legacy v3 was removed with a full local Git/release backup; previously public CDN caches cannot be recalled. Sela 1.0.0 remains immutable; current examples pin 1.2.0. New integrations should use:
+## Unified reader interface
 
-```
-https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.min.js
-https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.compat.js
-https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/js/sela.esm.js
-https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.2.0/dist/css/sela.min.css
-```
+Reader and Viewer now use the same responsive chrome. `ui: 'classic'` remains an accepted input alias for the current app interface; the classic toolbar is removed. Public API methods, document IDs, saved progress and bookmarks remain compatible. Integrations that customized old toolbar DOM or CSS selectors must update their styles. Treat the public API as the integration contract.
 
-Import `Sela` and `SelaOptions`; Vue component: `adapters/vue/SelaViewer.vue`. Package: `@bobbyfch/sela` via a GitHub tag until npm registry publication. `Flippy` globals/types and `flippy.*` dist files are compatibility aliases only, not the primary Sela API or CDN.
+When self-hosting, deploy the entire matching `dist/` folder. App chrome loads on opening the reader; tools, metadata and document adapters load as needed. If `autoStyles: false`, include both `sela.min.css` and `sela.app.css`.
 
-Overlay remains the default. Inline presentation adds `presentation: 'inline'` and a connected `container` selector/HTMLElement. Give that host an explicit height. Inline viewers do not lock body scrolling, steal focus on open, trap Tab, or receive shortcuts when focus is outside. Multiple independent embeds can coexist; only one overlay is active at a time.
+Overlay is the default. Inline presentation uses `presentation: 'inline'` and a connected `container` selector or HTMLElement with an explicit height. Inline viewers do not lock body scrolling or trap Tab. Keyboard shortcuts apply to the focused embed. Multiple independent embeds can coexist.
 
-Sela now has three products: Viewer CDN, Home desktop extension and Bookshelf mobile app. Existing Home extension shelves are retained under their original identities/database. The new mobile app uses its own Pages-origin IndexedDB; export/import original files to transfer. Historical Standard remains a compatibility edition. FlippyPDF main restores its original v1.0.0 assets with a migration landing page; historical tags remain unchanged.
+Reader library storage is tied to its browser origin. Export a complete ZIP backup before switching hosts or clearing site data. See [installation](install.md) and [backups](reading-experience.md).

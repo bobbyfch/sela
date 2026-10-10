@@ -1,10 +1,10 @@
-# Sela Reader + Sela Viewer
+# Sela Reader and Viewer
 
-Sela has two products.
+| Product | Purpose | Open / install |
+| --- | --- | --- |
+| Reader | Private bookshelf, collections, local/offline books and reading | [Web app](https://bobbyfch.github.io/sela/mobile/); use your browser’s Install or Add to Home Screen menu |
+| Viewer | Embed a document reader in a website or framework | [CDN / ESM guide](install.md) |
 
-- **Reader**: a private, installable web app for desktop, tablet and phone. Home, Shelf, Explore and Settings are app screens, with local books, collections, favorites and full ZIP backup. Wide layouts use a side rail; phones use bottom navigation.
-- **Viewer**: a lightweight CDN/ESM plugin for websites and frameworks, inline or fullscreen. It shares the document engine, without the app library or navigation. Choose classic controls (default) or the responsive app reader using `ui: 'app'`; the extra module loads only when requested.
+Both use one responsive reader interface on phone, tablet and desktop. Reader owns library navigation, import, backups and app preferences. Viewer is scoped to its host and includes no shelf or home widgets. Inline and overlay modes share bookmarks, previews, themes, search and reading tools.
 
-[Open Reader](https://bobbyfch.github.io/sela/mobile/) · [Install the web app](pwa.md) · [Embed Viewer](install.md).
-
-Browser-extension distribution is discontinued. Existing extension releases are historical; Reader can be bookmarked or selected as your browser home/start page. A browser new-tab override requires browser support and is not promised by the web app.
+Reader stores imported books in IndexedDB on the current origin/device. Export a ZIP backup before clearing site data or moving to another origin. Browser extensions are not distributed. Installation and optional capabilities depend on your browser; see [compatibility](compatibility.md), [reading tools](reading-experience.md), [PWA installation](pwa.md) and [cloud setup](cloud.md).

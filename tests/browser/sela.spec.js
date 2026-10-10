@@ -106,7 +106,7 @@ test('unavailable TTS degrades; mobile tools and rotation denial remain readable
   await expect(page.locator('.fb-book')).toHaveClass(/fb-single-mode/);
   await page.evaluate(() => r.showTools()); await page.getByRole('tab',{name:'Read aloud',exact:true}).click(); await expect(page.getByRole('button', { name: 'Listen', exact: true })).toBeDisabled();
   const bounds = await page.locator('.sela-tools').boundingBox(); expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x + bounds.width).toBeLessThanOrEqual(375);
-  await page.getByRole('button', { name: 'Reading tools', exact: true }).click(); await page.evaluate(() => r.goTo(5));
+  await page.getByRole('button', { name: 'Contents & bookmarks', exact: true }).click(); await page.evaluate(() => r.goTo(5));
   await page.setViewportSize({ width: 1000, height: 600 }); await expect(page.locator('.fb-book')).not.toHaveClass(/fb-single-mode/);
   await page.setViewportSize({ width: 375, height: 812 }); await expect(page.locator('.library-reader-page-form input')).toHaveValue('5');
 });

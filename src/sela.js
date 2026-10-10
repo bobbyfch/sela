@@ -6,7 +6,7 @@ import { FILTERS, brightness, applyAppearance } from './appearance.js';
 import { MODES, readingPreferences, readStored } from './preferences.js';
 export { FILTERS } from './appearance.js';
 
-export const VERSION = '1.4.1';
+export const VERSION = '1.5.0';
 const cssLoads = new Map();
 const bookEngines = new WeakMap();
 let activeViewer;
@@ -36,7 +36,7 @@ export function createSelaClass(defaultAssetBase) {
     static version = VERSION;
     constructor(options = {}) {
       super();
-      this.options = { mode: 'book', theme: 'auto', ...options };
+      this.options = { mode: 'book', theme: 'auto', ...options, ui:'app' };
       if(options.ui&&!['classic','app'].includes(options.ui))throw new TypeError('ui must be classic or app');
       if (options.presentation && !['overlay', 'inline'].includes(options.presentation)) throw new TypeError('presentation must be overlay or inline');
       if (!MODES.includes(this.options.mode)) throw new TypeError('mode must be book, single, scroll, webtoon or manga');
@@ -125,7 +125,7 @@ export function createSelaClass(defaultAssetBase) {
           this._rejectReady = reject;
           options.onReady = () => {
             this._rejectReady = null;
-            try{if(appUI)appUI.configureLibraryReader(this,{mobile:true,viewer:true,language:options.language||'id'});}catch(error){reject(error);return;}
+            try{if(appUI)appUI.configureLibraryReader(this,{mobile:true,viewer:!options.appContext,language:options.language||'id'});}catch(error){reject(error);return;}
             this._event('ready', { pages: this.book?.numPages || 0 });
             resolve(this);
           };
@@ -196,9 +196,8 @@ export function createSelaClass(defaultAssetBase) {
       if (!Object.prototype.hasOwnProperty.call(FILTERS, value)) throw new TypeError('Unknown reading filter');
       this.options.filter = value;
       if (this.overlay) {
-        this._reader.getState().options.filter=value;
-        applyAppearance(this.overlay,this._reader.getState().options);
-        this.overlay.querySelector('.flippy-filter').value = value;
+        this._reader.getState().setPreferences({filter:value});
+        this._reader.getState().controls.filter.value = value;
       }
       return this;
     }

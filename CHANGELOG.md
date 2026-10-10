@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.0
+
+- One responsive reader interface for web app, CDN and inline embeds; classic input remains a compatibility alias.
+- Page previews, bookmarks, direct appearance control, navigation history, sound and rotation controls in the shared interface.
+- Cleaner public upload/playground flow and compact palette-aware app home; Rimba, Lontar, Nila and Seroja palettes.
+- Opt-in Open Library/Gutenberg catalog search and configurable Google Drive/personal OneDrive imports, with OAuth setup documentation.
+- Updated installation, migration, privacy and bilingual usage documentation.
+
+
 ## 1.4.1 — 2026-10-10
 
 - Refresh the open personal bookmark list immediately after dock or keyboard changes.

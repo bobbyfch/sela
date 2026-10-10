@@ -1,11 +1,11 @@
-# Install Sela 1.2
+# Install Sela
 
 [Choose Reader or Viewer](https://bobbyfch.github.io/sela/#products) · [Install Reader web app](pwa.md)
 
 ## Quick start
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.4.1/dist/js/sela.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/js/sela.min.js"></script>
 <button id="read" type="button">Read PDF</button>
 <script>
 const reader = new Sela({
@@ -22,15 +22,16 @@ document.querySelector('#read').addEventListener('click', () => {
 CSS loads automatically on first open. For explicit loading/CSP:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.4.1/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/css/sela.app.css">
 ```
 
-Pin releases in production. New CDN: `bobbyfch/sela@v1.4.1`; historical FlippyPDF tags are not rewritten. [Migration](docs/migration.md).
+Pin releases in production. New CDN: `bobbyfch/sela@v1.5.0`; historical FlippyPDF tags are not rewritten. [Migration](migration.md).
 
 ### ESM / TypeScript
 
 ```sh
-npm install github:bobbyfch/sela#v1.4.1
+npm install github:bobbyfch/sela#v1.5.0
 ```
 
 ```ts
@@ -49,7 +50,7 @@ Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: se
 Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.4.1/dist/js/sela.compat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.5.0/dist/js/sela.compat.js"></script>
 <script>
 document.getElementById('read').onclick = function () {
   var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };
@@ -70,13 +71,13 @@ Overlay is the default. Inline embeds keep the same navigation, themes, filters,
 <div id="reading-room" style="height:640px"></div>
 <script>
 new Sela({ url: '/story.pdf', presentation: 'inline', container: '#reading-room',
-  theme: 'auto', language: 'auto' }).open().catch(console.error);
+  theme: 'auto', language: 'en' }).open().catch(console.error);
 </script>
 ```
 
 
 For protected endpoints and framework integration, see [integrations](integrations.md).
 
-## App controls in Viewer CDN
+## Responsive Viewer controls
 
-Add `ui: 'app'` to the same `new Sela({...})` call, optionally with `palette: 'forest'`, `language: 'en'` and `metadata: {author: 'Author', year: '2026'}`. Overlay and inline presentations both support this interface. Default classic controls keep existing integrations unchanged. Optional assets `dist/js/sela.app.js`, `dist/js/sela.metadata.js` and `dist/css/sela.app.css` resolve relative to `assetBase`; self-host them alongside the core. If automatic styles are disabled, link both core and app CSS.
+The Viewer and Reader use one responsive interface. No `ui` option is needed. Set `palette: 'forest'`, `language: 'en'` and optional publishing `metadata`. Palettes are scoped to the embedded viewer. Host `dist/js/sela.app.js`, `dist/js/sela.metadata.js` and `dist/css/sela.app.css` alongside the core when self-hosting. With `autoStyles: false`, link both core and app CSS. Existing `ui: 'classic'` values resolve to the current interface; the classic toolbar is no longer rendered.

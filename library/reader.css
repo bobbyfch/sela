@@ -40,3 +40,21 @@
 .app-reading-utilities{display:flex;gap:8px;justify-content:flex-end}
 .app-share-panel textarea{display:block;width:100%;margin:14px 0;resize:vertical}.app-share-panel>img{width:100%;height:300px;object-fit:contain;margin:14px 0}.share-card-actions{display:flex;flex-wrap:wrap;gap:8px}.share-card-actions button{border:1px solid var(--line);background:var(--bg);border-radius:12px;min-height:44px;padding:10px 12px;font-size:13px}
 .book-info-fields{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px 16px;font-size:13px;line-height:1.6}.book-info-fields dt{color:var(--muted)}.book-info-fields dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}.book-info-fields dt:last-of-type{border-top:1px solid var(--line);padding-top:12px}.book-info-fields dd:last-of-type{border-top:1px solid var(--line);padding-top:12px}
+
+.app-page-previews{position:absolute;inset:auto 0 0;z-index:16;max-height:85%;overflow:auto;background:var(--panel);color:var(--fg);padding:20px;border:1px solid var(--line);border-radius:24px 24px 0 0;box-sizing:border-box}.app-page-previews h3{font-size:14px;color:var(--muted)}.app-page-previews .library-reader-marks{display:flex;flex-wrap:wrap;gap:8px}.app-page-previews .library-reader-thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.app-page-previews .library-reader-thumb{width:100%;height:auto;background:var(--bg);padding:8px;display:grid;justify-items:center;gap:6px;border:1px solid var(--line);border-radius:12px}.app-page-previews canvas{max-width:100%;height:auto}.app-page-previews [aria-current=page]{border-color:var(--accent)}
+[data-reading-direction=rtl] .app-reading-actions{flex-direction:row-reverse}
+[data-product-reader=app][data-compact=true] .app-reading-top{flex-wrap:wrap;gap:4px 8px;padding:8px 12px}
+[data-product-reader=app][data-compact=true] .app-reading-title{flex:1 1 calc(100% - 60px)}
+[data-product-reader=app][data-compact=true] .app-reading-title small{display:none}
+[data-product-reader=app][data-compact=true] .app-reading-top>.app-reader-icon:not(:first-child){flex:1}
+[data-product-reader=app][data-compact=true] .app-reading-dock{display:block;padding:8px 12px}
+[data-product-reader=app][data-compact=true] .app-reading-position output{display:none}
+[data-product-reader=app][data-compact=true] .library-reader-page-form{float:left;margin-right:16px}
+[data-product-reader=app][data-compact=true] .app-reading-actions{clear:both;padding-top:8px}
+[data-product-reader=app][data-compact=true] .app-reading-settings,[data-product-reader=app][data-compact=true] .sela-tools{inset:auto 0 0;width:100%;max-height:85%;height:auto;border-radius:24px 24px 0 0}
+[data-product-reader=app][data-compact=true] .sela-tools{height:85%}
+[data-product-reader=app] .sela-credit{display:block;margin-top:20px;color:var(--muted);text-align:center}
+.app-reading-dock .library-reader-page-form{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;margin:0 auto 4px;max-width:240px}.app-reading-dock .library-reader-page-form input{width:64px;height:36px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);padding:6px}.app-reading-dock .library-reader-page-form button{width:36px;height:36px;min-height:36px;border:0;background:none;padding:6px;color:var(--fg)}.app-reading-dock .library-reader-page-form svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7}
+.app-reader-icon svg{stroke-linecap:round;stroke-linejoin:round;display:block}.app-reading-utilities{flex-wrap:wrap;justify-content:start}.app-page-previews button{color:var(--fg)}
+@media(min-width:768px){.app-page-previews{inset:0 0 0 auto;width:400px;max-height:100%;border-radius:0}.app-reading-dock .library-reader-page-form{margin:0;flex-shrink:0}.app-reading-top .app-reader-icon{width:40px;min-width:40px}}
+@media(max-width:480px){.app-reading-top{flex-wrap:wrap;gap:0}.app-reading-title{flex-basis:calc(100% - 48px)}.app-reading-top>.app-reader-icon:not(:first-child){flex:1}.app-reading-dock{padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}.app-reading-dock .library-reader-page-form{float:left;margin:0 10px 0 0}.app-reading-position{gap:4px}.app-reading-position output{display:none}.app-reading-actions{clear:both}.app-reading-top .app-reading-title small{display:none}}

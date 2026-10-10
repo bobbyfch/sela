@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 test('closing keyboard help keeps manual zoom instead of refitting the inner reading area',async({page})=>{
  await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;window.panelReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'book',fit:'page',duration:0,language:'en',id:'panel-zoom-test'});await panelReader.open();});
- await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await expect(page.locator('.flippy-shortcuts')).toBeVisible();await page.waitForTimeout(100);
+ await page.getByRole('button',{name:'Reader settings',exact:true}).click();await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await expect(page.locator('.flippy-shortcuts')).toBeVisible();await page.waitForTimeout(100);
  await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await page.evaluate(()=>panelReader.setZoom(1.5));await page.waitForTimeout(250);
  expect(await page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
 });
