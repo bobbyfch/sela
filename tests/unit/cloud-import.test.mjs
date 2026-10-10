@@ -10,6 +10,7 @@ test('cloud imports require HTTPS, bound sizes, omit credentials and sanitize fi
   await assert.rejects(fetchFile('http://example.test/book','book.txt'),/HTTPS/);
   const file=await fetchFile('https://example.test/book','../book.txt',{headers:{Authorization:'Bearer test'}});
   assert.equal(await file.text(),'A short book');assert.equal(file.name,'.._book.txt');assert.equal(request.options.credentials,'omit');assert.equal(request.options.referrerPolicy,'no-referrer');
+  const long=await fetchFile('https://example.test/book','a'.repeat(250)+'.epub');assert.equal(long.name.length,180);assert(long.name.endsWith('.epub'));
   globalThis.fetch=async()=>new Response('',{headers:{'Content-Length':String(MAX_IMPORT+1)}});
   await assert.rejects(fetchFile('https://example.test/book','book.txt'),/64 MB/);
   globalThis.fetch=async()=>new Response('',{status:403});await assert.rejects(fetchFile('https://example.test/book','book.txt'),/403/);

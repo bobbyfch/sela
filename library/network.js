@@ -8,7 +8,9 @@ export async function fetchFile(url,name,{headers={},signal}={}){
  const type=response.headers.get('content-type')||'application/octet-stream';let blob;
  if(response.body?.getReader){const reader=response.body.getReader(),chunks=[];let size=0;try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>MAX_IMPORT)throw new Error('Cloud imports are limited to 64 MB per book.');chunks.push(value);}blob=new Blob(chunks,{type});}catch(e){await reader.cancel().catch(()=>{});throw e;}finally{reader.releaseLock();}}
  else{blob=await response.blob();if(blob.size>MAX_IMPORT)throw new Error('Cloud imports are limited to 64 MB per book.');}
- return new File([blob],String(name).replace(/[\\/\u0000-\u001f]/g,'_').slice(0,180),{type});
+ const sanitized=String(name).replace(/[\\/\u0000-\u001f]/g,'_'),extension=sanitized.match(/\.[a-z\d]{1,8}$/i)?.[0]||'';
+ const filename=sanitized.length>180?sanitized.slice(0,180-extension.length)+extension:sanitized;
+ return new File([blob],filename,{type});
 }
 export function link(parent,label,url){const a=document.createElement('a');a.textContent=label;a.href=url;a.target='_blank';a.rel='noopener noreferrer';parent.append(a);return a;}
 export function node(parent,tag,text='',className=''){const n=document.createElement(tag);n.textContent=text;n.className=className;parent.append(n);return n;}

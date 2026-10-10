@@ -1,10 +1,10 @@
 import {test,expect} from '@playwright/test';
 test('app reader owns its chrome, settings, modes and palettes at phone, tablet and desktop sizes',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Seroja',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('data-palette','rose');
  await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('html')).toHaveAttribute('data-palette','rose');
- await page.getByRole('button',{name:'Read sample',exact:true}).click();const app=page.locator('[data-product-reader=app]');await expect(app).toBeVisible();
+ await page.getByRole('button',{name:'Read sample',exact:true}).click();const app=page.locator('[data-product-reader=app]');await expect(app).toBeVisible();expect(requests.some(url=>url.endsWith('/library/reader-shell.js'))).toBe(false);expect(requests.filter(url=>url.endsWith('/dist/js/sela.app.js'))).toHaveLength(1);
  await expect(app.locator('.library-reader-header')).toHaveCount(0);await expect(app.locator('.library-reader-footer')).toHaveCount(0);await expect(app.locator('.app-reading-title')).toContainText('Yang Tidak Ikut Pulang');
  for(const width of [320,768,1440]){await page.setViewportSize({width,height:900});await expect(app.locator('.app-reading-top')).toBeVisible();expect(await app.evaluate(el=>el.scrollWidth<=innerWidth)).toBe(true);}
  await app.getByRole('button',{name:'Next page',exact:true}).click();await expect(app.locator('.app-reading-position output')).toHaveText('2 / 50');
