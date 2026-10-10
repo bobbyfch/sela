@@ -1,3 +1,4 @@
+# Reader web app and Viewer share an immutable release; no browser-extension packages.
 name: Publish versioned release
 on:
   push:

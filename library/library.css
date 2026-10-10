@@ -31,4 +31,3 @@ body[data-selecting=false] .bulk-actions button:not(:first-of-type),body[data-se
 [data-product-reader=home] .library-reader-header{gap:16px;padding:14px 20px}
 [data-product-reader=home] .library-reader-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 [data-product-reader=home] .library-reader-close{flex-shrink:0}
-

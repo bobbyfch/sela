@@ -21,4 +21,3 @@ export function configureLibraryReader(reader,{mobile,language='en'}={}){
  }
  title.title=title.textContent;
 }
-

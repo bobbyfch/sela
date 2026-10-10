@@ -19,4 +19,3 @@ test('reader-first landing keeps the cover demo, local file picker and product o
  for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
  await page.locator('.trial-book').click();await expect(page.locator('.library-reader-overlay')).toBeVisible();
 });
-
