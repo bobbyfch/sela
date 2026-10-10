@@ -70,7 +70,7 @@ console.info('Sela private library · Bobby Fajar Christian · https://bobbyfaja
 
 async function releaseCheck(){
  const button=$('#check-update');button.disabled=true;$('#update-status').textContent=t('Checking GitHub…','Memeriksa GitHub…');
- try{const current='1.3.0';const result=await SelaUpdates.check(current);$('#update-link').hidden=!result.available;$('#update-link').href=result.url;$('#update-status').textContent=result.available?t('Sela '+result.version+' is available. Close Sela windows and reopen online to load the latest web app.','Sela '+result.version+' tersedia. Tutup jendela Sela dan buka kembali saat online untuk memuat web app terbaru.'):t('You have the latest stable release ('+current+').','Rilis stabil terbaru sudah terpasang ('+current+').');}
+ try{const current='1.3.1';const result=await SelaUpdates.check(current);$('#update-link').hidden=!result.available;$('#update-link').href=result.url;$('#update-status').textContent=result.available?t('Sela '+result.version+' is available. Close Sela windows and reopen online to load the latest web app.','Sela '+result.version+' tersedia. Tutup jendela Sela dan buka kembali saat online untuk memuat web app terbaru.'):t('You have the latest stable release ('+current+').','Rilis stabil terbaru sudah terpasang ('+current+').');}
  catch{$('#update-status').textContent=t('Could not check. Try again online, or open Releases.','Belum bisa memeriksa. Coba saat online, atau buka Releases.');$('#update-link').hidden=false;$('#update-link').href='https://github.com/bobbyfch/sela/releases/latest';}
  finally{button.disabled=false;$('.library-info').open=true;}
 }

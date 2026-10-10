@@ -1,5 +1,5 @@
 /* Viewer assets only; documents supplied by the user are never cached. */
-const VERSION='1.3.0',CACHE='sela-viewer-'+VERSION+'-r2',ROOT=new URL('./',self.location.href);
+const VERSION='1.3.1',CACHE='sela-viewer-'+VERSION+'-r2',ROOT=new URL('./',self.location.href);
 const local=path=>new URL(path,ROOT).href;
 let allowed;
 async function assetList(){if(!allowed)allowed=(async()=>{const response=await (await caches.open(CACHE)).match(local('offline-assets.json'));return new Set(response?(await response.json()).allowed:[]);})();return allowed;}

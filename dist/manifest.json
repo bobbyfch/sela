@@ -1,16 +1,16 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.1",
   "pdfjs": "4.10.38",
   "assets": {
     "dist/js/flippy.min.js": {
-      "bytes": 88454,
-      "gzip": 27262,
-      "sha256": "018c99f2dd9468a7039c1284b91e39ef018050e941f6503c1b9531e441b802c1"
+      "bytes": 88597,
+      "gzip": 27307,
+      "sha256": "142577f634f7002c02ef8b13d4046acace10d999dab7cfc2fd299564bf3867aa"
     },
     "dist/js/flippy.esm.js": {
-      "bytes": 88542,
-      "gzip": 27314,
-      "sha256": "9c3cacfcfe28556687f671ba668d9af3f9bdaeb476ea67283e6be9ac9fd144f1"
+      "bytes": 88685,
+      "gzip": 27356,
+      "sha256": "fa302d0cd2c8f8f478388bdd42d2eee157c66238aabc8e5d3b464aa72f1748d4"
     },
     "dist/js/flippy.compat.js": {
       "bytes": 1604,
@@ -28,14 +28,14 @@
       "sha256": "64144400f89b7c41a4ac1d24c0fcaa298087989b1aa9ac421d2c4b851f0d15d6"
     },
     "dist/js/sela.min.js": {
-      "bytes": 88454,
-      "gzip": 27262,
-      "sha256": "018c99f2dd9468a7039c1284b91e39ef018050e941f6503c1b9531e441b802c1"
+      "bytes": 88597,
+      "gzip": 27307,
+      "sha256": "142577f634f7002c02ef8b13d4046acace10d999dab7cfc2fd299564bf3867aa"
     },
     "dist/js/sela.esm.js": {
-      "bytes": 88542,
-      "gzip": 27314,
-      "sha256": "9c3cacfcfe28556687f671ba668d9af3f9bdaeb476ea67283e6be9ac9fd144f1"
+      "bytes": 88685,
+      "gzip": 27356,
+      "sha256": "fa302d0cd2c8f8f478388bdd42d2eee157c66238aabc8e5d3b464aa72f1748d4"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1604,
@@ -65,12 +65,12 @@
     "dist/css/sela.min.css": {
       "bytes": 15983,
       "gzip": 3988,
-      "sha256": "1a7c75e8adf7a7d2e53b5b0576bae4b9b456a19c2691346f3ea8425fb8b3c95a"
+      "sha256": "7b4b9f9bbd242a0df88238fbd4865b117c7b3b8a78cae913b86d6c3991b5f787"
     },
     "dist/css/flippy.min.css": {
       "bytes": 15983,
       "gzip": 3988,
-      "sha256": "1a7c75e8adf7a7d2e53b5b0576bae4b9b456a19c2691346f3ea8425fb8b3c95a"
+      "sha256": "7b4b9f9bbd242a0df88238fbd4865b117c7b3b8a78cae913b86d6c3991b5f787"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

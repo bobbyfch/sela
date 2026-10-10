@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1 — 2026-10-10
+
+- Preserve manual zoom when ResizeObserver delivers its initial or duplicate size notification. Actual viewport changes still apply the selected fit mode.
+- Wait for rendered zoom in the keyboard regression check to avoid reading an intermediate frame.
+
 ## 1.3.0 — 2026-10-10
 
 - Reader-first public page, original pastel hero and cover/upload grid.

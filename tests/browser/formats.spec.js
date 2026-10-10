@@ -14,7 +14,7 @@ test('story card opens reader; upload, live mode/filter/gap and global shortcuts
   await page.keyboard.press('Escape');await expect(page.locator('.flippy-shortcuts')).toBeHidden();
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
   await page.keyboard.press('+');
-  const zoom=await page.locator('.fb-stage').evaluate(el=>el.style.transform);expect(zoom).toContain('scale(1.5)');
+  await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
   await page.keyboard.press('0');await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1)');
   await page.locator('.flippy-demo-settings summary').click();
   await page.locator('.flippy-demo-panel select').nth(1).selectOption('webtoon');

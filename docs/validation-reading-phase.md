@@ -10,6 +10,8 @@ Current products: universal installable Reader web app and Viewer CDN/ESM. Brows
 
 Local Firefox could not launch (`spawn UNKNOWN`); this is not a compatibility pass. Linux CI runs Chromium, Firefox and WebKit. Physical old iPhones/Android and lock-screen/background narration are not verified. Cloud backup is manual, not automatic OAuth sync.
 
-Core gzip: 27,262 bytes (~26.6 KiB), CSS 3,988 bytes; optional tools 9,845 bytes, archive adapter 10,968 bytes, text adapter 3,103 bytes. Decoders, documents and app assets count separately. No comparative speed or memory claim against Readest is made.
+Core gzip: 27,307 bytes (~26.6 KiB), CSS 3,988 bytes; optional tools 9,845 bytes, archive adapter 10,968 bytes, text adapter 3,103 bytes. Decoders, documents and app assets count separately. No comparative speed or memory claim against Readest is made.
 
 [Reading capabilities and limits](reading-experience.md) · [Products](products.md) · [Install app](pwa.md).
+
+Patch 1.3.1: the initial/duplicate ResizeObserver notification no longer resets manual zoom. The keyboard/demo scenario passed 10 consecutive Chromium runs, and a delayed-notification + actual viewport resize regression passed Chromium and WebKit. The prior Linux matrix passed 169 scenarios; the patch matrix runs before publication.

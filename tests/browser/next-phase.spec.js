@@ -1,4 +1,19 @@
 import {test,expect} from '@playwright/test';
+test('a delayed initial resize notification preserves manual zoom; real resize still fits',async({page})=>{
+ await page.addInitScript(()=>{
+  const Native=ResizeObserver;
+  window.ResizeObserver=class {
+   constructor(callback){let first=true;this.observer=new Native(entries=>{if(first){first=false;setTimeout(()=>callback(entries),500);}else callback(entries);});}
+   observe(...args){this.observer.observe(...args);}
+   unobserve(...args){this.observer.unobserve(...args);}
+   disconnect(){this.observer.disconnect();}
+  };
+ });
+ await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;window.resizeReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'book',fit:'page',duration:0,id:'resize-zoom-test'});await resizeReader.open();resizeReader.zoomIn();});
+ await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
+ await page.waitForTimeout(800);expect(await page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
+ await page.setViewportSize({width:600,height:740});await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1)');
+});
 
 test('center taps toggle controls without turning pages and low power respects reduced motion',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/?geo=off');

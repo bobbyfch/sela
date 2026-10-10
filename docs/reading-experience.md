@@ -1,6 +1,6 @@
 # Reading, collections and backups
 
-Available in Sela Reader 1.3.0. The mobile app has its own touch reading screen; Home has a desktop workspace; the CDN viewer keeps its integration interface.
+Available in Sela Reader 1.3.1. The mobile app has its own touch reading screen; Home has a desktop workspace; the CDN viewer keeps its integration interface.
 
 ## Shared reader
 
