@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /sela/
+Sitemap: https://bobbyfch.github.io/sela/sitemap.xml

@@ -1,0 +1,46 @@
+{
+  "name": "@bobbyfch/sela",
+  "version": "0.9.0-beta.0",
+  "description": "Sela Reader offline bookshelf, reading profiles and lightweight framework-independent document viewer",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bobbyfch/sela.git"
+  },
+  "main": "./dist/js/sela.esm.js",
+  "module": "./dist/js/sela.esm.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/js/sela.esm.js",
+      "default": "./dist/js/sela.esm.js"
+    },
+    "./css": "./dist/css/sela.min.css",
+    "./vue": "./adapters/vue/SelaViewer.vue",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist",
+    "adapters",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/unit/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:types": "tsc -p tests/types/tsconfig.json",
+    "serve": "node scripts/serve.mjs",
+    "build:story": "python scripts/build-story.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "esbuild": "0.28.2",
+    "fflate": "0.8.3",
+    "pdfjs-dist": "4.10.38",
+    "typescript": "5.9.3",
+    "vue": "3.5.43"
+  }
+}

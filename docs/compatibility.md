@@ -1,0 +1,29 @@
+# Browser and platform compatibility
+
+The interactive reader requires ES2020, dynamic modules, module workers, Pointer Events, EventTarget, ResizeObserver and IntersectionObserver. Manga uses individual CSS scale. The compatibility entry checks capabilities instead of guessing from OS names.
+
+| Environment | Behavior | Verification |
+| --- | --- | --- |
+| Current Edge / Windows | Interactive viewer | Local browser suite |
+| Chromium / Linux | Interactive viewer | GitHub Actions suite |
+| Playwright WebKit / Windows | Interactive viewer, formats and library storage | Automated browser scenarios; this is not physical Safari/iOS verification |
+| Playwright Firefox / Linux | Interactive viewer and formats | GitHub Actions matrix; Windows runtime has failed to launch (SideBySide/mozglue assembly) |
+| Android / iOS | Responsive modes and fullscreen fallback | Mobile viewport emulation, not physical devices |
+| Missing required capabilities, including IE | Original HTTP(S) PDF via compat entry | Capability removal tested in Chromium |
+| JavaScript disabled / blocked | Normal PDF link | Demo includes noscript |
+
+PDF.js 4.10.38 ships matching modern and legacy bundles. A legacy build cannot give IE all modern reader features. [Official PDF.js FAQ](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions).
+
+Always retain a direct PDF link. CSP must allow scripts/styles and module workers (blob: for cross-origin workers). Authentication and CORS still apply. Windows, macOS, Linux, Android, iOS and ChromeOS are browser hosts, not separate native builds.
+
+EPUB additionally needs Shadow DOM and TextDecoder, CBZ needs image decoding, and optional DjVu needs createImageBitmap plus the external decoder's blob worker. The old-browser fallback applies to PDF; EPUB/CBZ/DjVu need a capable browser or an alternative server conversion. Touch pinch is covered by synthetic pointer tests; physical mobile gesture behavior remains unverified. See [format scope](formats.md).
+
+Regression scenarios cover embedded PDF/EPUB outlines, safe text and Office adapters, footnotes, notes, bookmarks, responsive layouts, independent inline embeds, local import/deduplication, update safety and offline storage. Physical device behavior remains unverified. Check CI for the current browser matrix. IndexedDB stores byte buffers for persistence across tested Chromium and WebKit hosts.
+
+TTS uses optional Web Speech and defaults to voices reporting `localService`. Voice availability and language quality depend on the browser and installed OS voices; local testing found English voices but no Indonesian local voice. No paid service or API key is required. Browsers without speech support keep the transcript available. Screen orientation locking requires browser/OS support and may require fullscreen; denial leaves ordinary responsive reading available.
+
+SEO: static crawlable content, canonical/description/Open Graph/Twitter tags, SoftwareApplication JSON-LD and sitemap. llms.txt is agent documentation, not a ranking mechanism. [Google AI features use the same foundational SEO practices](https://developers.google.com/search/docs/appearance/ai-features). Indexing, rankings and AI inclusion are not guaranteed. A GitHub project cannot supply origin-root robots.txt; the project-level file documents policy. Submit the sitemap to Search Console after verifying ownership.
+
+## Product-specific device limits
+
+Reader is available on all supported desktop, tablet and phone browsers. Installation depends on browser PWA capabilities; there are no OS gates. Bottom navigation adapts to a side rail on wide screens. Old devices receive basic PDF links; iPhone 4 cannot run a modern offline PWA. Automated browser emulation does not establish support on every physical device. Browser-extension distribution is discontinued.

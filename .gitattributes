@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.pdf binary
+*.mp3 binary
+*.png binary
+*.bcmap binary
+*.pfb binary
+*.ttf binary
+dist/vendor/** -whitespace
+*.jpg binary
+*.epub binary
+*.cbz binary
+*.djvu binary

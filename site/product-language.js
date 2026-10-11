@@ -1,0 +1,1 @@
+(function(){function apply(){var lang=document.documentElement.lang==='id'?'id':'en';var nodes=document.querySelectorAll('[data-en][data-id]');for(var i=0;i<nodes.length;i++)nodes[i].textContent=nodes[i].getAttribute('data-'+lang);}new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});apply();})();

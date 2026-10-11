@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible reader or integration problem
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/OS versions, Sela version, document format and reading mode.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction
+      description: Minimal configuration, steps, expected and actual behavior. A small non-sensitive sample is helpful. Do not include private documents, credentials or tokens.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots and errors
+      description: Include theme/viewport for visual issues and relevant console errors.

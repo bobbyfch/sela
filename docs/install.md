@@ -1,0 +1,83 @@
+# Install Sela
+
+[Choose Reader or Viewer](https://bobbyfch.github.io/sela/#products) · [Install Reader web app](pwa.md)
+
+## Quick start
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.0/dist/js/sela.min.js"></script>
+<button id="read" type="button">Read PDF</button>
+<script>
+const reader = new Sela({
+  pdfUrl: '/books/story.pdf', title: 'My story',
+  mode: 'book', // book | single | webtoon | manga
+  theme: 'auto', language: 'en', soundEnabled: false
+});
+document.querySelector('#read').addEventListener('click', () => {
+  reader.open().catch(error => console.error(error));
+});
+</script>
+```
+
+CSS loads automatically on first open. For explicit loading/CSP:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.0/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.0/dist/css/sela.app.css">
+```
+
+Pin a release tag in production.
+
+### ESM / TypeScript
+
+```sh
+npm install github:bobbyfch/sela#v0.9.0-beta.0
+```
+
+```ts
+import Sela from '@bobbyfch/sela';
+const reader = new Sela({ pdfUrl: '/story.pdf', mode: 'manga', filter: 'grayscale' });
+await reader.open();
+reader.next().setFilter('sepia');
+reader.addEventListener('pagechange', event => console.log(event.detail.page));
+reader.destroy(); // component cleanup
+```
+
+Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: serve all of `dist/` and set `assetBase: '/assets/sela/dist/'`. Keep module and worker versions matched.
+
+### Older browsers
+
+Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.0/dist/js/sela.compat.js"></script>
+<script>
+document.getElementById('read').onclick = function () {
+  var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };
+  if (window.SelaReady) SelaReady.then(start).catch(function () {
+    window.location.assign('/story.pdf');
+  }); else start();
+};
+</script>
+```
+
+Keep a normal PDF link for disabled JavaScript and load failures. Very old browsers receive the original PDF. [Verified capabilities and limits](docs/compatibility.md).
+
+## Embed or overlay
+
+Overlay is the default. Inline embeds keep the same navigation, themes, filters, search, narration, notes and fullscreen controls. Give the host a height; multiple inline readers can coexist. Keyboard shortcuts act only when focus is inside that embed, and page scrolling stays available.
+
+```html
+<div id="reading-room" style="height:640px"></div>
+<script>
+new Sela({ url: '/story.pdf', presentation: 'inline', container: '#reading-room',
+  theme: 'auto', language: 'en' }).open().catch(console.error);
+</script>
+```
+
+
+For protected endpoints and framework integration, see [integrations](integrations.md).
+
+## Responsive Viewer controls
+
+The Viewer and Reader use one responsive interface. No `ui` option is needed. Set `palette: 'forest'`, `language: 'en'` and optional publishing `metadata`. Palettes are scoped to the embedded viewer. Host `dist/js/sela.app.js`, `dist/js/sela.metadata.js` and `dist/css/sela.app.css` alongside the core when self-hosting. With `autoStyles: false`, link both core and app CSS. Existing `ui: 'classic'` values resolve to the current interface; the classic toolbar is no longer rendered.
