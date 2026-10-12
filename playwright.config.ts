@@ -16,5 +16,5 @@ export default defineConfig({
     {name:'webkit',use:{browserName:'webkit'}}
   ],
   webServer: { command: 'node --experimental-strip-types scripts/serve.ts', url: 'http://127.0.0.1:4173', reuseExistingServer: !process.env.CI },
-  reporter: [['list']],
+  reporter: process.env.GITHUB_ACTIONS ? [['github'],['list']] : [['list']],
 });
