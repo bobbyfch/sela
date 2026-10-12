@@ -1,0 +1,39 @@
+import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+
+test('dedicated room stores and deduplicates books, searches, opens, exports and undoes removal',async({page})=>{
+ await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ await expect(page.locator('#clock')).not.toHaveText('--:--');await page.locator('[data-tab=library]').click();
+ const file={name:'A quiet book.txt',mimeType:'text/plain',buffer:Buffer.from('Sela: a quiet story to keep offline.')};
+ await page.locator('#books').setInputFiles(file);await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('#books')).toBeEnabled();
+ await page.locator('#books').setInputFiles(file);await expect(page.locator('#status')).toContainText('already on shelf');await expect(page.locator('.book')).toHaveCount(1);
+ await page.locator('#search').fill('missing');await expect(page.locator('.book')).toHaveCount(0);await page.locator('#search').fill('quiet');await expect(page.locator('.book')).toHaveCount(1);
+ await page.getByRole('button',{name:'Read A quiet book',exact:true}).click();await expect(page.locator('.sela-epub article')).toContainText('quiet story');await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'Book options: A quiet book',exact:true}).click();
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:'Export original',exact:true}).click();expect(await readFile(await(await download).path(),'utf8')).toContain('quiet story');
+ await page.getByRole('button',{name:'Remove',exact:true}).click();await expect(page.locator('.book')).toHaveCount(0);await page.locator('#undo').click();await expect(page.locator('.book')).toHaveCount(1);
+ await page.reload();await expect(page.locator('.book')).toHaveCount(1);
+});
+
+test('library mobile light/dark and Indonesian preserve usable two-column shelf without overflow',async({page})=>{
+ await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();await page.locator('#books').setInputFiles([{name:'First.txt',mimeType:'text/plain',buffer:Buffer.from('First book')},{name:'Second.txt',mimeType:'text/plain',buffer:Buffer.from('Second book')}]);await expect(page.locator('.book')).toHaveCount(2);
+ for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const b=await page.locator('.cover').first().boundingBox();expect(b.width).toBeGreaterThan(90);}}
+ await page.locator('[data-tab=settings]').click();{for(const group of await page.locator('.settings-group').all())if(await group.getAttribute('open')===null)await group.locator('summary').click();}await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('#mobile-app h1')).toHaveText('Selamat datang di ruangmu.');
+ await page.screenshot({path:'test-results/library-id.png',fullPage:true});
+});
+
+test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{
+ await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.getByRole('button',{name:'Save offline',exact:true}).click();await page.locator('[data-tab=library]').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
+  await page.locator('.cover').click();await expect(page.locator('.app-page-seek')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Contents & bookmarks',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.app-reading-position output')).toHaveText('46 / 50');
+});
+
+test('concurrent inline readers keep page scrolling and scope keyboard navigation to focus',async({page})=>{
+ await page.goto('/');await page.locator('.developer-playground').evaluate(el=>(el as HTMLDialogElement).open=true);await page.evaluate(async()=>{await SelaReady;for(const id of ['one','two']){const host=document.createElement('div');host.id=id;host.style.height='520px';document.body.append(host);const r=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,language:'en',duration:0});window[id]=r;await r.open();}});
+ await expect(page.locator('.sela-inline')).toHaveCount(2);expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');await expect(page.locator('#one .sela-inline')).not.toHaveAttribute('aria-modal','true');
+ await page.locator('#one .library-reader-close').focus();await page.keyboard.press('ArrowRight');await expect(page.locator('#one .library-reader-page-form input')).toHaveValue('2');await expect(page.locator('#two .library-reader-page-form input')).toHaveValue('1');
+ await page.locator('#one .library-reader-close').click();await expect(page.locator('#one .sela-inline')).toHaveCount(0);await expect(page.locator('#two .sela-inline')).toHaveCount(1);
+});
+
+test('Pages is viewer-only and provides inline presentation',async({page})=>{
+ await page.goto('/');await page.locator('.developer-playground').evaluate(el=>(el as HTMLDialogElement).open=true);await expect(page.locator('#open-shelf')).toHaveCount(0);await page.locator('#demo-presentation').selectOption('inline');await page.locator('.launch-reader').click();await expect(page.locator('#embedded-reader .sela-inline')).toBeVisible();expect(await page.evaluate(()=>document.body.style.overflow)).not.toBe('hidden');
+});

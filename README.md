@@ -1,21 +1,23 @@
 <p align="center"><img src="logo.svg" width="88" alt="Sela open-book emblem"></p>
 <h1 align="center">Sela Reader</h1>
-<p align="center"><strong>Your books. Anywhere. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · DOCX · ODT · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
-<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases"><img alt="Release" src="https://img.shields.io/badge/version-0.9_beta-31725a?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
+<p align="center"><strong>Your personal reader. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · DOCX · ODT · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
+<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases"><img alt="Release" src="https://img.shields.io/badge/version-0.9_beta.2-31725a?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
 
 [Live playground](https://bobbyfch.github.io/sela/) · [Bahasa Indonesia](README.id.md) · [Integrations](docs/integrations.md) · [Formats](docs/formats.md) · [Browser support](docs/compatibility.md) · [Changelog](CHANGELOG.md)
 
-**Sela** means an interval: a space between things, and a moment to make room for a story. Open Sela Reader: your private offline bookshelf on desktop, tablet and phone, installable from your browser. Sela Viewer is the lightweight CDN foundation for websites. **No Bootstrap, jQuery or icon font required.** PDF.js loads only for PDFs; EPUB and CBZ use a separate lazy adapter. Optional DjVu integration uses an externally supplied decoder.
+**Sela** means an interval: a space between things, and a moment to make room for a story. Open Sela: your cozy personal reader and private offline bookshelf on desktop, tablet and phone, installable from your browser. Sela Viewer is the lightweight CDN foundation for websites. **No Bootstrap, jQuery or icon font required.** PDF.js loads only for PDFs; EPUB and CBZ use a separate lazy adapter. Optional DjVu integration uses an externally supplied decoder.
 
 🇮🇩 [Baca panduan lengkap dalam Bahasa Indonesia →](README.id.md)
 
-[![Sela live book reader](site/preview-reader.jpg)](https://bobbyfch.github.io/sela/)
+[![Sela Reader running on desktop](site/screenshots/app-desktop.webp)](https://bobbyfch.github.io/sela/)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta.2-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
 
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
-Reader and CDN Viewer use **one responsive interface**: icon controls, page navigation, bookmarks, previews and reading settings. Choose **Rimba, Lontar, Nila, Seroja or Jelaga (OLED)** palettes independently of light/dark/system appearance. Theme switching is available directly inside the viewer. Choose Novel, Manga, Study or Night reading profiles, or save your own in Reader settings. Custom profiles are included in full library backups. Screen wake lock and orientation lock are optional browser capabilities.
+Reader and CDN Viewer use **one responsive interface**: icon controls, page navigation, bookmarks, previews and reading settings. Choose **Linen (default), Oak, Walnut, Rimba, Lontar, Nila, Seroja or OLED** palettes independently of light/dark/system appearance. Theme switching is available directly inside the viewer. Choose Novel, Manga, Study or Night reading profiles, or save your own in Reader settings. Custom profiles are included in full library backups. Screen wake lock and orientation lock are optional browser capabilities.
+
+<p align="center"><img src="site/screenshots/app-mobile.webp" width="240" alt="Personal reading room with Linen material"><img src="site/screenshots/app-materials.png" width="240" alt="Walnut room and eight material previews"></p>
 
 ## Reader + Viewer
 
@@ -25,7 +27,7 @@ Reader and CDN Viewer use **one responsive interface**: icon controls, page navi
 
 [Choose / install on the public page](https://bobbyfch.github.io/sela/#products) · [Product guide](docs/products.md)
 
-> No account is needed. Explore searches external GITenberg classics and Indonesian Wikisource, or your open OPDS catalog. Read directly in Sela and save offline. ZIP backup sharing is manual; there is no automatic synchronization. [Book sources and limits](docs/library-sources.md).
+> No account is needed. Explore offers 22 source choices and your named OPDS catalogs. Read a temporary preview, then download to keep a copy. ZIP sharing and optional WebDAV sync are manual. [Book sources and limits](docs/library-sources.md).
 
 ## ✨ Why Sela?
 
@@ -43,13 +45,13 @@ Reader and CDN Viewer use **one responsive interface**: icon controls, page navi
 
 | Module | Gzip size | Loaded when |
 | --- | ---: | --- |
-| Main entry | ~27.2 KiB | Main script requested |
-| Scoped CSS | ~3.4 KiB | First open |
+| Main entry | ~27.8 KiB | Main script requested |
+| Scoped CSS | ~3.5 KiB | First open |
 | EPUB / CBZ adapter (includes fflate) | ~12.4 KiB | EPUB or CBZ selected |
-| Reading tools: contents, search, notes, TTS | ~9.9 KiB | Tools first opened |
-| Plain text / Markdown / HTML / FB2 | ~4.1 KiB | Text format selected |
-| DOCX / ODT text conversion | ~3.8 KiB | Office format selected; supplements text adapter |
-| Responsive reader UI | ~10.1 KiB JS + ~3.1 KiB CSS | Reader opened |
+| Reading tools: contents, search, notes, TTS | ~10.0 KiB | Tools first opened |
+| Plain text / Markdown / HTML / FB2 | ~4.3 KiB | Text format selected |
+| DOCX / ODT text conversion | ~4.4 KiB | Office format selected; supplements text adapter |
+| Responsive reader UI | ~15.7 KiB JS + ~7.6 KiB CSS | Reader opened |
 | Profile backup helpers | ~2.4 KiB | Library backup; not part of the main entry |
 | Publishing metadata | ~1.4 KiB | Metadata requested (app library imports it) |
 | DjVu adapter | ~1.4 KiB | DjVu selected; external decoder also needed |
@@ -59,7 +61,7 @@ The interface is lightweight; total download depends on the document and decoder
 
 ## Personal library
 
-Use grid, compact list or a cover-only wooden shelf. Sort and filters live in one panel. Long-press a cover to select books; its menu offers pin, metadata, originals and collection membership. Create, rename and delete collections, or add/remove/move selected books. Books can belong to several collections; deleting a collection keeps its books and reading data. Full ZIP backups include empty collections as well as memberships.
+Use grid, compact list or a cover-only wooden shelf. Sort and filters live in one accessible bottom sheet. Shelves load 80 books per batch; search covers the complete library. Long-press a cover to select books; its menu offers pin, metadata, originals and collection membership. Create, rename and delete collections, or add/remove/move selected books. Books can belong to several collections; deleting a collection keeps its books and reading data. Full ZIP backups include empty collections as well as memberships.
 
 Document-text actions appear when text is selected: save a quote to page notes, highlight, listen, create a quote card or clear selection. These use the extractable transcript; scan OCR is not included.
 
@@ -130,11 +132,11 @@ Write page/chapter notes; export/import a versioned JSON file with notes and per
 
 ## 📚 Sela Reader — your private reading room
 
-A local library with Home, Shelf, Explore and Settings, collections, favorites, sorting, grid/list views and ZIP backup. Open the web app on desktop, tablet or phone; install through the browser menu when supported. Touch devices get bottom navigation; wide screens get a side rail. Theme, language and backup live in Settings. You can bookmark the app or set its URL as your browser home page; no browser extension is required.
+A local library with Home, Shelf, Explore and Settings, collections, favorites, sorting, grid/list/bookshelf views and ZIP backup. Home includes a reading calendar, gentle water reminders, timer, quotes, companion characters, weather and an optional custom backdrop softened for legibility. The install action opens a native prompt when available or browser/OS-specific steps, and hides after a detected installation. Touch devices get bottom navigation; wide screens get a side rail. Ten language choices include country flags; the public page uses a supported IP-country mapping on first visit and defaults unmapped countries to English. You can always bookmark Sela; no browser extension is required.
 
 ## Language and privacy
 
-Pages uses a first-visit IP country lookup through [country.is](https://country.is/): Indonesia defaults to Indonesian, other countries to English. Saved manual choice wins; a 2.5-second failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply `en`/`id` from your host.
+The public page uses [country.is](https://country.is/) on first visit to select a supported language (for example, Indonesia → Indonesian, Japan → Japanese, Spain → Spanish). Unmapped countries default to English; a saved manual choice wins, and a 2.5-second lookup failure falls back to browser language. `?geo=off` disables the lookup. No document, precise device location or browser history is sent. The embed library makes no IP lookup; use `language: 'auto'` for browser language or supply a supported locale from your host.
 
 ## Quick start
 
@@ -150,7 +152,7 @@ Manga preserves PDF page numbers: `next()` increases the page number; **ArrowLef
 
 Filters: `none`, `grayscale`, `sepia`, `contrast`, `warm`, `cool`. Grayscale avoids relying on hue; warm/cool presets are personal adjustments, not medical color-blindness correction. Filters affect canvases, never the source PDF/download.
 
-Events: `ready`, `pagechange`, `pageerror`, `close`, `error`; payloads are in `event.detail`. Options include `presentation`, `container`, `format`, `language`, `pageGap`, `paperTexture`, `wheelZoom`, `startPage`, `id`, `storagePrefix`, `maxScale`, `maxCanvasPixels`, `duration`, `httpHeaders`, `withCredentials`, `password`, `data`, `assetBase`, `pdfBuild`, `zIndex`. Current zoom is available as `reader.zoom`. [Full declarations](src/index.d.ts).
+Events: `ready`, `pagechange`, `pageerror`, `close`, `error`; payloads are in `event.detail`. Options include `presentation`, `container`, `format`, `language`, `pageGap`, `paperTexture`, `wheelZoom`, `startPage`, `id`, `storagePrefix`, `maxScale`, `maxCanvasPixels`, `duration`, `httpHeaders`, `withCredentials`, `password`, `data`, `assetBase`, `pdfBuild`, `zIndex`. Current zoom is available as `reader.zoom`. [Full declarations](dist/types/index.d.ts).
 
 ## Privacy & accessibility
 
@@ -158,10 +160,13 @@ Selected demo documents stay in the browser; no upload or analytics. Bookmarks/p
 
 ## Development
 
-Sela is currently **beta**. The release version comes from `package.json`; build output supplies the page headers, runtime and CDN examples. [Development and versioning](docs/development.md).
+Sela is currently **beta.2** (`0.9.0-beta.2`), not a stable release. The release version comes from `package.json`; build output supplies the page headers, runtime and CDN examples. [Development and versioning](docs/development.md).
+
+Viewer, app, workers, tooling and tests are authored in TypeScript; Vite builds the SDK/React app shell and Astro generates public/reader pages from TSX. Browser JavaScript and SDK declarations are generated; existing CDN URLs stay the same. Use Node.js 22.18+ for development. [Source layout and typing limits](docs/typescript-migration.md), [Next Generation delivery](docs/next-generation-delivery.md).
 
 ```sh
 npm ci
+npm run typecheck
 npm run build
 npm test
 npm run test:types
@@ -181,14 +186,28 @@ If Sela makes your project easier to read, a ⭐ helps others find it. [Contribu
 
 Sela prints a one-time console credit when opened and includes a small source link in the viewer. These are credits, not a promise of search ranking. [Portfolio](https://bobbyfajarc.github.io/) · [Instagram]([private social link removed]) · [LinkedIn]([private social link removed]) · [GitHub](https://github.com/bobbyfch).
 
-A built-in music player is a future content feature. Optional host-provided audio narration adapters do not include a service or API key.
+Reader settings include optional local audiobook controls, embedded EPUB SMIL narration and soft-rain ambience with a sleep timer. Playback and codecs depend on the device; no streaming music service is bundled.
 
-## Cloud backup
+## Personal backup
 
-Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to choose an installed app using your device’s share sheet. Restore imports the ZIP without replacing existing books or newer notes. No account setup is required.
+Settings → Download full backup exports books and reading data to ZIP. Share backup prepares the archive; tap again to choose an installed app using your device’s share sheet. Restore imports the ZIP without replacing existing books or newer notes. Optional HTTPS WebDAV pull/push uses conditional writes; explicit remote review merges progress/bookmarks and preserves conflicting notes as notebook copies. Credentials stay in the session. A CORS-enabled server is required.
 
 ## 🌐 Beyond your shelf
 
-Open **Explore** to search GITenberg world classics or Indonesian Wikisource. Results have pagination, generated covers and **Read / Save offline** actions; acquired books open inside Sela. An open HTTPS/CORS OPDS catalog can be added without an account. Eight selected classics remain available as a fallback. Content downloads only when requested; editions, API limits and copyright vary by source and country. [Sources and limits](docs/library-sources.md).
+Open **Explore** for GITenberg, Gutendex, multilingual Wikisource, Open Library, DOAB, OpenStax, Standard Ebooks and named OPDS profiles. Results use cover shelves, pagination, detail sheets and **Read / download** actions. Read is an ephemeral preview; download keeps the validated edition. Metadata-only providers link to the source. Eight selected classics remain available as a fallback. Content downloads only when requested; editions, API limits and copyright vary by source and country. [Sources and limits](docs/library-sources.md).
 
-**Home** includes shelf counts, cover-based continue-reading cards and a 15/25/45-minute focus timer. Optional weather sits beside the clock: choose a city manually, with no location permission or API key. Results are cached for 30 minutes. [Weather privacy and hosting](docs/weather.md).
+**Home** prioritizes continue reading, your ordered reading desk, a weather-aware cat/hamster/plant scene and a book-linked 15/25/45-minute session. Shelf counts live in Settings. Optional weather sits beside the clock: choose a city manually, with no location permission or API key. Results are cached for 30 minutes. [Weather privacy and hosting](docs/weather.md).
+
+## Modern application and SDK extensions
+
+React 19 owns the app shell, Vite 8 builds the app and independent viewer, Astro 7 generates the public site, and TypeScript 7 checks their contracts. Native document controllers keep CDN/PHP hosts free of a React or Node runtime requirement. Material textures and vector icons are local assets.
+
+The optional `@bobbyfch/sela/host` entry provides disposable toolbar/selection commands, source loaders, custom host renderer adapters, annotation storage, dictionary/translation providers and a privacy-safe debug panel. No provider is contacted without host configuration. See [host contracts](docs/host-extensions.md), [framework runtime checks](docs/framework-validation.md), and [current validation](docs/modern-stack-validation.md).
+
+Regenerate product screenshots with `npm run serve` and `npm run screenshots`. Captures use the actual application in a disposable browser profile; device frames are CSS on the public page.
+
+## Make it yours
+
+Name your reading room, choose a companion, quiet the scene and hide optional Home sections. My room offers a cross-book notebook with Markdown export, reading journal, smart shelves, travel readiness, library care and collection-card PNG previews. Book details hold messages for later, impressions, favorite passages, ribbon labels and volume order. Connections adds local full-library text search, opt-in dictionary/translation and format-group reading presets.
+
+The public page, app and fresh product screenshots share a Linen reading-room scene. Original files remain local; scans need external OCR. Online provider availability varies, and physical mobile playback/storage are not guaranteed. [Complete delivery and validation boundaries](docs/personal-reader-delivery.md).

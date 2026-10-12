@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true
+  },
+  "include": [
+    "ui/**/*.ts",
+    "ui/**/*.tsx",
+    "app/mobile/**/*.tsx",
+    "src/host-globals.d.ts",
+    "src/platform.d.ts"
+  ]
+}

@@ -1,1 +1,1 @@
-// Sela Reader is available on every supported device; no OS installation gates.
+// Generated from app/site/products.ts by npm run build. Do not edit.

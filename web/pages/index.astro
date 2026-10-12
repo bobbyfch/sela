@@ -1,0 +1,12 @@
+---
+import { PublicHead, PublicBody } from '../../ui/pages/public.tsx';
+// No client directive: Astro renders this component entirely at build time.
+---
+<!doctype html>
+<html lang="en" data-theme="auto">
+  <head>
+    <PublicHead />
+    <link is:inline rel="stylesheet" href="site/demo.css?v={{SELA_VERSION}}" />
+  </head>
+  <body><PublicBody /></body>
+</html>

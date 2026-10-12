@@ -1,0 +1,93 @@
+/* Shared application materials. Document render surfaces deliberately do not use glass. */
+:root {
+  --sela-radius-control: 16px;
+  --sela-radius-capsule: 32px;
+  --sela-space-control: 6px;
+  --sela-motion-fast: 160ms;
+  --sela-motion-spring: 360ms;
+  --sela-ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --sela-glass-blur: 18px;
+  --sela-glass-surface: color-mix(in srgb, var(--panel) 86%, transparent);
+  --sela-glass-border: color-mix(in srgb, var(--fg) 12%, transparent);
+  --sela-glass-highlight: color-mix(in srgb, var(--panel) 72%, transparent);
+  --sela-glass-shadow: 0 8px 28px #00000016, 0 1px 3px #0000000c;
+  --sela-control-ring: color-mix(in srgb, var(--accent) 70%, var(--fg));
+}
+.glass-navigation {
+  isolation: isolate;
+  background: var(--panel);
+  border: 1px solid var(--sela-glass-border);
+  border-radius: var(--sela-radius-capsule);
+  box-shadow:
+    var(--sela-glass-shadow),
+    inset 0 1px 0 var(--sela-glass-highlight);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass-navigation {
+    background: var(--sela-glass-surface);
+    backdrop-filter: blur(var(--sela-glass-blur)) saturate(1.2);
+  }
+}
+.glass-navigation button {
+  position: relative;
+  z-index: 1;
+  border-radius: 26px;
+  transition:
+    color var(--sela-motion-fast),
+    transform var(--sela-motion-fast) var(--sela-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.glass-navigation button:active {
+  transform: scale(0.94);
+}
+.glass-navigation button:focus-visible {
+  outline: 2px solid var(--sela-control-ring);
+  outline-offset: -3px;
+}
+.glass-navigation-indicator {
+  position: absolute;
+  z-index: 0;
+  left: 6px;
+  top: 6px;
+  width: calc((100% - 12px) / var(--nav-count));
+  height: calc(100% - 12px);
+  border-radius: 26px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 0 1px 0 var(--sela-glass-highlight);
+  transform: translateX(calc(var(--nav-index, 0) * 100%));
+  transition: transform var(--sela-motion-spring) var(--sela-ease);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sela-motion-fast: 0ms;
+    --sela-motion-spring: 0ms;
+  }
+  .glass-navigation button:active {
+    transform: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .glass-navigation {
+    background: var(--panel);
+    backdrop-filter: none;
+    border-color: var(--fg);
+  }
+  .glass-navigation-indicator {
+    outline: 1px solid var(--accent);
+  }
+}
+.cover-transition {
+  contain: layout paint;
+  box-sizing: border-box;
+  box-shadow: 0 18px 50px #0003;
+  transform-origin: center;
+  overflow: hidden;
+}
+@media (min-width: 1000px) {
+  .glass-navigation-indicator {
+    width: calc(100% - 12px);
+    height: calc((100% - 12px) / var(--nav-count));
+    transform: translateY(calc(var(--nav-index, 0) * 100%));
+  }
+}

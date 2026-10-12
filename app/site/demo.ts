@@ -1,0 +1,78 @@
+import {localeBase,localeForCountry,normalizeLocale,translate} from '../../src/i18n.ts';
+(function () {
+'use strict';
+var viewer, selectedUrl;
+var status = document.querySelector('#status');
+var theme = document.querySelector('#theme');
+var language = document.querySelector('#language');
+var translations = {
+eyebrow:'SATU READER. BERBAGAI STACK.',headline:'Lebih banyak membaca.<br>Lebih sedikit setup.',intro:'Reader open source untuk dokumen, buku, dan komik.<br>Pasang di website, atau simpan rak offline pribadi.',try:'Coba pembacanya ↓',original:'NOVELET INDONESIA ORISINAL',storySub:'50 halaman · 12 bab · ingatan yang menyisakan sesuatu',demoEyebrow:'NYAMANKAN DIRIMU',demoHeading:'Empat cara membaca.',lazy:'Mesin PDF dimuat hanya saat membaca.',bookTitle:'Balik halamannya.',bookText:'Lipatan kertas, bayangan lembut, dan dua halaman seperti buku.',webtoonTitle:'Ikuti ceritanya.',webtoonText:'Baca vertikal. Halaman terdekat dirender saat kamu menggulir.',singleTitle:'Satu halaman dulu.',singleText:'Satu halaman, lebih fokus. Nyaman juga di layar kecil.',mangaTitle:'Mulai dari kanan.',mangaText:'Balik halaman dan tombol panah kanan ke kiri. Urutan PDF tetap.',read:'Mulai membaca ↗',upload:'Coba dengan file kamu.',privacy:'Buku tetap di browsermu. Tanpa unggahan atau akun.',download:'Unduh PDF Yang Tidak Ikut Pulang ↗',dropHint:'Tarik PDF, EPUB, komik, atau dokumen teks ke sini — atau pilih file.',browse:'Pilih file ↗',clear:'Hapus pilihan',playEyebrow:'ATUR SESUKAMU',playTitle:'Konfigurasi langsung.',launch:'Buka reader ↗',presentationLabel:'Penempatan',documentLabel:'Dokumen',modeLabel:'Mode baca',filterLabel:'Filter baca',gapLabel:'Jarak halaman vertikal',motionLabel:'Durasi lipatan',zoomLabel:'Zoom / ukuran teks',paperLabel:'Tekstur kertas',wheelLabel:'Zoom dengan roda mouse biasa',soundLabel:'Suara halaman',playNote:'Ctrl + roda mouse atau pinch trackpad untuk zoom. Gulir biasa tetap nyaman. Tekan ? di reader untuk shortcut. EPUB memakai navigasi bab.',formatNote:'PDF, EPUB, komik dan teks punya alat baca opsional: daftar isi, pencarian, narasi dan catatan. FB2 hanya teks; DjVu memakai decoder GPL-2.0 eksternal.',installTitle:'Pasang viewer di website.',installText:'CI3, Laravel, Vue, React, Svelte, Astro, atau HTML biasa. Bootstrap dan Tailwind boleh dipakai, keduanya tidak wajib.',docs:'Panduan pemasangan & integrasi ↗',filtersTitle:'Ruang baca lebih nyaman',filtersText:'Warna asli, hitam putih, sepia, kontras tinggi, serta warna hangat dan dingin. Warna netral bisa membantu saat warna sulit dibedakan; kebutuhan tiap orang berbeda.',compatTitle:'Tetap ada jalan membaca',compatText:'Browser modern mendapat viewer lengkap. Browser lama membuka PDF asli melalui compatibility entry. Dukungan Windows, macOS, Linux, Android, dan iOS mengikuti kemampuan browser.',openTitle:'Open source, asal jelas',openText:'Reader MIT, mesin halaman PDFlipbook, dan PDF.js Apache-2.0 yang dimuat saat dibutuhkan. Navigasi keyboard, progres tersimpan, dan bookmark tersedia.',themeLabel:'Tampilan',regionNote:'Bahasa kunjungan pertama memakai negara IP dari country.is; pilihan tersimpan diutamakan. Dokumen tidak dikirim. Tambahkan ?geo=off untuk menonaktifkan.'};
+
+Object.assign(translations,{eyebrow:'RUANG BACA PRIBADIMU',headline:'Buku-bukumu.<br>Selalu dekat.',intro:'Baca buku, komik dan dokumen dengan nyaman. Simpan rak offline dan lanjutkan dari halaman terakhir.'});
+var nodes = document.querySelectorAll('[data-i18n]');
+var original = [];
+for (var i=0;i<nodes.length;i++) original.push(nodes[i].innerHTML);
+function save(key,value){try{localStorage.setItem('sela-site:'+key,value);}catch(e){}}
+function read(key,fallback){try{return localStorage.getItem('sela-site:'+key)||fallback;}catch(e){return fallback;}}
+var sharedLanguage='';try{sharedLanguage=localStorage.getItem('sela:language')||'';}catch(e){}
+var languageChosen=!!sharedLanguage||!!read('language','');
+function localize(persist?: any){
+ var locale=(language as HTMLSelectElement).value,base=localeBase(locale),id=base==='id';document.documentElement.lang=locale;
+ for(var i=0;i<nodes.length;i++){var key=nodes[i].getAttribute('data-i18n'),indonesian=translations[key]||original[i];nodes[i].innerHTML=id?indonesian:base==='en'?original[i]:translate(original[i],indonesian,locale);}
+ Array.prototype.forEach.call(document.querySelectorAll('[data-theme-choice]'),function(button){var names={auto:translate('System theme','Tema sistem',locale),light:translate('Light theme','Tema terang',locale),dark:translate('Dark theme','Tema gelap',locale)};button.setAttribute('aria-label',names[button.dataset.themeChoice]);button.title=names[button.dataset.themeChoice];});
+ if(persist!==false){languageChosen=true;save('language',locale);try{localStorage.setItem('sela:language',locale);}catch(e){}}
+}
+function applyTheme(){document.documentElement.setAttribute('data-theme',(theme as HTMLInputElement).value);save('theme',(theme as HTMLInputElement).value);Array.prototype.forEach.call(document.querySelectorAll('[data-theme-choice]'),function(button){button.setAttribute('aria-pressed',String(button.dataset.themeChoice===(theme as HTMLInputElement).value));});if(viewer&&viewer.overlay)viewer.overlay.setAttribute('data-sela-theme',(theme as HTMLInputElement).value);}
+(theme as HTMLInputElement).value=/^(auto|light|dark)$/.test(read('theme','auto'))?read('theme','auto'):'auto';
+(language as HTMLSelectElement).value=normalizeLocale(sharedLanguage||read('language',navigator.language));localize(false);applyTheme();
+if(!languageChosen&&location.protocol==='https:'&&new URLSearchParams(location.search).get('geo')!=='off'&&window.fetch&&window.AbortController){
+ var regionAbort=new AbortController(),regionTimeout=setTimeout(function(){regionAbort.abort();},2500);
+ fetch('https://api.country.is/',{signal:regionAbort.signal,credentials:'omit',referrerPolicy:'no-referrer'}).then(function(response){if(!response.ok)throw new Error('Region unavailable');return response.json();}).then(function(data){if(!languageChosen&&/^[A-Z]{2}$/.test(data.country)){(language as HTMLSelectElement).value=localeForCountry(data.country);localize(false);}}).catch(function(){}).finally(function(){clearTimeout(regionTimeout);});
+}
+Array.prototype.forEach.call(document.querySelectorAll('[data-theme-choice]'),function(button){button.addEventListener('click',function(){(theme as HTMLInputElement).value=button.dataset.themeChoice;applyTheme();});});theme.addEventListener('change',applyTheme);language.addEventListener('change',function(){localize();});
+var selectedFile, generation=0;
+var input=document.querySelector('#pdf-file'),drop=document.querySelector('#drop-zone');
+var settings=document.querySelector('#playground');
+var samples={pdf:'example/yang-tidak-ikut-pulang.pdf',epub:'example/yang-tidak-ikut-pulang.epub',cbz:'example/yang-tidak-ikut-pulang.cbz',djvu:'example/green-valley.djvu',txt:'example/sela.txt',md:'example/sela.md',html:'example/sela.html',fb2:'example/sela.fb2'};
+function options(): Record<string, any>{return {ui:'app',presentation:(document.querySelector('#demo-presentation') as HTMLInputElement).value,mode:(document.querySelector('#demo-mode') as HTMLInputElement).value,filter:(document.querySelector('#demo-filter') as HTMLInputElement).value,pageGap:+(document.querySelector('#demo-gap') as HTMLInputElement).value,duration:+(document.querySelector('#demo-duration') as HTMLInputElement).value,paperTexture:(document.querySelector('#demo-paper') as HTMLInputElement).checked,wheelZoom:(document.querySelector('#demo-wheel') as HTMLInputElement).checked,soundEnabled:(document.querySelector('#demo-sound') as HTMLInputElement).checked};}
+function showCode(){document.querySelector('#config-code').textContent='new Sela('+JSON.stringify(options(),null,2)+');';}
+function selectFile(file){
+ if(file&&(!/\.(pdf|epub|cbz|djvu|djv|txt|md|html|htm|fb2|docx|odt)$/i.test(file.name)||file.size>64*1024*1024)){status.textContent=localeBase((language as HTMLSelectElement).value)==='id'?'Pilih format yang didukung, maksimal 64 MiB.':'Choose a supported document up to 64 MiB.';return;}
+ if(viewer)viewer.close();if(selectedUrl)URL.revokeObjectURL(selectedUrl);selectedFile=file;selectedUrl=file?URL.createObjectURL(file):null;
+ (document.querySelector('.file-selection') as HTMLElement).hidden=!file;document.querySelector('#file-name').textContent=file?file.name+' · '+(file.size/1024/1024).toFixed(2)+' MiB':'';
+ status.textContent='';showCode();
+}
+input.addEventListener('change',function(){selectFile((input as HTMLInputElement).files[0]);});
+document.querySelector('#clear-file').addEventListener('click',function(){(input as HTMLInputElement).value='';selectFile(null);});
+if(!window.URL||!URL.createObjectURL)(input as HTMLInputElement).disabled=true;
+['dragenter','dragover'].forEach(function(name){drop.addEventListener(name,function(e){e.preventDefault();drop.classList.add('is-dragging');});});
+['dragleave','drop'].forEach(function(name){drop.addEventListener(name,function(e){e.preventDefault();drop.classList.remove('is-dragging');if(name==='drop'&&window.URL&&URL.createObjectURL)selectFile((e as DragEvent).dataTransfer.files[0]);});});
+function applySettings(event){
+ showCode();if(!viewer||!viewer.overlay)return;var id=event.target.id;
+ if(id==='demo-mode'){var demoPanel=viewer.overlay.querySelector('.sela-demo-settings');if(demoPanel)demoPanel.open=false;viewer.setMode((document.querySelector('#demo-mode') as HTMLInputElement).value).catch(function(error){document.querySelector('#status').textContent=error.message;(document.querySelector('#demo-mode') as HTMLInputElement).value=viewer.options.mode;showCode();});return;}
+ if(id==='sample'||id==='demo-mode'||id==='demo-presentation'){var page=viewer.currentPage();if(id==='sample'){(input as HTMLInputElement).value='';selectFile(null);page=1;}open(document.querySelector('.launch-reader'),id==='sample',page);return;}
+ var config=options();viewer.setFilter(config.filter);viewer.setZoom(+(document.querySelector('#demo-zoom') as HTMLInputElement).value);
+ viewer.overlay.dataset.paper=String(config.paperTexture);viewer.book.opts.wheelZoom=config.wheelZoom;viewer.book.opts.duration=matchMedia('(prefers-reduced-motion:reduce)').matches?0:config.duration;
+ viewer.book.container.style.setProperty('--sela-page-gap',config.pageGap+'px');
+ if(id==='demo-sound'){var state=viewer._reader.getState();if(state.sound!==config.soundEnabled)state.controls.sound.click();}
+}
+settings.addEventListener('change',applySettings);settings.addEventListener('input',function(event){if((event.target as Element).id==='demo-zoom')applySettings(event);});
+function open(trigger,forceSample?: any,startPage?: any){
+ var seq=++generation;if(viewer)viewer.close();var sample=(document.querySelector('#sample') as HTMLInputElement).value;
+ var url=!forceSample&&selectedUrl?selectedUrl:samples[sample];
+  var format=!forceSample&&selectedFile?selectedFile.name.split('.').pop().toLowerCase().replace(/^djv$/,'djvu').replace(/^htm$/,'html'):sample;
+ if(window.Sela&&Sela.supported===false){window.location.assign(url);return;}
+ var run=function(){if(seq!==generation)return;
+ var config=options();config.pdfUrl=url;config.format=format;config.language=localeBase((language as HTMLSelectElement).value);config.theme=(theme as HTMLInputElement).value;config.trigger=trigger;config.startPage=startPage||1;
+ config.title=!forceSample&&selectedFile?selectedFile.name:(format==='pdf'||format==='epub'?'Yang Tidak Ikut Pulang':format==='cbz'?'Yang Tidak Ikut Pulang · illustration gallery':'Green valley');
+ if(format==='djvu'){config.djvujsSrc='https://djvu.js.org/assets/dist/djvu.js';config.djvuIntegrity='sha384-2L4uchU1kPKhHq+pfHZRZC4Aa0iSaT8GV8fX1oUuvmIJJaBguw2+zwG1sheMRee4';}
+ var embed=document.querySelector('#embedded-reader');(embed as HTMLElement).hidden=config.presentation!=='inline';if(config.presentation==='inline')config.container=embed;if(!selectedFile&&['pdf','epub'].includes(format))config.metadata={title:'Yang Tidak Ikut Pulang',author:'Bobby Fajar Christian',year:'2026',language:'id',description:'A return to an old house, a recording that should not exist, and the people left between memory and distance.'};config.language=localeBase((language as HTMLSelectElement).value)==='id'?'id':'en';viewer=new Sela(config);var current=viewer;void import('../../dist/js/sela.host.js').then(module=>{if(current!==viewer)return;const box=document.querySelector('#reader-debug');if(box){box.replaceChildren();module.mountReaderDebug(current,box);}});status.textContent=localeBase((language as HTMLSelectElement).value)==='id'?'Memuat reader…':'Loading reader…';
+ current.open().then(function(){if(seq!==generation)return;current.setZoom(+(document.querySelector('#demo-zoom') as HTMLInputElement).value);if(config.presentation==='inline'){(document.querySelector('.developer-playground') as HTMLDialogElement).open=true;requestAnimationFrame(function(){embed.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});});}status.textContent=current.totalPages+' '+(format==='epub'?'chapters':localeBase((language as HTMLSelectElement).value)==='id'?'halaman':'pages')+' · '+config.mode;}).catch(function(error){if(error.name!=='AbortError'&&seq===generation)status.textContent=error.message;});
+ };
+ if(window.SelaReady)SelaReady.then(run).catch(function(error){status.textContent=error.message;});else run();
+}
+var buttons=document.querySelectorAll('[data-mode]');for(var j=0;j<buttons.length;j++)(function(button){button.addEventListener('click',function(){(document.querySelector('#demo-mode') as HTMLInputElement).value=(button as HTMLElement).dataset.mode;showCode();open(button);});})(buttons[j]);
+document.querySelectorAll('[data-story-open]').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();(document.querySelector('#sample') as HTMLInputElement).value='pdf';(document.querySelector('#demo-mode') as HTMLInputElement).value=SelaPlatform.mobile?'single':'book';open(event.currentTarget,true);});});
+settings.addEventListener('submit',function(event){event.preventDefault();open(document.querySelector('.launch-reader'));});showCode();
+window.addEventListener('pagehide',function(){if(viewer)viewer.destroy();if(selectedUrl)URL.revokeObjectURL(selectedUrl);});
+})();

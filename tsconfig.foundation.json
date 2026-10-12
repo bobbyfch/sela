@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "include": [
+    "src/bytes.ts",
+    "src/public-api.ts",
+    "src/events.ts",
+    "app/library/glass-navigation.ts",
+    "app/library/cover-transition.ts",
+    "src/host-integration.ts",
+    "app/library/controls.ts",
+    "app/library/reader-history.ts",
+    "src/gestures.ts",
+    "src/appearance.ts",
+    "app/library/models.ts",
+    "app/library/network.ts",
+    "src/archive-codec.ts",
+    "src/archive-client.ts",
+    "src/preferences.ts",
+    "src/book-metadata.ts",
+    "src/pdf-loader.ts",
+    "src/archive-worker.ts",
+    "astro.config.ts",
+    "vite.config.ts"
+  ]
+}

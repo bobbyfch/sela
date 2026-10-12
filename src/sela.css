@@ -166,7 +166,14 @@
 .sela-epub{overflow:auto;padding:28px;overscroll-behavior:contain;background:var(--sela-bg);touch-action:pan-y}
 .sela-epub-chapter{max-width:740px;margin:0 auto 36px;filter:var(--sela-page-filter,brightness(1)) brightness(var(--sela-brightness,1))}
 .sela-epub-chapter[hidden]{display:none}
-.library-reader-overlay[data-paper=true] .fb-face::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(17deg,#785e3a05 0 1px,transparent 1px 4px),repeating-linear-gradient(107deg,#7d633006 0 1px,transparent 1px 5px);mix-blend-mode:multiply}
+.library-reader-overlay[data-page-surface]:not([data-page-surface=smooth]) .fb-face::after{content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply}
+.library-reader-overlay[data-page-surface=rough] .fb-face::after,.library-reader-overlay[data-page-surface=rough] .sela-epub-chapter{background-image:repeating-linear-gradient(11deg,transparent 0 19px,#806e5030 19px 19.6px,transparent 20px 33px),repeating-linear-gradient(102deg,#806e5010 0 1px,transparent 1px 15px)}
+.library-reader-overlay[data-page-surface=vellum] .fb-face::after,.library-reader-overlay[data-page-surface=vellum] .sela-epub-chapter{background-image:linear-gradient(118deg,#d5bb8a20,transparent 39%,#d8c8a412 74%,transparent)}
+.library-reader-overlay[data-page-surface=lined] .fb-face::after,.library-reader-overlay[data-page-surface=lined] .sela-epub-chapter{background-image:repeating-linear-gradient(to bottom,transparent 0 27px,#718a7540 27px 27.7px)}
+.library-reader-overlay[data-page-surface=laid] .fb-face::after,.library-reader-overlay[data-page-surface=laid] .sela-epub-chapter{background-image:repeating-linear-gradient(17deg,#785e3a10 0 1px,transparent 1px 5px),repeating-linear-gradient(107deg,#7d633012 0 1px,transparent 1px 7px)}
+.library-reader-overlay[data-page-surface=oak] .fb-face::after,.library-reader-overlay[data-page-surface=oak] .sela-epub-chapter{background-image:linear-gradient(94deg,#98714312 0 18%,transparent 19% 48%,#98714310 49% 52%,transparent 53% 82%,#98714312 83%),repeating-linear-gradient(2deg,transparent 0 42px,#98714313 42px 43px)}
+.library-reader-overlay[data-page-surface=walnut] .fb-face::after,.library-reader-overlay[data-page-surface=walnut] .sela-epub-chapter{background-image:repeating-linear-gradient(3deg,transparent 0 33px,#51392618 33px 34px),linear-gradient(91deg,#5139260c,transparent 35% 70%,#5139260c)}
+.library-reader-overlay[data-page-surface=woven] .fb-face::after,.library-reader-overlay[data-page-surface=woven] .sela-epub-chapter{background-image:repeating-linear-gradient(0deg,transparent 0 13px,#788b7020 13px 14px),repeating-linear-gradient(90deg,transparent 0 13px,#788b7019 13px 14px)}
 
 .sela-notice:empty{display:none}.sela-notice{margin:0;padding:8px 16px;font-size:12px;background:var(--sela-panel)}
 .sela-tools{width:min(420px,45vw);flex:none;min-width:0;overflow:auto;overscroll-behavior:contain;padding:0 20px 24px;border-inline-start:1px solid var(--sela-border);background:var(--sela-panel);font-size:14px;line-height:1.6}

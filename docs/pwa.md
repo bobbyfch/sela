@@ -1,11 +1,21 @@
 # Install Sela Reader
 
 1. Open [Sela Reader](https://bobbyfch.github.io/sela/mobile/) in your browser on desktop, tablet or phone. The legacy `/mobile/` URL remains supported on all devices.
-2. Use browser **Install app** / **Add to Home Screen** when offered. On iPhone/iPad use Safari → Share → Add to Home Screen. Desktop installation depends on the browser; bookmarking always works.
+2. On Home, choose **Install Sela**. Chromium browsers show their native install prompt when available; otherwise Sela gives instructions for the detected browser and operating system. The browser menu is always a fallback.
 3. Add local books. Open each format once online to cache its decoder; imported books live in this browser’s IndexedDB.
 
 Reader has Home, Shelf, Explore and Settings. Wide screens use a side rail, touch-sized phones a bottom bar. Theme and language are in Settings.
-After a useful import, supported browsers can offer an install invitation. Dismissing it pauses invitations for seven days; installation remains available in Settings. Sela never pretends that unsupported browsers expose a native install prompt.
+After a useful import, browsers with a native prompt can offer an install invitation. Dismissing it pauses invitations for seven days; installation remains available on Home. Sela detects standalone launches and installations made through its own prompt. Browsers do not expose a universal way to ask whether the same site was installed in a different browser or profile, so an installation made elsewhere may still show the guide.
+
+## Browser and device instructions
+
+- **Chrome, Edge, Opera and Samsung Internet:** when eligible, use Sela’s **Install Sela** button to open the browser prompt. The browser menu also offers **Install app** or **Add to Home Screen**. On Android, Chrome and Samsung Internet can create a full app; other browsers may create a browser shortcut instead.
+- **Safari on iPhone or iPad:** use **Share → Add to Home Screen** and enable **Open as Web App** when shown. Safari does not provide the Chromium `beforeinstallprompt` event, so Sela opens these instructions instead of promising a native popup.
+- **Safari on macOS:** choose **File → Add to Dock**. Chrome and Edge for macOS use their browser menu’s install command.
+- **Firefox on Windows:** use the Web Apps button in the address bar (Firefox 143 or newer; Firefox from the Microsoft Store requires version 150 or newer). Firefox on macOS and Linux does not currently provide this Web Apps installation flow.
+- **Firefox on Android:** use the browser menu’s **Add to Home Screen** command for a Firefox shortcut. Other unsupported combinations can keep Sela as a normal bookmark.
+
+The `beforeinstallprompt` interface is non-standard and limited to Chromium-based browsers. A successful installation hides the button when the browser reports `appinstalled`, the app is launched standalone, or Sela has recorded an accepted install prompt on that device/profile. A browser cannot reliably inspect unrelated app installations across browsers or profiles. [MDN install-prompt limits](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/How_to/Trigger_install_prompt) · [Apple iPhone steps](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/27/ios/27) · [Firefox Windows Web Apps](https://support.mozilla.org/en-US/kb/web-apps-firefox-windows).
 
 ## Updates and incoming files
 

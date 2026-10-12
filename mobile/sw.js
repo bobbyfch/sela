@@ -1,11 +1,82 @@
-/* Only known application assets enter CacheStorage. Book bytes belong to IndexedDB. */
-const CACHE='sela-bookshelf-0.9.0-beta.0-ac0e4f7d7af49659',ROOT=new URL('../',self.location.href);const url=p=>new URL(p,ROOT).href;let allowed;
-const incomingDB=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('sela-incoming',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
-self.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_UPDATE')event.waitUntil((async()=>{const pages=await self.clients.matchAll({type:'window',includeUncontrolled:true});if(pages.filter(p=>new URL(p.url).pathname.startsWith(new URL('mobile/',ROOT).pathname)).length>1){event.source?.postMessage({type:'UPDATE_BLOCKED'});return;}await self.skipWaiting();})());});
-self.addEventListener('fetch',event=>{
- const u=new URL(event.request.url);if(event.request.method!=='POST'||u.href!==url('mobile/share'))return;
- event.respondWith((async()=>{try{const form=await event.request.formData(),files=form.getAll('books');if(!files.length||files.length>20||files.some(f=>!(f instanceof Blob)||!f.size||f.size>64*1048576)||files.reduce((n,f)=>n+f.size,0)>120*1048576)throw Error('Invalid shared files');const records=await Promise.all(files.map(async f=>({name:f.name,type:f.type,bytes:await f.arrayBuffer()})));const db=await incomingDB(),key='share:'+crypto.randomUUID();try{await new Promise((resolve,reject)=>{const tx=db.transaction('files','readwrite'),store=tx.objectStore('files'),existing=store.getAll();existing.onsuccess=()=>{const held=existing.result.flat().reduce((n,r)=>n+(r.bytes?.byteLength||0),0);if(held+records.reduce((n,r)=>n+r.bytes.byteLength,0)>120*1048576){tx.abort();return;}store.put(records,key);};tx.oncomplete=resolve;tx.onabort=tx.onerror=()=>reject(tx.error||Error('Shared intake is full'));});}finally{db.close();}return Response.redirect(url('mobile/?incoming=1&share='+encodeURIComponent(key)),303);}catch{return Response.redirect(url('mobile/?incoming=error'),303);}})());
+// Generated from app/mobile/sw.ts by npm run build. Do not edit.
+const worker = self;
+const CACHE="sela-bookshelf-0.9.0-beta.2-c83a536d5777ec8f", ROOT = new URL("../", worker.location.href);
+const url = (p) => new URL(p, ROOT).href;
+let allowed;
+const incomingDB = () => new Promise((resolve, reject) => {
+  const r = indexedDB.open("sela-incoming", 1);
+  r.onupgradeneeded = () => r.result.createObjectStore("files");
+  r.onsuccess = () => resolve(r.result);
+  r.onerror = () => reject(r.error);
 });
-self.addEventListener('install',e=>e.waitUntil((async()=>{const r=await fetch(url('offline-assets.json'),{cache:'no-store'});if(!r.ok)throw Error('Assets unavailable');const assets=await r.clone().json(),cache=await caches.open(CACHE);await cache.addAll(assets.mobileShell.map(path=>new Request(url(path),{cache:'reload'})));await cache.put(url('offline-assets.json'),r);})()));
-self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const name of await caches.keys())if(name.startsWith('sela-bookshelf-')&&name!==CACHE)await caches.delete(name);await self.clients.claim();})()));
-self.addEventListener('fetch',e=>{const request=e.request,u=new URL(request.url);if(request.method!=='GET'||u.origin!==ROOT.origin||!u.href.startsWith(ROOT.href))return;const path=u.pathname.slice(ROOT.pathname.length),nav=request.mode==='navigate'&&(path==='mobile/'||path==='mobile/index.html');e.respondWith((async()=>{const cache=await caches.open(CACHE);if(!allowed){const list=await cache.match(url('offline-assets.json'));allowed=new Set((await list.json()).allowed);}if(!nav&&!allowed.has(path))return fetch(request);const key=nav?url('mobile/index.html'):request,hit=await cache.match(key);if(hit)return hit;const r=await fetch(request);if(r.ok&&r.type!=='opaque')await cache.put(key,r.clone());return r;})());});
+worker.addEventListener("message", (event) => {
+  if (event.data?.type === "ACTIVATE_UPDATE") event.waitUntil((async () => {
+    const pages = await worker.clients.matchAll({ type: "window", includeUncontrolled: true });
+    if (pages.filter((p) => new URL(p.url).pathname.startsWith(new URL("mobile/", ROOT).pathname)).length > 1) {
+      event.source?.postMessage({ type: "UPDATE_BLOCKED" });
+      return;
+    }
+    await worker.skipWaiting();
+  })());
+});
+worker.addEventListener("fetch", (event) => {
+  const u = new URL(event.request.url);
+  if (event.request.method !== "POST" || u.href !== url("mobile/share")) return;
+  event.respondWith((async () => {
+    try {
+      const form = await event.request.formData(), files = form.getAll("books");
+      if (!files.length || files.length > 20 || files.some((f) => !(f instanceof Blob) || !f.size || f.size > 64 * 1048576) || files.reduce((n, f) => n + f.size, 0) > 120 * 1048576) throw Error("Invalid shared files");
+      const records = await Promise.all(files.map(async (f) => ({ name: f.name, type: f.type, bytes: await f.arrayBuffer() })));
+      const db = await incomingDB(), key = "share:" + crypto.randomUUID();
+      try {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction("files", "readwrite"), store = tx.objectStore("files"), existing = store.getAll();
+          existing.onsuccess = () => {
+            const held = existing.result.flat().reduce((n, r) => n + (r.bytes?.byteLength || 0), 0);
+            if (held + records.reduce((n, r) => n + r.bytes.byteLength, 0) > 120 * 1048576) {
+              tx.abort();
+              return;
+            }
+            store.put(records, key);
+          };
+          tx.oncomplete = resolve;
+          tx.onabort = tx.onerror = () => reject(tx.error || Error("Shared intake is full"));
+        });
+      } finally {
+        db.close();
+      }
+      return Response.redirect(url("mobile/?incoming=1&share=" + encodeURIComponent(key)), 303);
+    } catch {
+      return Response.redirect(url("mobile/?incoming=error"), 303);
+    }
+  })());
+});
+worker.addEventListener("install", (e) => e.waitUntil((async () => {
+  const r = await fetch(url("offline-assets.json"), { cache: "no-store" });
+  if (!r.ok) throw Error("Assets unavailable");
+  const assets = await r.clone().json(), cache = await caches.open(CACHE);
+  await cache.addAll(assets.mobileShell.map((path) => new Request(url(path), { cache: "reload" })));
+  await cache.put(url("offline-assets.json"), r);
+})()));
+worker.addEventListener("activate", (e) => e.waitUntil((async () => {
+  for (const name of await caches.keys()) if (name.startsWith("sela-bookshelf-") && name !== CACHE) await caches.delete(name);
+  await worker.clients.claim();
+})()));
+worker.addEventListener("fetch", (e) => {
+  const request = e.request, u = new URL(request.url);
+  if (request.method !== "GET" || u.origin !== ROOT.origin || !u.href.startsWith(ROOT.href)) return;
+  const path = u.pathname.slice(ROOT.pathname.length), nav = request.mode === "navigate" && (path === "mobile/" || path === "mobile/index.html");
+  e.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    if (!allowed) {
+      const list = await cache.match(url("offline-assets.json"));
+      allowed = new Set((await list.json()).allowed);
+    }
+    if (!nav && !allowed.has(path)) return fetch(request);
+    const key = nav ? url("mobile/index.html") : request, hit = await cache.match(key);
+    if (hit) return hit;
+    const r = await fetch(request);
+    if (r.ok && r.type !== "opaque") await cache.put(key, r.clone());
+    return r;
+  })());
+});

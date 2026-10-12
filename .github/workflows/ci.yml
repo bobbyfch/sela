@@ -15,8 +15,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: git diff --exit-code -- dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js
+      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts sela-sw.js offline-assets.json
       - run: npm test
       - run: npm run test:types
+      - run: npm run typecheck
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser

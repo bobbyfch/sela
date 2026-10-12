@@ -1,121 +1,166 @@
+// Generated from src/public-api.ts by npm run build. Do not edit.
 export type SelaMode = 'book' | 'single' | 'scroll' | 'webtoon' | 'manga';
+export type SelaSource = string | File | Blob | ArrayBuffer | Uint8Array;
+export type { SelaEventMap, SelaEventName, SelaEventListener } from './events.js';
 export interface SelaOptions {
-  /** One responsive interface. 'classic' is a deprecated alias for 'app'. */
-  ui?: 'classic' | 'app';
-  palette?: 'forest' | 'paper' | 'ink' | 'rose' | 'charcoal';
-  metadata?: BookMetadata;
-  /** Inline embeds need a connected host with an explicit height. */
-  presentation?: 'overlay' | 'inline';
-  container?: HTMLElement | string;
-  pdfUrl?: string;
-  url?: string;
-  data?: ArrayBuffer | Uint8Array;
-  title?: string;
-  language?: 'en' | 'id' | 'auto';
-  mode?: SelaMode;
-  fit?: 'page' | 'width' | 'original';
-  persistPreferences?: boolean;
-  lowPower?: boolean;
-  fontSize?: number;
-  lineHeight?: number;
-  textMargin?: number;
-  cropMargin?: number;
-  fontFamily?: 'serif' | 'sans' | 'mono';
-  textAlign?: 'start' | 'justify';
-  onPreferences?: (preferences: Partial<SelaOptions>) => void;
-  /** Optional audio provider. Enable online voices explicitly; keep API secrets on your server. */
-  speechAdapter?: (text: string, options: { language: string; rate: number; signal: AbortSignal }) => Promise<Blob>;
-  format?: 'auto' | 'pdf' | 'epub' | 'cbz' | 'djvu' | 'txt' | 'md' | 'html' | 'fb2' | 'docx' | 'odt';
-  djvujsSrc?: string;
-  djvuIntegrity?: string;
-  pageGap?: number;
-  wheelZoom?: boolean;
-  paperTexture?: boolean;
-  theme?: 'auto' | 'light' | 'dark';
-  filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'warm' | 'cool' | 'night' | 'invert' | 'paper' | 'soft' | 'saturated' | 'lowblue';
-  /** Document brightness: 0.35–1.25; 1 is unchanged. Does not change OS brightness. */
-  brightness?: number;
-  /** Dim reader chrome independently of document filters. */
-  dim?: boolean;
-  readingDirection?: 'ltr' | 'rtl';
-  startPage?: number;
-  id?: string | number;
-  trigger?: HTMLElement;
-  assetBase?: string;
-  cssUrl?: string;
-  autoStyles?: boolean;
-  pdfBuild?: 'modern' | 'legacy';
-  pdfjsSrc?: string;
-  pdfWorkerSrc?: string;
-  pdfjsLib?: { getDocument(options: unknown): unknown };
-  cMapUrl?: string;
-  standardFontDataUrl?: string;
-  soundEnabled?: boolean;
-  soundUrl?: string;
-  maxScale?: number;
-  maxCanvasPixels?: number;
-  duration?: number;
-  zIndex?: number;
-  storagePrefix?: string;
-  httpHeaders?: Record<string, string>;
-  withCredentials?: boolean;
-  password?: string;
-  /** Legacy quality hint; prefer maxScale. */
-  scale?: number;
-  /** Legacy options accepted for source compatibility; automatic sizing/rendering replaces these. */
-  pageWidth?: number;
-  pageHeight?: number;
-  minZoom?: number;
-  maxZoom?: number;
-  zoomStep?: number;
-  parallelRender?: number;
-  jpegQuality?: number;
-  onReady?: (detail: { pages: number }) => void;
-  onClose?: (detail: object) => void;
-  onPageChange?: (detail: { page: number }) => void;
-  onPageError?: (detail: { page: number; error: Error }) => void;
-  onError?: (detail: { error: Error }) => void;
+    /** One responsive interface. 'classic' is a deprecated alias for 'app'. */
+    ui?: 'classic' | 'app';
+    /** Application shell integration; use false/default for standalone embeds. */
+    appContext?: boolean;
+    palette?: 'forest' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak' | 'linen';
+    metadata?: BookMetadata;
+    /** Inline embeds need a connected host with an explicit height. */
+    presentation?: 'overlay' | 'inline';
+    container?: HTMLElement | string;
+    pdfUrl?: string;
+    url?: string;
+    data?: ArrayBuffer | Uint8Array;
+    title?: string;
+    language?: 'en' | 'id' | 'auto';
+    mode?: SelaMode;
+    fit?: 'page' | 'width' | 'original';
+    persistPreferences?: boolean;
+    lowPower?: boolean;
+    fontSize?: number;
+    lineHeight?: number;
+    textMargin?: number;
+    cropMargin?: number;
+    fontFamily?: 'serif' | 'sans' | 'mono';
+    textAlign?: 'start' | 'justify';
+    onPreferences?: (preferences: Partial<SelaOptions>) => void;
+    /** Optional audio provider. Enable online voices explicitly; keep API secrets on your server. */
+    speechAdapter?: (text: string, options: {
+        language: string;
+        rate: number;
+        signal: AbortSignal;
+    }) => Promise<Blob>;
+    format?: 'auto' | 'pdf' | 'epub' | 'cbz' | 'djvu' | 'txt' | 'md' | 'html' | 'fb2' | 'docx' | 'odt';
+    djvujsSrc?: string;
+    djvuIntegrity?: string;
+    pageGap?: number;
+    wheelZoom?: boolean;
+    paperTexture?: boolean;
+    /** Page material stays inside the reader and is independent of the host app palette. */
+    pageSurface?: 'smooth' | 'rough' | 'vellum' | 'lined' | 'laid' | 'oak' | 'walnut' | 'woven';
+    theme?: 'auto' | 'light' | 'dark';
+    filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'warm' | 'cool' | 'night' | 'invert' | 'paper' | 'soft' | 'saturated' | 'lowblue';
+    /** Document brightness: 0.35–1.25; 1 is unchanged. Does not change OS brightness. */
+    brightness?: number;
+    /** Dim reader chrome independently of document filters. */
+    dim?: boolean;
+    readingDirection?: 'ltr' | 'rtl';
+    startPage?: number;
+    id?: string | number;
+    trigger?: HTMLElement;
+    assetBase?: string;
+    cssUrl?: string;
+    autoStyles?: boolean;
+    pdfBuild?: 'modern' | 'legacy';
+    pdfjsSrc?: string;
+    pdfWorkerSrc?: string;
+    pdfjsLib?: {
+        getDocument(options: unknown): unknown;
+    };
+    cMapUrl?: string;
+    standardFontDataUrl?: string;
+    wasmUrl?: string;
+    iccUrl?: string;
+    soundEnabled?: boolean;
+    soundUrl?: string;
+    maxScale?: number;
+    maxCanvasPixels?: number;
+    duration?: number;
+    zIndex?: number;
+    storagePrefix?: string;
+    httpHeaders?: Record<string, string>;
+    withCredentials?: boolean;
+    password?: string;
+    /** Legacy quality hint; prefer maxScale. */
+    scale?: number;
+    /** Legacy options accepted for source compatibility; automatic sizing/rendering replaces these. */
+    pageWidth?: number;
+    pageHeight?: number;
+    minZoom?: number;
+    maxZoom?: number;
+    zoomStep?: number;
+    parallelRender?: number;
+    jpegQuality?: number;
+    onReady?: (detail: {
+        pages: number;
+    }) => void;
+    onClose?: (detail: object) => void;
+    onPageChange?: (detail: {
+        page: number;
+    }) => void;
+    onPageError?: (detail: {
+        page: number;
+        error: Error;
+    }) => void;
+    onError?: (detail: {
+        error: Error;
+    }) => void;
 }
 export declare class Sela extends EventTarget {
-  static readonly version: string;
-  constructor(options?: SelaOptions);
-  options: SelaOptions;
-  readonly overlay: HTMLElement | null;
-  readonly totalPages: number;
-  readonly zoom: number;
-  open(): Promise<this>;
-  close(): void;
-  destroy(): void;
-  currentPage(): number;
-  next(): this;
-  prev(): this;
-  goTo(page: number): this;
-  nextPage(): this;
-  prevPage(): this;
-  goToPage(page: number): this;
-  firstPage(): this;
-  lastPage(): this;
-  zoomIn(): this;
-  zoomOut(): this;
-  setZoom(value: number): this;
-  setMode(mode: SelaMode): Promise<this>;
-  setFit(value: NonNullable<SelaOptions['fit']>): this;
-  setTypography(values: Pick<SelaOptions, 'fontSize' | 'lineHeight' | 'textMargin' | 'fontFamily' | 'textAlign'>): this;
-  back(): this;
-  showTools(): Promise<unknown>;
-  getText(page?: number): Promise<string>;
-  getMetadata(): Promise<BookMetadata>;
-  toggleFullscreen(): this;
-  setFilter(value: NonNullable<SelaOptions['filter']>): this;
-  setBrightness(value: number): this;
-  setDim(value: boolean): this;
+    static readonly version: string;
+    static readonly supported?: boolean;
+    constructor(options?: SelaOptions);
+    options: SelaOptions;
+    readonly overlay: HTMLElement | null;
+    readonly totalPages: number;
+    readonly zoom: number;
+    open(source?: SelaSource): Promise<this>;
+    mount(container: HTMLElement | string): Promise<this>;
+    on<K extends import('./events.js').SelaEventName>(name: K, listener: import('./events.js').SelaEventListener<K>, options?: {
+        signal?: AbortSignal;
+    }): () => void;
+    close(): void;
+    destroy(): void;
+    currentPage(): number;
+    next(): this;
+    prev(): this;
+    goTo(page: number): this;
+    nextPage(): this;
+    prevPage(): this;
+    goToPage(page: number): this;
+    firstPage(): this;
+    lastPage(): this;
+    zoomIn(): this;
+    zoomOut(): this;
+    setZoom(value: number): this;
+    setMode(mode: SelaMode): Promise<this>;
+    setTheme(theme: NonNullable<SelaOptions['theme']>): this;
+    setFit(value: NonNullable<SelaOptions['fit']>): this;
+    setTypography(values: Pick<SelaOptions, 'fontSize' | 'lineHeight' | 'textMargin' | 'fontFamily' | 'textAlign'>): this;
+    back(): this;
+    showTools(): Promise<unknown>;
+    getText(page?: number): Promise<string>;
+    getMetadata(): Promise<BookMetadata>;
+    toggleFullscreen(): this;
+    setFilter(value: NonNullable<SelaOptions['filter']>): this;
+    setBrightness(value: number): this;
+    setDim(value: boolean): this;
 }
 export interface BookMetadata {
-  title?: string; author?: string; publisher?: string; publicationDate?: string;
-  year?: string; language?: string; identifier?: string; isbn?: string;
-  description?: string; subjects?: string; rights?: string; series?: string;
-  edition?: string; pageCount?: number; creationDate?: string;
+    title?: string;
+    author?: string;
+    publisher?: string;
+    publicationDate?: string;
+    year?: string;
+    language?: string;
+    identifier?: string;
+    isbn?: string;
+    description?: string;
+    subjects?: string;
+    rights?: string;
+    series?: string;
+    edition?: string;
+    pageCount?: number;
+    creationDate?: string;
 }
 export declare const VERSION: string;
 export default Sela;
-declare global { interface Window { Sela: typeof Sela; } }
+declare global {
+    interface Window {
+        Sela: typeof import('./sela.esm.js').Sela;
+    }
+}

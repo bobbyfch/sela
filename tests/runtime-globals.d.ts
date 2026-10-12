@@ -1,0 +1,60 @@
+// Browser fixtures and host-provided capabilities, populated by integration tests.
+export {};
+declare global {
+  var adapterCalls: any;
+  var badWiki: any;
+  var demoReader: any;
+  var element: any;
+  var epubError: any;
+  var fakeVoices: any;
+  var finishBackupValidation: any;
+  var oldCanvasSurvived: any;
+  var panelReader: any;
+  var previousCanvas: any;
+  var profileReader: any;
+  var pwned: any;
+  var r: any;
+  var reader: any;
+  var registration: any;
+  var releaseBackupRead: any;
+  var resizeReader: any;
+  var sent: any;
+  var sharedCard: any;
+  var spoken: any;
+  var swEvents: any;
+  var testViewer: any;
+  var ttsCalls: any;
+  var updateMessages: any;
+  var vueApp: any;
+  var vueError: any;
+  var vueState: any;
+  interface Window {
+    adapterCalls: any;
+    badWiki: any;
+    demoReader: any;
+    element: any;
+    epubError: any;
+    fakeVoices: any;
+    finishBackupValidation: any;
+    oldCanvasSurvived: any;
+    panelReader: any;
+    previousCanvas: any;
+    profileReader: any;
+    pwned: any;
+    r: any;
+    reader: any;
+    registration: any;
+    releaseBackupRead: any;
+    resizeReader: any;
+    sent: any;
+    sharedCard: any;
+    spoken: any;
+    swEvents: any;
+    testViewer: any;
+    ttsCalls: any;
+    updateMessages: any;
+    vueApp: any;
+    vueError: any;
+    vueState: any;
+  }
+}

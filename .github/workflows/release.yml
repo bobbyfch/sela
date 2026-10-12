@@ -23,6 +23,7 @@ jobs:
       - run: npm run build
       - run: git diff --exit-code -- dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js
       - run: npm test && npm run test:types
+      - run: npm run typecheck
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
       - name: Create immutable release tag

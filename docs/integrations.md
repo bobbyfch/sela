@@ -3,9 +3,9 @@
 Sela provides overlay and inline viewers. One overlay is active at a time; opening another overlay closes the previous overlay. Multiple inline viewers can coexist. It does not initialize arbitrary buttons
 automatically, so it does not take over application event handling.
 
-## CI3 / Laravel
+## CI3 / CI4 / Laravel
 
-See `examples/ci3.php` and `examples/laravel.blade.php`. Use escaped HTML data
+See `examples/ci3.php`, `examples/ci4.php` and `examples/laravel.blade.php`. Use escaped HTML data
 attributes or safely serialized JSON. PDF URLs do not need to end with `.pdf`.
 Keep authorization on the PDF endpoint. Same-origin session cookies work as
 usual; `withCredentials:true` is available for a cross-origin endpoint that
@@ -17,14 +17,14 @@ Do not move private PDFs into GitHub Pages.
 This repo is not automatically published to npm. Install from the GitHub tag:
 
 ```sh
-npm install github:bobbyfch/sela#v0.9.0-beta.0
+npm install github:bobbyfch/sela#v0.9.0-beta.2
 ```
 
 ```ts
 import Sela, { type SelaOptions } from '@bobbyfch/sela';
 const options: SelaOptions = {
   pdfUrl: '/api/ebook/42',
-  assetBase: 'https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.0/dist/'
+  assetBase: 'https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.2/dist/'
 };
 const viewer = new Sela(options);
 await viewer.open();
@@ -37,6 +37,8 @@ Bundled imports use the pinned CDN by default. To self-host, copy the complete
 `dist` folder to the application's public assets and set `assetBase` to its
 HTTP URL; importing JavaScript alone does not copy the worker/font/CMap assets.
 SSR import and construction are safe; call `open()` only after mounting.
+
+See [typed lifecycle and host integration](sdk-lifecycle.md) for event subscriptions, File/Blob input and cleanup. `examples/nextjs.tsx` and `examples/nuxt.vue` demonstrate client mount/unmount, including lazy imports that finish after the host unmounts. Runtime verification in those frameworks is separate from SDK contract tests.
 
 ## Vue 3
 
