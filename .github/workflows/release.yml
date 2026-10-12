@@ -21,7 +21,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: git diff --exit-code -- dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js
+      - name: Verify generated release assets
+        run: |
+          paths=(dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js)
+          if ! git diff --quiet -- "${paths[@]}"; then
+            changed=$(git diff --name-only -- "${paths[@]}")
+            while IFS= read -r file; do
+              echo "::error file=$file,line=1,title=Generated output differs::npm run build changed this committed file on Linux"
+            done <<< "$changed"
+            git diff --stat -- "${paths[@]}" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
       - run: npm test && npm run test:types
       - run: npm run typecheck
       - run: npx playwright install --with-deps chromium firefox webkit
