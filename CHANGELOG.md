@@ -5,6 +5,7 @@
 - Detect install state and offer a browser-aware install prompt or concise platform instructions; document the browser and OS limits honestly.
 - Add an on-device Home backdrop with a readable soft overlay, and keep it compatible with Safari/WebKit storage.
 - Refine compact language/theme controls so the public page stays within narrow phone viewports.
+- Keep Explore reading and download actions legible at 320 px widths across browser engines.
 - Refresh the bilingual guides and product screenshots for the second beta.
 
 - Position Sela as a personal reader; introduce the default Linen reading room, eight material previews, companion/weather scenes and one public-to-footer visual world.

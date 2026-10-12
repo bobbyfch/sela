@@ -435,3 +435,5 @@ body[data-product=mobile] .home-page[data-custom-background=true]::before{conten
 .weather-location-privacy{display:block;color:var(--muted);font-size:11px;line-height:1.5}
 .settings-row-control #language{width:min(100%,250px);min-width:0;max-width:100%;min-height:42px;padding-inline:12px 30px}
 @media(max-width:400px){.settings-row-control #language{width:100%;font-size:12px;padding-inline:8px 24px}}
+
+@media(max-width:359px){body[data-product=mobile] .open-results[data-view-mode=bookshelf] .open-book .catalog-actions,body[data-product=mobile] .open-results[data-view-mode=grid] .open-book .catalog-actions{gap:2px;padding-inline:0}}

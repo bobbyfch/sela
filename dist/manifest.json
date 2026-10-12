@@ -63,9 +63,9 @@
       "sha256": "7b10a300da2026e857cb47deaee44ad711a510fd08b5b96efbc70f582dde7f40"
     },
     "dist/css/sela.app.css": {
-      "bytes": 93545,
-      "gzip": 15398,
-      "sha256": "62113c6c12ddf42311f3a5010a7868ac6cbdd5911326b2c855625956dc664038"
+      "bytes": 93778,
+      "gzip": 15416,
+      "sha256": "4005fcbd9bb56853c335765813aeef65211644abb4f420e48aceb7da6ee03c13"
     },
     "dist/css/sela.min.css": {
       "bytes": 15301,
