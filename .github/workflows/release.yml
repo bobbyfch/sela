@@ -21,6 +21,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Report viewer worker fingerprint
+        run: |
+          cache=$(grep -oE 'CACHE = "[^"]+"' sela-sw.js | head -1 | cut -d '"' -f 2)
+          fingerprint=$(sed -E 's/CACHE = "sela-viewer-[^"]+"/CACHE = "sela-viewer-identity"/' sela-sw.js | sha256sum | cut -d ' ' -f 1)
+          echo "::notice file=sela-sw.js,line=1,title=Generated viewer worker::cache=$cache; fingerprint=$fingerprint"
       - name: Verify generated release assets
         run: |
           paths=(dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js)
