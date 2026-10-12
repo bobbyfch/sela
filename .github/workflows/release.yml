@@ -25,11 +25,11 @@ jobs:
         run: |
           paths=(dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js)
           if ! git diff --quiet -- "${paths[@]}"; then
-            changed=$(git diff --name-only -- "${paths[@]}")
-            while IFS= read -r file; do
-              echo "::error file=$file,line=1,title=Generated output differs::npm run build changed this committed file on Linux"
-            done <<< "$changed"
-            git diff --stat -- "${paths[@]}" >> "$GITHUB_STEP_SUMMARY"
+            git status --short --untracked-files=all >> "$GITHUB_STEP_SUMMARY"
+            while IFS= read -r line; do
+              file=${line:3}
+              echo "::error file=$file,line=1,title=Generated output differs::Working tree changed after npm run build: $line"
+            done < <(git status --short --untracked-files=all)
             exit 1
           fi
       - run: npm test && npm run test:types
