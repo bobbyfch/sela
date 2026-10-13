@@ -228,8 +228,6 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   aboutLead.append(controlIcon("info"));
   const aboutLabel = el("span", "settings-action-label", aboutTrigger);
   text(aboutLabel, "About Sela", "Tentang Sela");
-  const aboutTrail = el("span", "settings-trailing-icon", aboutTrigger);
-  aboutTrail.append(controlIcon("chevron"));
   const aboutDialog = el("dialog", "control-sheet about-sheet", document.body);
   aboutDialog.setAttribute("aria-labelledby", "about-title");
   const aboutHeader = el("header", "control-sheet-header", aboutDialog), aboutHeading = el("h2", "", aboutHeader);
@@ -275,9 +273,11 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   notices.append(controlIcon("info"));
   text(el("span", "", notices), "Third-party licenses", "Lisensi pihak ketiga");
   const feedback = el("a", "about-link", links);
-  feedback.href = "mailto:[private contact removed]?subject=" + encodeURIComponent("Sela Reader " + (window.Sela?.version || "") + " feedback");
+  feedback.href = "https://github.com/bobbyfch/sela/issues/new";
+  feedback.target = "_blank";
+  feedback.rel = "noopener noreferrer";
   feedback.append(controlIcon("share"));
-  text(el("span", "", feedback), "Send a note", "Kirim masukan");
+  text(el("span", "", feedback), "Send feedback", "Kirim masukan");
   const aboutInfo = el("section", "library-info", aboutContent);
   text(el("h3", "library-info-title", aboutInfo), "Privacy, updates & compatibility", "Privasi, pembaruan & kompatibilitas");
   for (const child of Array.from(info.children)) if (!(child instanceof HTMLElement && child.tagName === "SUMMARY")) aboutInfo.append(child);
@@ -385,15 +385,20 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     }
   }, data);
   exportButton.id = "export-library";
-  const restoreLabel = el("label", "restore-label settings-row", data), restoreLead = el("span", "settings-leading-icon", restoreLabel);
+  const restoreLabel = el("div", "restore-label settings-row", data), restoreLead = el("span", "settings-leading-icon", restoreLabel);
   restoreLead.append(controlIcon("cloud"));
   const restoreCopy = el("span", "settings-row-copy", restoreLabel);
   text(el("strong", "", restoreCopy), "Restore backup", "Pulihkan backup");
   text(el("small", "", restoreCopy), "Choose a Sela backup ZIP.", "Pilih ZIP backup Sela.");
-  const restore = el("input", "", restoreLabel);
+  const restorePicker = el("label", "restore-file-picker", restoreLabel);
+  const restoreAction = el("span", "restore-file-picker-action", restorePicker);
+  restoreAction.append(controlIcon("download"));
+  text(el("span", "", restoreAction), "Choose file", "Pilih berkas");
+  const restore = el("input", "restore-file-input", restorePicker);
   restore.id = "restore-library";
   restore.type = "file";
   restore.accept = ".zip,application/zip";
+  restore.setAttribute("aria-label", t("Choose a Sela backup ZIP", "Pilih ZIP backup Sela"));
   restore.onchange = async () => {
     if (busy || !restore.files[0]) return;
     busy = true;

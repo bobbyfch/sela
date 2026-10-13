@@ -300,27 +300,13 @@ function Main() {
 }
 function Nav() {
   return (
-    <nav aria-label={"Author links"}>
+    <nav aria-label={"Project links"}>
       <a
-        href={"[private social link removed]"}
+        href={"https://github.com/bobbyfch/sela"}
         target={"_blank"}
-        rel={"noopener"}
+        rel={"noopener noreferrer"}
       >
-        {"Instagram"}
-      </a>
-      <a
-        href={"[private social link removed]"}
-        target={"_blank"}
-        rel={"noopener"}
-      >
-        {"LinkedIn"}
-      </a>
-      <a
-        href={"https://github.com/bobbyfch"}
-        target={"_blank"}
-        rel={"noopener"}
-      >
-        {"GitHub"}
+        {"Sela on GitHub"}
       </a>
     </nav>
   );

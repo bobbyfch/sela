@@ -1,11 +1,20 @@
 # Changelog
 
+## 0.9.0-beta.3 — Publishing & discovery polish (2026-10-13)
+
+- Expand open-catalog discovery and book-cover lookup while preserving generated covers when providers have no artwork.
+- Refine responsive reading controls, bookshelf layouts and installation/update feedback across supported browsers.
+- Keep author contact private by routing feedback through the project issue tracker; retain the requested creator credit and website.
+- Move planning and machine-specific validation notes out of the public release, and make local tooling paths configurable.
+
 ## 0.9.0-beta.2 — Personal reading room (2026-10-12)
 
 - Detect install state and offer a browser-aware install prompt or concise platform instructions; document the browser and OS limits honestly.
 - Add an on-device Home backdrop with a readable soft overlay, and keep it compatible with Safari/WebKit storage.
 - Refine compact language/theme controls so the public page stays within narrow phone viewports.
 - Keep Explore reading and download actions legible at 320 px widths across browser engines.
+- Make Explore's bookshelf view cover-only with tap-to-open details; add Gutenberg and Open Library cover artwork with an immediate generated fallback, and improve local covers without sending private ISBNs anywhere.
+- Fix phone calendar month controls and replace the compressed backup picker with a clear, keyboard-accessible control.
 - Refresh the bilingual guides and product screenshots for the second beta.
 
 - Position Sela as a personal reader; introduce the default Linen reading room, eight material previews, companion/weather scenes and one public-to-footer visual world.
@@ -43,7 +52,7 @@
 - Clean up PDF worker ports and Blob URLs when initialization or task destruction fails.
 - Add resource-loading regression tests and a Next Generation architecture audit.
 
-## 0.9 beta — Initial release
+## 0.9.0-beta.0 — Initial release
 
 Sela is a standalone, open-source reading application and embeddable viewer. This beta is the project's first release.
 

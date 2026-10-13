@@ -12,6 +12,7 @@ import { listBooks, getFile, writeBook, importBook, updateBook, listCollections 
 import { mountLibraryExperience } from "./library-experience.js";
 import { normalizeLocale, localeBase, translate } from "../dist/source/src/i18n.js";
 import { notify } from "./controls.js";
+import { coverFor } from "./open-catalog.js";
 const mobile = document.body.dataset.product === "mobile";
 const $ = (selector) => document.querySelector(selector);
 let viewer, items = [], urls = [], backup, experience, lang = normalizeLocale(localStorage.getItem("sela:language") || localStorage.getItem("sela-library:language") || navigator.language);
@@ -209,14 +210,13 @@ function render() {
     const cover = button(t("Read ", "Baca ") + book.name, () => openBook(book));
     cover.className = "cover";
     cover.style.setProperty("--cover", ["#c5d8c6", "#edcfbb", "#d8cfe5", "#cfdee2", "#e5ddb8"][parseInt(book.id.slice(0, 2), 16) % 5]);
-    if (book.cover) {
-      const img = document.createElement("img");
-      const url = URL.createObjectURL(book.cover);
-      urls.push(url);
-      img.src = url;
-      img.alt = "";
-      cover.append(img);
-    }
+    const imageSource = URL.createObjectURL(book.cover || coverFor({ id: book.id, title: book.name, author: book.metadata?.author }));
+    urls.push(imageSource);
+    const img = document.createElement("img");
+    img.src = imageSource;
+    img.alt = "";
+    img.loading = "lazy";
+    cover.append(img);
     const title = document.createElement("strong");
     title.textContent = book.name;
     const format = document.createElement("small");

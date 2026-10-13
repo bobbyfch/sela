@@ -3,8 +3,8 @@ import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {spawn} from 'node:child_process';
 import {chromium} from '@playwright/test';
-const root=resolve('.');const modern='C:/laragon/bin/php/php-8.5.10-Win32-vs17-x64/php.exe';const legacy='C:/laragon/bin/php/php-8.1.34-Win32-vs16-x64/php.exe';
-const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';const browser=await chromium.launch(existsSync(edge)?{executablePath:edge}:{});const results:object[]=[];
+const root=resolve('.');const modern=process.env.SELA_PHP||'php';const legacy=process.env.SELA_PHP_LEGACY||modern;
+const browser=await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{});const results:object[]=[];
 try{for(const [framework,port] of [['ci3',4183],['ci4',4184],['laravel',4185]] as const){
  const cwd=root+'/.build/'+framework+'-host';const publicRoot=framework==='ci3'?cwd:cwd+'/public';
  if(!existsSync(cwd))throw new Error('Install '+framework+' in .build first (docs/framework-validation.md).');
@@ -23,6 +23,6 @@ try{for(const [framework,port] of [['ci3',4183],['ci4',4184],['laravel',4185]] a
   const env=cwd+'/.env';await writeFile(env,(await readFile(env,'utf8')).replace(/^SESSION_DRIVER=.*$/m,'SESSION_DRIVER=array').replace(/^CACHE_STORE=.*$/m,'CACHE_STORE=array'));
  }
  const child=spawn(framework==='ci3'?legacy:modern,['-S','127.0.0.1:'+port,'-t',publicRoot],{cwd,windowsHide:true,stdio:['ignore','pipe','pipe']});let log='';child.stdout.on('data',data=>log+=data);child.stderr.on('data',data=>log+=data);const page=await browser.newPage();
- try{const deadline=Date.now()+30000;let ready=false;while(Date.now()<deadline){if(child.exitCode!==null)throw Error('PHP host exited: '+log);try{const response=await fetch('http://127.0.0.1:'+port,{signal:AbortSignal.timeout(2000)});await response.body?.cancel();if(response.ok){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,250));}if(!ready)throw Error('PHP host not ready: '+log);await page.goto('http://127.0.0.1:'+port);await page.locator('#open-ebook').click();await page.locator('.library-reader-overlay canvas').first().waitFor({timeout:45000});await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.library-reader-overlay'));results.push({framework,php:framework==='ci3'?'8.1':'8.5',open:true,close:true});}
+ try{const deadline=Date.now()+30000;let ready=false;while(Date.now()<deadline){if(child.exitCode!==null)throw Error('PHP host exited: '+log);try{const response=await fetch('http://127.0.0.1:'+port,{signal:AbortSignal.timeout(2000)});await response.body?.cancel();if(response.ok){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,250));}if(!ready)throw Error('PHP host not ready: '+log);await page.goto('http://127.0.0.1:'+port);await page.locator('#open-ebook').click();await page.locator('.library-reader-overlay canvas').first().waitFor({timeout:45000});await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.library-reader-overlay'));results.push({framework,open:true,close:true});}
  catch(error){await writeFile(cwd+'/runtime.log',log);await page.screenshot({path:cwd+'/failed.png'});throw error;}finally{await page.close();child.kill();}
-}}finally{await browser.close();await writeFile('docs/php-runtime-results.json',JSON.stringify(results,null,2)+'\n');}console.log(JSON.stringify(results));
+}}finally{await browser.close();await writeFile('.build/php-runtime-results.json',JSON.stringify(results,null,2)+'\n');}console.log(JSON.stringify(results));

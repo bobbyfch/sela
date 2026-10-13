@@ -4,6 +4,7 @@ import { node, fetchFile } from "./network.js";
 import { coverFor } from "./open-catalog.js";
 import { searchBooks, acquireBook } from "./book-sources.js";
 import { bottomSheet, iconAction, notify } from "./controls.js";
+import { catalogCoverUrl } from "./covers.js";
 export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   const description = node(parent, "p", t("Discover open books. Read here or keep an offline copy.", "Temukan buku terbuka. Baca di sini atau simpan offline."));
   const form = node(parent, "form"), source = node(form, "select");
@@ -68,18 +69,46 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   sourceLink.rel = "noopener noreferrer";
   sourceLink.hidden = true;
   const terms = node(parent, "small", t("Open editions vary in completeness and copyright by country. Source credits remain in each book. Public APIs may limit requests.", "Kelengkapan edisi dan hak cipta berbeda menurut sumber dan negara. Kredit tetap disertakan. API publik dapat membatasi permintaan."));
-  let controller, timer, page = 1, continuation, books = [], urls = [], destroyed = false, sequence = 0;
+  let controller, timer, page = 1, continuation, books = [], urls = [], imageObservers = [], destroyed = false, sequence = 0;
   function render() {
+    imageObservers.forEach((observer) => observer.disconnect());
+    imageObservers = [];
     urls.forEach(URL.revokeObjectURL);
     urls = [];
     results.replaceChildren();
     for (const book of books) {
-      const card = node(results, "article", "", "open-book"), image = node(card, "img"), cover = coverFor(book);
-      const url = URL.createObjectURL(cover);
-      urls.push(url);
-      image.src = url;
-      image.alt = book.title;
-      image.loading = "lazy";
+      const card = node(results, "article", "", "open-book"), cover = coverFor(book), fallback = URL.createObjectURL(cover), remote = catalogCoverUrl(book.coverUrl);
+      urls.push(fallback);
+      const coverButton = node(card, "button", "", "open-book-cover");
+      coverButton.type = "button";
+      coverButton.setAttribute("aria-label", t("Open book details: ", "Buka detail buku: ") + book.title);
+      const image = node(coverButton, "img");
+      image.src = fallback;
+      image.alt = "";
+      image.loading = "eager";
+      image.decoding = "async";
+      image.referrerPolicy = "no-referrer";
+      if (remote) {
+        let requested = false;
+        const requestRemote = () => {
+          if (requested) return;
+          requested = true;
+          image.src = remote;
+        };
+        if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.target === image && entry.isIntersecting)) {
+              observer.disconnect();
+              requestRemote();
+            }
+          }, { rootMargin: "240px 0px" });
+          observer.observe(image);
+          imageObservers.push(observer);
+        } else image.addEventListener("load", requestRemote, { once: true });
+        image.onerror = () => {
+          if (image.src !== fallback) image.src = fallback;
+        };
+      }
       const copy = node(card, "div", "", "open-book-copy"), heading = node(copy, "div", "", "open-book-heading"), title = node(heading, "h4", book.title);
       title.title = book.title;
       const details = node(heading, "button");
@@ -89,12 +118,14 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       node(copy, "p", book.author);
       node(copy, "small", book.genre + (book.language ? " \xB7 " + book.language.toUpperCase() : ""));
       const actions = node(copy, "div", "", "catalog-actions");
-      details.onclick = () => {
+      const openDetails = () => {
         const body = document.createElement("div");
         body.className = "personal-sheet";
         const coverImage = node(body, "img");
         coverImage.src = image.src;
         coverImage.alt = "";
+        coverImage.loading = "lazy";
+        coverImage.referrerPolicy = "no-referrer";
         coverImage.style.cssText = "max-width:110px;justify-self:center";
         node(body, "h3", book.title);
         node(body, "p", book.author || t("Author not provided", "Penulis belum tersedia"));
@@ -113,11 +144,13 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
         modal.element.addEventListener("close", () => modal.destroy(), { once: true });
         modal.open();
       };
+      details.onclick = openDetails;
+      coverButton.onclick = openDetails;
       if (book.external && !book.url && !book.pageid) {
         const link = node(actions, "a", t("View edition", "Lihat edisi"));
-        const url2 = new URL(book.external);
-        if (url2.protocol === "https:") {
-          link.href = url2.href;
+        const url = new URL(book.external);
+        if (url.protocol === "https:") {
+          link.href = url.href;
           link.target = "_blank";
           link.rel = "noopener noreferrer";
         }

@@ -1,6 +1,6 @@
 {
   "name": "@bobbyfch/sela",
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "description": "Sela personal reader with a cozy local-first bookshelf and lightweight framework-independent document viewer",
   "type": "module",
   "license": "MIT",

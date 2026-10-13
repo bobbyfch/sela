@@ -1,11 +1,17 @@
 export function coverFor(book){
  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 240 360');
- const add=(tag,attrs,text?: any)=>{const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text)e.textContent=text;svg.append(e);};
- const colors=['#385b54','#684d60','#49576f','#6c573d'];const color=colors[[...String(book.id)].reduce((sum,char)=>sum+char.charCodeAt(0),0)%colors.length];
- add('rect',{width:240,height:360,fill:color});add('rect',{x:15,y:15,width:210,height:330,rx:3,fill:'none',stroke:'#ede5cf','stroke-opacity':'.45'});
- add('path',{d:'M35 57h170M35 290h170',stroke:'#ede5cf','stroke-opacity':'.5'});
- const words=book.title.split(/\s+/);let lines=[],line='';for(const word of words){if((line+' '+word).trim().length>18&&line){lines.push(line);line=word;}else line=(line+' '+word).trim();}if(line)lines.push(line);
- lines.slice(0,7).forEach((s,i)=>add('text',{x:120,y:102+i*23,'text-anchor':'middle',fill:'#faf4e6','font-family':'Georgia, serif','font-size':19},s));
- add('text',{x:120,y:319,'text-anchor':'middle',fill:'#ede5cf','font-family':'sans-serif','font-size':11},book.author);
+ const add=(parent,tag,attrs,text?: any)=>{const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text)e.textContent=text;parent.append(e);return e;};
+ const themes=[['#385b54','#a9bd96','#e8d7b7'],['#684d60','#d0a58d','#f1ddc2'],['#49576f','#c69e6f','#e7dfc9'],['#6c573d','#b9aa81','#efe3c9']];const seed=[...String(book.id)].reduce((sum,char)=>sum+char.charCodeAt(0),0),[color,accent,paper]=themes[seed%themes.length];
+ const defs=add(svg,'defs',{}),gradient=add(defs,'linearGradient',{id:'cover-wash',x1:'0',y1:'0',x2:'1',y2:'1'});add(gradient,'stop',{offset:'0','stop-color':color});add(gradient,'stop',{offset:'1','stop-color':paper});const grain=add(defs,'pattern',{id:'cover-grain',width:'8',height:'8',patternUnits:'userSpaceOnUse',patternTransform:'rotate(35)'});add(grain,'path',{d:'M0 0v8M4 0v8',stroke:'#fff','stroke-opacity':'.13','stroke-width':'.7'});
+ add(svg,'rect',{width:240,height:360,fill:'url(#cover-wash)'});add(svg,'rect',{width:240,height:360,fill:'url(#cover-grain)',opacity:'.65'});add(svg,'rect',{x:14,y:14,width:212,height:332,rx:3,fill:'none',stroke:'#fff','stroke-opacity':'.42'});add(svg,'path',{d:'M35 42h170',stroke:'#fff','stroke-opacity':'.56'});add(svg,'text',{x:35,y:34,fill:'#fff','fill-opacity':'.78','font-family':'sans-serif','font-size':8,'letter-spacing':2},'OPEN EDITION');
+ const motif=seed%4;
+ if(motif===0){add(svg,'path',{d:'M56 210V151a64 64 0 0 1 128 0v59Z',fill:accent,'fill-opacity':'.76'});add(svg,'path',{d:'M75 210v-55a45 45 0 0 1 90 0v55M120 115v95',fill:'none',stroke:paper,'stroke-opacity':'.85','stroke-width':2});}
+ else if(motif===1){add(svg,'path',{d:'M119 203c3-39 0-68-11-103m14 91c8-27 24-47 49-62m-52 42c-20-18-39-28-61-31',fill:'none',stroke:paper,'stroke-width':3,'stroke-linecap':'round'});for(const d of ['M105 117c-22-2-34-15-36-32 22 1 35 13 36 32Z','M136 164c3-23 18-38 39-43-2 22-17 38-39 43Z','M102 157c-21-4-32-18-33-37 21 4 32 17 33 37Z'])add(svg,'path',{d,fill:accent,stroke:paper,'stroke-width':1});}
+ else if(motif===2){add(svg,'path',{d:'M20 188c33-42 67-42 100 0s67 42 100 0v22H20Zm0-50c33-42 67-42 100 0s67 42 100 0v22c-33 42-67 42-100 0s-67-42-100 0Z',fill:accent,'fill-opacity':'.82'});add(svg,'path',{d:'M20 138c33-42 67-42 100 0s67 42 100 0',fill:'none',stroke:paper,'stroke-opacity':'.9','stroke-width':2});}
+ else{add(svg,'path',{d:'M65 205V93h110v112M83 205v-90h74v90M55 205h130',fill:accent,'fill-opacity':'.77',stroke:paper,'stroke-opacity':'.9','stroke-width':2});add(svg,'path',{d:'M94 141h51m-51 16h51m-51 16h51',stroke:paper,'stroke-opacity':'.85','stroke-width':2});}
+ add(svg,'path',{d:'M35 218h170',stroke:'#fff','stroke-opacity':'.55'});
+ const words=String(book.title||'Untitled').split(/\s+/);let lines=[],line='';for(const word of words){if((line+' '+word).trim().length>20&&line){lines.push(line);line=word;}else line=(line+' '+word).trim();}if(line)lines.push(line);if(lines.length>4)lines[3]=lines[3].slice(0,17)+'…';
+ lines.slice(0,4).forEach((value,index)=>add(svg,'text',{x:120,y:250+index*20,'text-anchor':'middle',fill:'#faf4e6','font-family':'Georgia, serif','font-size':17,'font-weight':600},value));
+ add(svg,'text',{x:120,y:326,'text-anchor':'middle',fill:'#fff','fill-opacity':'.8','font-family':'sans-serif','font-size':10},String(book.author||'').slice(0,30));
  return new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'});
 }

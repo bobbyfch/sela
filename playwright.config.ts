@@ -1,17 +1,16 @@
 import { defineConfig } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-// This host's global Firefox executable failed to launch. Prefer the verified isolated
-// copy when present; CI and other machines use Playwright's normal installation.
-const localFirefox=resolve('.build/browser-cache/firefox-1555/firefox/firefox.exe');
+
+// Use an optional isolated Firefox executable when configured; otherwise use Playwright's installation.
+const localFirefox=process.env.PLAYWRIGHT_FIREFOX_EXECUTABLE_PATH||resolve('.build/browser-cache/firefox-1555/firefox/firefox.exe');
 export default defineConfig({
   testDir: './tests/browser',
   timeout: 45000,
   workers: 1,
   use: { baseURL: 'http://127.0.0.1:4173', headless: true, serviceWorkers: 'block' },
   projects: [
-    {name:'chromium',use:{browserName:'chromium',launchOptions:!process.env.CI&&existsSync(edge)?{executablePath:edge}:{}}},
+    {name:'chromium',use:{browserName:'chromium',launchOptions:!process.env.CI&&process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}}},
     {name:'firefox',use:{browserName:'firefox',launchOptions:!process.env.CI&&existsSync(localFirefox)?{executablePath:localFirefox}:{}}},
     {name:'webkit',use:{browserName:'webkit'}}
   ],

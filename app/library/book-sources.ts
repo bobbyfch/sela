@@ -1,5 +1,6 @@
 import {externalBooks,externalWikiFile} from './external-catalogs.ts';
 import {fetchFile} from './network.ts';
+import {catalogCoverUrl} from './covers.ts';
 const cache=new Map();
 async function json(url,signal){
  const hit=cache.get(url);if(hit&&Date.now()-hit.time<15*60000)return hit.data;
@@ -17,9 +18,9 @@ export async function searchBooks({source='gitenberg',query='',page=1,continuati
  }
  const q=(query.replace(/[:<>]/g,' ').slice(0,100)+' user:GITenberg').trim();
  const data=await json('https://api.github.com/search/repositories?'+new URLSearchParams({q,per_page:'24',page:String(page)}),signal);
- return {books:(data.items||[]).filter(b=>b.owner?.login?.toLowerCase()==='gitenberg').map(b=>{
-  const description=String(b.description||'').replace(/\s+/g,' ').replace(/ is a Project Gutenberg book.*$/,'');const split=description.lastIndexOf(' by ');
-  return {id:b.id,title:split>=0?description.slice(0,split):b.name.replace(/_\d+$/,'').replace(/-/g,' '),author:split>=0?description.slice(split+4):'',source,repo:b.name,branch:b.default_branch,language:'',genre:'Project Gutenberg',rights:'Project Gutenberg edition; public domain in the US. Check local copyright.'};
+ return {books:(data.items||[]).filter(b=>b.owner?.login?.toLowerCase()==='gitenberg'&&!/\.github\.com$/i.test(String(b.name||''))).map(b=>{
+  const description=String(b.description||'').replace(/\s+/g,' ').replace(/ is a Project Gutenberg book.*$/,'');const split=description.lastIndexOf(' by '),gutenbergId=b.name.match(/_(\d+)$/)?.[1];
+  return {id:b.id,title:split>=0?description.slice(0,split):b.name.replace(/_\d+$/,'').replace(/-/g,' '),author:split>=0?description.slice(split+4):'',source,repo:b.name,branch:b.default_branch,language:'',genre:'Project Gutenberg',rights:'Project Gutenberg edition; public domain in the US. Check local copyright.',coverUrl:gutenbergId?catalogCoverUrl(`https://www.gutenberg.org/cache/epub/${gutenbergId}/pg${gutenbergId}.cover.medium.jpg`):undefined};
  }),next:page*24<Math.min(data.total_count||0,1000),total:data.total_count};
 }
 export async function acquireBook(book,{signal}: Record<string, any>={}){

@@ -53,5 +53,7 @@ jobs:
             case "$version" in *-*) flags="--prerelease --latest=false" ;; esac
             title="Sela $version — Reader web app and Viewer"
             if [ "$version" = "0.9.0-beta.0" ]; then title="Sela 0.9 beta — Initial release"; fi
-            gh release create "$tag" $flags --verify-tag --title "$title" --notes-file CHANGELOG.md
+            awk -v version="$version" '$1 == "##" && $2 == version { active=1; found=1; next } $1 == "##" && active { exit } active { print } END { if (!found) exit 2 }' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+            test -s "$RUNNER_TEMP/release-notes.md"
+            gh release create "$tag" $flags --verify-tag --title "$title" --notes-file "$RUNNER_TEMP/release-notes.md"
           fi

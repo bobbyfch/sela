@@ -8,11 +8,11 @@ Sela adalah jeda yang tak kosong: tempat seseorang menaruh kesibukan sebentar, m
 
 [English](README.md) · [Demo](https://bobbyfch.github.io/sela/) · [Rilis terbaru](https://github.com/bobbyfch/sela/releases) · [Integrasi](docs/integrations.md) · [Format](docs/formats.md)
 
-Sela masih **beta.2** (`0.9.0-beta.2`), belum rilis stabil. Versi rilis bersumber dari `package.json`; build memperbarui header, runtime, metadata dan contoh CDN. [Pengembangan dan versi](docs/development.md).
+Sela masih **beta.3** (`0.9.0-beta.3`), belum rilis stabil. Versi rilis bersumber dari `package.json`; build memperbarui header, runtime, metadata dan contoh CDN. [Pengembangan dan versi](docs/development.md).
 
-Kode sumber viewer, aplikasi, worker, tooling, dan tes ditulis dalam TypeScript; Vite membangun SDK/shell React, sedangkan Astro menghasilkan halaman publik/reader dari TSX. JavaScript untuk browser serta deklarasi SDK dihasilkan melalui build; URL CDN tetap sama. Pengembangan membutuhkan Node.js 22.18+. [Struktur sumber dan batas pengetikan](docs/typescript-migration.md), [hasil Next Generation](docs/next-generation-delivery.md).
+Kode sumber viewer, aplikasi, worker, tooling, dan tes ditulis dalam TypeScript; Vite membangun SDK/shell React, sedangkan Astro menghasilkan halaman publik/reader dari TSX. JavaScript untuk browser serta deklarasi SDK dihasilkan melalui build; URL CDN tetap sama. Pengembangan membutuhkan Node.js 22.18+. [Struktur sumber dan kebijakan tipe](docs/development.md).
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta.2-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta.3-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
 
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
@@ -92,7 +92,7 @@ Reader settings menyediakan audio lokal, narasi EPUB SMIL embedded, ambience huj
 
 Web publik memakai country.is saat kunjungan pertama untuk memilih bahasa yang didukung, misalnya Indonesia→Bahasa Indonesia, Jepang→Jepang, dan Spanyol→Spanyol. Negara yang tidak dipetakan memakai bahasa Inggris; pilihan manual menang, sedangkan kegagalan lookup kembali ke bahasa browser. `?geo=off` menonaktifkan lookup. Embed dan app Reader tidak melakukan lookup IP. Dokumen tidak diunggah dan Sela tidak memakai analytics.
 
-Sela mencetak kredit satu kali di console ketika reader dibuka dan memiliki tautan kecil ke sumber. Atribusi tidak menjamin backlink terindeks atau peringkat SEO. Dibuat oleh **Bobby Fajar Christian**: [Portfolio](https://bobbyfajarc.github.io/) · [Instagram]([private social link removed]) · [LinkedIn]([private social link removed]) · [GitHub](https://github.com/bobbyfch).
+Sela mencetak kredit satu kali di console ketika reader dibuka dan memiliki tautan kecil ke sumber. Atribusi tidak menjamin backlink terindeks atau peringkat SEO. Dibuat oleh **Bobby Fajar Christian**: [Portfolio](https://bobbyfajarc.github.io/) · [Proyek di GitHub](https://github.com/bobbyfch/sela).
 
 Jika Sela membuat halaman proyekmu lebih nyaman dibaca, sebuah ⭐ membantu orang lain menemukannya.
 
@@ -126,7 +126,7 @@ Pada Teks dokumen, aksi muncul setelah teks dipilih: simpan kutipan ke catatan h
 
 Shell React 19, build Vite 8, web publik Astro 7, pemeriksaan TypeScript 7, serta satu viewer native untuk CDN/PHP dan aplikasi. Stack dipilih sesuai peran; host CI3/CI4/Laravel tidak membutuhkan React atau Node runtime.
 
-Extension opsional menyediakan toolbar/menu, loader, renderer host, storage anotasi, dictionary/translation, dan debug tanpa isi dokumen atau token. [Kontrak host](docs/host-extensions.md), [uji runtime framework](docs/framework-validation.md), [validasi terbaru](docs/modern-stack-validation.md).
+Extension opsional menyediakan toolbar/menu, loader, renderer host, storage anotasi, dictionary/translation, dan debug tanpa isi dokumen atau token. [Kontrak host](docs/host-extensions.md), [uji integrasi framework](docs/framework-validation.md).
 
 Screenshot berasal dari aplikasi nyata. Jalankan `npm run serve`, lalu `npm run screenshots` untuk memperbaruinya.
 
@@ -134,4 +134,4 @@ Screenshot berasal dari aplikasi nyata. Jalankan `npm run serve`, lalu `npm run 
 
 Nama ruang, preview companion, mode tenang dan section Beranda pilihan. Ruangku menyediakan notebook lintas buku + ekspor Markdown, journal, rak otomatis/dekorasi, cek offline perjalanan, perawatan library dan kartu koleksi PNG. Detail buku menyimpan pesan nanti, kesan selesai, kutipan favorit, pita penanda dan volume seri. Koneksi menambahkan pencarian isi rak lokal, kamus/terjemahan opt-in dan preset jenis bacaan.
 
-Public hingga footer, app dan screenshot nyata memakai dunia Linen yang sama. Provider online bergantung jaringan/CORS; perangkat fisik tetap perlu diuji. [Pemetaan lengkap hasil brainstorming dan batas validasi](docs/personal-reader-delivery.md).
+Public hingga footer, app dan screenshot nyata memakai dunia Linen yang sama. Provider online bergantung jaringan/CORS; perangkat fisik tetap perlu diuji. [Fitur membaca dan data lokal](docs/reading-experience.md).

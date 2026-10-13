@@ -34,7 +34,7 @@ generated landscape, encoded using DjVu.js.
 
 ## Original sample story
 
-Yang Tidak Ikut Pulang text and original AI-generated illustrations are CC BY 4.0, attributed to Sela and Bobby Fajar Christian. Text is AI-assisted fiction and does not describe the real people whose names appear. See example/story/README.md and prompts.md. Previous sample content remains licensed in historical releases; it is absent from the active distribution.
+Yang Tidak Ikut Pulang text and original AI-generated illustrations are CC BY 4.0, attributed to Sela and Bobby Fajar Christian. Text is AI-assisted fiction and does not describe the real people whose names appear. See example/story/README.md. Previous sample content remains licensed in historical releases; it is absent from the active distribution.
 
 ## Optional weather
 Home city weather uses Open-Meteo when enabled. Data attribution: Open-Meteo, CC BY 4.0. Hosted free endpoint is for non-commercial use; see https://open-meteo.com/en/pricing. Quotes are original Sela EN/ID copy and work offline.
@@ -53,4 +53,4 @@ Room/companion/material SVG artwork and bilingual offline reflections are origin
 
 Explore and optional quote/dictionary features fetch content only when requested. GITenberg/Gutenberg editions retain their source notices and jurisdiction-specific rights. Wikisource/Wikiquote contributions retain attribution and their applicable CC BY-SA terms; underlying works and quotations may carry separate rights. Open Library/DOAB/OpenStax/Standard Ebooks metadata links do not imply ownership or permission to redistribute every edition. Quotable content identifies its author/provider; original reflections are labelled separately.
 
-Dictionary packs are supplied by the user; no third-party dictionary dataset is bundled. Optional dictionaryapi.dev/MyMemory calls follow provider terms and receive the submitted word/passage. Local audio is user-supplied; rain ambience is synthesized locally. WebDAV sends an explicitly requested private backup to the user-selected server. See docs/library-sources.md and docs/personal-reader-delivery.md for scope and live availability.
+Dictionary packs are supplied by the user; no third-party dictionary dataset is bundled. Optional dictionaryapi.dev/MyMemory calls follow provider terms and receive the submitted word/passage. Local audio is user-supplied; rain ambience is synthesized locally. WebDAV sends an explicitly requested private backup to the user-selected server. See docs/library-sources.md for provider scope and availability.

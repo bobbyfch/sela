@@ -1,10 +1,9 @@
 /** Repeatable product captures from actual app UI, in a disposable browser context. */
 import sharp from 'sharp';
 import {chromium} from '@playwright/test';
-import {existsSync} from 'node:fs';
 import {mkdir} from 'node:fs/promises';
-const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const browser=await chromium.launch(existsSync(edge)?{executablePath:edge}:{});
+
+const browser=await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{});
 await mkdir('site/screenshots',{recursive:true});
 try {
  const page=await browser.newPage({viewport:{width:393,height:852},serviceWorkers:'block',locale:'en-US'});

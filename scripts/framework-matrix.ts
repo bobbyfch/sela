@@ -8,8 +8,8 @@ const root=resolve('.'),workspace=resolve('.build/framework-matrix');
 if(!existsSync(workspace+'/node_modules/next'))throw new Error('Install the isolated matrix dependencies described in docs/framework-validation.md first.');
 await mkdir(workspace+'/node_modules/@bobbyfch',{recursive:true});
 if(!existsSync(workspace+'/node_modules/@bobbyfch/sela'))await symlink(root,workspace+'/node_modules/@bobbyfch/sela','junction');
-const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const browser=await chromium.launch(existsSync(edge)?{executablePath:edge}:{});
+
+const browser=await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{});
 const report:object[]=[];
 try {
  for(const framework of ['next','nuxt']){
@@ -40,5 +40,5 @@ try {
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.library-reader-overlay'));report.push({framework,ssr:true,clientOpen:true,close:true});
   }catch(error){await writeFile(cwd+'/runtime.log',logs);throw error;}finally{await page.close();child.kill();}
  }
-}finally{await browser.close();await writeFile('docs/framework-runtime-results.json',JSON.stringify(report,null,2)+'\n');}
+}finally{await browser.close();await writeFile('.build/framework-runtime-results.json',JSON.stringify(report,null,2)+'\n');}
 console.log(JSON.stringify(report));

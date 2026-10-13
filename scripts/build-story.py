@@ -1,5 +1,6 @@
 """Reproducible original novella assets. Requires reportlab, Pillow and pypdf."""
 from pathlib import Path
+import os
 import re, json, html, zipfile, hashlib
 from PIL import Image
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Image as PdfImage
@@ -23,7 +24,7 @@ for name in ['cover','clock','hallway','cup']:
         with Image.open(ART/(name+'.png')) as image:
             image.convert('RGB').save(ART/(name+'.jpg'),quality=86,optimize=True)
 
-fonts=Path('C:/Windows/Fonts')
+fonts=Path(os.environ.get('SELA_STORY_FONTS',str(Path(os.environ.get('WINDIR',Path.home()))/'Fonts')))
 for name,file in [('Story','georgia.ttf'),('StoryBold','georgiab.ttf'),('StoryItalic','georgiai.ttf')]:
     pdfmetrics.registerFont(TTFont(name,str(fonts/file)))
 pdfmetrics.registerFontFamily('Story',normal='Story',bold='StoryBold',italic='StoryItalic')

@@ -1,17 +1,19 @@
 <p align="center"><img src="logo.svg" width="88" alt="Sela open-book emblem"></p>
 <h1 align="center">Sela Reader</h1>
 <p align="center"><strong>Your personal reader. 📖</strong><br>PDF · EPUB · CBZ · TXT · Markdown · HTML · FB2 · DOCX · ODT · optional DjVu<br>Book flip · Manga RTL · Seamless webtoon · Single page</p>
-<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases"><img alt="Release" src="https://img.shields.io/badge/version-0.9_beta.2-31725a?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
+<p align="center"><a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg"></a> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-31725a"> <a href="https://github.com/bobbyfch/sela/releases"><img alt="Release" src="https://img.shields.io/badge/version-0.9_beta.3-31725a?color=31725a"></a> <img alt="TypeScript ready" src="https://img.shields.io/badge/TypeScript-ready-3178c6"> <img alt="Framework independent" src="https://img.shields.io/badge/framework-independent-31725a"></p>
 
 [Live playground](https://bobbyfch.github.io/sela/) · [Bahasa Indonesia](README.id.md) · [Integrations](docs/integrations.md) · [Formats](docs/formats.md) · [Browser support](docs/compatibility.md) · [Changelog](CHANGELOG.md)
 
 **Sela** means an interval: a space between things, and a moment to make room for a story. Open Sela: your cozy personal reader and private offline bookshelf on desktop, tablet and phone, installable from your browser. Sela Viewer is the lightweight CDN foundation for websites. **No Bootstrap, jQuery or icon font required.** PDF.js loads only for PDFs; EPUB and CBZ use a separate lazy adapter. Optional DjVu integration uses an externally supplied decoder.
 
+The Reader is built with TypeScript, React and Vite; the public pages use Astro. The CDN Viewer remains framework-independent: its compiled browser bundle keeps the existing URLs and can be used from plain HTML, React, Vue, Svelte, Angular, Astro, PHP and other hosts. Hosts do not need to install Sela's application stack.
+
 🇮🇩 [Baca panduan lengkap dalam Bahasa Indonesia →](README.id.md)
 
 [![Sela Reader running on desktop](site/screenshots/app-desktop.webp)](https://bobbyfch.github.io/sela/)
 
-[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta.2-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
+[![Install CDN viewer](https://img.shields.io/badge/install-CDN_viewer-236947?style=for-the-badge&logo=javascript&logoColor=white)](https://bobbyfch.github.io/sela/#install-viewer) [![Latest release](https://img.shields.io/badge/version-0.9_beta.3-31725a?style=for-the-badge&color=236947&logo=github)](https://github.com/bobbyfch/sela/releases)
 
 [![Open Sela Reader](https://img.shields.io/badge/open-Sela_Reader-236947?style=for-the-badge&logo=android&logoColor=white)](https://bobbyfch.github.io/sela/#install-mobile)
 
@@ -33,8 +35,8 @@ Reader and CDN Viewer use **one responsive interface**: icon controls, page navi
 
 | Read your way | Fit your project |
 | --- | --- |
-| 📖 Book folds and two-page spreads | Vanilla JavaScript + ESM |
-| 🗯️ Manga RTL turns and arrow keys | TypeScript declarations, SSR-safe import |
+| 📖 Book folds and two-page spreads | Framework-neutral JavaScript + ESM bundle |
+| 🗯️ Manga RTL turns and arrow keys | TypeScript source and declarations, SSR-safe import |
 | 📜 Webtoon with nearby-page rendering | Vue component; additional integration examples |
 | 🎯 Responsive single-page focus | Bootstrap/Tailwind can stay in your app |
 | 🌗 Themes and reduced motion | Auth headers, credentials, byte-data PDFs |
@@ -160,9 +162,9 @@ Selected demo documents stay in the browser; no upload or analytics. Bookmarks/p
 
 ## Development
 
-Sela is currently **beta.2** (`0.9.0-beta.2`), not a stable release. The release version comes from `package.json`; build output supplies the page headers, runtime and CDN examples. [Development and versioning](docs/development.md).
+Sela is currently **beta.3** (`0.9.0-beta.3`), not a stable release. The release version comes from `package.json`; build output supplies the page headers, runtime and CDN examples. [Development and versioning](docs/development.md).
 
-Viewer, app, workers, tooling and tests are authored in TypeScript; Vite builds the SDK/React app shell and Astro generates public/reader pages from TSX. Browser JavaScript and SDK declarations are generated; existing CDN URLs stay the same. Use Node.js 22.18+ for development. [Source layout and typing limits](docs/typescript-migration.md), [Next Generation delivery](docs/next-generation-delivery.md).
+Viewer, app, workers, tooling and tests are authored in TypeScript; Vite builds the SDK/React app shell and Astro generates public/reader pages from TSX. Browser JavaScript and SDK declarations are generated; existing CDN URLs stay the same. Use Node.js 22.18+ for development. [Source layout and typing policy](docs/development.md).
 
 ```sh
 npm ci
@@ -184,7 +186,7 @@ If Sela makes your project easier to read, a ⭐ helps others find it. [Contribu
 
 ## Created by Bobby
 
-Sela prints a one-time console credit when opened and includes a small source link in the viewer. These are credits, not a promise of search ranking. [Portfolio](https://bobbyfajarc.github.io/) · [Instagram]([private social link removed]) · [LinkedIn]([private social link removed]) · [GitHub](https://github.com/bobbyfch).
+Sela prints a one-time console credit when opened and includes a small source link in the viewer. These are credits, not a promise of search ranking. [Portfolio](https://bobbyfajarc.github.io/) · [Project on GitHub](https://github.com/bobbyfch/sela).
 
 Reader settings include optional local audiobook controls, embedded EPUB SMIL narration and soft-rain ambience with a sleep timer. Playback and codecs depend on the device; no streaming music service is bundled.
 
@@ -202,7 +204,7 @@ Open **Explore** for GITenberg, Gutendex, multilingual Wikisource, Open Library,
 
 React 19 owns the app shell, Vite 8 builds the app and independent viewer, Astro 7 generates the public site, and TypeScript 7 checks their contracts. Native document controllers keep CDN/PHP hosts free of a React or Node runtime requirement. Material textures and vector icons are local assets.
 
-The optional `@bobbyfch/sela/host` entry provides disposable toolbar/selection commands, source loaders, custom host renderer adapters, annotation storage, dictionary/translation providers and a privacy-safe debug panel. No provider is contacted without host configuration. See [host contracts](docs/host-extensions.md), [framework runtime checks](docs/framework-validation.md), and [current validation](docs/modern-stack-validation.md).
+The optional `@bobbyfch/sela/host` entry provides disposable toolbar/selection commands, source loaders, custom host renderer adapters, annotation storage, dictionary/translation providers and a privacy-safe debug panel. No provider is contacted without host configuration. See [host contracts](docs/host-extensions.md) and [framework integration checks](docs/framework-validation.md).
 
 Regenerate product screenshots with `npm run serve` and `npm run screenshots`. Captures use the actual application in a disposable browser profile; device frames are CSS on the public page.
 
@@ -210,4 +212,4 @@ Regenerate product screenshots with `npm run serve` and `npm run screenshots`. C
 
 Name your reading room, choose a companion, quiet the scene and hide optional Home sections. My room offers a cross-book notebook with Markdown export, reading journal, smart shelves, travel readiness, library care and collection-card PNG previews. Book details hold messages for later, impressions, favorite passages, ribbon labels and volume order. Connections adds local full-library text search, opt-in dictionary/translation and format-group reading presets.
 
-The public page, app and fresh product screenshots share a Linen reading-room scene. Original files remain local; scans need external OCR. Online provider availability varies, and physical mobile playback/storage are not guaranteed. [Complete delivery and validation boundaries](docs/personal-reader-delivery.md).
+The public page, app and fresh product screenshots share a Linen reading-room scene. Original files remain local; scans need external OCR. Online provider availability varies, and physical mobile playback/storage are not guaranteed. [Reading features and local data](docs/reading-experience.md).

@@ -80,7 +80,7 @@ test('Explore source sheet keeps OPDS dropdowns, inputs, and long saved-catalog 
 test('Explore toggles between the responsive bookshelf and compact grid and remembers the choice',async({page})=>{
  await page.route('https://api.github.com/search/repositories?**',route=>route.fulfill({json:{total_count:40,items:Array.from({length:24},(_,index)=>({id:index+1,name:`classic-${index+1}`,description:`An open classic ${index+1} by Author ${index+1}`,default_branch:'master',owner:{login:'GITenberg'}}))}}));
  await page.setViewportSize({width:1440,height:900});await page.goto('/mobile/');await page.getByRole('button',{name:'Explore',exact:true}).click();const results=page.locator('.open-results');
- await expect(results).toHaveAttribute('data-view-mode','bookshelf');await expect(results.locator('.open-book')).toHaveCount(24);expect(await results.evaluate(element=>getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length)).toBe(4);
+ await expect(results).toHaveAttribute('data-view-mode','bookshelf');await expect(results.locator('.open-book')).toHaveCount(24);await expect.poll(()=>results.locator('.open-book-cover img').evaluateAll(images=>images.filter(image=>image instanceof HTMLImageElement&&image.complete&&image.naturalWidth>0).length)).toBe(24);expect(await results.evaluate(element=>getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length)).toBe(4);await expect(results.locator('.open-book-cover')).toHaveCount(24);await expect(results.locator('.open-book-copy').first()).toBeHidden();
  await page.getByRole('button',{name:'Grid view',exact:true}).click();await expect(results).toHaveAttribute('data-view-mode','grid');await expect(page.getByRole('button',{name:'Grid view',exact:true})).toHaveAttribute('aria-pressed','true');expect(await page.evaluate(()=>localStorage.getItem('sela-library:explore-view'))).toBe('grid');
  await page.reload();await page.getByRole('button',{name:'Explore',exact:true}).click();await expect(page.locator('.open-results')).toHaveAttribute('data-view-mode','grid');
 });
@@ -94,7 +94,7 @@ test('Long book titles and information actions fit the detail sheet on narrow sc
  for(const [width,colorScheme] of [[320,'light'],[393,'dark'],[1280,'light']] as const){
   await page.setViewportSize({width,height:852});
   await page.emulateMedia({colorScheme});
-  await catalog.getByRole('button',{name:'Book information'}).click();
+  await catalog.getByRole('button',{name:'Open book details: '+longTitle}).click();
   const sheet=page.locator('.control-sheet[open]');
   await expect(sheet).toBeVisible();
   const metrics=await sheet.evaluate(element=>{

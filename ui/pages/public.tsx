@@ -896,12 +896,8 @@ function Notes() {
 }
 function Nav() {
   return (
-    <nav aria-label={"Author links"}>
-      <a href={"[private social link removed]"}>{"Instagram"}</a>
-      {" · "}
-      <a href={"[private social link removed]"}>{"LinkedIn"}</a>
-      {" · "}
-      <a href={"https://github.com/bobbyfch"}>{"GitHub"}</a>
+    <nav aria-label={"Project links"}>
+      <a href={"https://github.com/bobbyfch/sela"}>{"Sela on GitHub"}</a>
     </nav>
   );
 }

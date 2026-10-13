@@ -1,11 +1,11 @@
 import { chromium } from '@playwright/test';
-import { existsSync } from 'node:fs';
+
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+
 const base = process.env.SELA_PROFILE_URL || 'http://127.0.0.1:4173';
-const browser = await chromium.launch(existsSync(edge) ? { executablePath: edge } : {});
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {});
 const page = await browser.newPage({ viewport: { width: 393, height: 852 }, serviceWorkers: 'block' });
 const session = await page.context().newCDPSession(page);
 await session.send('Performance.enable');

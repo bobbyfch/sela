@@ -5,7 +5,7 @@
 ## Quick start
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.2/dist/js/sela.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.3/dist/js/sela.min.js"></script>
 <button id="read" type="button">Read PDF</button>
 <script>
 const reader = new Sela({
@@ -22,8 +22,8 @@ document.querySelector('#read').addEventListener('click', () => {
 CSS loads automatically on first open. For explicit loading/CSP:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.2/dist/css/sela.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.2/dist/css/sela.app.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.3/dist/css/sela.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.3/dist/css/sela.app.css">
 ```
 
 Pin a release tag in production.
@@ -31,7 +31,7 @@ Pin a release tag in production.
 ### ESM / TypeScript
 
 ```sh
-npm install github:bobbyfch/sela#v0.9.0-beta.2
+npm install github:bobbyfch/sela#v0.9.0-beta.3
 ```
 
 ```ts
@@ -50,7 +50,7 @@ Bundled imports use the pinned CDN for renderer assets. Self-hosting/offline: se
 Use `dist/js/sela.compat.js` instead of the main script. This ES5 entry checks capabilities before loading the modern viewer:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.2/dist/js/sela.compat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.3/dist/js/sela.compat.js"></script>
 <script>
 document.getElementById('read').onclick = function () {
   var start = function () { new Sela({ pdfUrl: '/story.pdf' }).open(); };
@@ -61,7 +61,7 @@ document.getElementById('read').onclick = function () {
 </script>
 ```
 
-Keep a normal PDF link for disabled JavaScript and load failures. Very old browsers receive the original PDF. [Verified capabilities and limits](docs/compatibility.md).
+Keep a normal PDF link for disabled JavaScript and load failures. Very old browsers receive the original PDF. [Verified capabilities and limits](compatibility.md).
 
 ## Embed or overlay
 

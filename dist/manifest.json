@@ -1,16 +1,16 @@
 {
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "pdfjs": "6.4.299",
   "assets": {
     "dist/js/sela.min.js": {
-      "bytes": 92295,
-      "gzip": 28562,
-      "sha256": "2cf547c4cfcc38b4eb9a2b51dab00a8d4fe56799742c213ac50b7832bc78b6f0"
+      "bytes": 92192,
+      "gzip": 28517,
+      "sha256": "51b54b41f8808eca5e934be9168630b4b6b0df10dc3b5c05a6b1ee03661a52d6"
     },
     "dist/js/sela.esm.js": {
-      "bytes": 92347,
-      "gzip": 28578,
-      "sha256": "d680ca48f1191fa3a14d73ee35223a85b26eea88073115afcbfe12f266dd87b8"
+      "bytes": 92244,
+      "gzip": 28537,
+      "sha256": "4c4c18da1eaa3a93e005a8f6b845c46b1ad9c51a5b56638fac1fe04534b4b779"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1639,
@@ -63,14 +63,14 @@
       "sha256": "7b10a300da2026e857cb47deaee44ad711a510fd08b5b96efbc70f582dde7f40"
     },
     "dist/css/sela.app.css": {
-      "bytes": 93778,
-      "gzip": 15416,
-      "sha256": "4005fcbd9bb56853c335765813aeef65211644abb4f420e48aceb7da6ee03c13"
+      "bytes": 93810,
+      "gzip": 15359,
+      "sha256": "aeac587fc24a58215aa5789aa712665e195899a95a115ccd741e4343c4b1373e"
     },
     "dist/css/sela.min.css": {
       "bytes": 15301,
       "gzip": 3909,
-      "sha256": "daa5a3a1423d1f6b4916789cbaab782a65ffb4a3812371f44893d35e35d4d2b7"
+      "sha256": "d43f469634e12fa77bbbd433996208e3c8ac525c86f6064ffed1b104f07f4215"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

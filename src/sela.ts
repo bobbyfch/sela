@@ -115,7 +115,7 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
       }
       if (!win.__selaAttribution) {
         win.__selaAttribution = true;
-        console.info('Sela '+VERSION+' · Documents, books and comics.\nCreated by Bobby Fajar Christian · https://bobbyfajarc.github.io/\nGitHub: https://github.com/bobbyfch/sela · Instagram: [private social link removed] · LinkedIn: [private social link removed]');
+        console.info('Sela '+VERSION+' · Documents, books and comics.\nCreated by Bobby Fajar Christian · https://bobbyfajarc.github.io/\nProject: https://github.com/bobbyfch/sela');
       }
       if(options.language === 'auto')options.language = /^id\b/i.test(win.navigator.language) ? 'id' : 'en';
       const extension = /\.(epub|cbz|djvu|djv|txt|md|html|htm|fb2|docx|odt)(?:[?#]|$)/i.exec(options.url || options.pdfUrl || '')?.[1].toLowerCase().replace(/^htm$/, 'html');
