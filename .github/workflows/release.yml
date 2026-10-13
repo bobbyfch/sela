@@ -3,7 +3,7 @@ name: Publish Reader and Viewer release
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/release.yml', 'package.json', 'scripts/build.ts', 'playwright.config.ts', 'ui/app-materials.css']
+    paths: ['.github/workflows/release.yml', 'package.json', 'package-lock.json', 'CHANGELOG.md', 'scripts/build.ts', 'playwright.config.ts', 'ui/app-materials.css']
   workflow_dispatch:
 permissions:
   contents: write
