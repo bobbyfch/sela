@@ -2,6 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('reader audio, ambience, theme sync, and accessible controls work as separate tools',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('https://api.gdeltproject.org/**',route=>route.fulfill({json:{articles:[]}}));
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  await page.getByRole('button',{name:'Read sample',exact:true}).click();
  const reader=page.locator('[data-product-reader=app]');await expect(reader).toBeVisible({timeout:15000});

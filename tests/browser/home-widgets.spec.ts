@@ -105,6 +105,14 @@ test('prayer times stay a compact Home widget across phone, tablet, and desktop'
  await page.setViewportSize({width:390,height:844});await expect(page.locator('.home-reflection')).toBeVisible();await expect(page.locator('.home-faith-widget h2')).toHaveText('Verse of the day');
 });
 
+test('prayer time failures explain the fallback and keep retry available',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela-library:weather',JSON.stringify({latitude:-6.2,longitude:106.8,name:'Jakarta',timezone:'Asia/Jakarta'})));
+ await page.route('https://api.aladhan.com/v1/timings/**',route=>route.fulfill({status:503,body:'temporarily unavailable'}));
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('[data-tab=home]').click();
+ const prayer=page.locator('.home-page .home-prayer-times');await prayer.getByRole('button',{name:'Load prayer times'}).click();await expect(prayer).toContainText('Prayer times are unavailable');await expect(prayer.getByRole('button',{name:'Try again'})).toBeEnabled();expect(errors).toEqual([]);
+});
+
 test('Indonesian news aggregation keeps thumbnails and source attribution in compact rows',async({page})=>{
  await page.route('https://api.gdeltproject.org/api/v2/doc/doc?**',route=>route.fulfill({status:429,body:'rate limited'}));
  await page.route('https://www.antaranews.com/rss/**',route=>route.fulfill({contentType:'application/rss+xml',body:'<rss><channel><item><title>Berita buku hari ini</title><link>https://www.antaranews.com/berita/123/buku</link><description>Ringkasan berita buku.</description><enclosure url="https://cdn.antaranews.com/cache/800x533/buku.jpg" /></item></channel></rss>'}));
