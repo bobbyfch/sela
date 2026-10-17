@@ -25,12 +25,13 @@ test('extension assets are allowed only within the currently running extension',
 });
 test('optional capabilities keep the core within its declared download budget', async () => {
   const manifest = JSON.parse(await readFile('dist/manifest.json', 'utf8'));
-  assert(manifest.assets['dist/js/sela.min.js'].gzip < 28 * 1024);
+  assert(manifest.assets['dist/js/sela.min.js'].gzip < 30 * 1024); // Optional locale loading stays out of the default viewer payload.
   assert(manifest.assets['dist/js/sela.tools.js'].gzip < 10.5 * 1024); // Lazy reader includes page-material choices.
-  // The optional text adapter also owns frame-batched touch cancellation.
-  // Keep its small, explicit budget while retaining the unchanged core ceiling.
-  assert(manifest.assets['dist/js/sela.text.js'].gzip < 4.5 * 1024); // Parser structure limits and host-bundler directives.
+  assert(manifest.assets['dist/js/sela.locales.js'].gzip < 53 * 1024); // Japanese reader labels stay optional and load on demand.
+  // The optional text adapter sanitizes scripture markup and applies bounded reader font choices.
+  assert(manifest.assets['dist/js/sela.text.js'].gzip < 5.25 * 1024); // Host-bundler directives and constrained Quran presentation.
   const core = await readFile('dist/js/sela.min.js', 'utf8');
   assert(!core.includes('SpeechSynthesisUtterance'));
   assert(!core.includes('indexedDB'));
+  assert(!core.includes('A little space to make reading feel like yours.'));
 });

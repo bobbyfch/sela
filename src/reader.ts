@@ -108,7 +108,9 @@ export function createReader(global, engine) {
     function open(options) {
         var language=options.language||'en';
         var words = {"Pembaca e-book: ":"E-book reader: ","Tampilkan penanda dan pratinjau halaman":"Show bookmarks and page previews","Aktifkan suara halaman":"Enable page sound","Matikan suara halaman":"Disable page sound","Unduh ":"Download ","Tutup pembaca":"Close reader","Penanda halaman":"Bookmarks","Pratinjau halaman":"Page previews","Posisi halaman":"Reading position","Halaman ":"Page ","Lanjut atau buka halaman":"Next or go to page","Tandai halaman ini":"Bookmark this page","Belum ada halaman yang ditandai.":"No bookmarks yet.","Buka halaman ":"Go to page ","Hapus penanda halaman ini":"Remove this bookmark","Gunakan nomor halaman untuk dokumen yang sangat panjang.":"Use page numbers for very long documents.","Pratinjau halaman ":"Preview page ","Buka PDF":"Open PDF","Berkas PDF tidak dapat dimuat. Periksa koneksi atau coba lagi.":"The PDF could not be loaded. Check your connection or retry.","Efek buku tidak tersedia di browser ini. Anda dapat mencoba membuka PDF langsung.":"The book effect is unavailable. You can try opening the original PDF."};
-        function t(label) { return language === "en" ? words[label] || label : label; }
+        const translate=options.translate||((en,id)=>String(language).toLowerCase().startsWith('id')?id:en);
+        function t(label) { return translate(words[label]||label,label,language); }
+        function copy(en,id){return translate(en,id,language);}
         if (!engine || !options || (!options.url && !options.data)) {
             return Promise.reject(new Error('Pembaca tidak tersedia'));
         }
@@ -136,6 +138,7 @@ export function createReader(global, engine) {
             thumbRecent: [],
             thumbTasks: new Set()
         };
+        state.translate=translate;
         if (!Array.isArray(state.marks)) state.marks = [];
 
         var overlay = document.createElement('div');
@@ -155,10 +158,10 @@ export function createReader(global, engine) {
         overlay.appendChild(shell);
 
         // Internal actions are detached controllers; the shared app shell owns all chrome.
-        var helpButton=button(language==='en'?'Keyboard shortcuts':'Pintasan keyboard');
+        var helpButton=button(copy('Keyboard shortcuts','Pintasan keyboard'));
         var help=document.createElement('div');help.className='sela-shortcuts';help.hidden=true;
-        const touchHelp=language==='en'?'Touch: swipe or use page arrows; pinch to zoom; drag an enlarged page; tap Reading settings for fit and mode.':'Sentuh: geser atau gunakan panah halaman; cubit untuk zoom; tarik halaman yang diperbesar; buka Pengaturan bacaan untuk ukuran dan mode.';
-        const keyboardHelp='← → / PgUp PgDn: navigate · Home / End: first / last · + / −: zoom · 0: reset · F: fullscreen · B: bookmark · M: sound · ?: shortcuts · Esc: close · Alt + ←: previous position · Ctrl/Cmd + F: search.';
+        const touchHelp=copy('Touch: swipe or use page arrows; pinch to zoom; drag an enlarged page; tap Reading settings for fit and mode.','Sentuh: geser atau gunakan panah halaman; cubit untuk zoom; tarik halaman yang diperbesar; buka Pengaturan bacaan untuk ukuran dan mode.');
+        const keyboardHelp=copy('← → / PgUp PgDn: navigate · Home / End: first / last · + / −: zoom · 0: reset · F: fullscreen · B: bookmark · M: sound · ?: shortcuts · Esc: close · Alt + ←: previous position · Ctrl/Cmd + F: search.','← → / PgUp PgDn: navigasi · Home / End: pertama / terakhir · + / −: zoom · 0: reset · F: layar penuh · B: tandai · M: suara · ?: pintasan · Esc: tutup · Alt + ←: posisi sebelumnya · Ctrl/Cmd + F: cari.');
         help.textContent=global.matchMedia('(pointer: coarse)').matches?touchHelp:((global.navigator.maxTouchPoints||0)>0?touchHelp+'\n\n':'')+keyboardHelp;
         function toggleHelp(){help.hidden=!help.hidden;helpButton.setAttribute('aria-expanded',String(!help.hidden));}
         helpButton.addEventListener('click',toggleHelp);shell.appendChild(help);
@@ -166,11 +169,12 @@ export function createReader(global, engine) {
         var rotateButton=button('Rotate screen');rotateButton.disabled=!global.screen?.orientation?.lock;
         state.shell=shell;
         var notice=document.createElement('p');notice.className='sela-notice';notice.setAttribute('role','status');shell.appendChild(notice);
+        if(options.localeLoadError)notice.textContent='Using English translations.';
         rotateButton.addEventListener('click',async function(){try{
           if(!document.fullscreenElement)await shell.requestFullscreen();if(active!==state)return;
           await global.screen.orientation.lock(global.matchMedia('(orientation: portrait)').matches?'landscape':'portrait');
           if(active!==state){global.screen.orientation.unlock();return;}state.orientationLocked=true;
-        }catch{notice.textContent=language==='en'?'Rotate your device manually; the layout adapts automatically.':'Putar perangkat secara manual; tata letak menyesuaikan otomatis.';}});
+        }catch{notice.textContent=copy('Rotate your device manually; the layout adapts automatically.','Putar perangkat secara manual; tata letak menyesuaikan otomatis.');}});
         var filter=document.createElement('select');Object.keys(FILTERS).forEach(function(key){var option=document.createElement('option');option.value=key;filter.appendChild(option);});filter.value=options.filter||'none';
         var marksButton=button('Page previews'),soundButton=button('Page sound');
         var download=document.createElement('a'),documentFormat=options.format||'pdf';download.href=options.url||'#';download.hidden=!options.url;
@@ -213,8 +217,8 @@ export function createReader(global, engine) {
         state.setFit=function(value){options.fit=value;state.book?.setFit?.(value);state.savePreferences();};
         state.setMode=function(mode){
             if(!MODES.includes(mode))return Promise.reject(new TypeError('Unknown reading mode'));
-            if(state.switching)return Promise.reject(new Error(language==='en'?'Wait for the mode change.':'Tunggu perubahan mode selesai.'));
-            if(state.book.getText){if(!['single','scroll'].includes(mode))return Promise.reject(new Error(language==='en'?'Text books support single chapter or continuous scroll.':'Buku teks mendukung satu bab atau gulir berkelanjutan.'));state.book.setReadingMode?.(mode);options.mode=mode;state.savePreferences();return Promise.resolve();}
+            if(state.switching)return Promise.reject(new Error(copy('Wait for the mode change.','Tunggu perubahan mode selesai.')));
+            if(state.book.getText){if(!['single','scroll'].includes(mode))return Promise.reject(new Error(copy('Text books support single chapter or continuous scroll.','Buku teks mendukung satu bab atau gulir berkelanjutan.')));state.book.setReadingMode?.(mode);options.mode=mode;state.savePreferences();return Promise.resolve();}
             if(mode===options.mode)return Promise.resolve();
             var page=state.book.currentPage(),pdf=state.book.pdf,task=state.book.loadingTask;
             if(!pdf)return Promise.reject(new Error('Document is not ready'));
@@ -247,7 +251,7 @@ export function createReader(global, engine) {
         var progress=document.createElement('input');progress.type='range';progress.min='1';progress.max='1';progress.disabled=true;
         var pageForm=document.createElement('form');pageForm.className='library-reader-page-form';
         var pageInput=document.createElement('input');pageInput.type='number';pageInput.min='1';pageInput.value='1';pageInput.inputMode='numeric';
-            pageInput.setAttribute('aria-label',language==='en'?'Page or chapter number':'Nomor halaman atau bab');
+            pageInput.setAttribute('aria-label',copy('Page or chapter number','Nomor halaman atau bab'));
         var total=document.createElement('span');total.textContent='/ …';
         var goButton=button(t('Lanjut atau buka halaman'));goButton.type='submit';pageForm.append(pageInput,total,goButton);
         var bookmarkButton=button(t('Tandai halaman ini'));bookmarkButton.setAttribute('aria-pressed','false');
@@ -413,7 +417,7 @@ export function createReader(global, engine) {
             message.className = 'library-reader-fallback';
             var text = document.createElement('p');
             var unavailable = error && /missing pdf|unexpected server response|invalid pdf|failed to fetch|http response/i.test(String(error.message || error));
-            text.textContent = options.format !== 'pdf' ? (language === 'en' ? 'This document could not be opened. Check its format or try another file.' : 'Dokumen tidak dapat dibuka. Periksa format atau coba file lain.') : unavailable
+            text.textContent = options.format !== 'pdf' ? copy('This document could not be opened. Check its format or try another file.','Dokumen tidak dapat dibuka. Periksa format atau coba file lain.') : unavailable
                 ? t("Berkas PDF tidak dapat dimuat. Periksa koneksi atau coba lagi.")
                 : t("Efek buku tidak tersedia di browser ini. Anda dapat mencoba membuka PDF langsung.");
             var link = document.createElement('a');
@@ -421,7 +425,7 @@ export function createReader(global, engine) {
             if (!options.url) link.hidden = true;
             link.target = '_blank';
             link.rel = 'noopener';
-            link.textContent = options.format === "pdf" ? t("Buka PDF") : (language === "en" ? "Download original" : "Unduh dokumen asli");
+            link.textContent = options.format === "pdf" ? t("Buka PDF") : copy('Download original','Unduh dokumen asli');
             message.appendChild(text);
             message.appendChild(link);message.appendChild(closeButton);
             bookHost.appendChild(message);
@@ -576,7 +580,7 @@ export function createReader(global, engine) {
             });
             if (state.inline) state.book.toggleFullscreen=function(){
                 var result=document.fullscreenElement===shell?document.exitFullscreen?.():shell.requestFullscreen?.();
-                result?.catch(function(){notice.textContent=language==='en'?'Fullscreen is unavailable in this browser.':'Layar penuh tidak tersedia di browser ini.';});
+                result?.catch(function(){notice.textContent=copy('Fullscreen is unavailable in this browser.','Layar penuh tidak tersedia di browser ini.');});
             };
         } catch (error) {
             fallback(error);

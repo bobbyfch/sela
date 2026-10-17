@@ -26,7 +26,8 @@ Use `npm run serve` to open the public site and Reader locally. `npm run screens
 
 - `src/` contains the shared reader and public SDK.
 - `app/` contains the Reader application, storage, and workers.
-- `ui/` contains page templates and source styles.
+- `ui/` contains page templates and Tailwind v4 entrypoints and reusable component utilities. Public pages compile to `site/public.css`, the app to `site/mobile-app.css`, and the app's embedded reader to `dist/css/sela.app.css`.
+- The standalone CDN viewer is compiled through `ui/viewer-tailwind.css` into `dist/css/sela.min.css`. It ships plain compiled CSS, scoped viewer utilities, and no Tailwind runtime or host-framework dependency, so React, Vue, PHP, static HTML, and other hosts can embed it without adopting Sela's build stack.
 - `site/`, `mobile/`, `library/`, and `dist/` contain browser-ready assets and release output.
 - `scripts/` and `tests/` contain build tools and verification.
 

@@ -112,7 +112,6 @@ export function mountWeather(parent, { t }) {
     if (error?.code === 1) feedback.textContent = t("Location permission was declined. Choose a city or allow it in browser settings.", "Izin lokasi ditolak. Pilih kota atau izinkan lewat pengaturan browser.");
     else if (error?.code === 2) feedback.textContent = t("Your location is unavailable. Choose a city instead.", "Lokasimu belum tersedia. Silakan pilih kota.");
     else feedback.textContent = t("Location request timed out. You can choose a city instead.", "Permintaan lokasi terlalu lama. Kamu bisa memilih kota.");
-    notify(feedback.textContent, "error");
   }
   function requestLocation() {
     if (requestingLocation) return;

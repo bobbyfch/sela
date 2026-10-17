@@ -1,19 +1,25 @@
 // Generated from app/library/external-catalogs.ts by npm run build. Do not edit.
 import { responseText } from "./network.js";
 import { catalogCoverUrl } from "./covers.js";
-export const catalogSources = [["wikisource", "Wikisumber \xB7 Indonesia"], ["gitenberg", "GITenberg \xB7 Classics"], ["gutendex", "Gutenberg \xB7 Gutendex"], ["wiki-en", "Wikisource \xB7 English"], ["wiki-fr", "Wikisource \xB7 Fran\xE7ais"], ["wiki-es", "Wikisource \xB7 Espa\xF1ol"], ["wiki-jv", "Wikisumber \xB7 Jawa"], ["wiki-su", "Wikisumber \xB7 Sunda"], ["wiki-de", "Wikisource \xB7 Deutsch"], ["wiki-nl", "Wikisource \xB7 Nederlands"], ["wiki-pt", "Wikisource \xB7 Portugu\xEAs"], ["wiki-it", "Wikisource \xB7 Italiano"], ["wiki-zh", "Wikisource \xB7 \u4E2D\u6587"], ["wiki-ja", "Wikisource \xB7 \u65E5\u672C\u8A9E"], ["wiki-ru", "Wikisource \xB7 \u0420\u0443\u0441\u0441\u043A\u0438\u0439"], ["wiki-ar", "Wikisource \xB7 \u0627\u0644\u0639\u0631\u0628\u064A\u0629"], ["openlibrary", "Open Library \xB7 Discovery"], ["doab", "DOAB \xB7 Open research"], ["openstax", "OpenStax \xB7 Textbooks"], ["standard", "Standard Ebooks \xB7 New releases"], ["local", "Sela \xB7 Selected classics"], ["opds", "OPDS \xB7 My catalogs"]];
+export const catalogSources = [["wikisource", "Wikisumber \xB7 Indonesia"], ["gitenberg", "GITenberg \xB7 Classics"], ["gutendex", "Gutenberg \xB7 Public-domain books"], ["wiki-en", "Wikisource \xB7 English"], ["wiki-fr", "Wikisource \xB7 Fran\xE7ais"], ["wiki-es", "Wikisource \xB7 Espa\xF1ol"], ["wiki-jv", "Wikisumber \xB7 Jawa"], ["wiki-su", "Wikisumber \xB7 Sunda"], ["wiki-de", "Wikisource \xB7 Deutsch"], ["wiki-nl", "Wikisource \xB7 Nederlands"], ["wiki-pt", "Wikisource \xB7 Portugu\xEAs"], ["wiki-it", "Wikisource \xB7 Italiano"], ["wiki-zh", "Wikisource \xB7 \u4E2D\u6587"], ["wiki-ja", "Wikisource \xB7 \u65E5\u672C\u8A9E"], ["wiki-ru", "Wikisource \xB7 \u0420\u0443\u0441\u0441\u043A\u0438\u0439"], ["wiki-ar", "Wikisource \xB7 \u0627\u0644\u0639\u0631\u0628\u064A\u0629"], ["openlibrary-trending", "Open Library \xB7 Top reads"], ["openlibrary-hidden", "Open Library \xB7 Hidden gems"], ["google-books", "Google Books \xB7 New releases"], ["google-books-free", "Google Books \xB7 Free eBooks"], ["google-books-paid", "Google Books \xB7 Paid & preview"], ["openlibrary", "Open Library \xB7 Discovery"], ["doab", "DOAB \xB7 Open research"], ["openstax", "OpenStax \xB7 Textbooks"], ["standard", "Standard Ebooks \xB7 New releases"], ["local", "Sela \xB7 Selected classics"], ["opds", "OPDS \xB7 My catalogs"]];
+const catalogCache = /* @__PURE__ */ new Map();
 async function json(url, signal) {
+  const cached = catalogCache.get(url);
+  if (cached && Date.now() - cached.at < 10 * 6e4) return cached.data;
   const r = await fetch(url, { signal, headers: { Accept: "application/json" }, credentials: "omit", referrerPolicy: "no-referrer" });
   if (!r.ok) throw Error("Catalog unavailable (" + r.status + ")");
-  return JSON.parse(await responseText(r));
+  const data = JSON.parse(await responseText(r));
+  if (catalogCache.size > 80) catalogCache.delete(catalogCache.keys().next().value);
+  catalogCache.set(url, { at: Date.now(), data });
+  return data;
 }
-export async function externalBooks({ source, query = "", page = 1, signal }) {
+export async function externalBooks({ source, query = "", page = 1, category = "", signal }) {
   if (source === "gutendex") {
     const data = await json("https://gutendex.com/books/?" + new URLSearchParams({ search: query, page: String(page) }), signal);
     return { books: (data.results || []).map((b) => {
       const format = Object.entries(b.formats || {}).find(([type]) => type.startsWith("application/epub+zip")) || Object.entries(b.formats || {}).find(([type]) => type.startsWith("text/plain"));
       const cover = Object.entries(b.formats || {}).find(([type]) => type === "image/jpeg")?.[1];
-      return { id: "gutenberg-" + b.id, title: b.title, author: b.authors?.map((a) => a.name).join(", "), source, language: b.languages?.[0], genre: b.subjects?.[0] || "Classic", rights: "Project Gutenberg edition. Check rights for your location.", url: format?.[1], format: format?.[0].startsWith("application") ? "epub" : "txt", coverUrl: catalogCoverUrl(cover), external: "https://www.gutenberg.org/ebooks/" + b.id };
+      return { id: "gutenberg-" + b.id, title: b.title, author: b.authors?.map((a) => a.name).join(", "), source, accessType: "open", language: b.languages?.[0], genre: b.subjects?.[0] || "Classic", rights: "Project Gutenberg edition. Check rights for your location.", url: format?.[1], format: format?.[0].startsWith("application") ? "epub" : "txt", coverUrl: catalogCoverUrl(cover), external: "https://www.gutenberg.org/ebooks/" + b.id };
     }), next: !!data.next, total: data.count };
   }
   if (source.startsWith("wiki-")) {
@@ -22,9 +28,42 @@ export async function externalBooks({ source, query = "", page = 1, signal }) {
     const data = await json(`https://${language}.wikisource.org/w/api.php?` + new URLSearchParams({ action: "query", list: "search", srnamespace: "0", srsearch: query || "novel", srlimit: "24", sroffset: String((page - 1) * 24), format: "json", origin: "*" }), signal);
     return { books: (data.query?.search || []).map((b) => ({ id: source + "-" + b.pageid, title: b.title, source, pageid: b.pageid, language, author: "", genre: "Wikisource", rights: "See original work rights and contributor credits at source.", format: "html" })), next: !!data.continue, total: data.query?.searchinfo?.totalhits };
   }
+  if (source === "openlibrary-trending") {
+    const data = await json("https://openlibrary.org/trending/daily.json?" + new URLSearchParams({ limit: "24", page: String(page) }), signal), works = data.works || [];
+    return { books: works.map((b, index) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, genre: "Top reads \xB7 Open Library", accessType: "catalog", rights: "Popularity reflects reading activity recorded by Open Library, not sales; edition access and rights vary.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key, trendingRank: (page - 1) * 24 + index + 1 })), total: void 0, next: works.length === 24 };
+  }
+  if (["google-books", "google-books-free", "google-books-paid"].includes(source)) {
+    const subjects = { fiction: "fiction", fantasy: "fantasy", mystery_and_detective_stories: "mystery", romance: "romance", science_fiction: "science fiction", history: "history", poetry: "poetry", childrens_literature: "juvenile fiction", philosophy: "philosophy", biography: "biography" };
+    const queryText = query.trim();
+    if (queryText.length > 100) throw Error("Search query is too long.");
+    const q = queryText ? queryText + (subjects[category] ? " subject:" + subjects[category] : "") : category === "new" ? "subject:fiction" : subjects[category] ? "subject:" + subjects[category] : "subject:fiction";
+    const params = new URLSearchParams({ q, maxResults: "24", startIndex: String((page - 1) * 24), orderBy: source === "google-books" ? "newest" : "relevance", printType: "books" });
+    if (source === "google-books-free") params.set("filter", "free-ebooks");
+    if (source === "google-books-paid") params.set("filter", "paid-ebooks");
+    const language = typeof document === "undefined" ? "en-US" : document.documentElement.lang, country = language.match(/-([A-Z]{2})(?:-|$)/)?.[1];
+    if (country) params.set("country", country);
+    const data = await json("https://www.googleapis.com/books/v1/volumes?" + params, signal), items = data.items || [];
+    return { books: items.filter((b) => b.id && b.volumeInfo?.title).map((b) => {
+      const info = b.volumeInfo || {}, sale = b.saleInfo || {}, access = b.accessInfo || {}, images = info.imageLinks || {}, cover = images.medium || images.large || images.extraLarge || images.small || images.thumbnail, highRes = images.extraLarge || images.large || images.medium || images.small || images.thumbnail, buyLink = sale.buyLink, preview = info.previewLink;
+      return { id: "google-books-" + b.id, title: info.title, author: info.authors?.join(", "), source, year: info.publishedDate?.slice(0, 4), language: info.language, accessType: source === "google-books-paid" ? "paid" : source === "google-books-free" ? "free" : sale.saleability === "FOR_SALE" ? "paid" : sale.saleability === "FREE" ? "free" : "catalog", genre: source === "google-books-paid" ? "Paid books \xB7 Google Books" : source === "google-books-free" ? "Free eBooks \xB7 Google Books" : "New releases \xB7 Google Books", description: info.description, rights: "Google Books edition. Preview, price, and purchase availability vary by country.", coverUrl: catalogCoverUrl(cover), coverDownloadUrl: catalogCoverUrl(highRes), buyLink: typeof buyLink === "string" && /^https:\/\/(?:books\.google\.com|play\.google\.com)\//.test(buyLink) ? buyLink : void 0, previewLink: typeof preview === "string" && /^https:\/\/books\.google\.com\//.test(preview) ? preview : void 0, googleViewability: access.viewability, googleSaleability: sale.saleability, googlePrice: sale.retailPrice?.amount, googleCurrency: sale.retailPrice?.currencyCode, external: typeof info.infoLink === "string" && /^https:\/\/(?:books\.google\.com|play\.google\.com)\//.test(info.infoLink) ? info.infoLink : "https://books.google.com/books?id=" + encodeURIComponent(b.id) };
+    }), total: data.totalItems, next: page * 24 < (data.totalItems || 0) };
+  }
+  if (source === "openlibrary-hidden") {
+    const subject = category && /^[a-z_]{2,60}$/.test(category) ? category : "fiction", queryText = query.trim().slice(0, 80), q = [queryText, `subject:${subject}`].filter(Boolean).join(" ");
+    const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q, limit: "48", page: String(page), sort: "rating desc", fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject,ratings_average,ratings_count,edition_count" }), signal);
+    const docs = (data.docs || []).filter((b) => Number(b.ratings_count) >= 3 && Number(b.ratings_count) < 800 && Number(b.ratings_average) >= 3.8).slice(0, 24);
+    return { books: docs.map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Hidden gem \xB7 reader ratings", rating: b.ratings_average, ratingsCount: b.ratings_count, rights: "A reader-rated discovery, not a sales ranking. Edition access and rights vary; check the source.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: docs.length ? void 0 : data.numFound, next: docs.length === 24 };
+  }
+  if (source === "openlibrary" && category) {
+    const subjects = ["fiction", "fantasy", "mystery_and_detective_stories", "romance", "science_fiction", "history", "poetry", "childrens_literature", "philosophy", "biography"];
+    if (!subjects.includes(category)) throw Error("Unsupported book category");
+    const data = await json(`https://openlibrary.org/subjects/${category}.json?` + new URLSearchParams({ limit: "24", offset: String((page - 1) * 24) }), signal), works = data.works || [], needle = query.trim().toLocaleLowerCase();
+    const books = works.filter((b) => !needle || (b.title + " " + (b.authors || []).map((a) => a.name).join(" ")).toLocaleLowerCase().includes(needle)).map((b) => ({ id: b.key, title: b.title, author: b.authors?.map((a) => a.name).join(", "), source, year: b.first_publish_year, genre: category.replaceAll("_", " "), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key }));
+    return { books, total: data.work_count, next: page * 24 < (data.work_count || 0) };
+  }
   if (source === "openlibrary") {
-    const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q: query || "classics", limit: "24", page: String(page), fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i" }), signal);
-    return { books: (data.docs || []).map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Discovery \xB7 " + (b.ebook_access || "metadata"), rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < data.numFound };
+    const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q: query || "classics", limit: "24", page: String(page), fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject" }), signal);
+    return { books: (data.docs || []).map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Discovery \xB7 " + (b.subject?.[0] || b.ebook_access || "metadata"), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < data.numFound };
   }
   if (source === "doab") {
     const data = await json("https://directory.doabooks.org/rest/search?" + new URLSearchParams({ query: query ? "dc.title:" + query : "dc.type:book", expand: "metadata", limit: "24", offset: String((page - 1) * 24) }), signal);

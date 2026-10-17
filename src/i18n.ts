@@ -1,74 +1,319 @@
-export const APP_LANGUAGES = [
-  {locale:'en-US',name:'English (US)',base:'en',country:'US',flag:'🇺🇸'},
-  {locale:'en-GB',name:'English (UK)',base:'en',country:'GB',flag:'🇬🇧'},
-  {locale:'id-ID',name:'Bahasa Indonesia',base:'id',country:'ID',flag:'🇮🇩'},
-  {locale:'ja-JP',name:'日本語',base:'ja',country:'JP',flag:'🇯🇵'},
-  {locale:'es-ES',name:'Español',base:'es',country:'ES',flag:'🇪🇸'},
-  {locale:'fr-FR',name:'Français',base:'fr',country:'FR',flag:'🇫🇷'},
-  {locale:'de-DE',name:'Deutsch',base:'de',country:'DE',flag:'🇩🇪'},
-  {locale:'pt-BR',name:'Português',base:'pt',country:'BR',flag:'🇧🇷'},
-  {locale:'zh-CN',name:'简体中文',base:'zh',country:'CN',flag:'🇨🇳'},
-  {locale:'ko-KR',name:'한국어',base:'ko',country:'KR',flag:'🇰🇷'},
-] as const;
-
-export type AppLocale = typeof APP_LANGUAGES[number]['locale'];
-const byBase = Object.fromEntries(APP_LANGUAGES.map(item=>[item.base,item])) as Record<string,typeof APP_LANGUAGES[number]>;
-export function normalizeLocale(value:string|undefined|null):AppLocale {
-  if(!value)return 'en-US';
-  const normalized=value.replace('_','-').toLowerCase();
-  const exact=APP_LANGUAGES.find(item=>item.locale.toLowerCase()===normalized);
-  if(exact)return exact.locale;
-  const base=normalized.split('-')[0];
-  return byBase[base]?.locale||'en-US';
-}
-export function localeBase(value:string):string{return normalizeLocale(value).split('-')[0];}
-export function holidayCountry(value:string):string{return APP_LANGUAGES.find(item=>item.locale===normalizeLocale(value))?.country||'US';}
-const countryLocales:Record<string,AppLocale>={
-  ID:'id-ID',JP:'ja-JP',ES:'es-ES',MX:'es-ES',AR:'es-ES',BO:'es-ES',CL:'es-ES',CO:'es-ES',CR:'es-ES',CU:'es-ES',DO:'es-ES',EC:'es-ES',SV:'es-ES',GQ:'es-ES',GT:'es-ES',HN:'es-ES',NI:'es-ES',PA:'es-ES',PY:'es-ES',PE:'es-ES',UY:'es-ES',VE:'es-ES',
-  FR:'fr-FR',BE:'fr-FR',CH:'fr-FR',LU:'fr-FR',MC:'fr-FR',SN:'fr-FR',CI:'fr-FR',CD:'fr-FR',CG:'fr-FR',CM:'fr-FR',MG:'fr-FR',HT:'fr-FR',GN:'fr-FR',ML:'fr-FR',BF:'fr-FR',NE:'fr-FR',TG:'fr-FR',BJ:'fr-FR',DJ:'fr-FR',TD:'fr-FR',GA:'fr-FR',CF:'fr-FR',KM:'fr-FR',
-  DE:'de-DE',AT:'de-DE',LI:'de-DE',BR:'pt-BR',PT:'pt-BR',AO:'pt-BR',MZ:'pt-BR',CV:'pt-BR',GW:'pt-BR',ST:'pt-BR',TL:'pt-BR',CN:'zh-CN',SG:'zh-CN',TW:'zh-CN',HK:'zh-CN',MO:'zh-CN',KR:'ko-KR',
-  GB:'en-GB',IE:'en-GB',AU:'en-GB',NZ:'en-GB',CA:'en-US',US:'en-US',IN:'en-US',ZA:'en-US',NG:'en-US',KE:'en-US',PH:'en-US',PK:'en-US',BD:'en-US',GH:'en-US',JM:'en-US',TT:'en-US',
-};
-/** Select one of Sela's supported languages by country; unknown regions use English. */
-export function localeForCountry(country:string|undefined|null):AppLocale {
-  const code=(country||'').trim().toUpperCase();
-  return /^[A-Z]{2}$/.test(code)?countryLocales[code]||'en-US':'en-US';
-}
+import {APP_LANGUAGES,holidayCountry,localeBase,localeForCountry,normalizeLocale,type AppLocale} from './locale.ts';
+export {APP_LANGUAGES,holidayCountry,localeBase,localeForCountry,normalizeLocale} from './locale.ts';
+export type {AppLocale} from './locale.ts';
 
 const translated:Record<string,Record<string,string>>={
   ja:{
-    'Home':'ホーム','Shelf':'本棚','Explore':'本を探す','Settings':'設定','Add books':'本を追加','Check for updates':'更新を確認','Appearance':'外観','Language':'言語','Updates':'アップデート','Set the language for Sela.':'Selaの表示言語を選びます。','Choose light, dark, or automatic.':'ライト、ダーク、自動から選びます。','Reading calendar':'読書カレンダー','Small moments count.':'少しの時間も大切に。','A little water break':'水分補給のひと休み','A gentle note to pause and sip.':'ひと休みして水を飲みましょう。','Add a glass':'一杯追加','glass today':'今日の一杯','glasses today':'今日の一杯','Weather':'天気','Your weather':'現在地の天気','Nearby':'近く','Choose city':'場所を選ぶ','City name':'都市名','Find':'検索','Turn off weather':'天気をオフ','Use my location':'現在地を使う','Allow location to show nearby weather.':'現在地の天気を表示するには位置情報を許可してください。','Location unavailable. Choose a city instead.':'位置情報を取得できません。都市を選んでください。','Public holiday':'祝日','Previous month':'前の月','Next month':'次の月','Show the whole month':'月全体を表示','Show this week':'今週を表示','About Sela':'Selaについて','Your personal reader':'あなたのための読書アプリ','Personal website':'個人サイト','MIT license':'MITライセンス','Third-party licenses':'サードパーティのライセンス','Close':'閉じる','Single page':'単ページ','Book spread':'見開き','Continuous scroll':'連続スクロール','Low power reader':'省電力リーダー','Reduce motion and background effects.':'動きと背景効果を抑えます。','Default reading mode':'標準の読書モード','Choose how new books open.':'新しい本の開き方を選びます。','Reading defaults':'読書の初期設定','Books & storage':'本と保存容量','Your books.':'あなたの本。','Pick up where you left off.':'前回の続きから読みましょう。','Read':'読む','Save offline':'オフラインに保存','Book information':'本の情報','Save':'保存','Cancel':'キャンセル','Search':'検索','Search book':'本を検索','Previous page':'前のページ','Next page':'次のページ','Reader settings':'読書設定','Contents & bookmarks':'目次としおり','Bookmark page':'しおりを挟む','Download original':'元のファイルを保存','Install Sela on this device':'この端末にSelaをインストール','Choose a little companion':'小さなおともを選ぶ','Cat':'ねこ','Hamster':'ハムスター','Rabbit':'うさぎ','Fox':'きつね','Owl':'ふくろう','Turtle':'かめ','Plant':'植物','A quiet day. No reading saved here yet.':'静かな一日。まだ読書記録はありません。','Privacy, updates & compatibility':'プライバシー・更新・対応環境'
+    'Home':'ホーム','Shelf':'本棚','Explore':'本を探す','Settings':'設定','Add books':'本を追加','Check for updates':'更新を確認','Appearance':'外観','Language':'言語','Updates':'アップデート','Set the language for Sela.':'Selaの表示言語を選びます。','Choose light, dark, or automatic.':'ライト、ダーク、自動から選びます。','Reading calendar':'読書カレンダー','Small moments count.':'少しの時間も大切に。','A little water break':'水分補給のひと休み','A gentle note to pause and sip.':'ひと休みして水を飲みましょう。','Add a glass':'一杯追加','glass today':'今日の一杯','glasses today':'今日の一杯','Weather':'天気','Your weather':'現在地の天気','Nearby':'近く','Choose city':'場所を選ぶ','City name':'都市名','Find':'検索','Turn off weather':'天気をオフ','Use my location':'現在地を使う','Allow location to show nearby weather.':'現在地の天気を表示するには位置情報を許可してください。','Location unavailable. Choose a city instead.':'位置情報を取得できません。都市を選んでください。','Public holiday':'祝日','Previous month':'前の月','Next month':'次の月','Show the whole month':'月全体を表示','Show this week':'今週を表示','About Sela':'Selaについて','Your personal bookshelf':'あなたのための読書アプリ','Personal website':'個人サイト','MIT license':'MITライセンス','Third-party licenses':'サードパーティのライセンス','Close':'閉じる','Single page':'単ページ','Book spread':'見開き','Continuous scroll':'連続スクロール','Low power reader':'省電力リーダー','Reduce motion and background effects.':'動きと背景効果を抑えます。','Default reading mode':'標準の読書モード','Choose how new books open.':'新しい本の開き方を選びます。','Reading defaults':'読書の初期設定','Books & storage':'本と保存容量','Your books.':'あなたの本。','Pick up where you left off.':'前回の続きから読みましょう。','Read':'読む','Save offline':'オフラインに保存','Book information':'本の情報','Save':'保存','Cancel':'キャンセル','Search':'検索','Search book':'本を検索','Previous page':'前のページ','Next page':'次のページ','Reader settings':'読書設定','Contents & bookmarks':'目次としおり','Bookmark page':'しおりを挟む','Download original':'元のファイルを保存','Install Sela on this device':'この端末にSelaをインストール','Choose a little companion':'小さなおともを選ぶ','Cat':'ねこ','Hamster':'ハムスター','Rabbit':'うさぎ','Fox':'きつね','Owl':'ふくろう','Turtle':'かめ','Plant':'植物','A quiet day. No reading saved here yet.':'静かな一日。まだ読書記録はありません。','Privacy, updates & compatibility':'プライバシー・更新・対応環境'
   },
-  es:{'Home':'Inicio','Shelf':'Estantería','Explore':'Explorar','Settings':'Ajustes','Add books':'Añadir libros','Appearance':'Apariencia','Language':'Idioma','Updates':'Actualizaciones','Reading calendar':'Calendario de lectura','Small moments count.':'Cada pequeño momento cuenta.','A little water break':'Pausa para beber agua','Add a glass':'Añadir un vaso','Weather':'Tiempo','Nearby':'Cerca de ti','Choose city':'Elegir ciudad','Find':'Buscar','Turn off weather':'Desactivar el tiempo','Use my location':'Usar mi ubicación','Public holiday':'Festivo','Previous month':'Mes anterior','Next month':'Mes siguiente','About Sela':'Acerca de Sela','Your personal reader':'Tu lector personal','Personal website':'Sitio personal','MIT license':'Licencia MIT','Third-party licenses':'Licencias de terceros','Close':'Cerrar','Read':'Leer','Save offline':'Guardar sin conexión','Book information':'Información del libro','Cat':'Gato','Hamster':'Hámster','Rabbit':'Conejo','Fox':'Zorro','Owl':'Búho','Turtle':'Tortuga','Plant':'Planta','Privacy, updates & compatibility':'Privacidad, actualizaciones y compatibilidad'},
-  fr:{'Home':'Accueil','Shelf':'Bibliothèque','Explore':'Explorer','Settings':'Réglages','Add books':'Ajouter des livres','Appearance':'Apparence','Language':'Langue','Updates':'Mises à jour','Reading calendar':'Calendrier de lecture','Small moments count.':'Chaque instant compte.','A little water break':'Petite pause hydratation','Add a glass':'Ajouter un verre','Weather':'Météo','Nearby':'À proximité','Choose city':'Choisir une ville','Find':'Rechercher','Turn off weather':'Désactiver la météo','Use my location':'Utiliser ma position','Public holiday':'Jour férié','Previous month':'Mois précédent','Next month':'Mois suivant','About Sela':'À propos de Sela','Your personal reader':'Votre lecteur personnel','Personal website':'Site personnel','MIT license':'Licence MIT','Third-party licenses':'Licences tierces','Close':'Fermer','Read':'Lire','Save offline':'Enregistrer hors ligne','Book information':'Informations du livre','Cat':'Chat','Hamster':'Hamster','Rabbit':'Lapin','Fox':'Renard','Owl':'Hibou','Turtle':'Tortue','Plant':'Plante','Privacy, updates & compatibility':'Confidentialité, mises à jour et compatibilité'},
-  de:{'Home':'Startseite','Shelf':'Bücherregal','Explore':'Entdecken','Settings':'Einstellungen','Add books':'Bücher hinzufügen','Appearance':'Darstellung','Language':'Sprache','Updates':'Aktualisierungen','Reading calendar':'Lesekalender','Small moments count.':'Auch kleine Momente zählen.','A little water break':'Kleine Trinkpause','Add a glass':'Glas hinzufügen','Weather':'Wetter','Nearby':'In der Nähe','Choose city':'Ort auswählen','Find':'Suchen','Turn off weather':'Wetter ausschalten','Use my location':'Standort verwenden','Public holiday':'Feiertag','Previous month':'Voriger Monat','Next month':'Nächster Monat','About Sela':'Über Sela','Your personal reader':'Dein persönlicher Reader','Personal website':'Persönliche Website','MIT license':'MIT-Lizenz','Third-party licenses':'Lizenzen von Drittanbietern','Close':'Schließen','Read':'Lesen','Save offline':'Offline speichern','Book information':'Buchinformationen','Cat':'Katze','Hamster':'Hamster','Rabbit':'Kaninchen','Fox':'Fuchs','Owl':'Eule','Turtle':'Schildkröte','Plant':'Pflanze','Privacy, updates & compatibility':'Datenschutz, Updates und Kompatibilität'},
-  pt:{'Home':'Início','Shelf':'Estante','Explore':'Explorar','Settings':'Configurações','Add books':'Adicionar livros','Appearance':'Aparência','Language':'Idioma','Updates':'Atualizações','Reading calendar':'Calendário de leitura','Small moments count.':'Cada momento importa.','A little water break':'Pausa para beber água','Add a glass':'Adicionar um copo','Weather':'Clima','Nearby':'Perto de você','Choose city':'Escolher cidade','Find':'Buscar','Turn off weather':'Desativar clima','Use my location':'Usar minha localização','Public holiday':'Feriado','Previous month':'Mês anterior','Next month':'Próximo mês','About Sela':'Sobre o Sela','Your personal reader':'Seu leitor pessoal','Personal website':'Site pessoal','MIT license':'Licença MIT','Third-party licenses':'Licenças de terceiros','Close':'Fechar','Read':'Ler','Save offline':'Salvar offline','Book information':'Informações do livro','Cat':'Gato','Hamster':'Hamster','Rabbit':'Coelho','Fox':'Raposa','Owl':'Coruja','Turtle':'Tartaruga','Plant':'Planta','Privacy, updates & compatibility':'Privacidade, atualizações e compatibilidade'},
-  zh:{'Home':'首页','Shelf':'书架','Explore':'探索','Settings':'设置','Add books':'添加书籍','Appearance':'外观','Language':'语言','Updates':'更新','Reading calendar':'阅读日历','Small moments count.':'每一点阅读都很珍贵。','A little water break':'喝水休息一下','Add a glass':'添加一杯','Weather':'天气','Nearby':'附近','Choose city':'选择城市','Find':'搜索','Turn off weather':'关闭天气','Use my location':'使用我的位置','Public holiday':'节假日','Previous month':'上个月','Next month':'下个月','About Sela':'关于 Sela','Your personal reader':'你的个人阅读器','Personal website':'个人网站','MIT license':'MIT 许可证','Third-party licenses':'第三方许可证','Close':'关闭','Read':'阅读','Save offline':'离线保存','Book information':'书籍信息','Cat':'猫咪','Hamster':'仓鼠','Rabbit':'兔子','Fox':'狐狸','Owl':'猫头鹰','Turtle':'乌龟','Plant':'植物','Privacy, updates & compatibility':'隐私、更新与兼容性'},
-  ko:{'Home':'홈','Shelf':'책장','Explore':'둘러보기','Settings':'설정','Add books':'책 추가','Appearance':'화면','Language':'언어','Updates':'업데이트','Reading calendar':'독서 달력','Small moments count.':'짧은 독서도 소중해요.','A little water break':'물 한 잔 쉬어가기','Add a glass':'한 잔 추가','Weather':'날씨','Nearby':'내 주변','Choose city':'도시 선택','Find':'검색','Turn off weather':'날씨 끄기','Use my location':'내 위치 사용','Public holiday':'공휴일','Previous month':'이전 달','Next month':'다음 달','About Sela':'Sela 소개','Your personal reader':'나만의 리더','Personal website':'개인 웹사이트','MIT license':'MIT 라이선스','Third-party licenses':'서드파티 라이선스','Close':'닫기','Read':'읽기','Save offline':'오프라인 저장','Book information':'책 정보','Cat':'고양이','Hamster':'햄스터','Rabbit':'토끼','Fox':'여우','Owl':'부엉이','Turtle':'거북이','Plant':'식물','Privacy, updates & compatibility':'개인정보, 업데이트 및 호환성'}
 };
 
-Object.assign(translated.ja,{'Red panda':'レッサーパンダ','Penguin':'ペンギン','Shiba':'柴犬','Fawn':'子鹿'});
-Object.assign(translated.es,{'Red panda':'Panda rojo','Penguin':'Pingüino','Shiba':'Shiba','Fawn':'Cervatillo'});
-Object.assign(translated.fr,{'Red panda':'Panda roux','Penguin':'Manchot','Shiba':'Shiba','Fawn':'Faon'});
-Object.assign(translated.de,{'Red panda':'Kleiner Panda','Penguin':'Pinguin','Shiba':'Shiba','Fawn':'Rehkitz'});
-Object.assign(translated.pt,{'Red panda':'Panda-vermelho','Penguin':'Pinguim','Shiba':'Shiba','Fawn':'Cervo jovem'});
-Object.assign(translated.zh,{'Red panda':'小熊猫','Penguin':'企鹅','Shiba':'柴犬','Fawn':'小鹿'});
-Object.assign(translated.ko,{'Red panda':'레서판다','Penguin':'펭귄','Shiba':'시바견','Fawn':'아기 사슴'});
+Object.assign(translated.ja,{'Choose book files':'本のファイルを選択','Red panda':'レッサーパンダ','Penguin':'ペンギン','Shiba':'柴犬','Fawn':'子鹿'});
+Object.assign(translated.ja,{'Open Quran settings':'クルアーンの設定を開く','Buka pengaturan Al-Qur’an':'クルアーンの設定を開く','Close Quran settings':'クルアーンの設定を閉じる','Tutup pengaturan Al-Qur’an':'クルアーンの設定を閉じる'});
+Object.assign(translated.ja,{
+  'A little water break':'水分補給のひと休み','Track your sips at your own pace.':'自分のペースで水分を記録しましょう。','logged today':'今日の記録','Goal guide':'目標の目安','Water goal':'水分目標','Daily goal (mL)':'一日の目標 (mL)','Serving size':'一杯の量','My own goal':'自分で設定','Indonesia AKG · male · 19–64':'インドネシア基準 · 男性 · 19–64歳','Indonesia AKG · female · 19–64':'インドネシア基準 · 女性 · 19–64歳','No target':'目標なし','Indonesia’s adult AKG reference (ages 19–64): 2,500 mL for men, 2,350 mL for women. It is a population guide; food and drinks count toward total water, while Sela logs only the glasses you enter. Weight and height alone are not a validated personal formula. Activity, heat and health can change needs; adjust gently and follow clinical advice when relevant.':'インドネシアの成人AKG目安（19〜64歳）：男性2,500 mL、女性2,350 mL。これは集団向けの目安です。食事や他の飲み物も総水分量に含まれますが、Selaには入力した水の量だけが記録されます。体重と身長だけで個人の必要量を正確に出す検証済みの計算式はありません。活動量、暑さ、健康状態によって変わるため、無理なく調整し、必要に応じて医療専門家に相談してください。','Indonesia AKG source ↗':'インドネシアAKGの出典 ↗','Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.':'無理のない目標を選ぶか、0にして記録をオフにできます。これは習慣の記録であり、医療上の処方ではありません。','Set an optional goal if it feels helpful, or leave it off.':'役立ちそうなら目標を設定してください。不要ならオフのままで大丈夫です。','Choose a little companion':'小さなおともを選ぶ'
+});
+Object.assign(translated.ja,{'Quran passages':'クルアーンの章と節','Bacaan Al-Qur’an':'クルアーンの章と節','Daily readings':'毎日の祈り','Bacaan sehari-hari':'毎日の祈り','Quran passages use your chosen edition. Daily remembrance keeps its Arabic source and published English meaning.':'クルアーンは選択した翻訳版で表示します。日々の祈りはアラビア語の原文と公開元の英語訳を表示します。','Waking Up':'目覚めの祈り','Bangun tidur':'起床時の祈り','Morning Adhkar':'朝のズィクル','Zikir pagi':'朝のズィクル','After Salah':'礼拝後の祈り','Sesudah salat':'礼拝後の祈り','Evening Adhkar':'夕方のズィクル','Zikir petang':'夕方のズィクル','Before Sleep':'就寝前の祈り','Sebelum tidur':'就寝前の祈り','Quranic Duas':'クルアーンの祈り','Doa Qur’ani':'クルアーンの祈り','Leaving Home':'外出時の祈り','Keluar rumah':'外出時の祈り','Food & Drink':'食事の祈り','Makan & minum':'食事の祈り','Travel Duas':'旅の祈り','Doa perjalanan':'旅の祈り','Buruja · English meaning':'Buruja・英語の意味','English meaning':'英語の意味'});
+Object.assign(translated.ja,{'Protestant Christianity':'プロテスタント','Catholic Christianity':'カトリック','Protestant reading':'プロテスタントの聖書','Catholic reading':'カトリックの聖書','Confucianism':'儒教','Confucian classics':'儒教の古典','A little shelf of Islamic readings':'イスラムの読書棚','Open a surah or a daily passage in the Quran reader.':'クルアーンのビューアーでスーラや日々の一節を開きます。','Open The Quran':'クルアーンを開く','Open Yasin':'ヤースィーン章を開く','Open Al-Mulk':'アル・ムルク章を開く','Open Al-Kahf':'アル・カフ章を開く','Open Ayat Kursi':'玉座節を開く','Open A Quranic dua':'クルアーンの祈りを開く','A Quranic dua':'クルアーンの祈り','Al-Qur’an':'クルアーン','Ayat Kursi':'玉座節','The Chinese Text Project needs a registered API key for in-app reading. You can open the original Analects source here.':'中国哲学書電子化計画の本文をアプリ内で読むには登録済みのAPIキーが必要です。論語の原文はこちらから開けます。','Chinese Text Project memerlukan kunci API terdaftar untuk membaca di aplikasi. Sumber asli Lunyu dapat dibuka di sini.':'中国哲学書電子化計画の本文をアプリ内で読むには登録済みのAPIキーが必要です。論語の原文はこちらから開けます。','The Indonesian Bible API requires its own access credentials. Open the official LAI source to review editions and access terms.':'インドネシア聖書協会のAPIには専用の認証情報が必要です。公式サイトで版と利用条件を確認してください。','API Alkitab Indonesia memerlukan kredensial akses tersendiri. Buka sumber resmi LAI untuk melihat edisi dan ketentuan akses.':'インドネシア聖書協会のAPIには専用の認証情報が必要です。公式サイトで版と利用条件を確認してください。','The source is linked directly; Sela does not guess or substitute a different edition.':'版を推測したり置き換えたりせず、原典へ直接リンクしています。','Sumber ditautkan langsung; Sela tidak menebak atau mengganti dengan edisi lain.':'版を推測したり置き換えたりせず、原典へ直接リンクしています。','Original classical Chinese text · source access required':'古典中国語の原文・APIアクセスが必要','Teks klasik Mandarin · akses sumber diperlukan':'古典中国語の原文・APIアクセスが必要','Analects · Xue Er':'論語・学而','Stories are taking a little break':'ニュースは少し休憩中','A quiet moment for your news shelf':'ニュース棚に静かなひととき','Today’s little history note is resting':'今日は歴史の小話もお休みです','A quiet moment in history':'歴史の静かなひととき','The news services could not be reached. Your last saved stories will return when available.':'ニュースサービスに接続できません。復旧後、保存済みの記事が表示されます。','No matching stories right now. Try another topic or refresh later.':'該当する記事がありません。トピックを変えるか、後でもう一度お試しください。','This source could not be reached. Try again when you are online.':'情報源に接続できません。オンラインで再度お試しください。','No story is available for this date yet.':'この日の記事はまだありません。'});
 
 Object.assign(translated.ja,{'Weather options':'天気の設定','Location permission was declined. Choose a city or allow it in browser settings.':'位置情報が許可されませんでした。都市を選ぶか、ブラウザーの設定で許可してください。','Your location is unavailable. Choose a city instead.':'現在地を取得できません。都市を選んでください。','Location request timed out. You can choose a city instead.':'位置情報の取得がタイムアウトしました。都市を選べます。','Waiting for location permission…':'位置情報の許可を待っています…','Searching cities…':'都市を検索しています…','Choose your city.':'都市を選んでください。','City not found.':'都市が見つかりません。','City search unavailable. Try again.':'都市を検索できません。もう一度お試しください。','Weather unavailable. Saved data stays visible.':'天気情報を取得できません。保存済みの情報を表示します。','Find a book':'本を検索','Continue reading':'続きから読む','A little book to start':'まずは一冊','All books':'すべての本','Unread':'未読','Started':'読み始めた本','Favorites':'お気に入り','Newest':'新着順','Last read':'最後に読んだ順','Title':'タイトル','All formats':'すべての形式','Reading':'読書中','Finished':'読了','About Sela':'Selaについて','Notebook & memories':'ノートと記録','Reading journal':'読書日記','Personalize my room':'読書スペースをカスタマイズ','Smart shelves':'スマート本棚','Care for my library':'本棚を整理','Share backup':'バックアップを共有','Restore backup':'バックアップを復元'});
-Object.assign(translated.es,{'Weather options':'Opciones del tiempo','Find a book':'Buscar un libro','Continue reading':'Seguir leyendo','A little book to start':'Un libro para empezar','All books':'Todos los libros','Unread':'Sin leer','Started':'Empezados','Favorites':'Favoritos','Newest':'Más recientes','Last read':'Última lectura','Title':'Título','All formats':'Todos los formatos','Reading':'Leyendo','Finished':'Terminado','Notebook & memories':'Cuaderno y recuerdos','Reading journal':'Diario de lectura','Personalize my room':'Personalizar mi espacio','Smart shelves':'Estanterías inteligentes','Care for my library':'Cuidar mi biblioteca','Share backup':'Compartir copia','Restore backup':'Restaurar copia','Location permission was declined. Choose a city or allow it in browser settings.':'Se rechazó el permiso de ubicación. Elige una ciudad o permite el acceso en los ajustes del navegador.','Waiting for location permission…':'Esperando el permiso de ubicación…','Searching cities…':'Buscando ciudades…','Choose your city.':'Elige tu ciudad.','City not found.':'No se encontró la ciudad.','Weather unavailable. Saved data stays visible.':'El tiempo no está disponible. Se muestran los datos guardados.'});
-Object.assign(translated.fr,{'Weather options':'Options météo','Find a book':'Rechercher un livre','Continue reading':'Reprendre la lecture','A little book to start':'Un livre pour commencer','All books':'Tous les livres','Unread':'Non lus','Started':'En cours','Favorites':'Favoris','Newest':'Les plus récents','Last read':'Dernière lecture','Title':'Titre','All formats':'Tous les formats','Reading':'En cours de lecture','Finished':'Terminé','Notebook & memories':'Carnet et souvenirs','Reading journal':'Journal de lecture','Personalize my room':'Personnaliser mon espace','Smart shelves':'Étagères intelligentes','Care for my library':'Prendre soin de ma bibliothèque','Share backup':'Partager la sauvegarde','Restore backup':'Restaurer la sauvegarde','Location permission was declined. Choose a city or allow it in browser settings.':'L’autorisation de localisation a été refusée. Choisissez une ville ou autorisez-la dans les réglages du navigateur.','Waiting for location permission…':'En attente de l’autorisation de localisation…','Searching cities…':'Recherche de villes…','Choose your city.':'Choisissez votre ville.','City not found.':'Ville introuvable.','Weather unavailable. Saved data stays visible.':'Météo indisponible. Les données enregistrées restent visibles.'});
-Object.assign(translated.de,{'Weather options':'Wetteroptionen','Find a book':'Buch suchen','Continue reading':'Weiterlesen','A little book to start':'Ein Buch zum Einstieg','All books':'Alle Bücher','Unread':'Ungelesen','Started':'Begonnen','Favorites':'Favoriten','Newest':'Neueste','Last read':'Zuletzt gelesen','Title':'Titel','All formats':'Alle Formate','Reading':'Wird gelesen','Finished':'Abgeschlossen','Notebook & memories':'Notizbuch und Erinnerungen','Reading journal':'Lesetagebuch','Personalize my room':'Leseraum anpassen','Smart shelves':'Intelligente Regale','Care for my library':'Bibliothek pflegen','Share backup':'Sicherung teilen','Restore backup':'Sicherung wiederherstellen','Location permission was declined. Choose a city or allow it in browser settings.':'Die Standortfreigabe wurde abgelehnt. Wähle einen Ort oder erlaube den Zugriff in den Browsereinstellungen.','Waiting for location permission…':'Warte auf die Standortfreigabe…','Searching cities…':'Suche nach Städten…','Choose your city.':'Wähle deinen Ort.','City not found.':'Ort nicht gefunden.','Weather unavailable. Saved data stays visible.':'Wetter nicht verfügbar. Gespeicherte Daten bleiben sichtbar.'});
-Object.assign(translated.pt,{'Weather options':'Opções de clima','Find a book':'Buscar um livro','Continue reading':'Continuar lendo','A little book to start':'Um livro para começar','All books':'Todos os livros','Unread':'Não lidos','Started':'Iniciados','Favorites':'Favoritos','Newest':'Mais recentes','Last read':'Última leitura','Title':'Título','All formats':'Todos os formatos','Reading':'Lendo','Finished':'Concluído','Notebook & memories':'Caderno e memórias','Reading journal':'Diário de leitura','Personalize my room':'Personalizar meu espaço','Smart shelves':'Estantes inteligentes','Care for my library':'Cuidar da biblioteca','Share backup':'Compartilhar backup','Restore backup':'Restaurar backup','Location permission was declined. Choose a city or allow it in browser settings.':'A permissão de localização foi recusada. Escolha uma cidade ou permita o acesso nas configurações do navegador.','Waiting for location permission…':'Aguardando permissão de localização…','Searching cities…':'Buscando cidades…','Choose your city.':'Escolha sua cidade.','City not found.':'Cidade não encontrada.','Weather unavailable. Saved data stays visible.':'Clima indisponível. Os dados salvos continuam visíveis.'});
-Object.assign(translated.zh,{'Weather options':'天气设置','Find a book':'搜索书籍','Continue reading':'继续阅读','A little book to start':'从一本小书开始','All books':'所有书籍','Unread':'未读','Started':'已开始','Favorites':'收藏','Newest':'最新','Last read':'最近阅读','Title':'标题','All formats':'所有格式','Reading':'正在阅读','Finished':'已读完','Notebook & memories':'笔记与回忆','Reading journal':'阅读日记','Personalize my room':'个性化阅读空间','Smart shelves':'智能书架','Care for my library':'整理书库','Share backup':'分享备份','Restore backup':'恢复备份','Location permission was declined. Choose a city or allow it in browser settings.':'位置权限已被拒绝。请选择城市，或在浏览器设置中允许访问。','Waiting for location permission…':'正在等待位置权限…','Searching cities…':'正在搜索城市…','Choose your city.':'请选择城市。','City not found.':'未找到城市。','Weather unavailable. Saved data stays visible.':'天气暂不可用，仍会显示已保存的数据。'});
-Object.assign(translated.ko,{'Weather options':'날씨 설정','Find a book':'책 검색','Continue reading':'이어서 읽기','A little book to start':'가볍게 시작할 책','All books':'모든 책','Unread':'읽지 않음','Started':'읽기 시작함','Favorites':'즐겨찾기','Newest':'최신순','Last read':'최근 읽은 순','Title':'제목','All formats':'모든 형식','Reading':'읽는 중','Finished':'완료','Notebook & memories':'노트와 기록','Reading journal':'독서 일지','Personalize my room':'나만의 공간 꾸미기','Smart shelves':'스마트 책장','Care for my library':'책장 정리','Share backup':'백업 공유','Restore backup':'백업 복원','Location permission was declined. Choose a city or allow it in browser settings.':'위치 권한이 거부되었습니다. 도시를 선택하거나 브라우저 설정에서 허용해 주세요.','Waiting for location permission…':'위치 권한을 기다리는 중…','Searching cities…':'도시 검색 중…','Choose your city.':'도시를 선택해 주세요.','City not found.':'도시를 찾을 수 없습니다.','Weather unavailable. Saved data stays visible.':'날씨 정보를 가져올 수 없습니다. 저장된 정보는 표시됩니다.'});
 Object.assign(translated.ja,{'Appearance & language':'外観と言語','Weather settings':'天気の設定','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'座標は天気予報のためにOpen-Meteoへ送信され、この端末に保存されます。','Show the whole month':'月全体を表示','Show this week':'今週を表示','Clear':'晴れ','Cloudy':'曇り','Fog':'霧','Rain':'雨','Snow':'雪','Showers':'にわか雨','Thunderstorm':'雷雨','Find':'検索','Set the language for Sela.':'Selaの表示言語を選びます。'});
-Object.assign(translated.es,{'Appearance & language':'Apariencia e idioma','Weather settings':'Ajustes del tiempo','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'Las coordenadas se envían a Open-Meteo para el pronóstico y se guardan en este dispositivo.','Show the whole month':'Ver el mes completo','Show this week':'Ver esta semana','Clear':'Despejado','Cloudy':'Nublado','Fog':'Niebla','Rain':'Lluvia','Snow':'Nieve','Showers':'Chubascos','Thunderstorm':'Tormenta','Set the language for Sela.':'Elige el idioma de Sela.'});
-Object.assign(translated.fr,{'Appearance & language':'Apparence et langue','Weather settings':'Réglages météo','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'Les coordonnées sont envoyées à Open-Meteo pour les prévisions et enregistrées sur cet appareil.','Show the whole month':'Afficher le mois entier','Show this week':'Afficher cette semaine','Clear':'Ensoleillé','Cloudy':'Nuageux','Fog':'Brouillard','Rain':'Pluie','Snow':'Neige','Showers':'Averses','Thunderstorm':'Orage','Set the language for Sela.':'Choisissez la langue de Sela.'});
-Object.assign(translated.de,{'Appearance & language':'Darstellung und Sprache','Weather settings':'Wettereinstellungen','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'Koordinaten werden für die Wettervorhersage an Open-Meteo gesendet und auf diesem Gerät gespeichert.','Show the whole month':'Ganzen Monat anzeigen','Show this week':'Diese Woche anzeigen','Clear':'Klar','Cloudy':'Bewölkt','Fog':'Nebel','Rain':'Regen','Snow':'Schnee','Showers':'Schauer','Thunderstorm':'Gewitter','Set the language for Sela.':'Wähle die Sprache für Sela.'});
-Object.assign(translated.pt,{'Appearance & language':'Aparência e idioma','Weather settings':'Configurações do clima','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'As coordenadas são enviadas ao Open-Meteo para a previsão e salvas neste dispositivo.','Show the whole month':'Mostrar o mês inteiro','Show this week':'Mostrar esta semana','Clear':'Céu limpo','Cloudy':'Nublado','Fog':'Nevoeiro','Rain':'Chuva','Snow':'Neve','Showers':'Pancadas de chuva','Thunderstorm':'Tempestade','Set the language for Sela.':'Escolha o idioma do Sela.'});
-Object.assign(translated.zh,{'Appearance & language':'外观与语言','Weather settings':'天气设置','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'坐标会发送至 Open-Meteo 获取天气预报，并保存在此设备上。','Show the whole month':'显示整月','Show this week':'显示本周','Clear':'晴朗','Cloudy':'多云','Fog':'雾','Rain':'雨','Snow':'雪','Showers':'阵雨','Thunderstorm':'雷暴','Set the language for Sela.':'选择 Sela 的显示语言。'});
-Object.assign(translated.ko,{'Appearance & language':'화면 및 언어','Weather settings':'날씨 설정','Coordinates are sent to Open-Meteo for forecasts and saved on this device.':'날씨 예보를 위해 좌표가 Open-Meteo로 전송되고 이 기기에 저장됩니다.','Show the whole month':'한 달 전체 보기','Show this week':'이번 주 보기','Clear':'맑음','Cloudy':'흐림','Fog':'안개','Rain':'비','Snow':'눈','Showers':'소나기','Thunderstorm':'뇌우','Set the language for Sela.':'Sela의 언어를 선택해 주세요.'});
+
+Object.assign(translated.ja,{'Your little world of stories.':'物語のための、あなただけの小さな世界。','A little room of your own':'あなただけの小さな読書空間','Your books, new discoveries, and a little time for yourself.':'本と新しい発見、そして自分のための小さな時間。','Your reading space':'読書スペース','Home background':'ホームの背景','Your own companion':'お気に入りの仲間','Upload a mascot image':'マスコット画像をアップロード','Choose a background image':'背景画像を選ぶ','Color palettes':'カラーパレット','Snow':'スノー','Pop pastel':'ポップパステル','Akihabara neon':'秋葉原ネオン','Mint grove':'ミントグローブ','Sky pop':'スカイポップ','Lime soda':'ライムソーダ','Indigo':'インディゴ','Cherry pop':'チェリーポップ'});
+
+const homeTranslations:Record<string,Record<string,string>>={
+ ja:{'Good morning':'おはようございます','Good afternoon':'こんにちは','Good evening':'こんばんは','Good night':'おやすみなさい','A gentle note to pause and sip. Choose a small habit goal if it feels helpful.':'ひと休みして水を飲みましょう。よければ小さな習慣の目標を選べます。','My gentle daily goal':'今日の小さな目標','Choose a gentle goal to see your progress, or leave it off.':'目標を選ぶと進み具合が表示されます。設定しなくても大丈夫です。','A small reminder, never a rule. Drink when you feel thirsty.':'これは小さなお知らせです。のどが渇いたら水を飲みましょう。','You reached the goal you chose. Take a comfortable pause.':'自分で決めた目標に届きました。ゆっくりひと休みしましょう。','Goal reached · nice work!':'目標達成・すばらしいです！','No goal':'目標なし','cups':'杯','Quote language':'引用の言語','Quote topic':'引用のテーマ','App language':'アプリの言語'},
+};
+for(const [language,translations]of Object.entries(homeTranslations))Object.assign(translated[language],translations);
+const homeUiTranslations:Record<string,Record<string,string>>={
+ ja:{'Pick up where you left off.':'前回の続きから読みましょう。','glass today':'今日の一杯','glasses today':'今日の一杯','Find sourced quotes in this language':'この言語で出典付きの引用を探す','Sourced passages loaded in the selected language.':'選択した言語の出典付き引用を読み込みました。','Wikiquote is unavailable. Offline reflections remain ready.':'Wikiquoteを利用できません。オフラインのひとことは引き続き表示されます。','Open Wikiquote':'Wikiquoteを開く','Reading':'読書','Calm':'穏やかさ','Courage':'勇気','Life':'人生','Friendship':'友情','Creativity':'創造性','Reflection':'内省','My passages':'自分の文章'},
+};
+for(const [language,translations]of Object.entries(homeUiTranslations))Object.assign(translated[language],translations);
+const publicGuideTranslations:Record<string,Record<string,string>>={
+ ja:{'Your personal reading room':'あなたのための読書空間','Your books. Within reach.':'本を、いつでも手元に。','Read books, comics and documents on your own terms. Keep your shelf offline, and pick up where you left off.':'本や漫画、書類を自分のペースで読みましょう。本棚をオフラインに保存して、前回の続きから再開できます。','A private shelf. An uninterrupted read. Books, progress and collections stay on your device.':'自分だけの本棚で、読書に集中。書籍、進捗、コレクションは端末内に保存されます。','The same reading tools, on your website. One clean interface on every screen. Embed inline or open fullscreen.':'同じ読書機能をウェブサイトでも。どの画面でもすっきり表示し、埋め込みまたは全画面で開けます。','Open web app':'ウェブアプリを開く','Use Viewer CDN':'Viewer CDNを使う','How to install the app →':'アプリのインストール方法 →','Install guide ↗':'インストールガイド ↗','Install on your device':'端末にインストール','Open Sela Books, then tap Install Sela when the app offers it.':'Sela Booksを開き、インストールの案内が表示されたら「Selaをインストール」を選びます。','Chrome, Edge, Opera and Samsung Internet show their own install prompt when this browser supports it.':'対応ブラウザーでは、Chrome、Edge、Opera、Samsung Internetがインストール案内を表示します。','On iPhone or iPad, open the Share menu in Safari and choose Add to Home Screen. On macOS Safari, choose File → Add to Dock.':'iPhoneまたはiPadではSafariの共有メニューから「ホーム画面に追加」を選びます。macOSのSafariでは「ファイル」→「Dockに追加」を選びます。','Firefox offers a home-screen shortcut on Android. On desktop, use its Web Apps option where available or bookmark Sela.':'Android版Firefoxではホーム画面にショートカットを追加できます。デスクトップでは利用可能な場合にWeb Appsを使うか、Selaをブックマークしてください。','Sela hides the install action after a successful install when the browser reports that state. Browser and operating-system support varies.':'ブラウザーがインストール済みと判定すると、Selaはインストール操作を非表示にします。対応状況はブラウザーとOSによって異なります。','Works with your stack':'お使いの環境で使えます','Load the versioned Sela Viewer script from the CDN.':'CDNからバージョンを指定したSela Viewerのスクリプトを読み込みます。','Add a container with a height that suits your page.':'ページに合う高さの表示領域を追加します。','Create Sela with the document URL and choose inline or fullscreen presentation.':'文書のURLを指定してSelaを作成し、埋め込み表示または全画面表示を選びます。','Serve the document from a URL your website can access. Framework adapters are optional.':'ウェブサイトからアクセスできるURLで文書を配信します。フレームワーク用アダプターは任意です。','Embed the viewer.':'Viewerを埋め込む','CI3, Laravel, Vue, React, Svelte, Astro or plain HTML. Bring your own design system: Bootstrap and Tailwind are welcome, neither is required.':'CI3、Laravel、Vue、React、Svelte、Astro、または通常のHTMLで使えます。BootstrapとTailwindにも対応し、どちらも必須ではありません。'},
+};
+for(const [language,translations]of Object.entries(publicGuideTranslations))Object.assign(translated[language],translations);
+const paletteTranslations:Record<string,Record<string,string>>={
+ ja:{'Kids colors':'キッズカラー','Akihabara':'秋葉原','Forest':'森','Sakura':'桜','Ocean':'海','Lavender':'ラベンダー','Citrus':'シトラス'},
+};
+for(const [language,translations]of Object.entries(paletteTranslations))Object.assign(translated[language],translations);
+
+// Common Home and room controls should stay readable when the app language changes.
+const homeRoomTranslations: Array<[string,string]> = [
+  ['Your little world of stories.','物語が広がる、小さなあなたの場所。'],
+  ['YOUR READING SPACE','あなたの読書スペース'],
+  ['A little space to make reading feel like yours.','読書を自分らしく楽しむための小さな空間。'],
+  ['A thought for today','今日のひとこと'],
+  ['E-book reader: ','電子書籍リーダー：'],
+  ['Show bookmarks and page previews','しおりとページ一覧を表示'],
+  ['Enable page sound','ページめくり音をオン'],
+  ['Disable page sound','ページめくり音をオフ'],
+  ['Download ','ダウンロード '],
+  ['Close reader','リーダーを閉じる'],
+  ['Bookmarks','しおり'],
+  ['Page previews','ページ一覧'],
+  ['Reading position','読書位置'],
+  ['Page ','ページ '],
+  ['Next or go to page','次へ／ページを開く'],
+  ['Bookmark this page','このページにしおり'],
+  ['No bookmarks yet.','しおりはまだありません。'],
+  ['Go to page ','ページへ移動 '],
+  ['Remove this bookmark','このしおりを削除'],
+  ['Use page numbers for very long documents.','長い文書ではページ番号を使ってください。'],
+  ['Preview page ','ページをプレビュー '],
+  ['Open PDF','PDFを開く'],
+  ['Keyboard shortcuts','キーボード操作'],
+  ['← → / PgUp PgDn: navigate · Home / End: first / last · + / −: zoom · 0: reset · F: fullscreen · B: bookmark · M: sound · ?: shortcuts · Esc: close · Alt + ←: previous position · Ctrl/Cmd + F: search.','← → / PgUp PgDn：移動 · Home / End：最初／最後 · + / −：ズーム · 0：リセット · F：全画面 · B：しおり · M：音 · ?：操作一覧 · Esc：閉じる · Alt + ←：前の位置 · Ctrl/Cmd + F：検索。'],
+  ['Touch: swipe or use page arrows; pinch to zoom; drag an enlarged page; tap Reading settings for fit and mode.','タッチ操作：スワイプか矢印でページ移動、ピンチで拡大、拡大後はドラッグ。表示方法やモードは読書設定から変更できます。'],
+  ['Rotate your device manually; the layout adapts automatically.','端末を手動で回転してください。画面は自動で調整されます。'],
+  ['Wait for the mode change.','モードの切り替えが終わるまでお待ちください。'],
+  ['Text books support single chapter or continuous scroll.','テキスト本は章ごと、または連続スクロールで読めます。'],
+  ['Page or chapter number','ページ／章番号'],
+  ['This document could not be opened. Check its format or try another file.','この文書を開けませんでした。形式を確認するか、別のファイルをお試しください。'],
+  ['Fullscreen is unavailable in this browser.','このブラウザーでは全画面表示を利用できません。'],
+  ['Download original','元のファイルをダウンロード'],
+  ['Reading tools sections','読書ツールの項目'],
+  ['Back to previous position','前の位置に戻る'],
+  ['Document contents','文書の目次'],
+  ['No embedded contents or bookmarks.','埋め込みの目次やしおりはありません。'],
+  ['Contents unavailable.','目次を利用できません。'],
+  ['Search text','検索する文字'],
+  ['Search cancelled.','検索をキャンセルしました。'],
+  ['matching pages / chapters.','件のページ／章が一致しました。'],
+  ['Page material','ページの素材'],
+  ['Smooth paper','なめらかな紙'],
+  ['Deckled paper','縁に風合いのある紙'],
+  ['Soft vellum','やわらかな羊皮紙風'],
+  ['Ruled paper','罫線入りの紙'],
+  ['Laid paper','簀目紙'],
+  ['Woven paper','織り目のある紙'],
+  ['Text font','文字フォント'],
+  ['Text alignment','文字揃え'],
+  ['Document brightness','文書の明るさ'],
+  ['Low power · fewer effects, lower resolution','省電力 · 効果と解像度を抑える'],
+  ['Read aloud','読み上げ'],
+  ['Narration voice','読み上げ音声'],
+  ['Narration speed','読み上げ速度'],
+  ['Sleep timer','スリープタイマー'],
+  ['Your notes','メモ'],
+  ['Export notes & bookmarks','メモとしおりをエクスポート'],
+  ['Import notes & bookmarks','メモとしおりをインポート'],
+  ['Document text','文書のテキスト'],
+  ['Selectable document text','選択できる文書テキスト'],
+  ['Selected text actions','選択したテキストの操作'],
+  ['Back to library','本棚に戻る'],
+  ['Reading','読書'],
+  ['Pages & bookmarks','ページとしおり'],
+  ['Close previews','プレビューを閉じる'],
+  ['Contents & bookmarks','目次としおり'],
+  ['Search book','本を検索'],
+  ['Reader settings','読書設定'],
+  ['Page fit','ページの表示方法'],
+  ['Fit screen','画面に合わせる'],
+  ['Fit width','幅に合わせる'],
+  ['Original size','原寸大'],
+  ['Zoom out','縮小'],
+  ['Zoom in','拡大'],
+  ['All reading tools','すべての読書ツール'],
+  ['Cycle appearance','表示テーマを切り替え'],
+  ['Page filter','ページフィルター'],
+  ['Original','オリジナル'],
+  ['Black & white','白黒'],
+  ['High contrast','高コントラスト'],
+  ['Warm colors','暖色'],
+  ['Cool colors','寒色'],
+  ['Night page','夜間ページ'],
+  ['Invert colors','色を反転'],
+  ['Soft contrast','やわらかなコントラスト'],
+  ['Vivid','鮮やか'],
+  ['Amber','琥珀色'],
+  ['Crop page margins','ページの余白を切り取る'],
+  ['Fit','表示サイズ'],
+  ['Left / start','左揃え'],
+  ['Justified','両端揃え'],
+  ['Filters change the displayed page only. Brightness is a visual adjustment, not a device setting or medical color correction.','フィルターは表示だけを変更します。明るさは見た目の調整であり、端末設定や医療的な色補正ではありません。'],
+  ['Reset appearance','外観をリセット'],
+  ['Dim reader controls','読書コントロールを暗くする'],
+  ['Close tools','ツールを閉じる'],
+  ['Appearance','外観'],
+  ['Contents','目次'],
+  ['Find in book','本の中を検索'],
+  ['Reading appearance','読書画面'],
+  ['Page brightness','ページの明るさ'],
+  ['Next passage','次の箇所'],
+  ['Previous passage','前の箇所'],
+  ['Pause / resume','一時停止／再開'],
+  ['Narration player','読み上げプレーヤー'],
+  ['Off','オフ'],
+  ['minutes','分'],
+  ['Local voices only','端末内の音声のみ'],
+  ['Note for this page / chapter','このページ／章のメモ'],
+  ['Highlight selected text','選択範囲をハイライト'],
+  ['Clear highlights on this page','このページのハイライトを消す'],
+  ['Save selected quote to notes','選択した文章をメモに保存'],
+  ['Highlight selected text','選択したテキストをハイライト'],
+  ['Listen to selected text','選択したテキストを読み上げ'],
+  ['Share selected quote','選択した文章を共有'],
+  ['Clear selection','選択を解除'],
+  ['Uses browser / OS voices, without a Sela API key or subscription. Online voices may send text to their provider. Voice availability and pause/background behavior vary by device.','SelaのAPIキーや契約なしでブラウザー／OSの音声を使います。オンライン音声では文章が提供元に送られる場合があります。音声や一時停止、バックグラウンド動作は端末によって異なります。'],
+  ['A quiet little home for your books, notes, and reading time.','本とメモ、読書の時間のための静かな小さな場所。'],
+  ['MADE WITH CARE BY','心を込めて制作'],
+  ['Send feedback','フィードバックを送る'],
+  ['Preparing the offline app…','オフラインアプリを準備しています…'],
+  ['Bookshelf ready for local files offline. Keep a backup.','本棚はオフラインで使えます。元のファイルも保管してください。'],
+  ['Offline shell unavailable; keep your originals.','オフライン機能を利用できません。元のファイルを保管してください。'],
+  ['On your shelf','本棚'],
+  ['Make room for your first story.','最初の一冊を迎えましょう。'],
+  ['Drop books here, or use the + button. Files stay on this browser.','本をここにドロップするか、＋ボタンから追加してください。ファイルはこのブラウザーに保存されます。'],
+  ['My smart shelves','スマート本棚'],
+  ['Beyond your shelf','本棚の外にも'],
+  ['Discover open books. Read here or keep an offline copy.','公開書籍を探しましょう。ここで読むか、オフライン用に保存できます。'],
+  ['Open editions vary in completeness and copyright by country. Source credits remain in each book. Public APIs may limit requests.','公開版の内容や著作権は国によって異なります。出典は各書籍に表示されます。公開APIにはリクエスト制限がある場合があります。'],
+  ['More books','もっと見る'],
+  ['50-page novella','50ページの短編小説'],
+  ['Language & display','言語と表示'],
+  ['Check for a newer version.','新しいバージョンを確認します。'],
+  ['Reset defaults','初期設定に戻す'],
+  ['browser managed','ブラウザー管理'],
+  ['persistent','永続化'],
+  ['Protect offline storage','オフライン保存を保護'],
+  ['Backup includes original files, collections, progress, notes and bookmarks. Up to 120 MiB of book files per archive. Restore adds new books and keeps existing books and notes.','バックアップには元ファイル、コレクション、進捗、メモ、しおりが含まれます。書籍ファイルは1アーカイブ最大120 MiBです。復元では新しい本を追加し、既存の本とメモを保持します。'],
+  ['Device picker fallback','ファイル選択の代替方法'],
+  ['Use if your device hides a supported book. Contents are still validated.','端末が対応形式の本を表示しない場合に使います。ファイル内容は引き続き検証されます。'],
+  ['Download full backup','完全バックアップをダウンロード'],
+  ['Choose a Sela backup ZIP.','SelaのバックアップZIPを選択します。'],
+  ['Choose file','ファイルを選択'],
+  ['Keep a backup','バックアップを保存'],
+  ['Download your backup, or share it with an app on your device. No account setup needed.','バックアップをダウンロードするか、端末のアプリに共有できます。アカウント登録は不要です。'],
+  ['Connections & reading tools','連携と読書ツール'],
+  ['Search inside my library','本棚内を検索'],
+  ['Sync with my WebDAV','WebDAVと同期'],
+  ['Reading presets','読書プリセット'],
+  ['Travel shelf · check offline','旅行用の本棚 · オフライン確認'],
+  ['Create a collection card','コレクションカードを作成'],
+  ['Reading time','読書時間'],
+  ['Books','本'],
+  ['My room','読書スペース'],
+  ['Webtoon','ウェブトゥーン'],
+  ['min','分'],
+  ['books shown','冊を表示'],
+  ['found','件'],
+  ['GITenberg · Classics','GITenberg · 古典'],
+  ['Start','開始'],
+  ['Reset','リセット'],
+  ['Finish session','セッションを終了'],
+  ['Pause','一時停止'],
+  ['Session saved. Rest your eyes.','セッションを保存しました。目を休めましょう。'],
+  ['Session finished. Stretch and rest your eyes.','読書を終えました。体を伸ばして目を休めましょう。'],
+  ['Manga RTL','マンガ・右から左'],
+  ['A few pages are enough for today.','今日は数ページ読めば十分です。'],
+  ['An unfinished book still has a place here.','読みかけの本にも、ここに居場所があります。'],
+  ['Read at your own pace.','自分のペースで読みましょう。'],
+  ['Return to a favorite passage.','お気に入りの一節に戻りましょう。'],
+  ['Leave a little room for quiet.','静かな時間を少し残しておきましょう。'],
+  ['Rest is part of reading time.','休むことも読書の時間の一部です。'],
+  ['A small beginning is still a beginning.','小さな一歩も、始まりです。'],
+  ['You can begin again without rushing.','急がなくても、また始められます。'],
+  ['Make room for a different point of view.','違う視点を受け入れる余白をつくりましょう。'],
+  ['Today need not look like yesterday.','今日は昨日と同じでなくても大丈夫です。'],
+  ['A shared story opens a conversation.','物語を分かち合うと、会話が始まります。'],
+  ['Leave a page for someone you care about.','大切な人のために、一ページ残しておきましょう。'],
+  ['Let a question stay open a while.','問いを少しの間、そのままにしておきましょう。'],
+  ['A margin can hold a new idea.','余白には、新しいアイデアが宿ります。'],
+  ['Take a quiet moment for gratitude.','静かに感謝を思う時間をつくりましょう。'],
+  ['Give reflection a little space today.','今日は少し、思いを巡らせる時間をつくりましょう。'],
+  ['Your books, new discoveries, and a little time for yourself.','本や新しい発見、そして自分のためのひとときを。'],
+  ['Your books.','あなたの本。'],
+  ['My reading desk','読書デスク'],
+  ['A little reading time','読書のひととき'],
+  ['Make room for a chapter.','一章読む時間をつくりましょう。'],
+  ['Small reading rituals','読書の小さな習慣'],
+  ['Reading days','読書した日'],
+  ['Public holiday source: Nager.Date','祝日データ：Nager.Date'],
+  ['Holiday information is unavailable offline until it has been loaded once.','祝日情報は一度読み込むまでオフラインでは利用できません。'],
+  ['Reading saved · ','読書を記録 · '],
+  ['reading sessions','読書セッション'],
+  ['Undo one glass','一杯戻す'],
+  ['Water habit progress','水分補給の進み具合'],
+  [' · last update',' · 最終更新'],
+  ['Location is not supported here. Choose a city instead.','この環境では位置情報を利用できません。都市を選んでください。'],
+  ['From your notebook','ノートから'],
+  ['a little reflection','小さなひとこと'],
+  ['Another reading note','別の読書メモ'],
+  ['Quote themes','引用のテーマ'],
+  ['App palette','アプリの配色'],
+  ['Pure black in dark mode','ダークモードで黒を使用'],
+  ['Save power on OLED screens.','OLED画面で電力を節約します。'],
+  ['Make this space yours','この場所を自分らしく'],
+  ['Choose a background, a companion, and the small details of your home.','背景や仲間を選んで、自分の部屋を整えましょう。'],
+  ['Name your space','部屋に名前をつける'],
+  ['Room name','部屋の名前'],
+  ['Add a little room name','部屋に名前をつけましょう'],
+  ['Home background','ホームの背景'],
+  ['Choose a background image','背景画像を選ぶ'],
+  ['Pick a photo or illustration. Sela softens it so the page stays easy to read.','写真やイラストを選べます。文字が読みやすいよう、背景はやわらかく表示されます。'],
+  ['Choose a home background image','ホームの背景画像を選ぶ'],
+  ['Restore original background','元の背景に戻す'],
+  ['Choose a companion','仲間を選ぶ'],
+  ['Use your own picture','自分の画像を使う'],
+  ['Or choose a favorite picture. It stays on this device and replaces the companion above.','好きな画像も使えます。この端末に保存され、上の仲間に代わって表示されます。'],
+  ['Upload your own mascot image','自分のマスコット画像をアップロード'],
+  ['Home comforts','ホームの設定'],
+  ['Quiet room','静かな部屋'],
+  ['Show quotes','引用を表示'],
+  ['Show reading session','読書タイマーを表示'],
+  ['Rediscover books','本を再発見'],
+  ['Reset room','部屋をリセット'],
+  ['Your room is back to its original setup.','部屋を初期状態に戻しました。'],
+  ['Find a book','本を探す'],
+  ['Continue reading','続きを読む'],
+  ['Install Sela','Selaをインストール'],
+  ['Later','あとで'],
+  ['Update now','今すぐ更新'],
+  ['App checked. Updates appear here when ready.','アプリを確認しました。更新の準備ができるとここに表示されます。'],
+  ['YOUR PERSONAL READING ROOM','あなたの読書スペース'],
+  ['Your books.<br>Within reach.','本を、いつでも手元に。'],
+  ['Your library. Your space.','あなたの本棚、あなたの場所。'],
+  ['YOUR LIBRARY','あなたの本棚'],
+  ['FOR YOUR WEBSITE','ウェブサイト向け'],
+  ['PLUG IN. READ ON.','組み込んで、読み続ける。'],
+  ['Viewer playground','ビューアを試す'],
+  ['Modes, appearance & integration','モード・外観・連携'],
+  ['Local-first','端末内で完結'],
+  ['No account','アカウント不要'],
+  ['THE READING DESK','読書デスク'],
+  ['Open a book. Try your own.','本を開いてみましょう。'],
+  ['Everything stays in your browser.','すべてブラウザー内に保存されます。'],
+  ['Original sample · Read','オリジナルサンプル · 読む'],
+  ['A return to an old house, a recording that should not exist, and the people left between memory and distance.','古い家への帰還、存在するはずのない録音、そして記憶と距離のあいだに残された人々。'],
+  ['Try your document','自分のファイルで試す'],
+  ['Choose a file. No upload.','ファイルを選択。アップロード不要。'],
+  ['Original PDF ↗','オリジナルPDF ↗'],
+  ['Use CDN','CDNを使う'],
+  ['Try app controls','アプリの操作を試す'],
+  ['Integration guide ↗','連携ガイド ↗'],
+  ['Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional.','プレーンHTML、CI3、Laravel、React、Vue、Svelte、Astroなどで同じViewerを使えます。BootstrapとTailwindは任意です。'],
+  ['Track your sips at your own pace.','Catat minum air dengan ritmemu sendiri.'],
+  ['drunk today','diminum hari ini'],
+  ['Set up this tracker','Atur pencatat minum'],
+  ['Daily goal (mL)','Target harian (mL)'],
+  ['Serving size','Ukuran gelas'],
+  ['Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.','Pilih target yang terasa nyaman, atau isi 0 untuk mematikan progres. Ini pencatat kebiasaan pribadi, bukan resep medis.'],
+  ['Your chosen goal is reached. Nice work; pause when you need to.','Target pilihanmu tercapai. Bagus; berhenti sejenak saat perlu.'],
+  ['A fresh start','Awal yang segar'],
+  ['First sips logged','Tegukan pertama tercatat'],
+  ['Halfway there','Setengah jalan'],
+  ['More than halfway','Lebih dari setengah'],
+  ['A gentle reminder, not a rule. Drink when you feel thirsty.','Pengingat lembut, bukan aturan. Minumlah saat merasa haus.'],
+  ['Set an optional goal if it feels helpful, or leave it off.','Pasang target bila terasa membantu, atau biarkan mati.'],
+];
+const homeRoomLocales=['ja'] as const;
+for(const [english,...values]of homeRoomTranslations)homeRoomLocales.forEach((language,index)=>{translated[language][english]=values[index];});
+
+Object.assign(translated.ja,{
+  'Quick settings':'かんたん設定','Personalize your reading space':'読書スペースを整える','Reading space':'読書スペース','Daily reading':'今日の読書','Water goal':'水分補給の目標','Not set up yet':'未設定','Ready':'設定済み','A little for your day':'今日を心地よく過ごすために','Track your sips at your own pace.':'自分のペースで水分補給を記録しましょう。','drunk today':'今日飲んだ量','Set up this tracker':'記録を設定する','Daily goal (mL)':'1日の目標 (mL)','Serving size':'一杯の量','Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.':'無理のない目標を選ぶか、0に設定すると進捗をオフにできます。これは個人の習慣記録であり、医学的な指示ではありません。','Your chosen goal is reached. Nice work; pause when you need to.':'自分で決めた目標に達しました。いい調子です。必要なときは休みましょう。','A fresh start':'新しい一日','First sips logged':'最初の一杯を記録','Halfway there':'半分まで来ました','More than halfway':'半分を超えました','A gentle reminder, not a rule. Drink when you feel thirsty.':'優しい目安です。ルールではありません。喉が渇いたら飲みましょう。','Set an optional goal if it feels helpful, or leave it off.':'役立ちそうなら目標を設定してください。必要なければオフのままで大丈夫です。','Islamic reading':'イスラムの読書','A passage with its edition and source attached.':'版と出典を明記した一節です。','Finding a reading from the selected source…':'選択した出典から一節を取得しています…','This source is temporarily unavailable. Open its original library or try again later.':'この出典は一時的に利用できません。原典を開くか、後でもう一度お試しください。','Browse the Quran':'クルアーンを読む','Read the Quran':'クルアーンを読む','Home scripture preference updated.':'ホームの聖典の設定を更新しました。','Choose your scripture':'聖典を選ぶ','Faith & scripture':'信仰と聖典','Choose one':'一つ選ぶ','Each reading names its edition and source. Text is shown only when an identifiable source is available.':'各読書には版と出典を表示します。出典を確認できる本文のみを表示します。','Surah':'スーラ','Open':'開く',
+  'Choose a surah':'スーラを選ぶ','Search surahs':'スーラを検索','Translation language':'翻訳の言語','Translation edition':'翻訳版','Text size':'文字サイズ','Arabic text size':'アラビア語の文字サイズ','Translation text size':'翻訳の文字サイズ','Choose one of the source-published translations below.':'公開元の翻訳から一つ選んでください。','Source translation for this language.':'この言語で利用できる公開元の翻訳です。','Loading translations…':'翻訳を読み込み中…','No translations are available right now.':'現在利用できる翻訳はありません。','No surahs match your search.':'検索に一致するスーラはありません。','Open in Sela':'Selaで開く','Loading the surah…':'スーラを読み込み中…','Indonesian':'インドネシア語','Japanese':'日本語','English':'英語','Increase Arabic text size':'アラビア語の文字を大きくする','Decrease Arabic text size':'アラビア語の文字を小さくする','Increase translation text size':'翻訳の文字を大きくする','Decrease translation text size':'翻訳の文字を小さくする','Try again':'再試行','Quran navigation':'クルアーンの移動','Verse':'節','Verse number':'節番号','Go':'移動','That verse is not available in this edition.':'この翻訳版ではその節を利用できません。','The Quran location is not valid.':'クルアーンの場所が正しくありません。'
+});
 
 export function translate(en:string,id:string,locale:string):string {
   const base=localeBase(locale);

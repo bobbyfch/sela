@@ -1,0 +1,6 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss" source(none) prefix(tw);
+@import "./viewer-tailwind-utilities.css";
+
+@source inline("tw:library-reader-overlay tw:sela-inline tw:sela-credit tw:sela-tools tw:library-reader-shell tw:library-reader-button tw:library-reader-marks tw:library-reader-page-form tw:library-reader-close tw:library-reader-icon tw:library-reader-bookmark-item tw:library-reader-content tw:library-reader-stage tw:library-reader-book tw:library-reader-thumbs tw:library-reader-thumb tw:library-reader-fallback tw:sela-webtoon tw:sela-webtoon-page tw:sela-webtoon-tools tw:fb-rtl tw:sela-shortcuts tw:sela-epub tw:sela-epub-chapter tw:sela-notice tw:sela-tools-top tw:sela-tool-tabs tw:sela-tool-panel tw:sela-toc-item tw:sela-search-results tw:sela-speech-controls tw:sela-transcript tw:sela-tools-status tw:sela-voice-notice tw:sela-controls-hidden tw:fb-face tw:sela-footnote tw:sela-speech-mini");

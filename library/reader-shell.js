@@ -7,12 +7,14 @@ import { renderBookInfo } from "./book-info.js";
 import { mountReaderProfiles } from "./reader-profiles.js";
 import { mountSharePanel } from "./share-card.js";
 import { translate } from "../dist/source/src/i18n.js";
+import { mountQuranReader } from "./quran-reader.js";
 const paths = { back: "m14 5-7 7 7 7M7 12h14", contents: "M4 5h16M4 12h16M4 19h16", search: "m21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0", settings: "M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6", sun: "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0", help: "M9 8a3 3 0 1 1 5 2c-2 1-2 2-2 4m0 4v1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0", rotate: "M3 10a9 9 0 0 1 15-6l3 3m-6 0h6V1M21 14a9 9 0 0 1-15 6l-3-3m6 0H3v6", previews: "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z", prev: "m15 5-7 7 7 7", next: "m9 5 7 7-7 7", mark: "M6 3h12v18l-6-4-6 4Z", voice: "M9 4a3 3 0 0 1 6 0v8a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3", close: "m6 6 12 12M18 6 6 18", minus: "M5 12h14", plus: "M12 5v14M5 12h14", share: "M12 16V3m-4 4 4-4 4 4M5 12v9h14v-9", info: "M12 11v6m0-10v1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0", full: "M9 3H3v6m12-6h6v6M3 15v6h6m6 0h6v-6" };
 export function configureLibraryReader(reader, { mobile, viewer = false, language = "en" } = {}) {
   const overlay = reader.overlay;
   if (!overlay || !mobile || overlay.dataset.productReader === "app") return;
   const state = reader._reader.getState(), shell = overlay.querySelector(".library-reader-shell"), host = overlay.querySelector(".library-reader-book"), tools = overlay.querySelector(".sela-tools");
   overlay.dataset.productReader = "app";
+  overlay.dataset.oled = document.documentElement.dataset.oled || "false";
   if (!viewer) {
     state.options.theme = document.documentElement.dataset.theme || "auto";
     reader.options.theme = state.options.theme;
@@ -44,6 +46,8 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   close.classList.add("library-reader-close");
   const title = el("div", "app-reading-title", top);
   el("strong", "", title).textContent = state.options.title || t("Your book", "Buku kamu");
+  const quranCandidate = reader.options?.metadata?.quran || reader.book?.quranMetadata, quran = quranCandidate && Number.isInteger(quranCandidate.surah) && quranCandidate.surah >= 1 && quranCandidate.surah <= 114 && Number.isInteger(quranCandidate.verseCount) && quranCandidate.verseCount >= 1 && quranCandidate.verseCount <= 286 && /^[a-z0-9_]{1,80}$/.test(String(quranCandidate.translationKey || "")) && ["id", "en", "ja"].includes(quranCandidate.language) ? quranCandidate : null;
+  if (quran) mountQuranReader(overlay, top, reader, quran, t);
   const dock = el("footer", "app-reading-dock", shell);
   dock.append(controls.pageForm);
   controls.pageForm.querySelector("button").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + paths.next + '"/></svg>';
@@ -321,7 +325,7 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
     range("Line spacing", "Jarak baris", "lineHeight", 1.2, 2.4, 0.1, 1.7);
   } else range("Crop margins", "Pangkas tepi", "cropMargin", 0, 15, 1, 0);
   const pageFilter = select("Page filter", "Filter halaman", [["none", "Original", "Asli"], ["grayscale", "Black & white", "Hitam putih"], ["sepia", "Sepia", "Sepia"], ["invert", "Inverted", "Terbalik"], ["contrast", "High contrast", "Kontras tinggi"], ["warm", "Warm", "Hangat"], ["cool", "Cool", "Sejuk"], ["night", "Night", "Malam"], ["paper", "Paper", "Kertas"], ["soft", "Soft", "Lembut"], ["saturated", "Vivid", "Pekat"], ["lowblue", "Amber", "Amber"]], state.options.filter || "none", (v) => reader.setFilter(v));
-  const pageSurface = select("Page material", "Material halaman", [["smooth", "Smooth linen", "Linen halus"], ["rough", "Deckled paper", "Kertas bertekstur"], ["vellum", "Soft vellum", "Kertas buram"], ["lined", "Ruled paper", "Kertas bergaris"], ["laid", "Laid paper", "Kertas serat silang"], ["oak", "Light oak", "Oak muda"], ["walnut", "Dark walnut", "Walnut tua"], ["woven", "Woven linen", "Linen tenun"]], state.options.pageSurface || (state.options.paperTexture ? "vellum" : "smooth"), (value) => state.setPreferences({ pageSurface: value }));
+  const pageSurface = select("Page material", "Material halaman", [["smooth", "Smooth paper", "Kertas halus"], ["rough", "Deckled paper", "Kertas bertekstur"], ["vellum", "Soft vellum", "Kertas buram"], ["lined", "Ruled paper", "Kertas bergaris"], ["laid", "Laid paper", "Kertas serat silang"], ["woven", "Woven paper", "Kertas tenun"]], state.options.pageSurface || (state.options.paperTexture ? "vellum" : "smooth"), (value) => state.setPreferences({ pageSurface: value }));
   const advanced = el("button", "app-advanced", drawer);
   advanced.type = "button";
   advanced.textContent = t("All reading tools", "Semua alat baca");

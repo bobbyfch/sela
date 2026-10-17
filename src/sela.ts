@@ -4,6 +4,7 @@ import { createReader } from './reader.ts';
 import { Webtoon } from './webtoon.ts';
 import { FILTERS, brightness, applyAppearance } from './appearance.ts';
 import { MODES, readingPreferences, readStored } from './preferences.ts';
+import {normalizeLocale} from './locale.ts';
 export { FILTERS } from './appearance.ts';
 
 import { VERSION } from '../app/library/version.ts';
@@ -115,9 +116,9 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
       }
       if (!win.__selaAttribution) {
         win.__selaAttribution = true;
-        console.info('Sela '+VERSION+' · Documents, books and comics.\nCreated by Bobby Fajar Christian · https://bobbyfajarc.github.io/\nProject: https://github.com/bobbyfch/sela');
+        console.info('Sela '+VERSION+' · Documents, books and comics.\nCreated by Bobby Fajar Christian · https://bobbyfch.github.io/\nProject: https://github.com/bobbyfch/sela');
       }
-      if(options.language === 'auto')options.language = /^id\b/i.test(win.navigator.language) ? 'id' : 'en';
+      if(options.language === 'auto')options.language = normalizeLocale(win.navigator.language);
       const extension = /\.(epub|cbz|djvu|djv|txt|md|html|htm|fb2|docx|odt)(?:[?#]|$)/i.exec(options.url || options.pdfUrl || '')?.[1].toLowerCase().replace(/^htm$/, 'html');
       options.format = options.format && options.format !== 'auto' ? options.format : (extension === 'djv' ? 'djvu' : extension || 'pdf');
       options.pageGap = Math.max(0, Math.min(80, Number(options.pageGap)||0));
@@ -134,6 +135,12 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
       options.cMapUrl ||= new URL('vendor/pdfjs/cmaps/', base).href;
       options.standardFontDataUrl ||= new URL('vendor/pdfjs/standard_fonts/', base).href;
       const generation = ++this._generation;
+      const language=String(options.language||'en').toLowerCase();
+      if(!language.startsWith('en')&&!language.startsWith('id')){
+        options.localesUrl ||= new URL('js/sela.locales.js',base).href;
+        try{const locales=await import(/* webpackIgnore: true */ /* @vite-ignore */ options.localesUrl);if(generation!==this._generation)throw abortError();options.translate=locales.translate;}
+        catch(error){if((error as Error)?.name==='AbortError')throw error;options.localeLoadError=true;}
+      }
       if (options.presentation !== 'inline') {
         if (activeViewer && activeViewer !== this) activeViewer.close();
         activeViewer = this;

@@ -18,7 +18,6 @@ test('calendar controls and backup picker stay aligned from phone to desktop',as
   }
 
   await page.getByRole('button',{name:'Settings',exact:true}).click();
-  for(const group of await page.locator('.settings-group').all())if(await group.getAttribute('open')===null)await group.locator('summary').click();
   const restore=page.locator('#restore-library');
   await expect(restore).toBeVisible();
   for(const width of [320,360,393,768,1366]){
@@ -33,6 +32,25 @@ test('calendar controls and backup picker stay aligned from phone to desktop',as
     expect(metrics.scrollWidth,`backup row at ${width}px`).toBeLessThanOrEqual(metrics.width+1);
     expect(metrics.pickerInside,`backup control at ${width}px`).toBe(true);
     expect(metrics.buttonOverflow,`backup label at ${width}px`).toBe(false);
+  }
+});
+
+test('Tailwind shell keeps the shelf responsive without horizontal overflow',async({page})=>{
+  await page.goto('/mobile/');
+  await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+  await page.getByRole('button',{name:'Shelf',exact:true}).click();
+  await page.locator('#books').setInputFiles([{name:'Responsive layout.txt',mimeType:'text/plain',buffer:Buffer.from('A small book used only to measure the responsive shelf grid.')}]);
+  await expect(page.locator('.book')).toHaveCount(1);
+  for(const [width,columns] of [[320,2],[393,2],[768,3],[1024,4],[1440,4]] as const){
+    await page.setViewportSize({width,height:900});
+    const metrics=await page.evaluate(()=>({
+      columns:getComputedStyle(document.querySelector('#shelf')!).gridTemplateColumns.split(' ').length,
+      overflow:document.documentElement.scrollWidth>innerWidth,
+      shellWidth:document.querySelector('#mobile-app')!.getBoundingClientRect().width,
+    }));
+    expect(metrics.columns,`shelf columns at ${width}px`).toBe(columns);
+    expect(metrics.overflow,`page overflow at ${width}px`).toBe(false);
+    expect(metrics.shellWidth,`shell width at ${width}px`).toBeLessThanOrEqual(width);
   }
 });
 

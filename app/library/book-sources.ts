@@ -9,8 +9,8 @@ async function json(url,signal){
  if(cache.size>40)cache.delete(cache.keys().next().value);cache.set(url,{time:Date.now(),data});return data;
 }
 const wiki=(params,signal)=>json('https://id.wikisource.org/w/api.php?'+new URLSearchParams({format:'json',origin:'*',...params}),signal);
-export async function searchBooks({source='gitenberg',query='',page=1,continuation,signal}: Record<string, any>={}){
- if(!['wikisource','gitenberg'].includes(source))return externalBooks({source,query,page,signal});
+export async function searchBooks({source='gitenberg',query='',page=1,continuation,category='',signal}: Record<string, any>={}){
+ if(!['wikisource','gitenberg'].includes(source))return externalBooks({source,query,page,category,signal});
  if(source==='wikisource'){
   const data=await wiki(query?{action:'query',list:'search',srnamespace:'0',srsearch:query,srlimit:'24',sroffset:String((page-1)*24)}:{action:'query',list:'categorymembers',cmtitle:'Kategori:Novel',cmnamespace:'0',cmlimit:'24',...(continuation?{cmcontinue:continuation}:{})},signal);
   const rows=data.query?.search||data.query?.categorymembers||[];

@@ -1,5 +1,6 @@
-import {windowPlants,booksAndTea} from "../../app/site/cozy-decor.ts";
 import React from "react";
+import { Button } from "../components/ui/button.tsx";
+import { NativeSelect } from "../components/ui/native-select.tsx";
 export function PublicHead() {
   return (
     <>
@@ -8,7 +9,7 @@ export function PublicHead() {
       <meta name={"viewport"} content={"width=device-width,initial-scale=1"} />
       <meta name={"color-scheme"} content={"light dark"} />
       {"\n"}
-      <title>{"Sela — Your personal reader"}</title>
+      <title>{"Sela Books — Your personal library"}</title>
       {"\n"}
       <meta
         name={"description"}
@@ -18,13 +19,13 @@ export function PublicHead() {
       />
       {"\n"}
       <meta name={"robots"} content={"index,follow,max-image-preview:large"} />
-      <meta name={"theme-color"} content={"#236947"} />
+      <meta name={"theme-color"} content={"#ffffff"} />
       {"\n"}
       <link rel={"canonical"} href={"https://bobbyfch.github.io/sela/"} />
       {"\n"}
       <meta property={"og:type"} content={"website"} />
-      <meta property={"og:site_name"} content={"Sela Reader"} />
-      <meta property={"og:title"} content={"Sela — Your personal reader"} />
+      <meta property={"og:site_name"} content={"Sela Books"} />
+      <meta property={"og:title"} content={"Sela Books — Your personal library"} />
       <meta
         property={"og:description"}
         content={
@@ -38,7 +39,7 @@ export function PublicHead() {
       />
       <meta
         property={"og:image:alt"}
-        content={"Sela Reader app running on desktop and phone"}
+        content={"Sela Books app running on desktop and phone"}
       />
       <meta property={"og:image:width"} content={"1200"} />
       <meta property={"og:image:height"} content={"630"} />
@@ -46,7 +47,7 @@ export function PublicHead() {
       <meta property={"og:locale:alternate"} content={"id_ID"} />
       {"\n"}
       <meta name={"twitter:card"} content={"summary_large_image"} />
-      <meta name={"twitter:title"} content={"Sela — Your personal reader"} />
+      <meta name={"twitter:title"} content={"Sela Books — Your personal library"} />
       <meta
         name={"twitter:description"}
         content={
@@ -61,11 +62,10 @@ export function PublicHead() {
       <link rel={"apple-touch-icon"} href={"site/icon-192.png"} />
       <link rel={"icon"} href={"favicon.svg"} type={"image/svg+xml"} />
       <link rel={"alternate icon"} href={"favicon.png"} />
-      <link rel={"stylesheet"} href={"site/demo.css?v={{SELA_VERSION}}"} />
       {"\n"}
       <script type={"application/ld+json"}>
         {
-          '{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sela Reader","applicationCategory":"LifestyleApplication","operatingSystem":"Any OS with a supported web browser","softwareVersion":"{{SELA_VERSION}}","url":"https://bobbyfch.github.io/sela/","downloadUrl":"https://github.com/bobbyfch/sela/releases","codeRepository":"https://github.com/bobbyfch/sela","license":"https://opensource.org/license/mit","description":"Open-source universal reader for PDF, reflowable EPUB and CBZ, with optional DjVu. Book, single, seamless webtoon and manga modes. Format adapters load on demand.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Bobby Fajar Christian"}}'
+          '{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sela Books","applicationCategory":"LifestyleApplication","operatingSystem":"Any OS with a supported web browser","softwareVersion":"{{SELA_VERSION}}","url":"https://bobbyfch.github.io/sela/","downloadUrl":"https://github.com/bobbyfch/sela/releases","codeRepository":"https://github.com/bobbyfch/sela","license":"https://opensource.org/license/mit","description":"Open-source universal reader for PDF, reflowable EPUB and CBZ, with optional DjVu. Book, single, seamless webtoon and manga modes. Format adapters load on demand.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Bobby Fajar Christian"}}'
         }
       </script>
       {"\n"}
@@ -74,85 +74,76 @@ export function PublicHead() {
 }
 function PublicNavigation() {
   return (
-    <header className={"nav"}>
-      <a className={"brand"} href={"#"}>
+    <header className={"nav tw:sticky tw:top-0 tw:z-50 tw:mx-auto tw:flex tw:w-full tw:max-w-[1440px] tw:flex-wrap tw:items-center tw:justify-between tw:gap-x-5 tw:gap-y-2 tw:border-b tw:border-sela-line/80 tw:bg-sela-canvas/90 tw:px-4 tw:py-3 tw:backdrop-blur-2xl tw:sm:px-6 tw:lg:px-10"}>
+      <a className={"brand tw:flex tw:min-w-0 tw:shrink-0 tw:items-center tw:gap-3 tw:font-semibold tw:tracking-tight tw:text-sela-ink tw:no-underline"} href={"#"}>
         <img
           src={"logo.svg"}
-          alt={"Sela open book"}
+          alt={"Sela Books symbol"}
           width={"36"}
           height={"36"}
+          className={"tw:size-10 tw:rounded-[14px] tw:shadow-md tw:shadow-sela-violet/15"}
         />
-        {" Sela Reader "}
-        <span>{"{{SELA_LABEL}}"}</span>
+        <span className={"tw:text-lg tw:font-semibold tw:tracking-[-.04em] tw:sm:text-xl"}>{"Sela Books"}</span>
+        <span className={"tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-2.5 tw:py-1 tw:text-[10px] tw:font-semibold tw:tracking-wide tw:text-sela-muted tw:max-[430px]:hidden"}>{"{{SELA_LABEL}}"}</span>
       </a>
-      <div className={"nav-actions"}>
-        <div className={"theme-switch"} role={"group"} aria-label={"Appearance"}>
-          <button
+      <div className={"nav-actions tw:flex tw:min-w-0 tw:max-w-full tw:flex-wrap tw:items-center tw:justify-end tw:gap-2 tw:sm:gap-2.5"}>
+        <div className={"theme-switch tw:flex tw:shrink-0 tw:items-center tw:gap-0.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface/90 tw:p-1 tw:shadow-sm"} role={"group"} aria-label={"Appearance"}>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
             type={"button"}
             data-theme-choice={"light"}
             aria-label={"Light theme"}
             title={"Light"}
+            aria-pressed={"false"}
+            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <circle cx={"12"} cy={"12"} r={"4"}></circle>
-              <path
-                d={
-                  "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
-                }
-              ></path>
-            </svg>
-          </button>
-          <button
+            <i className={"ph-fill ph-sun tw:text-[19px]"} aria-hidden={true}></i>
+          </Button>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
             type={"button"}
             data-theme-choice={"dark"}
             aria-label={"Dark theme"}
             title={"Dark"}
+            aria-pressed={"false"}
+            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path d={"M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z"}></path>
-            </svg>
-          </button>
-          <button
+            <i className={"ph-fill ph-moon-stars tw:text-[19px]"} aria-hidden={true}></i>
+          </Button>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
             type={"button"}
             data-theme-choice={"auto"}
             aria-label={"System theme"}
             title={"System"}
+            aria-pressed={"false"}
+            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <rect x={"3"} y={"4"} width={"18"} height={"13"} rx={"2"}></rect>
-              <path d={"M8 21h8m-4-4v4"}></path>
-            </svg>
-          </button>
+            <i className={"ph-fill ph-desktop-tower tw:text-[19px]"} aria-hidden={true}></i>
+          </Button>
         </div>
-        <select id={"theme"} hidden={true} aria-label={"Appearance"}>
+        <NativeSelect id={"theme"} hidden={true} aria-label={"Appearance"}>
           <option value={"auto"}>{"System"}</option>
           <option value={"light"}>{"Light"}</option>
           <option value={"dark"}>{"Dark"}</option>
-        </select>
-        <select id={"language"} className={"public-language-select"} aria-label={"Language"}>
-          <option value={"en-US"}>{"🇺🇸 English (US)"}</option>
-          <option value={"en-GB"}>{"🇬🇧 English (UK)"}</option>
-          <option value={"id-ID"}>{"🇮🇩 Bahasa Indonesia"}</option>
-          <option value={"ja-JP"}>{"🇯🇵 日本語"}</option>
-          <option value={"es-ES"}>{"🇪🇸 Español"}</option>
-          <option value={"fr-FR"}>{"🇫🇷 Français"}</option>
-          <option value={"de-DE"}>{"🇩🇪 Deutsch"}</option>
-          <option value={"pt-BR"}>{"🇧🇷 Português"}</option>
-          <option value={"zh-CN"}>{"🇨🇳 简体中文"}</option>
-          <option value={"ko-KR"}>{"🇰🇷 한국어"}</option>
-        </select>
+        </NativeSelect>
+        <div className={"tw:flex tw:min-w-0 tw:items-center tw:gap-1.5 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-2 tw:shadow-sm"}>
+        <img id={"language-flag"} className={"language-flag tw:h-[15px] tw:w-5 tw:shrink-0 tw:rounded-[3px] tw:object-cover"} src={"site/flag-en.svg"} alt={""} aria-hidden={true} />
+        <NativeSelect id={"language"} className={"public-language-select tw:h-11 tw:min-w-0 tw:max-w-[min(38vw,190px)] tw:cursor-pointer tw:border-0 tw:bg-transparent tw:py-1 tw:pr-1 tw:text-xs tw:font-medium tw:text-sela-ink tw:outline-none"} aria-label={"Language"}>
+          <option value={"en-US"}>{"English"}</option>
+          <option value={"id-ID"}>{"Bahasa Indonesia"}</option>
+          <option value={"ja-JP"}>{"日本語"}</option>
+        </NativeSelect>
+        </div>
         <a
+          className={"tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:text-sela-ink tw:transition-colors tw:hover:bg-sela-surface tw:hover:text-sela-accent tw:max-[430px]:hidden"}
           href={"https://github.com/bobbyfch/sela"}
           aria-label={"Sela on GitHub"}
         >
-          <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-            <path
-              fill={"currentColor"}
-              d={
-                "M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.64-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.84c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.73c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
-              }
-            ></path>
-          </svg>
+          <i className={"ph-fill ph-github-logo tw:text-[22px]"} aria-hidden={true}></i>
         </a>
       </div>
     </header>
@@ -160,50 +151,56 @@ function PublicNavigation() {
 }
 function PublicContent() {
   return (
-    <main>
+    <main className={"tw:mx-auto tw:w-full tw:max-w-[1440px] tw:px-4 tw:sm:px-6 tw:lg:px-10 tw:2xl:px-12"}>
       {"\n"}
       <Hero />
       {"\n"}
       <SampleGallery />
       {"\n"}
-      <Demo />
+      <ReadingCorner />
       {"\n"}
       <Products />
-      <p id={"product-status"} role={"status"} aria-live={"polite"}></p>
-      <Install />
-      <details className={"developer-playground"}>
-        <summary>
-          <span aria-hidden={"true"}>{"⌘"}</span>{" "}
-          <span data-en={"Viewer playground"} data-id={"Playground Viewer"}>
-            {"Viewer playground"}
+      <p className="tw:mx-auto tw:my-3 tw:max-w-6xl tw:text-sm tw:font-medium tw:text-sela-accent" id={"product-status"} role={"status"} aria-live={"polite"}></p>
+      <details id={"install-viewer"} className={"developer-playground tw:my-12 tw:overflow-hidden tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:shadow-sm"}>
+        <summary className="tw:flex tw:min-h-16 tw:cursor-pointer tw:list-none tw:items-center tw:gap-3 tw:px-5 tw:py-4 tw:font-semibold tw:text-sela-ink tw:sm:px-7 tw:[&::-webkit-details-marker]:hidden">
+          <span className="tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-violet/10 tw:text-sela-accent"><i className="ph-fill ph-sliders-horizontal tw:text-xl" aria-hidden={true}></i></span>
+          <span className="tw:min-w-0 tw:flex-1" data-en={"Try the viewer & get your setup"} data-id={"Coba viewer & dapatkan konfigurasinya"}>
+            {"Try the viewer & get your setup"}
           </span>
-          <small
-            data-en={"Modes, appearance & integration"}
-            data-id={"Mode, tampilan & integrasi"}
+          <small className="tw:text-xs tw:font-normal tw:text-sela-muted tw:max-[560px]:hidden"
+            data-en={"One place to try and configure it"}
+            data-id={"Satu tempat untuk mencoba dan mengaturnya"}
           >
-            {"Modes, appearance & integration"}
+            {"One place to try and configure it"}
           </small>
         </summary>
-        <form className={"playground"} id={"playground"}>
-          <div className={"playground-heading"}>
+        <Demo />
+        <form className={"playground tw:border-t tw:border-sela-line tw:p-4 tw:sm:p-7"} id={"playground"}>
+          <ol className="tw:mb-6 tw:grid tw:grid-cols-1 tw:gap-2 tw:pl-0 tw:sm:grid-cols-3">
+            <li className="tw:flex tw:items-center tw:gap-3 tw:rounded-xl tw:bg-sela-canvas tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-violet/10 tw:font-bold tw:text-sela-accent">1</span><span data-en="Choose a sample or your own file." data-id="Pilih contoh atau file milikmu.">Choose a sample or your own file.</span></li>
+            <li className="tw:flex tw:items-center tw:gap-3 tw:rounded-xl tw:bg-sela-canvas tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-sky/15 tw:font-bold tw:text-sela-sky">2</span><span data-en="Pick how you want to read." data-id="Pilih cara membaca.">Pick how you want to read.</span></li>
+            <li className="tw:flex tw:items-center tw:gap-3 tw:rounded-xl tw:bg-sela-canvas tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-pink/15 tw:font-bold tw:text-sela-pink">3</span><span data-en="Open it. Copy the setup if you want it on your site." data-id="Buka. Salin konfigurasinya jika ingin dipakai di situsmu.">Open it. Copy the setup if you want it on your site.</span></li>
+          </ol>
+          <div className={"playground-heading tw:mb-5 tw:flex tw:flex-wrap tw:items-end tw:justify-between tw:gap-4"}>
             <div>
-              <p className={"eyebrow"} data-i18n={"playEyebrow"}>
+              <p className={"eyebrow tw:mb-2 tw:text-[10px] tw:font-bold tw:tracking-[.2em] tw:text-sela-accent"} data-i18n={"playEyebrow"}>
                 {"MAKE IT YOURS"}
               </p>
-              <h3 data-i18n={"playTitle"}>{"Live configuration."}</h3>
+              <h3 className="tw:m-0 tw:text-xl tw:font-semibold tw:tracking-tight" data-i18n={"playTitle"}>{"Live configuration."}</h3>
             </div>
-            <button
+            <Button
+              variant={"default"}
               type={"submit"}
-              className={"launch-reader"}
+              className={"launch-reader tw:h-auto tw:min-h-11 tw:inline-flex tw:items-center tw:justify-center tw:rounded-xl tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-white tw:transition-colors tw:hover:bg-sela-violet"}
               data-i18n={"launch"}
             >
               {"Open reader ↗"}
-            </button>
+            </Button>
           </div>
-          <div className={"play-controls"}>
+          <div className={"play-controls tw:grid tw:grid-cols-1 tw:gap-4 tw:sm:grid-cols-2 tw:lg:grid-cols-3 [&_label]:grid [&_label]:gap-2 [&_label]:text-xs [&_label]:font-semibold [&_label]:text-sela-muted [&_select]:h-11 [&_select]:min-w-0 [&_select]:rounded-xl [&_select]:border [&_select]:border-sela-line [&_select]:bg-sela-canvas [&_select]:px-3 [&_select]:text-sm [&_select]:font-medium [&_select]:text-sela-ink [&_input[type=range]]:w-full [&_input[type=range]]:accent-sela-accent"}>
             <label>
               <span data-i18n={"documentLabel"}>{"Document"}</span>
-              <select id={"sample"}>
+              <NativeSelect id={"sample"}>
                 <option value={"pdf"}>{"Yang Tidak Ikut Pulang · PDF"}</option>
                 <option value={"epub"}>
                   {"Yang Tidak Ikut Pulang · EPUB"}
@@ -214,28 +211,32 @@ function PublicContent() {
                 <option value={"md"}>{"A quiet interval · Markdown"}</option>
                 <option value={"html"}>{"A quiet interval · HTML"}</option>
                 <option value={"fb2"}>{"A quiet interval · FB2"}</option>
-              </select>
+              </NativeSelect>
             </label>
             <label>
               <span data-i18n={"modeLabel"}>{"Reading mode"}</span>
-              <select id={"demo-mode"}>
+              <NativeSelect id={"demo-mode"}>
                 <option value={"book"}>{"Book"}</option>
                 <option value={"single"}>{"Single"}</option>
                 <option value={"scroll"}>{"Scroll"}</option>
                 <option value={"webtoon"}>{"Webtoon"}</option>
                 <option value={"manga"}>{"Manga RTL"}</option>
-              </select>
+              </NativeSelect>
             </label>
             <label>
               <span data-i18n={"presentationLabel"}>{"Presentation"}</span>
-              <select id={"demo-presentation"}>
+              <NativeSelect id={"demo-presentation"}>
                 <option value={"overlay"}>{"Overlay"}</option>
                 <option value={"inline"}>{"Embedded"}</option>
-              </select>
+              </NativeSelect>
             </label>
+          </div>
+          <details className="tw:mt-4 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-canvas">
+            <summary className="tw:flex tw:min-h-11 tw:cursor-pointer tw:list-none tw:items-center tw:justify-between tw:gap-3 tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink [&::-webkit-details-marker]:hidden"><span data-en="More reading settings" data-id="Pengaturan baca lainnya">More reading settings</span><i className="ph-fill ph-caret-down tw:text-sela-muted" aria-hidden="true"></i></summary>
+            <div className="tw:grid tw:grid-cols-1 tw:gap-4 tw:border-t tw:border-sela-line tw:p-4 tw:sm:grid-cols-2 tw:lg:grid-cols-3 [&_label]:grid [&_label]:gap-2 [&_label]:text-xs [&_label]:font-semibold [&_label]:text-sela-muted [&_select]:h-11 [&_select]:min-w-0 [&_select]:rounded-xl [&_select]:border [&_select]:border-sela-line [&_select]:bg-sela-surface [&_select]:px-3 [&_select]:text-sm [&_select]:font-medium [&_select]:text-sela-ink [&_input[type=range]]:w-full [&_input[type=range]]:accent-sela-accent">
             <label>
               <span data-i18n={"filterLabel"}>{"Reading filter"}</span>
-              <select id={"demo-filter"}>
+              <NativeSelect id={"demo-filter"}>
                 <option value={"none"}>{"Original"}</option>
                 <option value={"grayscale"}>{"Black & white"}</option>
                 <option value={"sepia"}>{"Sepia"}</option>
@@ -248,24 +249,24 @@ function PublicContent() {
                 <option value={"soft"}>{"Soft contrast"}</option>
                 <option value={"saturated"}>{"Vivid"}</option>
                 <option value={"lowblue"}>{"Amber"}</option>
-              </select>
+              </NativeSelect>
             </label>
             <label>
               <span data-i18n={"gapLabel"}>{"Vertical page gap"}</span>
-              <select id={"demo-gap"}>
+              <NativeSelect id={"demo-gap"}>
                 <option value={"0"}>{"0 px · seamless"}</option>
                 <option value={"16"}>{"16 px"}</option>
                 <option value={"32"}>{"32 px"}</option>
-              </select>
+              </NativeSelect>
             </label>
             <label>
               <span data-i18n={"motionLabel"}>{"Turn duration"}</span>
-              <select id={"demo-duration"}>
+              <NativeSelect id={"demo-duration"}>
                 <option value={"560"}>{"560 ms"}</option>
                 <option value={"320"}>{"320 ms"}</option>
                 <option value={"800"}>{"800 ms"}</option>
                 <option value={"0"}>{"0 · no animation"}</option>
-              </select>
+              </NativeSelect>
             </label>
             <label>
               <span data-i18n={"zoomLabel"}>{"Zoom / text size"}</span>
@@ -279,7 +280,7 @@ function PublicContent() {
               />
             </label>
           </div>
-          <div className={"play-toggles"}>
+          <div className={"play-toggles tw:flex tw:flex-wrap tw:gap-3 tw:px-4 tw:pb-4 [&_label]:inline-flex [&_label]:min-h-11 [&_label]:items-center [&_label]:gap-2 [&_label]:rounded-xl [&_label]:border [&_label]:border-sela-line [&_label]:bg-sela-surface [&_label]:px-3 [&_label]:text-xs [&_label]:text-sela-muted [&_input]:accent-sela-accent"}>
             <label>
               <input id={"demo-paper"} type={"checkbox"} defaultChecked={true} />
               <span data-i18n={"paperLabel"}>{"Paper texture"}</span>
@@ -293,24 +294,28 @@ function PublicContent() {
               <span data-i18n={"soundLabel"}>{"Page sound"}</span>
             </label>
           </div>
-          <p className={"play-note"} data-i18n={"playNote"}>
+          </details>
+          <p className={"play-note tw:mt-5 tw:text-xs tw:leading-6 tw:text-sela-muted"} data-i18n={"playNote"}>
             {
               "Ctrl + wheel or trackpad pinch zooms; normal scrolling stays natural. Press ? inside the reader for shortcuts. EPUB uses chapter-based text reading."
             }
           </p>
-          <code id={"config-code"}></code>
-          <p className={"format-note"} data-i18n={"formatNote"}>
+          <div className="tw:mb-2 tw:mt-6 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3"><h4 className="tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink" data-en="Your website setup" data-id="Konfigurasi untuk situsmu">Your website setup</h4><Button type="button" variant="outline" id="copy-config" className="tw:min-h-10 tw:rounded-xl tw:px-3 tw:text-xs tw:font-semibold" data-en="Copy setup" data-id="Salin konfigurasi">Copy setup</Button></div>
+          <code className="tw:block tw:overflow-x-auto tw:rounded-xl tw:bg-[#20212b] tw:px-4 tw:py-3 tw:font-mono tw:text-xs tw:leading-6 tw:text-[#edeaff]" id={"config-code"} aria-label="Sela configuration code"></code>
+          <p className="tw:mt-2 tw:text-xs tw:leading-5 tw:text-sela-muted" data-en="For your own file, upload it to a URL your website can access and replace the sample URL in this snippet." data-id="Untuk file sendiri, unggah ke alamat yang bisa diakses situsmu lalu ganti URL contoh di potongan kode ini.">For your own file, upload it to a URL your website can access and replace the sample URL in this snippet.</p>
+          <p className={"format-note tw:mt-4 tw:text-xs tw:leading-6 tw:text-sela-muted"} data-i18n={"formatNote"}>
             {
               "PDF, EPUB, comics and text have optional reading tools: contents, search, narration and notes. FB2 is text-only; DjVu uses an external GPL-2.0 decoder."
             }
           </p>
-          <p id={"status"} role={"status"} aria-live={"polite"}></p>
+          <p className="tw:mt-3 tw:text-sm tw:font-medium tw:text-sela-accent" id={"status"} role={"status"} aria-live={"polite"}></p>
           <div
             id={"embedded-reader"}
-            className={"embedded-reader"}
+            className={"embedded-reader tw:mt-6 tw:h-[min(75vh,760px)] tw:min-h-[420px] tw:overflow-hidden tw:rounded-2xl tw:border tw:border-sela-line"}
             hidden={true}
           ></div>
         </form>
+        <Install />
       </details>
       {"\n"}
       <Notes />
@@ -320,20 +325,28 @@ function PublicContent() {
 }
 function PublicFooter() {
   return (
-    <footer className="cozy-footer">
-      <div className="footer-room" aria-hidden="true" dangerouslySetInnerHTML={{__html:booksAndTea}}/>
-      <p className="footer-invitation" data-en="A little corner for your next chapter." data-id="Sudut kecil untuk bab berikutnya.">A little corner for your next chapter.</p>
-      <small data-i18n={"regionNote"}>
+    <footer className="cozy-footer tw:mx-auto tw:mt-16 tw:flex tw:w-full tw:max-w-[1440px] tw:flex-wrap tw:items-center tw:gap-x-5 tw:gap-y-3 tw:border-t tw:border-sela-line tw:px-4 tw:py-8 tw:text-sela-muted tw:sm:px-6 tw:lg:px-10">
+      <img className="footer-mascot tw:order-1 tw:w-20 tw:shrink-0 tw:drop-shadow-md tw:sm:w-24" src="site/illustrations/book-cart.webp" width="900" height="675" loading="lazy" alt="" aria-hidden="true" />
+      <p className="footer-invitation tw:order-2 tw:my-0 tw:min-w-[220px] tw:flex-1 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink tw:sm:text-lg" data-en="A little corner for your next chapter." data-id="Sudut kecil untuk bab berikutnya.">A little corner for your next chapter.</p>
+      <small className="tw:order-4 tw:w-full tw:max-w-3xl tw:text-xs tw:leading-6" data-i18n={"regionNote"}>
         {
           "First-visit language uses country.is IP country lookup; saved choice wins. No document is sent. Add ?geo=off to disable."
         }
       </small>
-      <span>
+      <span className="tw:order-3 tw:text-xs tw:font-medium">
         {"Sela · MIT · "}
-        <a href={"https://bobbyfajarc.github.io/"}>{"Bobby Fajar Christian"}</a>
+        <a href={"https://bobbyfch.github.io/"}>{"Bobby Fajar Christian"}</a>
       </span>
       <Nav />
+      <nav className="tw:order-5 tw:flex tw:flex-wrap tw:items-center tw:gap-x-3 tw:gap-y-2 tw:text-xs tw:font-semibold" aria-label={"Bobby Fajar Christian links"}>
+        <a href={"https://bobbyfch.github.io/"} target={"_blank"} rel={"noopener noreferrer"} data-en={"About Bobby"} data-id={"Tentang Bobby"}>{"About Bobby"}</a>
+        <a href={"https://github.com/bobbyfch"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on GitHub"}>{"GitHub"}</a>
+        <a href={"https://www.instagram.com/bobbyfch/"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on Instagram"}>{"Instagram"}</a>
+        <a href={"https://www.threads.com/@bobby.fch"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on Threads"}>{"Threads"}</a>
+        <a href={"https://id.linkedin.com/in/bobbyfajarc"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on LinkedIn"}>{"LinkedIn"}</a>
+      </nav>
       <a
+        className="tw:order-3 tw:ml-auto tw:text-xs tw:font-semibold tw:text-sela-ink tw:underline-offset-4 hover:tw:underline"
         href={
           "https://github.com/bobbyfch/sela/blob/main/THIRD_PARTY_NOTICES.md"
         }
@@ -367,7 +380,7 @@ export function PublicBody() {
           <PublicNavigation />
           {"\n"}
           <PublicContent />
-          <details className="reader-debug"><summary>Reader diagnostics</summary><pre id="reader-debug" aria-label="Reader debug output">Open a document to inspect its lifecycle. Document text, URLs, headers and error messages are excluded.</pre></details>
+      <details className="reader-debug tw:hidden"><summary>Reader diagnostics</summary><pre id="reader-debug" aria-label="Reader debug output">Open a document to inspect its lifecycle. Document text, URLs, headers and error messages are excluded.</pre></details>
           <PublicFooter />
           {"\n"}
           <CompatibilityEntry />
@@ -383,49 +396,48 @@ export function PublicBody() {
 
 function Hero() {
   return (
-    <section className={"hero"}>
-      <div>
-        <p className={"eyebrow"} data-i18n={"eyebrow"}>
+    <section className={"hero tw:grid tw:grid-cols-1 tw:items-center tw:gap-8 tw:py-8 tw:sm:py-9 tw:min-[901px]:grid-cols-[1fr_1.05fr] tw:min-[901px]:gap-12 tw:min-[901px]:py-12 tw:xl:gap-16"}>
+      <div className={"tw:min-w-0"}>
+        <p className={"eyebrow tw:mb-4 tw:text-[11px] tw:font-bold tw:tracking-[.2em] tw:text-sela-accent"} data-i18n={"eyebrow"}>
           {"YOUR PERSONAL READING ROOM"}
         </p>
-        <h1 data-i18n={"headline"}>
+        <h1 className={"tw:mb-5 tw:max-w-[11ch] tw:text-[clamp(3.25rem,7vw,6.25rem)] tw:font-semibold tw:leading-[.96] tw:tracking-[-.075em] tw:text-sela-ink"} data-i18n={"headline"}>
           {"Your books."}
           <br />
           {"Within reach."}
         </h1>
-        <p className={"intro"} data-i18n={"intro"}>
+        <p className={"intro tw:mb-0 tw:max-w-[38rem] tw:text-base tw:leading-7 tw:text-sela-muted tw:sm:text-lg tw:sm:leading-8"} data-i18n={"intro"}>
           {
             "Read books, comics and documents on your own terms. Keep your shelf offline, and pick up where you left off."
           }
         </p>
-        <div className={"pills"}>
-          <span>{"PDF · EPUB · Comics"}</span>
-          <span data-en={"Local-first"} data-id={"Berkas lokal"}>
+        <div className={"pills tw:mt-6 tw:flex tw:flex-wrap tw:items-center tw:gap-2"}>
+          <span className="tw:inline-flex tw:min-h-9 tw:items-center tw:gap-1.5 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-xs tw:font-medium tw:text-sela-ink"><i className="ph-fill ph-files tw:text-sm tw:text-sela-violet" aria-hidden={true}></i>{"PDF · EPUB · Comics"}</span>
+          <span className="tw:inline-flex tw:min-h-9 tw:items-center tw:gap-1.5 tw:rounded-full tw:border tw:border-sela-sky/25 tw:bg-sela-sky/10 tw:px-3 tw:text-xs tw:font-medium tw:text-sela-ink" data-en={"Local-first"} data-id={"Berkas lokal"}>
+            <i className="ph-fill ph-hard-drives tw:text-sm tw:text-sela-sky" aria-hidden={true}></i>
             {"Local-first"}
           </span>
-          <span data-en={"No account"} data-id={"Tanpa akun"}>
+          <span className="tw:inline-flex tw:min-h-9 tw:items-center tw:gap-1.5 tw:rounded-full tw:border tw:border-sela-pink/25 tw:bg-sela-pink/10 tw:px-3 tw:text-xs tw:font-medium tw:text-sela-ink" data-en={"No account"} data-id={"Tanpa akun"}>
+            <i className="ph-fill ph-user-minus tw:text-sm tw:text-sela-pink" aria-hidden={true}></i>
             {"No account"}
           </span>
         </div>
-        <div className={"install-actions"}>
-          <a className={"install-button"} href={"mobile/"}>
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <rect x={"6"} y={"2"} width={"12"} height={"20"} rx={"3"}></rect>
-              <path d={"M10 18h4"}></path>
-            </svg>
+        <div className={"install-actions tw:mt-7 tw:flex tw:flex-wrap tw:items-center tw:gap-3"}>
+          <a className={"install-button tw:inline-flex tw:min-h-12 tw:items-center tw:justify-center tw:gap-2.5 tw:rounded-2xl tw:bg-sela-accent tw:px-5 tw:py-3 tw:text-sm tw:font-semibold tw:text-white tw:shadow-lg tw:shadow-sela-violet/20 tw:transition tw:hover:-translate-y-0.5 tw:hover:shadow-xl"} href={"app/"}>
+            <i className="ph-fill ph-device-mobile tw:text-xl" aria-hidden={true}></i>
             <span data-en={"Open web app"} data-id={"Buka web app"}>
               {"Open web app"}
             </span>
           </a>
-          <a className={"install-button secondary"} href={"#install-viewer"}>
-            <span aria-hidden={"true"}>{"</>"}</span>
+          <a className={"install-button secondary tw:inline-flex tw:min-h-12 tw:items-center tw:justify-center tw:gap-2.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-5 tw:py-3 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent"} href={"#install-viewer"}>
+            <i className="ph-fill ph-code tw:text-xl" aria-hidden={true}></i>
             <span data-en={"Use Viewer CDN"} data-id={"Gunakan Viewer CDN"}>
               {"Use Viewer CDN"}
             </span>
           </a>
         </div>
         <a
-          className={"hero-link"}
+          className={"hero-link tw:mt-3 tw:inline-flex tw:min-h-11 tw:items-center tw:text-sm tw:font-semibold tw:text-sela-muted tw:underline-offset-4 hover:tw:text-sela-accent hover:tw:underline"}
           href={"#install-mobile"}
           data-en={"How to install the app →"}
           data-id={"Cara memasang app →"}
@@ -433,28 +445,35 @@ function Hero() {
           {"How to install the app →"}
         </a>
       </div>
-      <figure className="reader-illustration device-scene cozy-device-scene" aria-label="Sela Reader on laptop and phone">
-        <div className="hero-room" aria-hidden="true" dangerouslySetInnerHTML={{__html:windowPlants}}/>
-        <div className="device-laptop"><div className="device-camera"/><img src="site/screenshots/app-desktop.webp" width="1440" height="900" fetchPriority="high" alt="Sela Reader desktop bookshelf"/><div className="device-base"/></div>
-        <div className="device-phone"><div className="device-island"/><img src="site/screenshots/app-mobile.webp" width="393" height="852" fetchPriority="high" alt="Sela Reader mobile app"/></div>
-        <figcaption>Your library. Your space.</figcaption>
+      <figure className="reader-illustration device-scene cozy-device-scene tw:relative tw:mx-auto tw:min-w-0 tw:w-full tw:max-w-3xl tw:px-1 tw:pb-12 tw:pt-4 tw:sm:px-3 tw:sm:pb-14 tw:sm:pt-7" aria-label="Sela Books on laptop and phone">
+        <div className="device-laptop tw:relative tw:z-10 tw:ml-0 tw:w-[88%] tw:overflow-hidden tw:rounded-[1.4rem] tw:border-[7px] tw:border-[#252633] tw:bg-[#252633] tw:p-1.5 tw:shadow-2xl tw:shadow-[#33344a]/20 tw:sm:border-[9px] tw:sm:p-2">
+          <div className="device-camera tw:absolute tw:left-1/2 tw:top-0 tw:z-10 tw:h-1 tw:w-10 tw:-translate-x-1/2 tw:rounded-b-full tw:bg-[#151620]"/>
+          <img className="tw:block tw:aspect-[16/10] tw:w-full tw:rounded-lg tw:object-cover tw:object-top" src="site/screenshots/app-desktop.webp" width="1440" height="900" fetchPriority="high" alt="Sela Books desktop bookshelf"/>
+          <div className="device-base tw:absolute tw:-bottom-1 tw:left-[18%] tw:right-[18%] tw:h-1.5 tw:rounded-b-full tw:bg-[#252633]"/>
+        </div>
+        <div className="device-phone tw:absolute tw:bottom-10 tw:right-1 tw:z-20 tw:w-[24%] tw:overflow-hidden tw:rounded-[1.4rem] tw:border-[5px] tw:border-[#252633] tw:bg-[#252633] tw:p-1 tw:shadow-xl tw:shadow-[#33344a]/25 tw:sm:bottom-12 tw:sm:right-3 tw:sm:w-[22%]">
+          <div className="device-island tw:absolute tw:left-1/2 tw:top-1.5 tw:z-10 tw:h-2 tw:w-10 tw:-translate-x-1/2 tw:rounded-full tw:bg-[#252633]"/>
+          <img className="tw:block tw:aspect-[393/852] tw:w-full tw:rounded-[1rem] tw:object-cover tw:object-top" src="site/screenshots/app-mobile.webp" width="393" height="852" loading="eager" alt="Sela Books mobile app"/>
+        </div>
+        <figcaption className="tw:absolute tw:bottom-3 tw:left-5 tw:text-xs tw:font-medium tw:text-sela-muted tw:sm:left-7" data-en={"Your library. Your space."} data-id={"Perpustakaanmu. Ruangmu."}>Your library. Your space.</figcaption>
       </figure>
     </section>
   );
 }
 function SampleGallery() {
   return (
-    <section className={"sample-gallery"} aria-labelledby={"samples-title"}>
-      <div className={"section-heading"}>
+    <section className={"sample-gallery tw:my-6 tw:border-t tw:border-sela-line tw:py-7 tw:sm:py-9"} aria-labelledby={"samples-title"}>
+      <div className={"section-heading tw:flex tw:flex-col tw:items-start tw:gap-3 tw:md:flex-row tw:md:items-end tw:md:justify-between"}>
         <div>
           <p
-            className={"eyebrow"}
+            className={"eyebrow tw:mb-2 tw:text-[10px] tw:font-bold tw:tracking-[.2em] tw:text-sela-accent"}
             data-en={"THE READING DESK"}
             data-id={"MEJA BACA"}
           >
             {"THE READING DESK"}
           </p>
           <h2
+            className={"tw:mb-0 tw:text-2xl tw:font-semibold tw:tracking-[-.04em] tw:text-sela-ink tw:sm:text-3xl"}
             id={"samples-title"}
             data-en={"Open a book. Try your own."}
             data-id={"Buka buku. Coba berkasmu."}
@@ -462,22 +481,24 @@ function SampleGallery() {
             {"Open a book. Try your own."}
           </h2>
         </div>
-        <span
+        <span className="tw:text-sm tw:text-sela-muted"
           data-en={"Everything stays in your browser."}
           data-id={"Berkas tetap di browsermu."}
         >
           {"Everything stays in your browser."}
         </span>
       </div>
-      <div className={"book-trial-grid"}>
-        <div className={"trial-entry"}>
-          <button
-            className={"trial-book"}
+      <div className={"book-trial-grid tw:mx-auto tw:mt-6 tw:grid tw:min-w-0 tw:grid-cols-1 tw:items-start tw:gap-x-4 tw:gap-y-5 tw:sm:grid-cols-2 tw:sm:gap-x-6 tw:md:max-w-[900px] tw:md:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] tw:md:items-center tw:md:gap-10"}>
+        <div className={"trial-entry tw:min-w-0"}>
+          <Button
+            variant={"ghost"}
+            className={"trial-book tw:group tw:h-auto tw:min-h-0 tw:w-full tw:min-w-0 tw:justify-start tw:whitespace-normal tw:flex-col tw:items-start tw:gap-2 tw:rounded-none tw:border-transparent tw:bg-transparent tw:p-0 tw:text-left tw:text-sela-ink tw:shadow-none tw:transition-transform tw:hover:-translate-y-1 tw:hover:bg-transparent"}
             data-story-open={""}
             aria-label={"Read Yang Tidak Ikut Pulang"}
           >
-            <span className={"trial-cover"}>
+            <span className={"trial-cover tw:relative tw:block tw:aspect-[2/3] tw:w-full tw:max-w-[180px] tw:overflow-hidden tw:rounded-2xl tw:bg-sela-surface tw:shadow-lg tw:shadow-slate-900/10"}>
               <img
+                className="tw:absolute tw:inset-0 tw:size-full tw:object-cover tw:transition-transform tw:duration-500 tw:group-hover:scale-105"
                 src={"example/story/cover.jpg"}
                 width={"400"}
                 height={"600"}
@@ -485,20 +506,20 @@ function SampleGallery() {
                 alt={"Yang Tidak Ikut Pulang sample cover"}
               />
             </span>
-            <strong>{"Yang Tidak Ikut Pulang"}</strong>
-            <span
+            <strong className="tw:mt-1 tw:text-base tw:font-semibold tw:leading-snug tw:tracking-tight">{"Yang Tidak Ikut Pulang"}</strong>
+            <span className="tw:text-xs tw:text-sela-muted"
               data-en={"Original sample · Read"}
               data-id={"Bacaan contoh · Buka"}
             >
               {"Original sample · Read"}
             </span>
-          </button>
-          <small className={"trial-author"}>{"Bobby Fajar Christian · 2026"}</small>
-          <details className={"trial-info"}>
-            <summary data-en={"Book information"} data-id={"Informasi buku"}>
+          </Button>
+          <small className={"trial-author tw:mt-1 tw:text-xs tw:text-sela-muted"}>{"Bobby Fajar Christian · 2026"}</small>
+          <details className={"trial-info tw:mt-3 tw:text-xs tw:text-sela-muted"}>
+            <summary className="tw:cursor-pointer tw:font-semibold tw:text-sela-accent" data-en={"Book information"} data-id={"Informasi buku"}>
               {"Book information"}
             </summary>
-            <p
+            <p className="tw:leading-6"
               data-en={
                 "A return to an old house, a recording that should not exist, and the people left between memory and distance."
               }
@@ -510,28 +531,26 @@ function SampleGallery() {
                 "A return to an old house, a recording that should not exist, and the people left between memory and distance."
               }
             </p>
-            <small>
+            <small className="tw:text-[10px] tw:leading-5">
               {"50 pages · Indonesian · Sela sample edition · CC BY 4.0"}
             </small>
           </details>
         </div>
-        <label className={"trial-upload"} id={"drop-zone"} htmlFor={"pdf-file"}>
+        <label className={"trial-upload tw:relative tw:flex tw:min-h-56 tw:cursor-pointer tw:flex-col tw:items-center tw:justify-center tw:gap-2 tw:rounded-2xl tw:border-2 tw:border-dashed tw:border-sela-sky/45 tw:bg-sela-sky/5 tw:px-4 tw:py-6 tw:text-center tw:transition-colors tw:hover:border-sela-sky tw:hover:bg-sela-sky/10 tw:focus-within:ring-4 tw:focus-within:ring-sela-sky/15 tw:data-[dragging=true]:border-sela-accent tw:data-[dragging=true]:bg-sela-violet/10 tw:sm:min-h-64"} id={"drop-zone"} htmlFor={"pdf-file"}>
           <input
             id={"pdf-file"}
-            className={"file-input"}
+            className={"file-input tw:sr-only"}
             type={"file"}
             accept={
               "application/pdf,application/epub+zip,.pdf,.epub,.cbz,.djvu,.djv,.txt,.md,.html,.htm,.fb2,.docx,.odt"
             }
           />
-          <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-            <path d={"M12 4v16M4 12h16"}></path>
-          </svg>
-          <strong data-en={"Try your document"} data-id={"Coba dokumenmu"}>
+          <i className="ph-fill ph-upload-simple tw:mb-2 tw:text-4xl tw:text-sela-sky" aria-hidden={true}></i>
+          <strong className="tw:text-sm tw:font-semibold tw:text-sela-ink" data-en={"Try your document"} data-id={"Coba dokumenmu"}>
             {"Try your document"}
           </strong>
-          <span>{"PDF · EPUB · CBZ · TXT"}</span>
-          <small
+          <span className="tw:rounded-full tw:bg-sela-surface tw:px-2.5 tw:py-1 tw:text-[10px] tw:font-medium tw:text-sela-muted">{"PDF · EPUB · CBZ · TXT"}</span>
+          <small className="tw:mt-1 tw:text-xs tw:text-sela-muted"
             data-en={"Choose a file. No upload."}
             data-id={"Pilih berkas. Tanpa unggahan."}
           >
@@ -539,18 +558,37 @@ function SampleGallery() {
           </small>
         </label>
         <a
-          className={"original-document"}
+          className={"original-document tw:col-span-full tw:inline-flex tw:min-h-10 tw:w-fit tw:items-center tw:gap-2 tw:text-sm tw:font-semibold tw:text-sela-accent tw:underline-offset-4 hover:tw:underline"}
           href={"example/yang-tidak-ikut-pulang.pdf"}
           data-en={"Original PDF ↗"}
           data-id={"PDF asli ↗"}
         >
           {"Original PDF ↗"}
         </a>
-        <div className={"file-selection"} hidden={true}>
-          <span id={"file-name"}></span>
-          <button type={"button"} id={"clear-file"} data-i18n={"clear"}>
+        <div className={"file-selection tw:hidden tw:col-span-full tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-4 tw:py-3 tw:text-sm"} hidden={true}>
+          <span className="tw:min-w-0 tw:break-all tw:text-sela-ink" id={"file-name"}></span>
+          <Button variant={"ghost"} className="tw:h-auto tw:min-h-10 tw:shrink-0 tw:rounded-xl tw:bg-sela-canvas tw:px-3 tw:font-semibold tw:text-sela-muted tw:hover:text-sela-accent" type={"button"} id={"clear-file"} data-i18n={"clear"}>
             {"Clear"}
-          </button>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+function ReadingCorner() {
+  return (
+    <section className="reading-corner tw:relative tw:isolate tw:my-8 tw:min-h-[420px] tw:overflow-hidden tw:rounded-[26px] tw:bg-sela-canvas tw:shadow-sm tw:sm:my-10 tw:sm:min-h-[500px] tw:lg:min-h-[560px] tw:max-sm:grid tw:max-sm:grid-rows-[210px_auto] tw:max-sm:min-h-0" aria-labelledby="reading-corner-title">
+      <img className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-[66%_center] tw:sm:object-center tw:max-sm:relative tw:max-sm:inset-auto tw:max-sm:h-[210px] tw:max-sm:object-[68%_center]" src="site/illustrations/reading-corner-jakarta.webp" width="2172" height="724" loading="lazy" decoding="async" alt="An Indonesian child reading with two friendly magical companions above a Jakarta rooftop garden" />
+      <div className="tw:absolute tw:inset-0 tw:bg-gradient-to-t tw:from-sela-canvas/95 tw:via-sela-canvas/42 tw:to-transparent tw:sm:bg-gradient-to-r tw:sm:from-sela-canvas/95 tw:sm:via-sela-canvas/65 tw:sm:to-sela-canvas/5 tw:max-sm:hidden" aria-hidden="true"></div>
+      <div className="tw:relative tw:mx-auto tw:flex tw:min-h-[420px] tw:max-w-[1440px] tw:flex-col tw:items-start tw:justify-end tw:px-5 tw:pb-8 tw:pt-16 tw:sm:min-h-[500px] tw:sm:px-9 tw:sm:pb-12 tw:lg:min-h-[560px] tw:lg:px-12 tw:max-sm:min-h-0 tw:max-sm:justify-start tw:max-sm:px-5 tw:max-sm:py-5">
+        <p className="tw:mb-3 tw:text-[10px] tw:font-bold tw:tracking-[.2em] tw:text-sela-pink" data-en="A LITTLE PAUSE" data-id="JEDA SEJENAK">A LITTLE PAUSE</p>
+        <h2 id="reading-corner-title" className="tw:mb-3 tw:max-w-[14ch] tw:text-3xl tw:font-semibold tw:leading-[1.02] tw:tracking-[-.055em] tw:text-sela-ink tw:drop-shadow-sm tw:sm:text-4xl tw:lg:text-5xl" data-en="Make a little room for a story." data-id="Sisakan sedikit ruang untuk sebuah cerita.">Make a little room for a story.</h2>
+        <p className="tw:mb-0 tw:max-w-[34rem] tw:text-sm tw:leading-7 tw:text-sela-ink/80 tw:sm:text-base" data-en="A calm shelf, a favorite page, and a small companion nearby. Sela keeps the reading simple so the moment can feel like yours." data-id="Rak yang tenang, halaman favorit, dan teman kecil di dekatmu. Sela menjaga kegiatan membaca tetap sederhana agar momennya terasa milikmu.">A calm shelf, a favorite page, and a small companion nearby. Sela keeps the reading simple so the moment can feel like yours.</p>
+        <div className="tw:mt-5">
+          <a className="tw:inline-flex tw:min-h-11 tw:w-fit tw:items-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-5 tw:text-sm tw:font-semibold tw:text-white tw:shadow-lg tw:shadow-sela-accent/20 tw:transition tw:hover:-translate-y-0.5 tw:hover:shadow-xl" href="app/">
+            <i className="ph-fill ph-books tw:text-lg" aria-hidden={true}></i>
+            <span data-en="Visit your shelf" data-id="Lihat rakmu">Visit your shelf</span>
+          </a>
         </div>
       </div>
     </section>
@@ -558,109 +596,79 @@ function SampleGallery() {
 }
 function Demo() {
   return (
-    <section className={"demo"} aria-labelledby={"demo-heading"}>
-      <div className={"section-heading"}>
+    <section className={"demo tw:border-t tw:border-sela-line tw:py-9 tw:sm:py-12"} aria-labelledby={"demo-heading"}>
+      <div className={"section-heading tw:flex tw:flex-col tw:items-start tw:gap-3 tw:md:flex-row tw:md:items-end tw:md:justify-between"}>
         <div>
-          <p className={"eyebrow"} data-i18n={"demoEyebrow"}>
+          <p className={"eyebrow tw:mb-2 tw:text-[10px] tw:font-bold tw:tracking-[.2em] tw:text-sela-accent"} data-i18n={"demoEyebrow"}>
             {"MAKE YOURSELF COMFORTABLE"}
           </p>
-          <h2 id={"demo-heading"} data-i18n={"demoHeading"}>
+          <h2 className="tw:mb-0 tw:text-2xl tw:font-semibold tw:tracking-[-.04em] tw:text-sela-ink tw:sm:text-3xl" id={"demo-heading"} data-i18n={"demoHeading"}>
             {"Four ways to read."}
           </h2>
         </div>
-        <span className={"version-note"} data-i18n={"lazy"}>
+        <span className={"version-note tw:text-sm tw:text-sela-muted"} data-i18n={"lazy"}>
           {"PDF engine loads only when you read."}
         </span>
       </div>
       {"\n"}
-      <div className={"cards"}>
+      <div className={"cards tw:grid tw:grid-cols-1 tw:gap-3 tw:min-[451px]:grid-cols-2 tw:lg:grid-cols-4 tw:lg:gap-4"}>
         {"\n"}
-        <button className={"mode-card"} data-mode={"book"}>
-          <span className={"card-art"}>
-            <svg viewBox={"0 0 64 64"} aria-hidden={"true"}>
-              <path
-                d={
-                  "M32 17C23 10 12 11 8 14v36c8-4 16-3 24 3 8-6 16-7 24-3V14c-8-4-16-3-24 3Zm0 0v36M15 22l10 3m-10 5 10 3m14-8 10-3m-10 11 10-3"
-                }
-              ></path>
-            </svg>
+        <Button variant={"outline"} className={"mode-card tw:h-auto tw:min-h-[250px] tw:w-full tw:justify-start tw:whitespace-normal tw:flex-col tw:items-start tw:rounded-2xl tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:text-sela-ink tw:shadow-sm tw:transition-all tw:hover:-translate-y-1 tw:hover:bg-sela-surface tw:hover:shadow-lg tw:focus-visible:ring-2 tw:focus-visible:ring-sela-accent tw:sm:p-5"} data-mode={"book"}>
+          <span className={"card-art tw:mb-4 tw:grid tw:size-14 tw:place-items-center tw:rounded-2xl tw:bg-sela-violet/10 tw:text-sela-violet"}>
+            <i className="ph-fill ph-book-open-text tw:text-3xl" aria-hidden={true}></i>
           </span>
-          <span className={"card-number"}>{"01 / BOOK"}</span>
-          <strong data-i18n={"bookTitle"}>{"Turn the page."}</strong>
-          <span data-i18n={"bookText"}>
+          <span className={"card-number tw:text-[10px] tw:font-bold tw:tracking-[.16em] tw:text-sela-violet"}>{"01 / BOOK"}</span>
+          <strong className="tw:mb-2 tw:mt-2 tw:text-lg tw:font-semibold tw:tracking-tight" data-i18n={"bookTitle"}>{"Turn the page."}</strong>
+          <span className="tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"bookText"}>
             {"Paper folds, gentle shadows and a familiar two-page spread."}
           </span>
-          <b data-i18n={"read"}>{"Start reading ↗"}</b>
-        </button>
+          <b className="tw:mt-auto tw:pt-4 tw:text-xs tw:font-semibold tw:text-sela-accent" data-i18n={"read"}>{"Start reading ↗"}</b>
+        </Button>
         {"\n"}
-        <button className={"mode-card"} data-mode={"webtoon"}>
-          <span className={"card-art scroll-art"}>
-            <svg viewBox={"0 0 64 64"} aria-hidden={"true"}>
-              <rect x={"16"} y={"5"} width={"32"} height={"20"} rx={"3"}></rect>
-              <rect
-                x={"16"}
-                y={"31"}
-                width={"32"}
-                height={"17"}
-                rx={"3"}
-              ></rect>
-              <path
-                d={"M32 52v10m-5-5 5 5 5-5M22 12h20m-20 6h13m-13 20h20"}
-              ></path>
-            </svg>
+        <Button variant={"outline"} className={"mode-card tw:h-auto tw:min-h-[250px] tw:w-full tw:justify-start tw:whitespace-normal tw:flex-col tw:items-start tw:rounded-2xl tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:text-sela-ink tw:shadow-sm tw:transition-all tw:hover:-translate-y-1 tw:hover:bg-sela-surface tw:hover:shadow-lg tw:focus-visible:ring-2 tw:focus-visible:ring-sela-accent tw:sm:p-5"} data-mode={"webtoon"}>
+          <span className={"card-art scroll-art tw:mb-4 tw:grid tw:size-14 tw:place-items-center tw:rounded-2xl tw:bg-sela-sky/15 tw:text-sela-sky"}>
+            <i className="ph-fill ph-scroll tw:text-3xl" aria-hidden={true}></i>
           </span>
-          <span className={"card-number"}>{"02 / WEBTOON"}</span>
-          <strong data-i18n={"webtoonTitle"}>{"Follow the story."}</strong>
-          <span data-i18n={"webtoonText"}>
+          <span className={"card-number tw:text-[10px] tw:font-bold tw:tracking-[.16em] tw:text-sela-sky"}>{"02 / WEBTOON"}</span>
+          <strong className="tw:mb-2 tw:mt-2 tw:text-lg tw:font-semibold tw:tracking-tight" data-i18n={"webtoonTitle"}>{"Follow the story."}</strong>
+          <span className="tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"webtoonText"}>
             {"Vertical reading with nearby pages rendered as you scroll."}
           </span>
-          <b data-i18n={"read"}>{"Start reading ↗"}</b>
-        </button>
+          <b className="tw:mt-auto tw:pt-4 tw:text-xs tw:font-semibold tw:text-sela-accent" data-i18n={"read"}>{"Start reading ↗"}</b>
+        </Button>
         {"\n"}
-        <button className={"mode-card"} data-mode={"single"}>
-          <span className={"card-art single-art"}>
-            <svg viewBox={"0 0 64 64"} aria-hidden={"true"}>
-              <path
-                d={
-                  "M16 6h23l10 11v40H16Zm23 0v12h10M23 28h19m-19 8h19m-19 8h12"
-                }
-              ></path>
-            </svg>
+        <Button variant={"outline"} className={"mode-card tw:h-auto tw:min-h-[250px] tw:w-full tw:justify-start tw:whitespace-normal tw:flex-col tw:items-start tw:rounded-2xl tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:text-sela-ink tw:shadow-sm tw:transition-all tw:hover:-translate-y-1 tw:hover:bg-sela-surface tw:hover:shadow-lg tw:focus-visible:ring-2 tw:focus-visible:ring-sela-accent tw:sm:p-5"} data-mode={"single"}>
+          <span className={"card-art single-art tw:mb-4 tw:grid tw:size-14 tw:place-items-center tw:rounded-2xl tw:bg-sela-pink/15 tw:text-sela-pink"}>
+            <i className="ph-fill ph-file-text tw:text-3xl" aria-hidden={true}></i>
           </span>
-          <span className={"card-number"}>{"03 / SINGLE"}</span>
-          <strong data-i18n={"singleTitle"}>{"Just this page."}</strong>
-          <span data-i18n={"singleText"}>
+          <span className={"card-number tw:text-[10px] tw:font-bold tw:tracking-[.16em] tw:text-sela-pink"}>{"03 / SINGLE"}</span>
+          <strong className="tw:mb-2 tw:mt-2 tw:text-lg tw:font-semibold tw:tracking-tight" data-i18n={"singleTitle"}>{"Just this page."}</strong>
+          <span className="tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"singleText"}>
             {"One page, less distraction. A natural fit for small screens."}
           </span>
-          <b data-i18n={"read"}>{"Start reading ↗"}</b>
-        </button>
+          <b className="tw:mt-auto tw:pt-4 tw:text-xs tw:font-semibold tw:text-sela-accent" data-i18n={"read"}>{"Start reading ↗"}</b>
+        </Button>
         {"\n"}
-        <button className={"mode-card"} data-mode={"manga"}>
-          <span className={"card-art manga-art"}>
-            <svg viewBox={"0 0 64 64"} aria-hidden={"true"}>
-              <path
-                d={
-                  "M8 12h48v42H8Zm24 0v42M8 32h24m0-8h24M45 4H18m6-4-6 4 6 4M39 32l10 6-10 8Z"
-                }
-              ></path>
-            </svg>
+        <Button variant={"outline"} className={"mode-card tw:h-auto tw:min-h-[250px] tw:w-full tw:justify-start tw:whitespace-normal tw:flex-col tw:items-start tw:rounded-2xl tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:text-sela-ink tw:shadow-sm tw:transition-all tw:hover:-translate-y-1 tw:hover:bg-sela-surface tw:hover:shadow-lg tw:focus-visible:ring-2 tw:focus-visible:ring-sela-accent tw:sm:p-5"} data-mode={"manga"}>
+          <span className={"card-art manga-art tw:mb-4 tw:grid tw:size-14 tw:place-items-center tw:rounded-2xl tw:bg-sela-lemon/20 tw:text-[#aa7c19]"}>
+            <i className="ph-fill ph-book-open tw:text-3xl" aria-hidden={true}></i>
           </span>
-          <span className={"card-number"}>{"04 / MANGA · RTL"}</span>
-          <strong data-i18n={"mangaTitle"}>{"Read from the right."}</strong>
-          <span data-i18n={"mangaText"}>
+          <span className={"card-number tw:text-[10px] tw:font-bold tw:tracking-[.16em] tw:text-[#aa7c19]"}>{"04 / MANGA · RTL"}</span>
+          <strong className="tw:mb-2 tw:mt-2 tw:text-lg tw:font-semibold tw:tracking-tight" data-i18n={"mangaTitle"}>{"Read from the right."}</strong>
+          <span className="tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"mangaText"}>
             {
               "Right-to-left page turns and arrow keys. Keep original page order."
             }
           </span>
-          <b data-i18n={"read"}>{"Start reading ↗"}</b>
-        </button>
+          <b className="tw:mt-auto tw:pt-4 tw:text-xs tw:font-semibold tw:text-sela-accent" data-i18n={"read"}>{"Start reading ↗"}</b>
+        </Button>
         {"\n"}
       </div>
       {"\n"}
       <noscript>
         <p>
           {"JavaScript is disabled. "}
-          <a href={"example/yang-tidak-ikut-pulang.pdf"}>
+          <a className="tw:font-semibold tw:text-sela-accent" href={"example/yang-tidak-ikut-pulang.pdf"}>
             {"Read or download Yang Tidak Ikut Pulang as a PDF."}
           </a>
         </p>
@@ -672,27 +680,21 @@ function Products() {
   return (
     <section
       id={"products"}
-      className={"installation-guide"}
-      aria-label={"Sela Reader and Viewer"}
+      className={"installation-guide tw:my-10 tw:mx-auto tw:grid tw:w-full tw:max-w-6xl tw:grid-cols-1 tw:items-start tw:gap-4 tw:lg:grid-cols-2 tw:lg:gap-6"}
+      aria-label={"Sela Books and Viewer"}
     >
       {"\n"}
-      <article id={"install-mobile"}>
-        <div className={"product-heading"}>
-          <span className={"route-icon"}>
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path
-                d={
-                  "M4 3h6a3 3 0 0 1 3 3v15a5 5 0 0 0-5-2H4ZM20 3h-4a3 3 0 0 0-3 3v15a5 5 0 0 1 5-2h2Z"
-                }
-              ></path>
-            </svg>
+      <article className="tw:min-w-0 tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:p-5 tw:shadow-sm tw:sm:p-7" id={"install-mobile"}>
+        <div className={"product-heading tw:flex tw:items-center tw:gap-3"}>
+          <span className={"route-icon tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-violet/10 tw:text-sela-violet"}>
+            <i className="ph-fill ph-books tw:text-2xl" aria-hidden={true}></i>
           </span>
           <div>
-            <small>{"YOUR LIBRARY"}</small>
-            <h2>{"Sela Reader"}</h2>
+            <small className="tw:text-[10px] tw:font-bold tw:tracking-[.17em] tw:text-sela-muted" data-en={"YOUR LIBRARY"} data-id={"PERPUSTAKAANMU"}>{"YOUR LIBRARY"}</small>
+            <h2 className="tw:mb-0 tw:mt-1 tw:text-xl tw:font-semibold tw:tracking-tight">{"Sela Books"}</h2>
           </div>
         </div>
-        <p>
+        <p className="tw:my-4 tw:max-w-[44rem] tw:text-sm tw:leading-7 tw:text-sela-muted">
           <span
             data-en={
               "A private shelf. An uninterrupted read. Books, progress and collections stay on your device."
@@ -706,28 +708,26 @@ function Products() {
             }
           </span>
         </p>
-        <div className={"product-chips"}>
-          <span>{"Desktop"}</span>
-          <span>{"Tablet"}</span>
-          <span>{"Mobile"}</span>
+        <div className={"product-chips tw:flex tw:flex-wrap tw:gap-2"}>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"Desktop"}</span>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"Tablet"}</span>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"Mobile"}</span>
         </div>
-        <div className={"product-actions"}>
-          <a id={"get-bookshelf"} className={"install-button"} href={"mobile/"}>
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path d={"M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"}></path>
-            </svg>
+        <div className={"product-actions tw:mt-5 tw:flex tw:flex-wrap tw:items-center tw:gap-x-4 tw:gap-y-2"}>
+          <a id={"get-bookshelf"} className={"install-button tw:inline-flex tw:min-h-11 tw:items-center tw:justify-center tw:gap-2 tw:rounded-xl tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-white tw:transition-colors tw:hover:bg-sela-violet"} href={"app/"}>
+            <i className="ph-fill ph-arrow-square-out tw:text-lg" aria-hidden={true}></i>
             <span data-en={"Open web app"} data-id={"Buka web app"}>
               {"Open web app"}
             </span>
           </a>
-          <a href={"https://github.com/bobbyfch/sela/blob/main/docs/pwa.md"}>
+          <a className="tw:py-2 tw:text-sm tw:font-semibold tw:text-sela-accent tw:underline-offset-4 hover:tw:underline" href={"#install-mobile-steps"}>
             <span data-en={"Install guide ↗"} data-id={"Cara pasang ↗"}>
               {"Install guide ↗"}
             </span>
           </a>
         </div>
-        <details className={"product-help"}>
-          <summary>
+        <details className={"product-help tw:mt-5 tw:border-t tw:border-sela-line tw:pt-4"} open={true}>
+          <summary className="tw:cursor-pointer tw:list-none tw:font-semibold tw:text-sela-ink tw:[&::-webkit-details-marker]:hidden">
             <span
               data-en={"Install on your device"}
               data-id={"Pasang di perangkatmu"}
@@ -735,35 +735,26 @@ function Products() {
               {"Install on your device"}
             </span>
           </summary>
-          <p>
-            <span
-              data-en={
-                "Open the app, then choose Install or Add to Home Screen in your browser. Windows, macOS, Linux, Android, iPhone and iPad; available features depend on your browser. Older browsers offer original PDF links."
-              }
-              data-id={
-                "Buka app, lalu pilih Pasang atau Tambahkan ke Layar Utama di browser. Windows, macOS, Linux, Android, iPhone dan iPad; fitur mengikuti kemampuan browser. Browser lama menyediakan tautan PDF asli."
-              }
-            >
-              {
-                "Open the app, then choose Install or Add to Home Screen in your browser. Windows, macOS, Linux, Android, iPhone and iPad; available features depend on your browser. Older browsers offer original PDF links."
-              }
-            </span>
-          </p>
+          <ol id={"install-mobile-steps"} className={"install-steps tw:mt-4 tw:grid tw:gap-2.5 tw:pl-0 tw:text-xs tw:leading-6 tw:text-sela-muted"}>
+            <li className="tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:p-3"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-violet/10 tw:text-[11px] tw:font-bold tw:text-sela-violet">1</span><span data-en={"Open Sela Books, then tap Install Sela when the app offers it."} data-id={"Buka Sela Books, lalu ketuk Pasang Sela saat tombolnya tersedia."}>{"Open Sela Books, then tap Install Sela when the app offers it."}</span></li>
+            <li className="tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:p-3"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-sky/15 tw:text-[11px] tw:font-bold tw:text-sela-sky">2</span><span data-en={"Chrome, Edge, Opera and Samsung Internet show their own install prompt when this browser supports it."} data-id={"Chrome, Edge, Opera, dan Samsung Internet menampilkan prompt pemasangan bawaan jika browser mendukungnya."}>{"Chrome, Edge, Opera and Samsung Internet show their own install prompt when this browser supports it."}</span></li>
+            <li className="tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:p-3"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-pink/15 tw:text-[11px] tw:font-bold tw:text-sela-pink">3</span><span data-en={"On iPhone or iPad, open the Share menu in Safari and choose Add to Home Screen. On macOS Safari, choose File → Add to Dock."} data-id={"Di iPhone atau iPad, buka menu Bagikan di Safari lalu pilih Tambahkan ke Layar Utama. Di Safari macOS, pilih File → Tambahkan ke Dock."}>{"On iPhone or iPad, open the Share menu in Safari and choose Add to Home Screen. On macOS Safari, choose File → Add to Dock."}</span></li>
+            <li className="tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:p-3"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-mint/20 tw:text-[11px] tw:font-bold tw:text-sela-ink">4</span><span data-en={"Firefox offers a home-screen shortcut on Android. On desktop, use its Web Apps option where available or bookmark Sela."} data-id={"Firefox menyediakan pintasan layar utama di Android. Di desktop, gunakan Web Apps bila tersedia atau bookmark Sela."}>{"Firefox offers a home-screen shortcut on Android. On desktop, use its Web Apps option where available or bookmark Sela."}</span></li>
+          </ol>
+          <aside className="tw:mt-3 tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-sky/25 tw:bg-sela-sky/10 tw:p-3" role="note"><i className="ph-fill ph-info tw:mt-0.5 tw:shrink-0 tw:text-lg tw:text-sela-sky" aria-hidden={true}></i><p className="install-footnote tw:m-0 tw:text-[11px] tw:leading-5 tw:text-sela-ink/80" data-en={"Sela checks whether this browser has already installed the app and hides the install action when it confirms. Options vary by browser and operating system."} data-id={"Sela memeriksa apakah aplikasi sudah terpasang dan menyembunyikan tombol setelah browser mengonfirmasinya. Pilihan berbeda menurut browser dan sistem operasi."}>{"Sela checks whether this browser has already installed the app and hides the install action when it confirms. Options vary by browser and operating system."}</p></aside>
         </details>
       </article>
-      <article>
-        <div className={"product-heading"}>
-          <span className={"route-icon"}>
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path d={"m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"}></path>
-            </svg>
+      <article className="tw:min-w-0 tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:p-5 tw:shadow-sm tw:sm:p-7">
+        <div className={"product-heading tw:flex tw:items-center tw:gap-3"}>
+          <span className={"route-icon tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-sky/15 tw:text-sela-sky"}>
+            <i className="ph-fill ph-code tw:text-2xl" aria-hidden={true}></i>
           </span>
           <div>
-            <small>{"FOR YOUR WEBSITE"}</small>
-            <h2>{"Sela Viewer"}</h2>
+            <small className="tw:text-[10px] tw:font-bold tw:tracking-[.17em] tw:text-sela-muted" data-en={"FOR YOUR WEBSITE"} data-id={"UNTUK WEBSITE-MU"}>{"FOR YOUR WEBSITE"}</small>
+            <h2 className="tw:mb-0 tw:mt-1 tw:text-xl tw:font-semibold tw:tracking-tight">{"Sela Viewer"}</h2>
           </div>
         </div>
-        <p>
+        <p className="tw:my-4 tw:max-w-[44rem] tw:text-sm tw:leading-7 tw:text-sela-muted">
           <span
             data-en={
               "The same reading tools, on your website. One clean interface on every screen. Embed inline or open fullscreen."
@@ -777,36 +768,31 @@ function Products() {
             }
           </span>
         </p>
-        <div className={"product-chips"}>
-          <span>{"CDN"}</span>
-          <span>{"ESM"}</span>
-          <span>{"TypeScript"}</span>
+        <div className={"product-chips tw:flex tw:flex-wrap tw:gap-2"}>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"CDN"}</span>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"ESM"}</span>
+          <span className="tw:rounded-full tw:bg-sela-canvas tw:px-3 tw:py-1.5 tw:text-[11px] tw:font-medium tw:text-sela-muted">{"TypeScript"}</span>
         </div>
-        <div className={"product-actions"}>
-          <a className={"install-button secondary"} href={"#install-viewer"}>
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path d={"m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"}></path>
-            </svg>
+        <div className={"product-actions tw:mt-5 tw:flex tw:flex-wrap tw:items-center tw:gap-x-4 tw:gap-y-2"}>
+          <a className={"install-button secondary tw:inline-flex tw:min-h-11 tw:items-center tw:justify-center tw:gap-2 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent"} href={"#install-viewer"}>
+            <i className="ph-fill ph-code tw:text-lg" aria-hidden={true}></i>
             <span data-en={"Use CDN"} data-id={"Gunakan CDN"}>
               {"Use CDN"}
             </span>
           </a>
-          <button
+          <Button
+            variant={"ghost"}
             type={"button"}
-            className={"product-demo"}
+            className={"product-demo tw:h-auto tw:min-h-11 tw:inline-flex tw:items-center tw:gap-2 tw:rounded-xl tw:px-1 tw:text-sm tw:font-semibold tw:text-sela-accent"}
             data-story-open={""}
             data-app-demo={""}
           >
-            <svg viewBox={"0 0 24 24"} aria-hidden={"true"}>
-              <path d={"m9 5 7 7-7 7"}></path>
-            </svg>
+            <i className="ph-fill ph-play-circle tw:text-lg" aria-hidden={true}></i>
             <span data-en={"Try app controls"} data-id={"Coba kontrol app"}>
               {"Try app controls"}
             </span>
-          </button>
-          <a
-            href={"https://github.com/bobbyfch/sela/blob/main/docs/install.md"}
-          >
+          </Button>
+          <a className="tw:py-2 tw:text-sm tw:font-semibold tw:text-sela-accent tw:underline-offset-4 hover:tw:underline" href={"#install-viewer"}>
             <span
               data-en={"Integration guide ↗"}
               data-id={"Panduan integrasi ↗"}
@@ -815,8 +801,8 @@ function Products() {
             </span>
           </a>
         </div>
-        <details className={"product-help"}>
-          <summary>
+        <details className={"product-help tw:mt-5 tw:border-t tw:border-sela-line tw:pt-4"}>
+          <summary className="tw:cursor-pointer tw:list-none tw:font-semibold tw:text-sela-ink tw:[&::-webkit-details-marker]:hidden">
             <span
               data-en={"Works with your stack"}
               data-id={"Cocok dengan stack kamu"}
@@ -824,11 +810,7 @@ function Products() {
               {"Works with your stack"}
             </span>
           </summary>
-          <p>
-            {
-              "CI3 · Laravel · Vue · React · Svelte · Astro · HTML. Bootstrap & Tailwind optional."
-            }
-          </p>
+          <p className="tw:mb-0 tw:mt-3 tw:text-xs tw:leading-6 tw:text-sela-muted" data-en={"Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional."} data-id={"Gunakan Viewer yang sama dari HTML, CI3, Laravel, React, Vue, Svelte, Astro, dan host lainnya. Bootstrap dan Tailwind bersifat opsional."}>{"Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional."}</p>
         </details>
       </article>
     </section>
@@ -836,55 +818,38 @@ function Products() {
 }
 function Install() {
   return (
-    <section className={"install"} id={"install-viewer"}>
-      <div>
-        <p className={"eyebrow"}>{"PLUG IN. READ ON."}</p>
-        <h2 data-i18n={"installTitle"}>{"Embed the viewer."}</h2>
-        <p data-i18n={"installText"}>
-          {
-            "CI3, Laravel, Vue, React, Svelte, Astro or plain HTML. Bring your own design system: Bootstrap and Tailwind are welcome, neither is required."
-          }
-        </p>
-        <a
-          href={"https://github.com/bobbyfch/sela#quick-start"}
-          data-i18n={"docs"}
-        >
-          {"Installation & integration guide ↗"}
-        </a>
-      </div>
-      <pre>
-        <code>
-          {
-            "<script src=\"https://cdn.jsdelivr.net/gh/bobbyfch/sela@v{{SELA_VERSION}}/dist/js/sela.min.js\"></script>\n\n// Add <div id=\"reader\" style=\"height:600px\"></div>\n// Omit presentation/container for the fullscreen overlay.\nconst reader = new Sela({\n  url: '/document.pdf', mode: 'single',\n  presentation: 'inline', container: '#reader',\n  theme: 'auto', ui: 'app'\n});\nreader.open();"
-          }
-        </code>
-      </pre>
-    </section>
+    <aside className="tw:mx-4 tw:my-4 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:rounded-xl tw:border tw:border-sela-sky/25 tw:bg-sela-sky/10 tw:p-4 tw:sm:mx-7" role="note">
+      <p className="tw:m-0 tw:min-w-0 tw:flex-1 tw:text-xs tw:leading-5 tw:text-sela-muted" data-en="Works with plain HTML, React, Vue, Laravel, CodeIgniter and other stacks. Your site needs a document URL that visitors can access." data-id="Bisa dipakai di HTML biasa, React, Vue, Laravel, CodeIgniter, dan stack lain. Situsmu perlu URL dokumen yang dapat diakses pengunjung.">Works with plain HTML, React, Vue, Laravel, CodeIgniter and other stacks. Your site needs a document URL that visitors can access.</p>
+      <a className="tw:inline-flex tw:min-h-10 tw:shrink-0 tw:items-center tw:font-semibold tw:text-sela-accent tw:underline-offset-4 hover:tw:underline" href="https://github.com/bobbyfch/sela/blob/main/docs/install.md" target="_blank" rel="noopener noreferrer" data-i18n="docs">Installation and integration guide ↗</a>
+    </aside>
   );
 }
 function Notes() {
   return (
-    <section className={"notes"}>
-      <div>
-        <article>
-          <h3 data-i18n={"filtersTitle"}>{"A softer reading space"}</h3>
-          <p data-i18n={"filtersText"}>
+    <section className={"notes tw:py-6 tw:sm:py-10"}>
+      <div className={"tw:grid tw:grid-cols-1 tw:gap-5 tw:md:grid-cols-3 tw:md:gap-7"}>
+        <article className="tw:border-t tw:border-sela-line tw:pt-4">
+          <i className="ph-fill ph-sparkle tw:text-2xl tw:text-sela-violet" aria-hidden={true}></i>
+          <h3 className="tw:mb-2 tw:mt-3 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink" data-i18n={"filtersTitle"}>{"A softer reading space"}</h3>
+          <p className="tw:mb-0 tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"filtersText"}>
             {
               "Twelve page presets, a document brightness slider and dimmed controls. Separate tabs for contents, search, appearance, narration, notes and selectable text."
             }
           </p>
         </article>
-        <article>
-          <h3 data-i18n={"compatTitle"}>{"A graceful way back"}</h3>
-          <p data-i18n={"compatText"}>
+        <article className="tw:border-t tw:border-sela-line tw:pt-4">
+          <i className="ph-fill ph-device-mobile tw:text-2xl tw:text-sela-sky" aria-hidden={true}></i>
+          <h3 className="tw:mb-2 tw:mt-3 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink" data-i18n={"compatTitle"}>{"A graceful way back"}</h3>
+          <p className="tw:mb-0 tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"compatText"}>
             {
               "Modern browsers get the full viewer. Older browsers get the original PDF via the compatibility entry. Windows, macOS, Linux, Android and iOS follow browser capabilities."
             }
           </p>
         </article>
-        <article>
-          <h3 data-i18n={"openTitle"}>{"Open source, clear origins"}</h3>
-          <p data-i18n={"openText"}>
+        <article className="tw:border-t tw:border-sela-line tw:pt-4">
+          <i className="ph-fill ph-heart tw:text-2xl tw:text-sela-pink" aria-hidden={true}></i>
+          <h3 className="tw:mb-2 tw:mt-3 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink" data-i18n={"openTitle"}>{"Open source, clear origins"}</h3>
+          <p className="tw:mb-0 tw:text-sm tw:leading-6 tw:text-sela-muted" data-i18n={"openText"}>
             {
               "MIT reader, PDFlipbook page engine and lazy Apache-2.0 PDF.js. No framework runtime. Keyboard controls, saved progress and bookmarks included."
             }
@@ -896,8 +861,8 @@ function Notes() {
 }
 function Nav() {
   return (
-    <nav aria-label={"Project links"}>
-      <a href={"https://github.com/bobbyfch/sela"}>{"Sela on GitHub"}</a>
+    <nav className="tw:order-3 tw:flex tw:items-center tw:gap-4 tw:text-xs tw:font-semibold tw:text-sela-ink" aria-label={"Project links"}>
+      <a className="tw:underline-offset-4 hover:tw:text-sela-accent hover:tw:underline" href={"https://github.com/bobbyfch/sela"}>{"Sela on GitHub"}</a>
     </nav>
   );
 }

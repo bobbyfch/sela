@@ -15,8 +15,8 @@ async function json(url, signal) {
   return data;
 }
 const wiki = (params, signal) => json("https://id.wikisource.org/w/api.php?" + new URLSearchParams({ format: "json", origin: "*", ...params }), signal);
-export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, signal } = {}) {
-  if (!["wikisource", "gitenberg"].includes(source)) return externalBooks({ source, query, page, signal });
+export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, category = "", signal } = {}) {
+  if (!["wikisource", "gitenberg"].includes(source)) return externalBooks({ source, query, page, category, signal });
   if (source === "wikisource") {
     const data2 = await wiki(query ? { action: "query", list: "search", srnamespace: "0", srsearch: query, srlimit: "24", sroffset: String((page - 1) * 24) } : { action: "query", list: "categorymembers", cmtitle: "Kategori:Novel", cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} }, signal);
     const rows = data2.query?.search || data2.query?.categorymembers || [];

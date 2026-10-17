@@ -16,10 +16,15 @@ assets retain their upstream notices. PDF.js is an internal dependency; this
 project does not claim to implement a new PDF parser.
 
 The page-turn audio is MIT licensed, Copyright Bobby Fajar Christian.
-Sela includes inline SVG icons rather than third-party icon fonts.
+Public-site icons use the locally bundled Phosphor Icons web font 2.1.2,
+MIT licensed, Copyright Phosphor Icons. Only the filled weight is included;
+its license is preserved in `licenses/Phosphor-MIT.txt`.
 
 The optional EPUB/CBZ adapter includes fflate 0.8.3 (MIT), Copyright Arjun
 Barrett. Its full license is preserved in `dist/fflate-LICENSE.txt`.
+
+The public reading-nook and book-cart illustrations were generated for Sela
+and are included under this project's MIT license.
 
 The mobile Home room animation optionally bundles Three.js 0.186.1 (MIT),
 Copyright three.js authors. Its full license is preserved in
@@ -51,6 +56,6 @@ Sharp 0.35.5 (Apache-2.0) converts development-time browser captures to local We
 
 Room/companion/material SVG artwork and bilingual offline reflections are original Sela assets under the repository MIT license. No Apple artwork or proprietary UI icons are included.
 
-Explore and optional quote/dictionary features fetch content only when requested. GITenberg/Gutenberg editions retain their source notices and jurisdiction-specific rights. Wikisource/Wikiquote contributions retain attribution and their applicable CC BY-SA terms; underlying works and quotations may carry separate rights. Open Library/DOAB/OpenStax/Standard Ebooks metadata links do not imply ownership or permission to redistribute every edition. Quotable content identifies its author/provider; original reflections are labelled separately.
+Explore and optional quote/dictionary features fetch content only when requested. GITenberg/Gutenberg editions retain their source notices and jurisdiction-specific rights. Wikisource/Wikiquote contributions retain attribution and their applicable CC BY-SA terms; underlying works and quotations may carry separate rights. Open Library/DOAB/OpenStax/Standard Ebooks metadata links do not imply ownership or permission to redistribute every edition. Online quote passages retain their source attribution; original reflections are labelled separately.
 
 Dictionary packs are supplied by the user; no third-party dictionary dataset is bundled. Optional dictionaryapi.dev/MyMemory calls follow provider terms and receive the submitted word/passage. Local audio is user-supplied; rain ambience is synthesized locally. WebDAV sends an explicitly requested private backup to the user-selected server. See docs/library-sources.md for provider scope and availability.

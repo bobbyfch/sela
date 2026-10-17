@@ -1,6 +1,6 @@
 // Generated from app/mobile/sw.ts by npm run build. Do not edit.
 const worker = self;
-const CACHE="sela-bookshelf-0.9.0-beta.3-ecee7464f8d63519", ROOT = new URL("../", worker.location.href);
+const CACHE="sela-bookshelf-0.9.0-beta.4-e8f647b0f754660a", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
 const url = (p) => new URL(p, ROOT).href;
 let allowed;
 const incomingDB = () => new Promise((resolve, reject) => {
@@ -11,8 +11,8 @@ const incomingDB = () => new Promise((resolve, reject) => {
 });
 worker.addEventListener("message", (event) => {
   if (event.data?.type === "ACTIVATE_UPDATE") event.waitUntil((async () => {
-    const pages = await worker.clients.matchAll({ type: "window", includeUncontrolled: true });
-    if (pages.filter((p) => new URL(p.url).pathname.startsWith(new URL("mobile/", ROOT).pathname)).length > 1) {
+    const scope = new URL("./", worker.location.href).pathname, pages = await worker.clients.matchAll({ type: "window", includeUncontrolled: true });
+    if (pages.filter((p) => new URL(p.url).pathname.startsWith(scope)).length > 1) {
       event.source?.postMessage({ type: "UPDATE_BLOCKED" });
       return;
     }
@@ -21,7 +21,7 @@ worker.addEventListener("message", (event) => {
 });
 worker.addEventListener("fetch", (event) => {
   const u = new URL(event.request.url);
-  if (event.request.method !== "POST" || u.href !== url("mobile/share")) return;
+  if (event.request.method !== "POST" || u.href !== url(APP_PATH + "share")) return;
   event.respondWith((async () => {
     try {
       const form = await event.request.formData(), files = form.getAll("books");
@@ -45,9 +45,9 @@ worker.addEventListener("fetch", (event) => {
       } finally {
         db.close();
       }
-      return Response.redirect(url("mobile/?incoming=1&share=" + encodeURIComponent(key)), 303);
+      return Response.redirect(url(APP_PATH + "?incoming=1&share=" + encodeURIComponent(key)), 303);
     } catch {
-      return Response.redirect(url("mobile/?incoming=error"), 303);
+      return Response.redirect(url(APP_PATH + "?incoming=error"), 303);
     }
   })());
 });
@@ -65,7 +65,7 @@ worker.addEventListener("activate", (e) => e.waitUntil((async () => {
 worker.addEventListener("fetch", (e) => {
   const request = e.request, u = new URL(request.url);
   if (request.method !== "GET" || u.origin !== ROOT.origin || !u.href.startsWith(ROOT.href)) return;
-  const path = u.pathname.slice(ROOT.pathname.length), nav = request.mode === "navigate" && (path === "mobile/" || path === "mobile/index.html");
+  const path = u.pathname.slice(ROOT.pathname.length), nav = request.mode === "navigate" && (path === APP_PATH || path === APP_PATH + "index.html");
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
     if (!allowed) {
@@ -73,7 +73,7 @@ worker.addEventListener("fetch", (e) => {
       allowed = new Set((await list.json()).allowed);
     }
     if (!nav && !allowed.has(path)) return fetch(request);
-    const key = nav ? url("mobile/index.html") : request, hit = await cache.match(key);
+    const key = nav ? url(APP_PATH + "index.html") : request, hit = await cache.match(key);
     if (hit) return hit;
     const r = await fetch(request);
     if (r.ok && r.type !== "opaque") await cache.put(key, r.clone());

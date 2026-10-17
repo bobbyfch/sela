@@ -28,9 +28,22 @@ function isInstalled() {
   return installedThisSession || standalone() || read("sela-installed") === "true";
 }
 function feedback(copy, tone = "info") {
-  if (status) status.textContent = copy;
+  if (status) {
+    delete status.dataset.offlineState;
+    status.textContent = copy;
+  }
   notify(copy, tone);
 }
+function offlineStatus(state) {
+  if (!status) return;
+  const copy = state === "preparing" ? ["Preparing the offline app\u2026", "Menyiapkan app offline\u2026"] : state === "ready" ? ["Bookshelf ready for local files offline. Keep a backup.", "Rak siap untuk berkas lokal offline. Tetap simpan cadangan."] : ["Offline shell unavailable; keep your originals.", "Shell offline belum tersedia; simpan berkas asli."];
+  status.dataset.offlineState = state;
+  status.textContent = t(copy[0], copy[1]);
+}
+document.addEventListener("sela:language", () => {
+  const state = status?.dataset.offlineState;
+  if (state === "preparing" || state === "ready" || state === "unavailable") offlineStatus(state);
+});
 if (status) status.classList.add("sr-only");
 function installHelp() {
   const { browser, os, ios } = browserAndOS();
@@ -201,9 +214,10 @@ if ("serviceWorker" in navigator) {
   });
   try {
     registration = await navigator.serviceWorker.register(new URL("./sw.js", import.meta.url), { scope: new URL("./", import.meta.url).href, updateViaCache: "none" });
-    if (status) status.textContent = t("Preparing the offline app\u2026", "Menyiapkan app offline\u2026");
+    offlineStatus("preparing");
     void navigator.serviceWorker.ready.then(() => {
-      if (status && !new URL(location.href).searchParams.has("incoming")) status.textContent = t("Bookshelf ready for local files offline. Keep a backup.", "Rak siap untuk berkas lokal offline. Tetap simpan cadangan.");
+      if (status && !new URL(location.href).searchParams.has("incoming")) offlineStatus("ready");
+      else if (status) delete status.dataset.offlineState;
     });
     if (check) {
       const releaseCheck = check.onclick;
@@ -226,9 +240,8 @@ if ("serviceWorker" in navigator) {
       if (!document.hidden) void checkWorker();
     });
   } catch {
-    const copy = t("Offline shell unavailable; keep your originals.", "Shell offline belum tersedia; simpan berkas asli.");
-    if (status) status.textContent = copy;
-    feedback(copy, "error");
+    offlineStatus("unavailable");
+    feedback(status?.textContent || t("Offline shell unavailable; keep your originals.", "Shell offline belum tersedia; simpan berkas asli."), "error");
   }
 }
 async function receive(files) {

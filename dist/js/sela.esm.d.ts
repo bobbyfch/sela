@@ -7,7 +7,8 @@ export interface SelaOptions {
     ui?: 'classic' | 'app';
     /** Application shell integration; use false/default for standalone embeds. */
     appContext?: boolean;
-    palette?: 'forest' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak' | 'linen';
+    /** Accent palette; historical names remain supported aliases. Dark appearance is controlled by `theme`. */
+    palette?: 'white' | 'kids' | 'cyberpunk' | 'forest' | 'sakura' | 'ocean' | 'lavender' | 'citrus' | 'linen' | 'rimba' | 'nila' | 'seroja' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak';
     metadata?: BookMetadata;
     /** Inline embeds need a connected host with an explicit height. */
     presentation?: 'overlay' | 'inline';
@@ -16,7 +17,7 @@ export interface SelaOptions {
     url?: string;
     data?: ArrayBuffer | Uint8Array;
     title?: string;
-    language?: 'en' | 'id' | 'auto';
+    language?: AppLocale | 'en' | 'id' | 'auto';
     mode?: SelaMode;
     fit?: 'page' | 'width' | 'original';
     persistPreferences?: boolean;
@@ -40,7 +41,7 @@ export interface SelaOptions {
     pageGap?: number;
     wheelZoom?: boolean;
     paperTexture?: boolean;
-    /** Page material stays inside the reader and is independent of the host app palette. */
+    /** Page material stays inside the reader; legacy oak/walnut values map to neutral paper textures. */
     pageSurface?: 'smooth' | 'rough' | 'vellum' | 'lined' | 'laid' | 'oak' | 'walnut' | 'woven';
     theme?: 'auto' | 'light' | 'dark';
     filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'warm' | 'cool' | 'night' | 'invert' | 'paper' | 'soft' | 'saturated' | 'lowblue';
@@ -164,3 +165,4 @@ declare global {
         Sela: typeof import('./sela.esm.js').Sela;
     }
 }
+import type { AppLocale } from './locale.ts';

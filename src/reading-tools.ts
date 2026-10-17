@@ -32,8 +32,8 @@ export function speechChunks(text) {
 
 export function mountTools(state, host) {
   const { book, options } = state;
-  const id = options.language !== 'en';
-  const label = (en, indo) => id ? indo : en;
+  const language = options.language || 'en-US';
+  const label = (en, indo) => state.translate?state.translate(en,indo,language):(String(language).toLowerCase().startsWith('id')?indo:en);
   let expectedSpeechPage = 0;
   let destroyed = false, searchRun = 0, textRun = 0, speechRun = 0, speaking = false, paused = false;
   const synth = window.speechSynthesis;
@@ -136,9 +136,9 @@ export function mountTools(state, host) {
   section('appearance',label('Appearance','Tampilan'),'appearance');
   element('h3',label('Reading appearance','Tampilan bacaan'));
   const filterLabel=element('label',label('Page filter','Filter halaman'));const filter=element('select',null,filterLabel);filter.setAttribute('aria-label',label('Page filter','Filter halaman'));
-  for(const [key,names] of Object.entries(FILTER_LABELS)){const option=element('option',names[id?1:0],filter);option.value=key;}
+  for(const [key,names] of Object.entries(FILTER_LABELS)){const option=element('option',label(names[0],names[1]),filter);option.value=key;}
   const surfaceLabel=element('label',label('Page material','Material halaman'));const surface=element('select',null,surfaceLabel);surface.setAttribute('aria-label',label('Page material','Material halaman'));
-  for(const [key,en,indo] of [['smooth','Smooth linen','Linen halus'],['rough','Deckled paper','Kertas bertekstur'],['vellum','Soft vellum','Kertas buram'],['lined','Ruled paper','Kertas bergaris'],['laid','Laid paper','Kertas serat silang'],['oak','Light oak','Oak muda'],['walnut','Dark walnut','Walnut tua'],['woven','Woven linen','Linen tenun']] as const){const option=element('option',label(en,indo),surface);option.value=key;}
+  for(const [key,en,indo] of [['smooth','Smooth paper','Kertas halus'],['rough','Deckled paper','Kertas bertekstur'],['vellum','Soft vellum','Kertas buram'],['lined','Ruled paper','Kertas bergaris'],['laid','Laid paper','Kertas serat silang'],['woven','Woven paper','Kertas tenun']] as const){const option=element('option',label(en,indo),surface);option.value=key;}
   surface.value=options.pageSurface||'smooth';surface.onchange=()=>state.setPreferences({pageSurface:surface.value});
   const brightLabel=element('label',label('Document brightness','Kecerahan dokumen'));const bright=element('input',null,brightLabel);bright.type='range';bright.min='.35';bright.max='1.25';bright.step='.05';bright.setAttribute('aria-label',label('Document brightness','Kecerahan dokumen'));const brightValue=element('output',null,brightLabel);
   const dimLabel=element('label');const dim=element('input',null,dimLabel);dim.type='checkbox';dimLabel.appendChild(document.createTextNode(label(' Dim reader controls',' Redupkan kontrol reader')));
@@ -164,10 +164,10 @@ export function mountTools(state, host) {
   function updateVoices() {
     const selected = voices.value;
     available = (synth?.getVoices()||[]).filter(v => !localOnly.checked || v.localService);
-    if(!localOnly.checked&&typeof options.speechAdapter==='function')available.push({name:'Sela custom adapter',lang:book.language||(id?'id-ID':'en-US'),localService:false,adapter:true});
+    if(!localOnly.checked&&typeof options.speechAdapter==='function')available.push({name:'Sela custom adapter',lang:book.language||language,localService:false,adapter:true});
     voices.replaceChildren();
     available.forEach((voice, index) => { const opt = element('option', `${voice.name} · ${voice.lang} · ${voice.localService ? label('local', 'lokal') : label('online', 'daring')}`, voices); opt.value = String(index); });
-    const lang = book.language || (id ? 'id' : 'en');
+    const lang = book.language || language;
     const preferred = available.findIndex(v => v.lang.toLowerCase().startsWith(lang.split('-')[0].toLowerCase()));
     voices.value = selected !== '' && available[+selected] ? selected : String(Math.max(0, preferred));
     play.disabled = !capable || !textCapable || !available.length;

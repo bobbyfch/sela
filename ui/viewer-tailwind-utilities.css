@@ -1,0 +1,333 @@
+/* Tailwind v4 component utilities, restricted to classes present in shipped source. */
+/* Tailwind v4 component utilities, restricted to classes present in shipped source. */
+/* Tailwind v4 utility source generated from the Sela component rules. */
+@utility library-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sela-z-index, 12010);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: rgba(6, 10, 20, .88);
+  color: var(--sela-fg);
+  opacity: 1;
+  transition: opacity 180ms ease;
+  &.sela-inline { position:relative; inset:auto; width:100%; height:100%; min-height:320px; z-index:0; border:1px solid var(--sela-border); border-radius:18px; overflow:hidden
+  }
+  &.is-entering { opacity: 0
+  }
+  &.is-closing { opacity: 0
+  }
+  &.is-closing { pointer-events: none
+  }
+  &.is-entering .library-reader-shell { transform: translateY(10px) scale(.995)
+  }
+  &.is-closing .library-reader-shell { transform: translateY(10px) scale(.995)
+  }
+  @media (prefers-reduced-motion: reduce) { transition-duration: 0.01ms
+  } --sela-bg:#111722; --sela-panel:#182232; --sela-fg:#f5f6fa; --sela-muted:#c9d4e3; --sela-button:#243247; --sela-hover:#365170; --sela-border:rgba(255,255,255,.2); --fb-counter-fg:var(--sela-fg); color-scheme:dark; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.5; &[data-sela-theme="light"] { --sela-bg:#e8edf3; --sela-panel:#f6f8fb; --sela-fg:#152238; --sela-muted:#52647b; --sela-button:#dce5f0; --sela-hover:#c5d5e8; --sela-border:rgba(20,35,55,.2); color-scheme:light
+  } @media (prefers-color-scheme:light) {
+    &[data-sela-theme="auto"] { --sela-bg:#e8edf3; --sela-panel:#f6f8fb; --sela-fg:#152238; --sela-muted:#52647b; --sela-button:#dce5f0; --sela-hover:#c5d5e8; --sela-border:rgba(20,35,55,.2); color-scheme:light
+    }
+  } & * { box-sizing:border-box
+  } & *::before { box-sizing:border-box
+  } & *::after { box-sizing:border-box
+  } & [hidden] { display:none!important
+  } & button { font-family:inherit; line-height:1.5
+  } & input { font-family:inherit; line-height:1.5
+  } & button { text-transform:none
+  } & svg { flex-shrink:0
+  } @media (prefers-reduced-motion:reduce) {
+    & * { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important
+    }
+    & *::before { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important
+    }
+    & *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important
+    }
+  } & canvas {filter:var(--sela-page-filter,brightness(1)) brightness(var(--sela-brightness,1))
+  } &[data-page-surface]:not([data-page-surface=smooth]) .fb-face::after {content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply
+  } &[data-page-surface=rough] .fb-face::after {background-image:repeating-linear-gradient(11deg,transparent 0 19px,#73839a30 19px 19.6px,transparent 20px 33px),repeating-linear-gradient(102deg,#8292a912 0 1px,transparent 1px 15px)
+  } &[data-page-surface=rough] .sela-epub-chapter {background-image:repeating-linear-gradient(11deg,transparent 0 19px,#73839a30 19px 19.6px,transparent 20px 33px),repeating-linear-gradient(102deg,#8292a912 0 1px,transparent 1px 15px)
+  } &[data-page-surface=vellum] .fb-face::after {background-image:linear-gradient(118deg,#c7d7ec24,transparent 39%,#ccd9ec12 74%,transparent)
+  } &[data-page-surface=vellum] .sela-epub-chapter {background-image:linear-gradient(118deg,#c7d7ec24,transparent 39%,#ccd9ec12 74%,transparent)
+  } &[data-page-surface=lined] .fb-face::after {background-image:repeating-linear-gradient(to bottom,transparent 0 27px,#879ab847 27px 27.7px)
+  } &[data-page-surface=lined] .sela-epub-chapter {background-image:repeating-linear-gradient(to bottom,transparent 0 27px,#879ab847 27px 27.7px)
+  } &[data-page-surface=laid] .fb-face::after {background-image:repeating-linear-gradient(17deg,#7c91ad15 0 1px,transparent 1px 5px),repeating-linear-gradient(107deg,#8b9fb41a 0 1px,transparent 1px 7px)
+  } &[data-page-surface=laid] .sela-epub-chapter {background-image:repeating-linear-gradient(17deg,#7c91ad15 0 1px,transparent 1px 5px),repeating-linear-gradient(107deg,#8b9fb41a 0 1px,transparent 1px 7px)
+  } &[data-page-surface=woven] .fb-face::after {background-image:repeating-linear-gradient(0deg,transparent 0 13px,#8296b023 13px 14px),repeating-linear-gradient(90deg,transparent 0 13px,#7a8faa1c 13px 14px)
+  } &[data-page-surface=woven] .sela-epub-chapter {background-image:repeating-linear-gradient(0deg,transparent 0 13px,#8296b023 13px 14px),repeating-linear-gradient(90deg,transparent 0 13px,#7a8faa1c 13px 14px)
+  } &[data-dim=true] {--sela-bg:#121721;--sela-panel:#1a202a;--sela-fg:#d5deec;--sela-button:#252d3b;--sela-hover:#303b4d;--sela-border:#3d4759
+  } @media (max-width:720px) {padding:0
+  } &[data-product-reader=app] {--sela-bg:var(--bg,#141923);--sela-panel:var(--panel,#1d2430);--sela-fg:var(--fg,#f1f5fc);--sela-muted:var(--muted,#a9b4c5);--sela-button:color-mix(in srgb,var(--panel,#1d2430) 82%,var(--fg,#f1f5fc));--sela-hover:color-mix(in srgb,var(--panel,#1d2430) 70%,var(--accent,#426fe2));--sela-border:var(--line,#303a4b);--fb-counter-fg:var(--sela-fg);color:var(--sela-fg)
+  } &[data-product-reader=app][data-oled=true] {--sela-bg:var(--bg,#000);--sela-panel:var(--panel,#08090d)
+  }
+}
+@utility sela-inline {
+  & .library-reader-shell { width:100%; height:100%; box-shadow:none
+  }
+  & .library-reader-shell:fullscreen { width:100vw; height:100vh; border-radius:0
+  }
+  @media (max-width:720px) {
+    & .library-reader-shell {height:100%;border-radius:inherit
+    }
+  }
+}
+@utility sela-credit { color:inherit; font-size:11px; text-decoration:none; opacity:.7; white-space:nowrap
+}
+@utility sela-tools {
+  & .sela-tool-icon { display:inline-flex; justify-content:center; align-items:center; min-width:40px; min-height:40px; padding:8px; width:auto
+  }width:min(420px,45vw);flex:none;min-width:0;overflow:auto;overscroll-behavior:contain;padding:0 20px 24px;border-inline-start:1px solid var(--sela-border);background:var(--sela-panel);font-size:14px;line-height:1.6;& [hidden] {display:none!important
+  }& button {color:var(--sela-fg);background:var(--sela-button);border:1px solid var(--sela-border);border-radius:10px;padding:10px;cursor:pointer;text-align:start;min-height:44px
+  }& button:disabled {opacity:.5;cursor:default
+  }& input {max-width:100%;color:var(--sela-fg);background:var(--sela-bg);font:inherit;padding:10px;border:1px solid var(--sela-border);border-radius:9px
+  }& select {max-width:100%;color:var(--sela-fg);background:var(--sela-bg);font:inherit;padding:10px;border:1px solid var(--sela-border);border-radius:9px
+  }& textarea {max-width:100%;color:var(--sela-fg);background:var(--sela-bg);font:inherit;padding:10px;border:1px solid var(--sela-border);border-radius:9px
+  }& select {width:100%;min-height:44px;font-size:14px
+  }& input[type=range] {width:100%;min-height:44px;accent-color:var(--sela-accent,#376cda)
+  }& input[type=checkbox] {accent-color:var(--sela-accent,#376cda);width:18px;height:18px;vertical-align:middle;margin-inline-end:6px
+  }& label {display:block;margin:16px 0
+  }& output {font-variant-numeric:tabular-nums;font-size:12px
+  }& form {display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:6px;align-items:center
+  }& input[type=search] {width:100%;min-width:0;min-height:44px;font-size:16px
+  }& button:focus-visible {outline:3px solid var(--sela-accent,#376cda);outline-offset:2px
+  }& input:focus-visible {outline:3px solid var(--sela-accent,#376cda);outline-offset:2px
+  }& select:focus-visible {outline:3px solid var(--sela-accent,#376cda);outline-offset:2px
+  }@media (max-width:720px) {position:absolute;inset:0 0 0 auto;width:min(420px,100%);z-index:95;padding-inline:16px;box-shadow:-10px 0 40px #0005;& .sela-tool-icon {min-width:0;min-height:44px
+    }inset:auto 0 0;max-height:88%;width:100%;border-radius:22px 22px 0 0;padding:0 16px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--sela-border);border-inline-start:0;box-shadow:0 -16px 50px #0006;& button.sela-tool-icon {padding:8px;display:flex;align-items:center;justify-content:center
+    }& svg {width:20px;height:20px
+    }
+  }& textarea {display:block;max-width:100%;width:100%;font:inherit;background:var(--sela-bg);color:var(--sela-fg);border:1px solid var(--sela-border);border-radius:7px;padding:8px;resize:vertical
+  }
+}
+@utility library-reader-shell {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 1600px);
+  height: 100dvh;
+  min-height: 0;
+  background: var(--sela-bg);
+  box-shadow: 0 0 60px rgba(0, 0, 0, .3);
+  transform: translateY(0) scale(1);
+  transition: transform 180ms cubic-bezier(.2,.75,.25,1);
+  @supports not (height: 100dvh) { height: 100vh
+  }
+  @media (prefers-reduced-motion: reduce) { transition-duration: 0.01ms
+  }
+  @media (max-width:720px) {width:100%;height:100%;max-height:none;border-radius:0;height:100dvh
+  }
+}
+@utility library-reader-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid var(--sela-border);
+  border-radius: 8px;
+  background: var(--sela-button);
+  color: var(--sela-fg);
+  font: inherit;
+  font-size: .83rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover { background: var(--sela-hover); color: var(--sela-fg)
+  }
+  &:focus-visible {
+  outline: 3px solid #78b8ff;
+  outline-offset: 2px
+  }
+  &[aria-pressed="true"] { background: #245988
+  }
+  &:disabled { opacity: .45; cursor: default
+  }
+  @media (max-width: 720px) { width: 38px; height: 38px; min-height: 38px
+  }
+}
+@utility library-reader-marks {
+  & button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid var(--sela-border);
+  border-radius: 8px;
+  background: var(--sela-button);
+  color: var(--sela-fg);
+  font: inherit;
+  font-size: .83rem;
+  text-decoration: none;
+  cursor: pointer
+  }
+  & button:hover { background: var(--sela-hover); color: var(--sela-fg)
+  }
+  & button:focus-visible {
+  outline: 3px solid #78b8ff;
+  outline-offset: 2px
+  } display: grid; gap: 8px; & button { justify-content: flex-start
+  } & p { color: var(--sela-muted); font-size: .85rem
+  } & + h3 { margin-top: 24px
+  }
+}
+@utility library-reader-page-form {
+  & input:focus-visible {
+  outline: 3px solid #78b8ff;
+  outline-offset: 2px
+  } display: flex; align-items: center; gap: 6px; white-space: nowrap; & label { margin: 0; color: inherit; font-size: .85rem
+  } & input {
+  width: 70px;
+  margin-left: 4px;
+  padding: 5px;
+  border: 1px solid #8292a9;
+  border-radius: 6px;
+  background: var(--sela-bg);
+  color: var(--sela-fg);
+  text-align: center
+  } @media (max-width: 720px) { flex: 1
+  } @media (max-width:720px) {
+    & input {width:48px;font-size:16px
+    }
+  }
+}
+@utility library-reader-close { background: #66404b; &:hover { background: #944755
+  } color:#fff; &:hover { color:#fff
+  } @media (max-width:720px) {margin-inline-start:auto
+  }
+}
+@utility library-reader-icon { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round
+}
+@utility library-reader-bookmark-item { width: 100%; height: 38px; min-height: 38px; justify-content: flex-start; gap: 8px; padding: 5px 10px; & span { min-width: 1.5em; text-align: center
+  }
+}
+@utility library-reader-content { display: flex; flex: 1; min-height: 0; position: relative
+}
+@utility library-reader-stage { flex: 1; min-width: 0; min-height: 0
+}
+@utility library-reader-book {
+  width: 100%;
+  height: 100%;
+  --fb-bg: var(--sela-bg);
+  --fb-control-bg: var(--sela-button);
+  --fb-control-fg: var(--sela-fg);
+  &:focus-visible { outline: 3px solid #78b8ff; outline-offset: -3px
+  } --fb-counter-fg:var(--sela-fg)
+}
+@utility library-reader-thumbs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px
+}
+@utility library-reader-thumb {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 8px 2px;
+  border: 1px solid var(--sela-border);
+  border-radius: 8px;
+  background: var(--sela-button);
+  color: var(--sela-fg);
+  cursor: pointer;
+  &:hover { border-color: #89c5ff; background: var(--sela-hover)
+  }
+  &[aria-current="page"] { border-color: #89c5ff; background: var(--sela-hover)
+  }
+  &:focus-visible { outline: 3px solid #78b8ff; outline-offset: 2px
+  }
+  & canvas {
+  display: block;
+  width: min(90px, 100%);
+  height: 126px;
+  background: #f8f8f8;
+  object-fit: contain
+  }
+  & span { font-size: .8rem
+  }
+}
+@utility library-reader-fallback { padding: 20px; color: var(--sela-fg); text-align: center; & a { color: #9dcfff
+  }
+}
+@utility sela-webtoon { overflow:auto; overscroll-behavior:contain; padding:20px; background:var(--sela-bg); --sela-page-width:760px; @media (max-width:720px) {padding:12px
+  }
+}
+@utility sela-webtoon-page { width:var(--sela-page-width);max-width:var(--sela-page-max,100%); margin:0 auto var(--sela-page-gap,0px); background:#fff; scroll-margin-top:12px; & canvas { display:block; width:100%; height:100%
+  } & canvas {transform:scale(var(--sela-crop-scale,1));transform-origin:center
+  }overflow:hidden;touch-action:inherit
+}
+@utility sela-webtoon-tools { position:sticky; top:0; z-index:4; display:flex; justify-content:flex-end; gap:8px; margin-bottom:12px; pointer-events:none; & button { pointer-events:auto
+  } @media (max-width:720px) {display:none
+  }
+}
+@utility fb-rtl {
+  & canvas {scale:-1 1
+  }
+  & .fb-nav-prev {left:auto;right:10px
+  }
+  & .fb-nav-next {right:auto;left:10px
+  }
+  & .fb-nav svg {transform:rotate(180deg)
+  }
+}
+@utility sela-shortcuts {padding:14px 22px;background:var(--sela-panel);font-size:12px;color:var(--sela-fg);line-height:1.8;border-bottom:1px solid var(--sela-border)
+}
+@utility sela-epub {overflow:auto;padding:28px;overscroll-behavior:contain;background:var(--sela-bg);touch-action:pan-y
+}
+@utility sela-epub-chapter {max-width:740px;margin:0 auto 36px;filter:var(--sela-page-filter,brightness(1)) brightness(var(--sela-brightness,1));&[hidden] {display:none
+  }touch-action:pan-y
+}
+@utility sela-notice {
+  &:empty {display:none
+  }margin:0;padding:8px 16px;font-size:12px;background:var(--sela-panel)
+}
+@utility sela-tools-top {display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px;@media (max-width:720px) {position:sticky;top:0;z-index:3;background:var(--sela-panel)
+  }
+}
+@utility sela-tool-tabs {position:sticky;top:0;z-index:2;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:8px 0 14px;background:var(--sela-panel);border-bottom:1px solid var(--sela-border);& button[aria-selected=true] {border-color:var(--sela-accent,#376cda);background:var(--sela-hover);box-shadow:inset 0 -3px var(--sela-accent,#376cda)
+  }@media (max-width:720px) {gap:4px;position:sticky;top:60px;gap:4px
+  }grid-template-columns:repeat(7,minmax(0,1fr))
+}
+@utility sela-tool-panel {
+  & h3 {margin:22px 0 16px;font-size:18px
+  }
+  & nav {display:grid;gap:6px
+  }
+  &>p {font-size:12px;opacity:.8
+  }
+}
+@utility sela-toc-item {line-height:1.5;width:100%;&[aria-current=location] {background:color-mix(in srgb,var(--sela-accent,#376cda) 16%,transparent);box-shadow:inset 3px 0 var(--sela-accent,#376cda)
+  }
+}
+@utility sela-search-results {display:grid;gap:8px;margin-top:18px;& button {overflow-wrap:anywhere
+  }
+}
+@utility sela-speech-controls {display:flex;flex-wrap:wrap;gap:8px;margin:16px 0
+}
+@utility sela-transcript {white-space:pre-wrap;line-height:1.9;user-select:text;font-family:Georgia,serif
+}
+@utility sela-tools-status {
+  &:empty {display:none
+  }font-size:12px;overflow-wrap:anywhere
+}
+@utility sela-voice-notice {
+  &:empty {display:none
+  }
+}
+@utility sela-controls-hidden {
+  & .sela-webtoon-tools {opacity:0;pointer-events:none
+  }
+  & .fb-toolbar {opacity:0;pointer-events:none
+  }
+  & .fb-counter {opacity:0;pointer-events:none
+  }
+}
+@utility fb-face {overflow:hidden;& canvas {transform:scale(var(--sela-crop-scale,1));transform-origin:center
+  }
+}
+@utility sela-footnote {width:min(480px,calc(100vw - 40px));max-height:70vh;overflow:auto;box-sizing:border-box;border:1px solid var(--sela-border);border-radius:18px;padding:24px;background:var(--sela-panel,var(--sela-bg));color:var(--sela-fg);font:18px/1.65 Georgia,serif;box-shadow:0 20px 100px #0005;&::backdrop {background:#0006
+  }&>button {display:block;margin-left:auto;min-width:44px;min-height:44px;border-radius:12px;font:24px system-ui;color:inherit;background:transparent;border:1px solid var(--sela-border)
+  }
+}
+@utility sela-speech-mini {position:absolute;z-index:20;bottom:80px;right:12px;display:flex;gap:4px;max-width:calc(100% - 24px);padding:8px;border-radius:16px;background:var(--sela-panel,#202923);color:var(--sela-fg,#fff);box-shadow:0 8px 28px #0004;& button {font:inherit;font-size:12px;min-height:44px;border:0;border-radius:10px;padding:8px;background:transparent;color:inherit
+  }&[hidden] {display:none
+  }
+}

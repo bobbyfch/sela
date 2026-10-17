@@ -1,1 +1,1 @@
-// Sela Reader is available on every supported device; no OS installation gates.
+// Sela Books is available on every supported device; no OS installation gates.

@@ -6,7 +6,7 @@ import { showBookInfo } from "./book-info.js";
 import { samples } from "./catalog.js";
 import { writeBook, getFile, listCollections } from "./storage.js";
 import { showCollections, mountShelfControls } from "./collections.js";
-import { mountPalettes, mountPaperTextures, initializePalette } from "./themes.js";
+import { mountPalettes, mountOledToggle, initializePalette } from "./themes.js";
 import { mountReadingDesk } from "./reading-desk.js";
 import { mountWeather } from "./weather.js";
 import { mountAtmosphere, readingNote } from "./home-atmosphere.js";
@@ -26,8 +26,7 @@ function svg(name) {
 export function mountLibraryExperience({ mobile, t, status, refresh, openBook, readSample, addSample, addFiles }) {
   if (mobile) initializePalette();
   const selected = /* @__PURE__ */ new Set();
-  let items = [], busy = false, page = "home", onlineCatalog, glassNavigation, paperTextureSync = () => {
-  };
+  let items = [], busy = false, page = "home", onlineCatalog, glassNavigation;
   const labels = [], recentUrls = [];
   const el = (tag2, className, parent) => {
     const node = document.createElement(tag2);
@@ -95,7 +94,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   }
   const main = $("main");
   const intro = $(".room-intro"), library = $(".library"), info = $(".library-info");
-  const home = el("section", "app-page home-page");
+  const home = el("section", "app-page home-page tw:relative tw:isolate tw:min-w-0 tw:px-4 tw:py-5 tw:sm:px-6 tw:sm:py-7 tw:lg:px-9 tw:lg:py-9");
   home.dataset.page = "home";
   main.insertBefore(home, library);
   if (mobile) {
@@ -115,35 +114,35 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   text(el("h2", "", homeCatalog), "A little book to start", "Bacaan kecil untuk memulai");
   const browse = el("section", "app-page browse-page", main);
   browse.dataset.page = "browse";
-  text(el("h2", "", browse), "Explore", "Jelajah");
-  text(el("p", "section-description", browse), "Read a sample, or download it into your private shelf.", "Baca contoh, atau unduh ke rak pribadimu.");
+  text(el("h2", "tw:mb-1 tw:text-2xl tw:font-bold tw:tracking-tight tw:text-sela-ink", browse), "Explore", "Jelajah");
+  text(el("p", "section-description tw:mb-5 tw:max-w-2xl tw:text-sm tw:leading-6 tw:text-sela-muted", browse), "Find a book for today, browse new releases, or let Sela surprise you.", "Temukan bacaan hari ini, jelajahi rilisan baru, atau biarkan Sela memberi kejutan.");
   function catalog(parent, saveBeforeRead = false) {
-    const list = el("div", "catalog-list", parent);
+    const list = el("div", "catalog-list tw:grid tw:w-full tw:grid-cols-1 tw:gap-4", parent);
     for (const sample of samples) {
-      const card = el("article", "catalog-book", list);
-      const image = el("img", "", card);
+      const card = el("article", "catalog-book tw:relative tw:grid tw:min-w-0 tw:grid-cols-[80px_minmax(0,1fr)] tw:items-center tw:gap-4 tw:rounded-3xl tw:border tw:border-sela-line tw:bg-sela-surface/90 tw:p-4 tw:shadow-sm tw:md:max-w-[720px] tw:md:grid-cols-[112px_minmax(0,1fr)] tw:md:gap-5 tw:md:p-5", list);
+      const image = el("img", "tw:aspect-[2/3] tw:w-full tw:shrink-0 tw:rounded-2xl tw:object-cover tw:shadow-md", card);
       image.src = sample.cover;
       image.alt = "";
       image.loading = "lazy";
-      const copy = el("div", "", card);
-      el("h3", "", copy).textContent = sample.title;
-      const meta = el("small", "catalog-meta", copy);
+      const copy = el("div", "tw:flex tw:min-w-0 tw:flex-col tw:items-start", card);
+      el("h3", "tw:mb-1 tw:break-words tw:text-base tw:font-bold tw:leading-snug tw:tracking-tight tw:text-sela-ink tw:md:text-lg", copy).textContent = sample.title;
+      const meta = el("small", "catalog-meta tw:text-xs tw:text-sela-muted", copy);
       meta.textContent = [sample.metadata?.author, sample.metadata?.year].filter(Boolean).join(" \xB7 ");
       action("Book information", "Informasi buku", () => showBookInfo(sample.metadata, { t, format: sample.format }), copy).classList.add("catalog-info");
-      const description = el("p", "", copy);
+      const description = el("p", "tw:my-1 tw:text-sm tw:leading-6 tw:text-sela-muted", copy);
       labels.push({ node: description, en: sample.description.en, id: sample.description.id });
       description.textContent = t(sample.description.en, sample.description.id);
-      const actions = el("div", "catalog-actions", copy);
-      action("Read sample", "Baca contoh", () => readSample(sample, saveBeforeRead), actions);
-      action("Save offline", "Simpan offline", () => addSample(sample), actions);
+      const actions = el("div", "catalog-actions tw:col-span-2 tw:mt-2 tw:flex tw:w-full tw:flex-nowrap tw:items-center tw:gap-2 tw:md:col-span-1", copy), read = action("Read sample", "Baca contoh", () => readSample(sample, saveBeforeRead), actions), save = action("Save offline", "Simpan offline", () => addSample(sample), actions);
+      for (const button of [read, save]) button.classList.add("tw:w-auto", "tw:min-w-0", "tw:flex-1", "tw:whitespace-nowrap");
+      read.classList.add("tw:md:w-fit", "tw:md:min-w-28", "tw:md:flex-none", "tw:md:px-4");
+      save.classList.add("tw:md:w-fit", "tw:md:flex-none");
     }
     return list;
   }
   catalog(homeCatalog, true);
-  const sampleShelf = catalog(browse);
-  const online = el("section", "open-catalog settings-card", browse);
-  text(el("h3", "", online), "Beyond your shelf", "Di luar rakmu");
-  browse.insertBefore(online, sampleShelf);
+  const online = el("section", "open-catalog tw:min-w-0 tw:space-y-4 tw:md:space-y-5", browse);
+  const onlineHeading = el("h3", "tw:mb-0 tw:text-lg tw:font-semibold tw:tracking-tight tw:text-sela-ink", online);
+  text(onlineHeading, "Books from open shelves", "Buku dari rak terbuka");
   let loadingCatalog = false;
   async function discover() {
     if (onlineCatalog || loadingCatalog) return;
@@ -179,8 +178,9 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     settingsGreeting = el("h3", "", copy);
     const subtitle = el("p", "", copy);
     text(subtitle, "A little space to make reading feel like yours.", "Ruang kecil untuk mengatur bacaan dengan caramu.");
-    const reflection = el("div", "settings-welcome-reflection", welcome), noteCopy = el("div", "", reflection);
-    text(el("small", "", noteCopy), "A thought for today", "Renungan hari ini");
+    const reflection = el("details", "settings-welcome-reflection", welcome), reflectionHeading = el("summary", "", reflection);
+    text(reflectionHeading, "A thought for today", "Renungan hari ini");
+    const noteCopy = el("div", "", reflection);
     settingsQuote = el("p", "", noteCopy);
     settingsQuoteSource = el("span", "settings-quote-source", noteCopy);
     const another = el("button", "settings-quote-refresh", reflection);
@@ -198,10 +198,24 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       if (!document.hidden) updateSettingsWelcome();
     });
     const appearance = el("section", "settings-card appearance-settings", settings);
-    text(el("h3", "", appearance), "Appearance & language", "Tampilan & bahasa");
-    for (const [id, en, ind, subEn, subId, icon] of [["theme", "Appearance", "Tampilan", "Choose light, dark, or automatic.", "Pilih terang, gelap, atau otomatis.", "sun"], ["language", "Language", "Bahasa", "Set the language for Sela.", "Atur bahasa untuk Sela.", "journal"], ["check-update", "Updates", "Pembaruan", "Check for a newer version.", "Periksa versi terbaru.", "refresh"]]) {
-      settingsRow(appearance, icon, en, ind, subEn, subId, document.getElementById(id));
+    text(el("h3", "", appearance), "Language & display", "Bahasa & tampilan");
+    for (const [id, en, ind, subEn, subId, icon] of [["language", "Language", "Bahasa", "Set the language for Sela.", "Atur bahasa untuk Sela.", "journal"], ["check-update", "Updates", "Pembaruan", "Check for a newer version.", "Periksa versi terbaru.", "refresh"]]) {
+      const control = id === "language" ? (() => {
+        const topbar = document.querySelector("#language"), clone = topbar.cloneNode(true);
+        clone.id = "settings-language";
+        clone.className = "settings-language-control";
+        clone.addEventListener("change", () => {
+          topbar.value = clone.value;
+          topbar.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        topbar.addEventListener("change", () => {
+          clone.value = topbar.value;
+        });
+        return clone;
+      })() : document.getElementById(id);
+      settingsRow(appearance, icon, en, ind, subEn, subId, control);
     }
+    mountOledToggle(appearance, t);
     const install = document.getElementById("install-mobile-app");
     if (install) {
       install.classList.add("home-install-action");
@@ -213,11 +227,9 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   }
   if (mobile) {
     const palette = el("section", "settings-card appearance-materials", settings);
-    text(el("h3", "", palette), "App palette & room material", "Palet & material ruang");
+    text(el("h3", "", palette), "Color palettes", "Palet warna");
     const sync = mountPalettes(palette, t);
-    paperTextureSync = mountPaperTextures(palette, t);
     document.addEventListener("sela:palette", sync);
-    document.addEventListener("sela:texture", paperTextureSync);
   }
   const defaults = el("section", "settings-card", settings);
   text(el("h3", "", defaults), "Reading defaults", "Default bacaan");
@@ -241,25 +253,32 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   aboutLogo.alt = "";
   aboutLogo.src = new URL(document.querySelector(".brand-logo")?.getAttribute("src") || "../logo.svg", document.baseURI).href;
   const aboutName = el("div", "about-identity-copy", aboutIdentity);
-  text(el("strong", "", aboutName), "Sela Reader", "Sela Reader");
-  text(el("small", "", aboutName), "Your personal reader", "Pembaca pribadimu");
+  text(el("strong", "", aboutName), "Sela Books", "Sela Books");
+  text(el("small", "", aboutName), "Your personal bookshelf", "Perpustakaan pribadimu");
   const version = el("span", "about-version", aboutIdentity);
   version.textContent = "v" + (window.Sela?.version || VERSION);
   text(el("p", "about-description", aboutContent), "A quiet little home for your books, notes, and reading time.", "Ruang hangat untuk buku, catatan, dan waktu membacamu.");
   const creator = el("section", "about-detail", aboutContent);
   text(el("small", "", creator), "MADE WITH CARE BY", "DIBUAT DENGAN HATI OLEH");
   const author = el("a", "about-author", creator);
-  author.href = "https://bobbyfajarc.github.io/";
+  author.href = "https://bobbyfch.github.io/";
   author.target = "_blank";
   author.rel = "noopener noreferrer";
   text(author, "Bobby Fajar Christian", "Bobby Fajar Christian");
   const links = el("div", "about-links", aboutContent);
-  const website = el("a", "about-link", links);
-  website.href = "https://bobbyfajarc.github.io/";
-  website.target = "_blank";
-  website.rel = "noopener noreferrer";
-  website.append(controlIcon("share"));
-  text(el("span", "", website), "Personal website", "Situs pribadi");
+  const addProfileLink = (label, url, idLabel = label) => {
+    const link = el("a", "about-link", links);
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.append(controlIcon("share"));
+    text(el("span", "", link), label, idLabel);
+  };
+  addProfileLink("About Bobby", "https://bobbyfch.github.io/", "Tentang Bobby");
+  addProfileLink("GitHub", "https://github.com/bobbyfch");
+  addProfileLink("Instagram", "https://www.instagram.com/bobbyfch/");
+  addProfileLink("Threads", "https://www.threads.com/@bobby.fch");
+  addProfileLink("LinkedIn", "https://id.linkedin.com/in/bobbyfajarc");
   const license = el("a", "about-link", links);
   license.href = "https://github.com/bobbyfch/sela/blob/main/LICENSE";
   license.target = "_blank";
@@ -541,7 +560,10 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       void estimate();
       updateSettingsWelcome();
     }
-    if (value === "browse") void discover().catch((e) => status(e.message));
+    if (value === "browse") {
+      if (onlineCatalog) onlineCatalog.shuffle();
+      else void discover().catch((e) => status(e.message));
+    }
   }
   if (mobile) {
     const nav = $(".bottom-bar");
@@ -565,9 +587,17 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   } }) : null;
   const weather = mobile ? mountWeather(intro.querySelector(".ritual"), { t }) : null;
   const atmosphere = mobile ? mountAtmosphere(home, { t }) : null;
-  const homeWidgets = mobile ? mountHomeWidgets({ t }) : null;
+  const homeWidgets = mobile ? mountHomeWidgets({ t, openBook }) : null;
   const advanced = mountAdvanced(settings, { t, openBook, status });
   const personal = mountPersonal({ home, settings, library, t, refresh, openBook, navigate });
+  const homeShortcuts = mobile ? el("section", "home-shortcuts tw:my-1 tw:min-w-0") : null;
+  if (homeShortcuts) {
+    const personalize = el("button", "home-personalize-link tw:inline-flex tw:min-h-11 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line/80 tw:bg-sela-surface/65 tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition hover:tw:border-sela-accent/50 hover:tw:bg-sela-surface", homeShortcuts);
+    personalize.type = "button";
+    personalize.append(controlIcon("sliders"));
+    text(el("span", "", personalize), "Make this space yours", "Atur ruang & bacaan");
+    personalize.onclick = () => navigate("settings");
+  }
   if (mobile) {
     const stats = home.querySelector(".reading-summary");
     if (stats) {
@@ -575,15 +605,63 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       text(el("h3", "", summaryCard), "Reading time", "Waktu membaca");
       summaryCard.append(stats);
     }
+    const routine = el("section", "settings-card home-routine-settings", settings);
+    text(el("h3", "", routine), "Home & daily rhythm", "Beranda & rutinitas harian");
+    const routineIntro = el("p", "settings-card-intro", routine);
+    text(routineIntro, "Choose what appears on Home and set gentle daily habits.", "Atur isi Beranda dan kebiasaan harian dengan santai.");
+    if (homeWidgets?.waterSettings) routine.append(homeWidgets.waterSettings);
+    if (atmosphere?.quoteSettings) routine.append(atmosphere.quoteSettings);
+    settings.append(about);
     for (const card of Array.from(settings.querySelectorAll(":scope>.settings-card"))) {
-      const title = card.querySelector(":scope>h3")?.textContent || "", icon = card.classList.contains("appearance-settings") ? "sun" : card.classList.contains("app-about") ? "info" : card.classList.contains("backup-sharing") ? "cloud" : card.classList.contains("personal-settings") ? "person" : title.includes("palette") || title.includes("Palet") ? "palette" : title.includes("storage") || title.includes("penyimpanan") ? "storage" : title.includes("Reading time") || title.includes("Waktu membaca") ? "clock" : title.includes("Connections") || title.includes("Koneksi") ? "sliders" : "read";
+      const title = card.querySelector(":scope>h3")?.textContent || "", icon = card.classList.contains("appearance-settings") ? "sun" : card.classList.contains("app-about") ? "info" : card.classList.contains("backup-sharing") ? "cloud" : card.classList.contains("personal-settings") ? "person" : title.includes("palette") || title.includes("Palet") ? "palette" : title.includes("storage") || title.includes("penyimpanan") ? "storage" : title.includes("Reading time") || title.includes("Waktu membaca") ? "clock" : title.includes("Home &") || title.includes("Beranda &") ? "person" : title.includes("Connections") || title.includes("Koneksi") ? "sliders" : "read";
       decorateSettingsHeading(card, icon);
     }
     updateSettingsWelcome();
   }
   if (mobile) {
     const queue = home.querySelector(".personal-desk"), focus = home.querySelector(".focus-card"), quote = home.querySelector(".home-reflection");
-    home.replaceChildren(intro, continueSection, ...queue ? [queue] : [], ...homeWidgets ? [homeWidgets.section] : [], homeCatalog, ...focus ? [focus] : [], ...quote ? [quote] : []);
+    home.replaceChildren(intro, ...homeShortcuts ? [homeShortcuts] : [], continueSection, homeCatalog, ...quote ? [quote] : [], ...queue ? [queue] : [], ...homeWidgets ? [homeWidgets.section] : []);
+    const ritual = intro.querySelector(".ritual");
+    if (focus && ritual) ritual.append(focus);
+  }
+  if (mobile) {
+    const directCards = () => Array.from(settings.querySelectorAll(":scope > .settings-card"));
+    const findCard = (predicate) => directCards().find((card) => predicate(card)) || null;
+    const byTitle = (pattern) => findCard((card) => pattern.test(card.querySelector(":scope > h3")?.textContent || ""));
+    const groups = [
+      { title: ["Reading & appearance", "Tampilan & bacaan"], description: ["Language, colors, and reading behavior.", "Bahasa, warna, dan cara membaca."], icon: "sun", cards: [findCard((card) => card.classList.contains("appearance-settings")), findCard((card) => card.classList.contains("appearance-materials")), byTitle(/Reading defaults|Default bacaan/i)] },
+      { title: ["Your library & data", "Rak dan data pribadimu"], description: ["Manage your books, backups, and connections.", "Kelola buku, cadangan, dan koneksi."], icon: "storage", cards: [byTitle(/Books & storage|Buku & penyimpanan/i), findCard((card) => card.classList.contains("backup-sharing")), byTitle(/Connections|Koneksi/i)] },
+      { title: ["Your space & routine", "Ruang dan rutinitas"], description: ["Make Sela feel right for your day.", "Atur Sela agar pas dengan harimu."], icon: "person", cards: [findCard((card) => card.classList.contains("personal-settings")), findCard((card) => card.classList.contains("settings-summary-card")), findCard((card) => card.classList.contains("home-routine-settings"))] },
+      { title: ["About Sela", "Tentang Sela"], description: ["Version, project details, and the people behind Sela.", "Versi, detail proyek, dan orang di balik Sela."], icon: "info", cards: [findCard((card) => card.classList.contains("app-about"))] }
+    ];
+    const wrapper = el("div", "settings-groups", settings);
+    const moved = /* @__PURE__ */ new Set();
+    for (const group of groups) {
+      const cards = group.cards.filter((card) => !!card && !moved.has(card));
+      if (!cards.length) continue;
+      const section = el("section", "settings-group", wrapper), heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
+      mark.setAttribute("aria-hidden", "true");
+      mark.append(controlIcon(group.icon));
+      const copy = el("div", "settings-group-copy", heading);
+      text(el("h3", "", copy), ...group.title);
+      text(el("p", "", copy), ...group.description);
+      const grid = el("div", "settings-group-grid", section);
+      for (const card of cards) {
+        moved.add(card);
+        grid.append(card);
+      }
+    }
+    const ungrouped = directCards().filter((card) => !moved.has(card));
+    if (ungrouped.length) {
+      const section = el("section", "settings-group", wrapper), heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
+      mark.setAttribute("aria-hidden", "true");
+      mark.append(controlIcon("sliders"));
+      const copy = el("div", "settings-group-copy", heading);
+      text(el("h3", "", copy), "More settings", "Pengaturan lainnya");
+      text(el("p", "", copy), "Other tools for your reading space.", "Alat lain untuk ruang bacamu.");
+      const grid = el("div", "settings-group-grid", section);
+      for (const card of ungrouped) grid.append(card);
+    }
   }
   window.addEventListener("pagehide", () => recentUrls.forEach(URL.revokeObjectURL), { once: true });
   let collectionRun = 0;
@@ -660,8 +738,14 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     atmosphere?.localize();
     homeWidgets?.localize();
     onlineCatalog?.localize();
+    if (mobile) {
+      const link = homeShortcuts?.querySelector("button");
+      if (link) {
+        const copy = link.querySelector("span");
+        if (copy) copy.textContent = t("Make this space yours", "Atur ruang & bacaan");
+      }
+    }
     document.dispatchEvent(new Event("sela:palette"));
-    paperTextureSync();
     for (const item of labels) {
       if (!item.node.isConnected) continue;
       if (item.icon) {
@@ -677,6 +761,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       document.querySelector(".bottom-bar").setAttribute("aria-label", t("Bookshelf navigation", "Navigasi Bookshelf"));
       updateSettingsWelcome();
     }
+    void estimate();
   }
   localize();
   return { selected, render, localize, navigate };

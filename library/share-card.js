@@ -17,8 +17,9 @@ export async function capturePage(reader) {
     reader.removeEventListener("close", cancel);
   }
 }
-export async function createQuoteCard({ quote = "", metadata = {}, page = 1, palette = "forest", pageImage = null }) {
-  const colors = { forest: ["#f4f6ee", "#dce8d9", "#294b38"], paper: ["#fcf5e9", "#eadac3", "#66503b"], ink: ["#f1f5fb", "#d7e3f2", "#344e73"], rose: ["#fcf1f4", "#efd9e2", "#75475b"] }[palette] || ["#f4f6ee", "#dce8d9", "#294b38"];
+export async function createQuoteCard({ quote = "", metadata = {}, page = 1, palette = "white", pageImage = null }) {
+  const colorsByPalette = { white: ["#fff", "#f3f6fc", "#376cda"], kids: ["#fff", "#fff0f3", "#ed5f72"], cyberpunk: ["#fff", "#f4efff", "#8354e8"], forest: ["#fff", "#eaf8f4", "#148c76"], sakura: ["#fff", "#fff0f7", "#dc5794"], ocean: ["#fff", "#eaf7fe", "#1598d2"], lavender: ["#fff", "#f0efff", "#6958cb"], citrus: ["#fff", "#f2f8e8", "#6d9f2b"], linen: ["#fff", "#eaf7fe", "#1598d2"], rimba: ["#fff", "#eaf8f4", "#148c76"], nila: ["#fff", "#f0efff", "#6958cb"], seroja: ["#fff", "#fff0f7", "#dc5794"], oak: ["#fff", "#eaf8f4", "#148c76"], walnut: ["#fff", "#f0efff", "#6958cb"], paper: ["#fff", "#f3f6fc", "#376cda"], ink: ["#fff", "#f0efff", "#6958cb"], rose: ["#fff", "#fff0f7", "#dc5794"], charcoal: ["#fff", "#f3f6fc", "#376cda"] };
+  const colors = colorsByPalette[palette] || colorsByPalette.white;
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;
@@ -87,7 +88,7 @@ export async function createQuoteCard({ quote = "", metadata = {}, page = 1, pal
   c.font = "18px system-ui";
   c.fillText("p. " + page, 84, 1290);
   c.textAlign = "right";
-  c.fillText("Sela Reader", 996, 1290);
+  c.fillText("Sela Books", 996, 1290);
   return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Image export unavailable")), "image/png"));
 }
 export function mountSharePanel(reader, shell, { t, metadata, dismiss, palette }) {

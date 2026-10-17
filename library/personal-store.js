@@ -1,7 +1,7 @@
 // Generated from app/library/personal-store.ts by npm run build. Do not edit.
 export const PERSONAL_KEY = "sela-library:personal";
 export function emptyPersonal() {
-  return { version: 1, room: "", companion: "cat", quiet: false, hidden: [], queue: [], books: {}, racks: [], sessions: [], quoteTopic: "reading", quoteLanguage: "auto" };
+  return { version: 1, room: "", companion: "tanuki", faith: "none", quiet: false, hidden: [], queue: [], books: {}, racks: [], sessions: [], quoteTopic: "reading", quoteLanguage: "auto", quranTranslationKey: "", quranSurah: 1, quranVerse: 1, quranArabicSize: 32, quranTranslationSize: 18 };
 }
 export function validatePersonal(value) {
   const result = emptyPersonal();
@@ -9,7 +9,17 @@ export function validatePersonal(value) {
   const data = value;
   if (data.version !== 1) throw Error("Unsupported personal data version");
   for (const key of ["room", "quoteTopic", "quoteLanguage"]) if (typeof data[key] === "string") result[key] = data[key].slice(0, 80);
-  if (["cat", "hamster", "rabbit", "fox", "owl", "turtle", "red-panda", "penguin", "shiba", "fawn", "plant"].includes(data.companion)) result.companion = data.companion;
+  if (result.quoteLanguage !== "auto" && !["id", "en", "ja"].includes(result.quoteLanguage)) result.quoteLanguage = "auto";
+  if (typeof data.quranTranslationKey === "string" && /^[a-z0-9_]{1,80}$/.test(data.quranTranslationKey)) result.quranTranslationKey = data.quranTranslationKey;
+  if (["id", "en", "ja"].includes(data.quranLanguage)) result.quranLanguage = data.quranLanguage;
+  if (Number.isInteger(data.quranSurah) && data.quranSurah >= 1 && data.quranSurah <= 114) result.quranSurah = data.quranSurah;
+  if (Number.isInteger(data.quranVerse) && data.quranVerse >= 1 && data.quranVerse <= 286) result.quranVerse = data.quranVerse;
+  if (Number.isFinite(data.quranArabicSize)) result.quranArabicSize = Math.max(20, Math.min(48, Math.round(data.quranArabicSize)));
+  if (Number.isFinite(data.quranTranslationSize)) result.quranTranslationSize = Math.max(14, Math.min(28, Math.round(data.quranTranslationSize)));
+  const companions = { fox: "fox", tanuki: "tanuki", crane: "crane", rabbit: "rabbit", plant: "plant", cat: "tanuki", hamster: "tanuki", owl: "crane", turtle: "tanuki", "red-panda": "tanuki", penguin: "crane", shiba: "tanuki", fawn: "rabbit" };
+  if (typeof data.companion === "string" && companions[data.companion]) result.companion = companions[data.companion];
+  const faithAliases = { none: "none", islam: "islam", christianity: "protestantism", protestantism: "protestantism", catholicism: "catholicism", buddhism: "buddhism", hinduism: "hinduism", confucianism: "confucianism" };
+  if (typeof data.faith === "string" && faithAliases[data.faith]) result.faith = faithAliases[data.faith];
   result.quiet = data.quiet === true;
   if (Number.isFinite(data.weeklyTarget) && data.weeklyTarget >= 0 && data.weeklyTarget <= 6e3) result.weeklyTarget = Math.round(data.weeklyTarget);
   result.hidden = Array.isArray(data.hidden) ? data.hidden.filter((x) => ["quote", "timer", "rediscover"].includes(x)).slice(0, 10) : [];

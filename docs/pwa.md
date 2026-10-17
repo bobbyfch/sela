@@ -1,6 +1,6 @@
-# Install Sela Reader
+# Install Sela Books
 
-1. Open [Sela Reader](https://bobbyfch.github.io/sela/mobile/) in your browser on desktop, tablet or phone. The legacy `/mobile/` URL remains supported on all devices.
+1. Open [Sela Books](https://bobbyfch.github.io/sela/app/) in your browser on desktop, tablet or phone. The legacy `/mobile/` address remains supported for existing bookmarks and installations.
 2. On Home, choose **Install Sela**. Chromium browsers show their native install prompt when available; otherwise Sela gives instructions for the detected browser and operating system. The browser menu is always a fallback.
 3. Add local books. Open each format once online to cache its decoder; imported books live in this browser’s IndexedDB.
 

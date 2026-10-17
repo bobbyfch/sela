@@ -18,8 +18,50 @@ test('dedicated room stores and deduplicates books, searches, opens, exports and
 test('library mobile light/dark and Indonesian preserve usable two-column shelf without overflow',async({page})=>{
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();await page.locator('#books').setInputFiles([{name:'First.txt',mimeType:'text/plain',buffer:Buffer.from('First book')},{name:'Second.txt',mimeType:'text/plain',buffer:Buffer.from('Second book')}]);await expect(page.locator('.book')).toHaveCount(2);
  for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const b=await page.locator('.cover').first().boundingBox();expect(b.width).toBeGreaterThan(90);}}
- await page.locator('[data-tab=settings]').click();{for(const group of await page.locator('.settings-group').all())if(await group.getAttribute('open')===null)await group.locator('summary').click();}await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('#mobile-app h1')).toHaveText('Selamat datang di ruangmu.');
+ await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('#mobile-app h1')).toHaveText('Dunia kecil untuk cerita-ceritamu.');
  await page.screenshot({path:'test-results/library-id.png',fullPage:true});
+});
+
+test('Home glass header and reading scene stay balanced across screen sizes',async({page})=>{
+ await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ await expect(page.locator('.language-picker')).toBeVisible();
+ await expect(page.locator('.home-utility-primary')).toHaveCount(1);await expect(page.locator('.home-utility-secondary')).toHaveCount(1);
+ for(const width of [320,390,768,1280]){
+  await page.setViewportSize({width,height:860});
+  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>resolve())));
+  const overflow=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:innerWidth,offenders:[...document.querySelectorAll<HTMLElement>('#mobile-app *')].map(element=>({tag:element.tagName,cls:typeof element.className==='string'?element.className:'',right:Math.round(element.getBoundingClientRect().right)})).filter(item=>item.right>innerWidth+1).slice(0,6)}));expect(overflow.scroll<=overflow.viewport,`width ${width}: ${JSON.stringify(overflow)}`).toBe(true);
+  const geometry=await page.evaluate(()=>({viewport:innerWidth,header:document.querySelector('.topbar')!.getBoundingClientRect().width,picker:document.querySelector('.language-picker')!.getBoundingClientRect().width,scene:document.querySelector('.room-intro')!.getBoundingClientRect().width}));
+  expect(geometry.picker).toBeGreaterThan(0);expect(geometry.scene).toBeLessThanOrEqual(geometry.viewport);expect(geometry.header).toBeGreaterThanOrEqual(geometry.viewport-1);
+  if(width===1280){const widgets=await page.evaluate(()=>({calendar:document.querySelector('.home-calendar-widget')!.getBoundingClientRect().height,water:document.querySelector('.home-water-widget')!.getBoundingClientRect().height}));expect(widgets.water).toBeLessThan(widgets.calendar);await page.screenshot({path:'test-results/home-glass-desktop.png',fullPage:true});}
+ }
+ await page.locator('#language').selectOption('ja-JP');await expect(page.locator('#language-current')).toHaveText('日本語');await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');
+});
+
+test('app topbar language flags stay visible offline and language control remains tappable on compact phones',async({page})=>{
+ await page.route('https://flagcdn.com/**',route=>route.abort());
+ await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ for(const width of [320,360,390,768,1440]){
+  await page.setViewportSize({width,height:844});
+  const geometry=await page.evaluate(()=>{const picker=document.querySelector<HTMLElement>('.language-picker')!.getBoundingClientRect(),select=document.querySelector<HTMLSelectElement>('#language')!.getBoundingClientRect(),theme=document.querySelector<HTMLButtonElement>('#theme')!.getBoundingClientRect(),add=document.querySelector<HTMLButtonElement>('#add-books')!.getBoundingClientRect();return {picker:[picker.x,picker.y,picker.width,picker.height],select:[select.x,select.y,select.width,select.height],theme:[theme.width,theme.height],add:[add.width,add.height],scroll:document.documentElement.scrollWidth,viewport:innerWidth};});
+  expect(geometry.scroll).toBeLessThanOrEqual(geometry.viewport);expect(geometry.select[0]).toBeGreaterThanOrEqual(geometry.picker[0]);expect(geometry.select[0]+geometry.select[2]).toBeLessThanOrEqual(geometry.picker[0]+geometry.picker[2]+1);
+  if(width<=380){expect(geometry.theme[0]).toBeGreaterThanOrEqual(40);expect(geometry.theme[1]).toBeGreaterThanOrEqual(40);expect(geometry.add[0]).toBeGreaterThanOrEqual(40);expect(geometry.add[1]).toBeGreaterThanOrEqual(40);expect(geometry.picker[3]).toBeGreaterThanOrEqual(44);}
+  for(const [locale,flag,name,compact] of [['en-US','flag-en.svg','English','EN'],['id-ID','flag-id.svg','Bahasa Indonesia','ID'],['ja-JP','flag-jp.svg','日本語','JA']] as const){
+   await page.locator('#language').selectOption(locale);await expect(page.locator('#language-current')).toHaveText(width<=380?compact:name);await expect(page.locator('#language-current')).toHaveAttribute('title',name);await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('#language-flag')).toHaveAttribute('src',new RegExp(flag));await expect.poll(()=>page.locator('#language-flag').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  }
+ }
+});
+
+test('desktop shelf keeps a single book compact and the round options button opens a dismissible tray',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ await page.getByRole('button',{name:'Shelf',exact:true}).click();
+ await page.locator('#books').setInputFiles({name:'One book.txt',mimeType:'text/plain',buffer:Buffer.from('A book that should keep its cover size on a wide shelf.')});await expect(page.locator('#shelf .book')).toHaveCount(1);
+ const cover=await page.locator('#shelf .cover').boundingBox();expect(cover).not.toBeNull();expect(cover!.width).toBeLessThanOrEqual(241);expect(cover!.height).toBeGreaterThan(300);
+ const menu=page.getByRole('button',{name:'Book options: One book',exact:true});await menu.click();await expect(menu).toHaveAttribute('aria-expanded','true');await expect(page.locator('#shelf .book-actions')).toBeVisible();await expect(page.locator('#shelf .book-actions button')).toHaveCount(9);
+ await page.keyboard.press('Escape');await expect(page.locator('#shelf .book-actions')).toBeHidden();await expect(menu).toHaveAttribute('aria-expanded','false');
+ await page.locator('#language').selectOption('ja-JP',{timeout:5000});await expect(page.locator('#language-current')).toHaveText('日本語');await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');await expect(page.locator('#settings-language')).toHaveValue('ja-JP');
+ await page.locator('[data-tab=settings]').click();await page.locator('#settings-language').selectOption('id-ID');await expect(page.locator('#language')).toHaveValue('id-ID');await expect(page.locator('#language-current')).toHaveText('Bahasa Indonesia');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');
+ await page.locator('#language').selectOption('en-US');await expect(page.locator('#settings-language')).toHaveValue('en-US');await expect(page.locator('html')).toHaveAttribute('lang','en-US');
+ const previous=await page.locator('html').getAttribute('data-theme');await page.locator('#theme').click();await expect.poll(()=>page.locator('html').getAttribute('data-theme')).not.toBe(previous);
 });
 
 test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{

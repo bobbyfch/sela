@@ -1,10 +1,10 @@
 # Reading, collections and backups
 
-Reader and Viewer share one responsive reading interface: a title bar, compact navigation dock and settings sheet on phones, or side panel on larger screens. CDN palettes stay inside the viewer. Document engines and tools load as needed.
+Reader and Viewer share one clean, colorful responsive reading interface: a title bar, compact navigation dock and settings sheet on phones, or side panel on larger screens. CDN palettes stay inside the viewer. Document engines and tools load as needed.
 
 ## Reader app
 
-Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Five persistent palettes (Rimba, Lontar, Nila, Seroja, Jelaga) are independent of the light/dark/system preference in Settings. The sun icon in the viewer cycles system/light/dark appearance. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
+Open the sliders icon to change mode, page fit, brightness, crop or text typography, page filters and application palette. Eight colorful palettes share a clean white surface and stay independent of light/dark/system appearance. The sun icon in the viewer cycles system/light/dark appearance. Contents, search and narration have direct icon actions; all tools also include notes, transcription and additional appearance options. Press Escape to dismiss a panel before leaving the book.
 
 On phones the panel opens from the bottom; tablet/desktop use a side panel. The book occupies the reading canvas with app controls hidden by a center tap. Optional screen wake lock is available only where supported and permitted; it is released when hidden or closed. No native volume-key or forced rotation claim is made.
 
@@ -14,7 +14,7 @@ Reader settings includes Novel, Manga, Study and Night reading profiles. Profile
 
 Open Manage profiles to save the current settings with a unique name, update/rename the selected personal profile, or delete it after confirmation. Up to 20 personal profiles are stored locally. Deleting a profile leaves applied book settings intact. Full library backups preserve personal profiles; restore retains a local profile when its name already exists and refuses an oversized or invalid profile list before importing books. Viewer profiles use its storagePrefix, separately from the Reader library.
 
-Jelaga uses a true-black background in dark and system-dark appearance, with a readable light scheme. The document retains its own colors unless a document filter is selected. OLED battery savings depend on the device and content.
+Pure black is an optional switch that appears while dark appearance is active. It affects the app chrome only; the document retains its own colors unless a document filter is selected. OLED battery savings depend on the device and content.
 
 ## Shared document services
 
@@ -87,4 +87,4 @@ Personal page bookmarks appear in Contents & bookmarks → Your bookmarks. Scree
 
 ## Online sources
 
-Explore searches Indonesian Wikisource and GITenberg, with pagination and eight selected classics as a fallback. You can add compatible HTTPS/CORS OPDS catalogs with direct open acquisitions. Each has a cover, direct reading within Sela and offline saving. Original credits and rights remain intact; see [sources](library-sources.md). Home adds shelf totals, cover-based recent reading, a focus timer and optional city weather; see [weather](weather.md). Backup uses the device share sheet or a ZIP download, without account setup. There is no automatic cloud synchronization.
+Explore shuffles regular results whenever you reopen the tab, then lets you browse ten genre shelves, a separately ranked “Trending today” feed based on Open Library reader activity, and newest-first releases from Google Books. Explore has one cover-only shelf layout, responsive from two to five columns; tap a cover for edition details, reading, offline saving, source credits, and any available purchase link. Sela never processes a purchase. You can add compatible HTTPS/CORS OPDS catalogs with direct open acquisitions. Original credits and rights remain intact; see [sources](library-sources.md). Home adds shelf totals, cover-based recent reading, a focus timer and optional city weather; see [weather](weather.md). Backup uses the device share sheet or a ZIP download, without account setup. There is no automatic cloud synchronization.

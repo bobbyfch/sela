@@ -1,9 +1,34 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useSyncExternalStore } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createPortal, flushSync } from 'react-dom';
+import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import {TabIcon} from '../../ui/icons.tsx';
+import { Button } from '../../ui/components/ui/button.tsx';
+import { DialogOverlay } from '../../ui/components/ui/dialog.tsx';
 import { ReaderShell } from '../../ui/pages/reader.tsx';
 import type { AppTab, NavigationMount } from './navigation.ts';
+
+type ControlSheet = { dialog: HTMLDialogElement; open: boolean };
+type ControlSheetEvent = { action: 'register' | 'state' | 'unregister'; dialog: HTMLDialogElement; open?: boolean };
+const controlSheetEntries = new Map<HTMLDialogElement, ControlSheet>();
+const controlSheetListeners = new Set<() => void>();
+let controlSheetSnapshot: ControlSheet[] = [];
+const getControlSheetSnapshot = () => controlSheetSnapshot;
+const subscribeToControlSheets = (listener: () => void) => {
+  controlSheetListeners.add(listener);
+  return () => controlSheetListeners.delete(listener);
+};
+document.addEventListener('sela:control-sheet', event => {
+  const detail = (event as CustomEvent<ControlSheetEvent>).detail;
+  if (detail.action === 'register') controlSheetEntries.set(detail.dialog, { dialog: detail.dialog, open: false });
+  else if (detail.action === 'unregister') controlSheetEntries.delete(detail.dialog);
+  else {
+    const current = controlSheetEntries.get(detail.dialog);
+    if (current) controlSheetEntries.set(detail.dialog, { ...current, open: !!detail.open });
+  }
+  controlSheetSnapshot = [...controlSheetEntries.values()];
+  controlSheetListeners.forEach(listener => listener());
+});
 
 const Shell = memo(ReaderShell);
 const tabs = [
@@ -29,7 +54,7 @@ function Navigation({ mount }: { mount: NavigationMount }) {
   }, [mount, tab]);
   return createPortal(<>
     <span className="glass-navigation-indicator" aria-hidden="true" />
-    {tabs.map(([id, en, ind, path], index) => <button key={id} type="button" data-tab={id}
+    {tabs.map(([id, en, ind], index) => <Button variant="ghost" size="default" className="tw:relative tw:z-[1] tw:flex tw:h-auto tw:min-h-14 tw:flex-1 tw:flex-col tw:items-center tw:justify-center tw:gap-1 tw:rounded-[26px] tw:border-transparent tw:bg-transparent tw:px-1.5 tw:py-1 tw:text-inherit tw:shadow-none tw:hover:bg-white/10 tw:hover:text-inherit tw:aria-current:bg-white/15 tw:aria-current:text-inherit" key={id} type="button" data-tab={id}
       aria-current={id === tab} aria-label={mount.translate(en, ind)}
       onClick={() => mount.navigate(id)} onKeyDown={event => {
         const directions = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'];
@@ -39,8 +64,35 @@ function Navigation({ mount }: { mount: NavigationMount }) {
           (index + (['ArrowLeft', 'ArrowUp'].includes(event.key) ? -1 : 1) + tabs.length) % tabs.length;
         mount.nav.querySelectorAll<HTMLButtonElement>('button')[next]?.focus();
       }}><TabIcon name={id} />
-      <small>{mount.translate(en, ind)}</small></button>)}
+      <small>{mount.translate(en, ind)}</small></Button>)}
   </>, mount.nav);
+}
+
+function ControlSheetHost() {
+  const sheets = useSyncExternalStore(subscribeToControlSheets, getControlSheetSnapshot, getControlSheetSnapshot);
+  return <>{sheets.map(sheet => <ControlSheetPortal key={sheet.dialog.id} sheet={sheet} />)}</>;
+}
+
+function ControlSheetPortal({ sheet }: { sheet: ControlSheet }) {
+  const attachDialog = React.useCallback((target: HTMLDivElement | null) => {
+    if (target) target.append(sheet.dialog);
+    else if (sheet.dialog.dataset.controlSheetDestroyed === 'true') sheet.dialog.remove();
+    else document.body.append(sheet.dialog);
+  }, [sheet.dialog]);
+  const title = sheet.dialog.querySelector('h2')?.textContent?.trim() || 'Sela';
+  return <DialogPrimitive.Root
+    open={sheet.open}
+    modal
+    disablePointerDismissal
+    onOpenChange={open => { if (!open && sheet.open) sheet.dialog.close(); }}
+  >
+    <DialogPrimitive.Portal>
+      <DialogOverlay style={{ background: '#17171178', backdropFilter: 'blur(5px)' }} />
+      <DialogPrimitive.Popup aria-label={title} className="tw:contents">
+        <div className="tw:contents" ref={attachDialog} />
+      </DialogPrimitive.Popup>
+    </DialogPrimitive.Portal>
+  </DialogPrimitive.Root>;
 }
 
 function App() {
@@ -54,7 +106,7 @@ function App() {
   }, []);
   // Shell markup is stable. Native document/storage controllers own its content;
   // React owns navigation state and never reconciles the controller-owned subtree.
-  return <><Shell />{navigation && <Navigation mount={navigation} />}</>;
+  return <><Shell />{navigation && <Navigation mount={navigation} />}<ControlSheetHost /></>;
 }
 
 async function start() {

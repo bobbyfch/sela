@@ -1,5 +1,4 @@
 // Generated from app/library/library.ts by npm run build. Do not edit.
-import { readPersonal } from "./personal-store.js";
 import { BOOK_ACCEPT } from "./file-format.js";
 import { beginCoverTransition } from "./cover-transition.js";
 import { bindReaderHistory } from "./reader-history.js";
@@ -10,15 +9,50 @@ import { bindBookSelection } from "./shelf-interactions.js";
 import { readBookMetadata, epubMetadata, comicMetadata, fb2Metadata, cleanMetadata } from "../dist/js/sela.metadata.js";
 import { listBooks, getFile, writeBook, importBook, updateBook, listCollections } from "./storage.js";
 import { mountLibraryExperience } from "./library-experience.js";
-import { normalizeLocale, localeBase, translate } from "../dist/source/src/i18n.js";
-import { notify } from "./controls.js";
+import { normalizeLocale, translate } from "../dist/source/src/i18n.js";
+import { notify, controlIcon } from "./controls.js";
 import { coverFor } from "./open-catalog.js";
 const mobile = document.body.dataset.product === "mobile";
 const $ = (selector) => document.querySelector(selector);
+document.addEventListener("pointerdown", (event) => {
+  if (event.target instanceof Element && event.target.closest(".book-menu,.book-actions")) return;
+  for (const panel of document.querySelectorAll(".book-actions:not([hidden])")) {
+    panel.hidden = true;
+    panel.closest(".book")?.querySelector(".book-menu")?.setAttribute("aria-expanded", "false");
+  }
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  const panel = document.querySelector(".book-actions:not([hidden])");
+  if (!panel) return;
+  panel.hidden = true;
+  const menu = panel.closest(".book")?.querySelector(".book-menu");
+  menu?.setAttribute("aria-expanded", "false");
+  menu?.focus();
+});
 let viewer, items = [], urls = [], backup, experience, lang = normalizeLocale(localStorage.getItem("sela:language") || localStorage.getItem("sela-library:language") || navigator.language);
-const strings = { autoUpdate: "Periksa rilis GitHub sekali sehari (pemberitahuan saja)", eyebrow: "RUANG KECIL MILIKMU", title: "Ada tempat untuk kembali.", intro: "Buku-bukumu, secangkir hangat, dan waktu yang menjadi milikmu.", add: "Tambah buku", shelf: "Di rakmu", empty: "Sisakan tempat untuk cerita pertama.", drop: "Tarik buku ke sini, atau gunakan tombol +. Berkas tetap di browser ini.", sample: "Temui Bobby dalam Yang Tidak Ikut Pulang", undo: "Urungkan penghapusan", about: "Privasi, pembaruan & kompatibilitas", privacy: "Buku disimpan lokal dalam IndexedDB. Tanpa akun, unggahan, atau pelacakan. Menghapus data browser menghapus rak: simpan berkas asli dan ekspor catatan bacaan.", newtab: "Reader dapat dipasang dari browser pada desktop, tablet atau ponsel. Bookmark atau jadikan URL ini halaman awal browser.", formats: "PDF, EPUB, CBZ dan teks. Narasi memakai suara browser/OS yang tersedia. Dokumen bertulisan dapat dicari; PDF hasil pindai perlu OCR. Reader menyesuaikan desktop, tablet dan ponsel." };
+const strings = { autoUpdate: "Periksa rilis GitHub sekali sehari (pemberitahuan saja)", eyebrow: "RUANG KECIL MILIKMU", title: "Dunia kecil untuk cerita-ceritamu.", intro: "Buku-bukumu, temuan baru, dan waktu kecil untuk dirimu sendiri.", add: "Tambah buku", shelf: "Di rakmu", empty: "Sisakan tempat untuk cerita pertama.", drop: "Tarik buku ke sini, atau gunakan tombol +. Berkas tetap di browser ini.", sample: "Temui Bobby dalam Yang Tidak Ikut Pulang", undo: "Urungkan penghapusan", about: "Privasi, pembaruan & kompatibilitas", privacy: "Buku disimpan lokal dalam IndexedDB. Tanpa akun, unggahan, atau pelacakan. Menghapus data browser menghapus rak: simpan berkas asli dan ekspor catatan bacaan.", newtab: "Reader dapat dipasang dari browser pada desktop, tablet atau ponsel. Bookmark atau jadikan URL ini halaman awal browser.", formats: "PDF, EPUB, CBZ dan teks. Narasi memakai suara browser/OS yang tersedia. Dokumen bertulisan dapat dicari; PDF hasil pindai perlu OCR. Reader menyesuaikan desktop, tablet dan ponsel." };
 const originals = new Map([...document.querySelectorAll("[data-i18n]")].map((el) => [el, el.textContent]));
 const t = (en, id) => translate(en, id, lang);
+function updateLanguageFlag(value) {
+  const country = { "en-US": "en", "id-ID": "id", "ja-JP": "jp" }[value] || "en";
+  const image = document.querySelector("#language-flag");
+  if (image) {
+    image.dataset.locale = value;
+    image.onerror = null;
+    image.src = new URL(`../site/flag-${country}.svg`, document.baseURI).href;
+    image.alt = "";
+    image.hidden = false;
+  }
+}
+function updateLanguageCurrentLabel() {
+  const select = $("#language"), current = document.querySelector("#language-current");
+  if (!select || !current) return;
+  const full = select.selectedOptions[0]?.textContent || select.value, short = { "en-US": "EN", "id-ID": "ID", "ja-JP": "JA" }[select.value] || select.value;
+  current.textContent = innerWidth <= 380 ? short : full;
+  current.title = full;
+}
+window.addEventListener("resize", updateLanguageCurrentLabel, { passive: true });
 const paths = { favorite: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z", sun: "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0", moon: "M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z", system: "M3 4h18v13H3ZM8 21h8m-4-4v4", finished: "m4 12 5 5L20 6", collection: "M3 7h7l2-3h9v17H3Z", remove: "M5 7h14M9 7V3h6v4M7 7l1 14h8l1-14M10 11v6m4-6v6", rename: "m4 16 12-12 4 4-12 12H4ZM13 7l4 4", info: "M12 11v6m0-10v1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0", download: "M12 3v12m-5-5 5 5 5-5M5 21h14" };
 function icon(name) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -66,6 +100,7 @@ function localize() {
   $("#check-update").setAttribute("aria-label", $("#check-update").title);
   $("#add-books").title = t("Add books", "Tambah buku");
   $("#add-books").setAttribute("aria-label", $("#add-books").title);
+  $("#books").setAttribute("aria-label", t("Choose book files", "Pilih berkas buku"));
   document.documentElement.lang = lang;
   for (const [el, original] of originals) {
     const key = el.dataset.i18n;
@@ -75,6 +110,8 @@ function localize() {
   language.value = lang;
   language.setAttribute("aria-label", t("Language", "Bahasa"));
   language.title = language.getAttribute("aria-label");
+  updateLanguageCurrentLabel();
+  updateLanguageFlag(lang);
   $("#search").placeholder = t("Find a book", "Cari buku");
   $("#search").setAttribute("aria-label", $("#search").placeholder);
   $("#sort").setAttribute("aria-label", t("Sort books", "Urutkan buku"));
@@ -92,29 +129,70 @@ function localize() {
   clock();
   theme();
 }
+function appearanceIcon(dark) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  if (dark) {
+    const path = document.createElementNS(svg.namespaceURI, "path");
+    path.setAttribute("fill", "currentColor");
+    path.setAttribute("d", "M20.2 15.5A9.2 9.2 0 0 1 8.5 3.8 9.5 9.5 0 1 0 20.2 15.5Z");
+    svg.append(path);
+  } else {
+    const circle = document.createElementNS(svg.namespaceURI, "circle");
+    circle.setAttribute("cx", "12");
+    circle.setAttribute("cy", "12");
+    circle.setAttribute("r", "4.5");
+    circle.setAttribute("fill", "currentColor");
+    svg.append(circle);
+    for (const angle of [0, 45, 90, 135, 180, 225, 270, 315]) {
+      const ray = document.createElementNS(svg.namespaceURI, "rect");
+      ray.setAttribute("x", "11");
+      ray.setAttribute("y", "1.4");
+      ray.setAttribute("width", "2");
+      ray.setAttribute("height", "4");
+      ray.setAttribute("rx", "1");
+      ray.setAttribute("fill", "currentColor");
+      ray.setAttribute("transform", `rotate(${angle} 12 12)`);
+      svg.append(ray);
+    }
+  }
+  return svg;
+}
+function syncReaderOled() {
+  if (viewer?.overlay) viewer.overlay.dataset.oled = document.documentElement.dataset.oled || "false";
+}
 function theme() {
   const choice = localStorage.getItem("sela-library:theme") || "auto";
   document.documentElement.dataset.theme = choice;
-  $("#theme").replaceChildren(icon({ auto: "system", light: "sun", dark: "moon" }[choice]));
-  $("#theme").title = t("Appearance: ", "Tampilan: ") + choice;
-  $("#theme").setAttribute("aria-label", $("#theme").title);
+  const dark = choice === "dark" || choice === "auto" && matchMedia("(prefers-color-scheme: dark)").matches;
+  const label = t(dark ? "Switch to light mode" : "Switch to dark mode", dark ? "Ganti ke mode terang" : "Ganti ke mode gelap");
+  $("#theme").replaceChildren(appearanceIcon(dark));
+  $("#theme").title = label;
+  $("#theme").setAttribute("aria-label", label);
+  syncReaderOled();
 }
 document.addEventListener("sela:appearance", theme);
+document.addEventListener("sela:oled", syncReaderOled);
 $("#theme").onclick = () => {
-  const choices = ["auto", "light", "dark"];
-  localStorage.setItem("sela-library:theme", choices[(choices.indexOf(document.documentElement.dataset.theme) + 1) % 3]);
+  const choice = localStorage.getItem("sela-library:theme") || "auto", dark = choice === "dark" || choice === "auto" && matchMedia("(prefers-color-scheme: dark)").matches, next = dark ? "light" : "dark";
+  localStorage.setItem("sela-library:theme", next);
   theme();
-  if (viewer?.overlay) viewer.setTheme(document.documentElement.dataset.theme);
+  document.dispatchEvent(new Event("sela:appearance"));
+  if (viewer?.overlay) viewer.setTheme(next);
 };
-$("#language").onchange = () => {
-  lang = normalizeLocale($("#language").value);
+const languagePicker = $("#language");
+languagePicker.addEventListener("change", () => {
+  const selected = normalizeLocale(languagePicker.value);
+  if (selected !== languagePicker.value) languagePicker.value = selected;
+  lang = selected;
   localStorage.setItem("sela:language", lang);
   localStorage.setItem("sela-library:language", lang);
   localize();
   render();
   experience?.localize();
-  document.dispatchEvent(new Event("sela:language"));
-};
+  document.dispatchEvent(new CustomEvent("sela:language", { detail: { locale: lang, source: "topbar" } }));
+});
 function clock() {
   const now = /* @__PURE__ */ new Date();
   $("#clock").textContent = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" }).format(now);
@@ -141,9 +219,8 @@ async function openBook(book) {
     viewer?.destroy();
     const { detectBookFormat } = await import("./file-format.js");
     const format = await detectBookFormat(book.previewFile);
-    viewer = new Sela({ data: await book.previewFile.arrayBuffer(), format, title: book.name, metadata: book.metadata, appContext: true, persistPreferences: false, theme: document.documentElement.dataset.theme, language: localeBase(lang) === "id" ? "id" : "en", mode: matchMedia("(max-width:767px)").matches ? "single" : "book", onClose: () => void refresh() });
+    viewer = new Sela({ data: await book.previewFile.arrayBuffer(), format, title: book.name, metadata: book.metadata, appContext: true, persistPreferences: false, theme: document.documentElement.dataset.theme, language: lang, mode: matchMedia("(max-width:767px)").matches ? "single" : "book", onClose: () => void refresh() });
     await viewer.open();
-    if (readPersonal().quiet) viewer.overlay?.classList.add("sela-controls-hidden");
     if (mobile) await bindReaderHistory(viewer);
     return;
   }
@@ -162,7 +239,7 @@ async function openBook(book) {
       hadBookMode = !!JSON.parse(localStorage.getItem("sela-library:" + book.id + ":preferences") || "{}").mode;
     } catch {
     }
-    viewer = new Sela({ data: await blob.arrayBuffer(), format: book.format, title: book.name, metadata: book.metadata, id: book.id, storagePrefix: "sela-library:", persistPreferences: true, appContext: true, startPage: book.searchPage, ...readingPreset(book.format), mode: readingPreset(book.format).mode || (matchMedia("(max-width:767px)").matches ? "single" : "book"), language: localeBase(lang) === "id" ? "id" : "en", theme: document.documentElement.dataset.theme, soundEnabled: false, paperTexture: true, onClose: () => {
+    viewer = new Sela({ data: await blob.arrayBuffer(), format: book.format, title: book.name, metadata: book.metadata, id: book.id, storagePrefix: "sela-library:", persistPreferences: true, appContext: true, startPage: book.searchPage, ...readingPreset(book.format), mode: readingPreset(book.format).mode || (matchMedia("(max-width:767px)").matches ? "single" : "book"), language: lang, theme: document.documentElement.dataset.theme, soundEnabled: false, paperTexture: true, onClose: () => {
       coverTransition.close();
       void refresh();
     }, onPageChange: ({ page }) => {
@@ -175,7 +252,6 @@ async function openBook(book) {
       const requested = readingPreset(book.format).mode;
       if (!["epub", "txt", "md", "html", "fb2", "docx", "odt"].includes(book.format) || ["single", "scroll"].includes(requested)) await viewer.setMode(requested);
     }
-    if (readPersonal().quiet) viewer.overlay?.classList.add("sela-controls-hidden");
     if (mobile) await bindReaderHistory(viewer);
     coverTransition.ready();
     book.metadata = await viewer.getMetadata();
@@ -206,10 +282,10 @@ function render() {
   shelfMore.setAttribute("aria-label", t("More books", "Buku lainnya"));
   for (const book of sorted.slice(0, visibleLimit)) {
     const card = document.createElement("article");
-    card.className = "book";
+    card.className = "book tw:relative tw:w-full tw:max-w-[15rem]";
     const cover = button(t("Read ", "Baca ") + book.name, () => openBook(book));
     cover.className = "cover";
-    cover.style.setProperty("--cover", ["#c5d8c6", "#edcfbb", "#d8cfe5", "#cfdee2", "#e5ddb8"][parseInt(book.id.slice(0, 2), 16) % 5]);
+    cover.style.setProperty("--cover", getComputedStyle(document.documentElement).getPropertyValue("--palette-soft").trim() || "#eef4ff");
     const imageSource = URL.createObjectURL(book.cover || coverFor({ id: book.id, title: book.name, author: book.metadata?.author }));
     urls.push(imageSource);
     const img = document.createElement("img");
@@ -227,14 +303,18 @@ function render() {
     const size = document.createElement("span");
     size.textContent = `${book.format.toUpperCase()} \xB7 ${(book.size / 1048576).toFixed(1)} MiB`;
     const actions = document.createElement("div");
-    actions.className = "book-actions";
+    actions.className = "book-actions tw:absolute tw:right-0 tw:top-12 tw:z-30 tw:grid tw:grid-cols-3 tw:gap-1.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-2 tw:shadow-xl";
     actions.hidden = true;
     const menu = button(t("Book options: ", "Pilihan buku: ") + book.name, () => {
       actions.hidden = !actions.hidden;
       menu.setAttribute("aria-expanded", String(!actions.hidden));
     });
     menu.className = "book-menu";
-    menu.textContent = "\u22EF";
+    menu.replaceChildren(controlIcon("sliders"));
+    menu.classList.add("tw:grid", "tw:size-11", "tw:place-items-center", "tw:rounded-full", "tw:bg-sela-surface", "tw:shadow-sm");
+    menu.setAttribute("aria-haspopup", "true");
+    actions.id = "book-actions-" + encodeURIComponent(book.id);
+    menu.setAttribute("aria-controls", actions.id);
     menu.setAttribute("aria-expanded", "false");
     const info = button(t("Book information: ", "Informasi buku: ") + book.name, () => showBookInfo({ title: book.name, ...book.metadata }, { t, format: book.format, onSave: async (value) => {
       book.metadata = { ...book.metadata, ...value };
@@ -287,7 +367,7 @@ function render() {
     actions.append(button(t("Select book", "Pilih buku"), () => {
       select.checked = !select.checked;
       select.dispatchEvent(new Event("change", { bubbles: true }));
-    }));
+    }, "finished"));
     const progress = document.createElement("small");
     progress.className = "book-progress";
     progress.textContent = book.completed ? t("Finished", "Selesai") : book.progress && book.total ? `${Math.round(book.progress / book.total * 100)}%` : book.opened ? t("Reading", "Sedang dibaca") : t("Unread", "Belum dibaca");
@@ -524,9 +604,8 @@ async function readSample(sample, saveFirst = false) {
     return;
   }
   viewer?.destroy();
-  viewer = new Sela({ url: sample.url, format: sample.format, title: sample.title, metadata: sample.metadata, id: sample.id, storagePrefix: "sela-library:", persistPreferences: true, appContext: true, mode: matchMedia("(max-width:767px)").matches ? "single" : "book", language: localeBase(lang) === "id" ? "id" : "en", theme: document.documentElement.dataset.theme, soundEnabled: false });
+  viewer = new Sela({ url: sample.url, format: sample.format, title: sample.title, metadata: sample.metadata, id: sample.id, storagePrefix: "sela-library:", persistPreferences: true, appContext: true, mode: matchMedia("(max-width:767px)").matches ? "single" : "book", language: lang, theme: document.documentElement.dataset.theme, soundEnabled: false });
   await viewer.open();
-  if (readPersonal().quiet) viewer.overlay?.classList.add("sela-controls-hidden");
   if (mobile) await bindReaderHistory(viewer);
 }
 $("#sample").onclick = () => document.dispatchEvent(new Event("sela:browse"));
@@ -538,24 +617,25 @@ localize();
 experience = mountLibraryExperience({ mobile, t, status, refresh, openBook, addSample, readSample, addFiles });
 export const libraryReady = refresh();
 libraryReady.catch((error) => status(error.message));
-console.info("Sela private library \xB7 Bobby Fajar Christian \xB7 https://bobbyfajarc.github.io/ \xB7 https://github.com/bobbyfch/sela");
+console.info("Sela private library \xB7 Bobby Fajar Christian \xB7 https://bobbyfch.github.io/ \xB7 https://github.com/bobbyfch/sela");
 async function releaseCheck() {
-  const button2 = $("#check-update");
+  const button2 = $("#check-update"), status2 = $("#update-status"), link = $("#update-link"), current = VERSION;
   button2.disabled = true;
-  $("#update-status").textContent = t("Checking GitHub\u2026", "Memeriksa GitHub\u2026");
+  status2.textContent = t("Checking GitHub\u2026", "Memeriksa GitHub\u2026");
   try {
-    const current = VERSION;
     const result = await SelaUpdates.check(current);
-    $("#update-link").hidden = !result.available;
-    $("#update-link").href = result.url;
-    const copy = result.available ? t("Sela " + result.version + " is available. Use the update notice when ready; close other Sela windows before applying.", "Sela " + result.version + " tersedia. Gunakan pemberitahuan pembaruan setelah siap; tutup jendela Sela lainnya sebelum menerapkan.") : t("You have the current release (" + current + ").", "Rilis saat ini sudah terpasang (" + current + ").");
-    $("#update-status").textContent = copy;
+    link.hidden = !result.available;
+    link.href = result.url;
+    link.textContent = t("View release " + result.version + " \u2197", "Lihat rilis " + result.version + " \u2197");
+    const copy = result.available ? t("Update available: " + result.version + ". Installed: " + current + ". Close other Sela windows before applying.", "Pembaruan tersedia: " + result.version + ". Terpasang: " + current + ". Tutup jendela Sela lainnya sebelum menerapkan.") : t("Installed: " + current + ". Latest release: " + result.version + ". You are up to date.", "Terpasang: " + current + ". Rilis terbaru: " + result.version + ". Sela sudah mutakhir.");
+    status2.textContent = copy;
     notify(copy, result.available ? "success" : "info");
   } catch {
-    $("#update-status").textContent = t("Could not check. Try again online, or open Releases.", "Belum bisa memeriksa. Coba saat online, atau buka Releases.");
-    $("#update-link").hidden = false;
-    $("#update-link").href = "https://github.com/bobbyfch/sela/releases/latest";
-    notify($("#update-status").textContent, "error");
+    status2.textContent = t("Installed: " + current + ". Could not check for a newer release. Try again online or open Releases.", "Terpasang: " + current + ". Belum bisa memeriksa rilis terbaru. Coba lagi saat online atau buka halaman rilis.");
+    link.hidden = false;
+    link.href = "https://github.com/bobbyfch/sela/releases/latest";
+    link.textContent = t("Open releases \u2197", "Buka halaman rilis \u2197");
+    notify(status2.textContent, "error");
   } finally {
     button2.disabled = false;
   }

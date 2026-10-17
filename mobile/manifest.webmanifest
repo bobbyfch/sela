@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Sela Reader",
+  "name": "Sela Books",
   "short_name": "Sela",
   "description": "Your personal reading room on desktop, tablet and phone. Read books, comics and documents.",
   "start_url": "./?installed=1",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#e6e1d8",
-  "theme_color": "#47604b",
+  "background_color": "#ffffff",
+  "theme_color": "#376cda",
   "icons": [
     {
       "src": "../site/icon-192.png",

@@ -4,6 +4,7 @@ async function routePwaFixture(page,prefix:string){
  await page.route(`**/${prefix}/mobile/pwa.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('mobile/pwa.js','utf8')}));
  await page.route(`**/${prefix}/library/controls.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('library/controls.js','utf8')}));
  await page.route(`**/${prefix}/dist/source/src/i18n.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/i18n.js','utf8')}));
+ await page.route(`**/${prefix}/dist/source/src/locale.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/locale.js','utf8')}));
 }
 test.use({serviceWorkers:'allow',userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36'});
 test('mobile PWA registration stays within its project subfolder',async({page})=>{
@@ -43,7 +44,7 @@ test('Firefox Windows install help names its native Web Apps route',async({page}
  await page.route('**/firefox-install/mobile/index.html',route=>route.fulfill({contentType:'text/html',body:'<button id="install-mobile-app">Install</button><p id="mobile-offline-status"></p><script type="module" src="./pwa.js"></script>'}));
  await routePwaFixture(page,'firefox-install');
  await page.addInitScript(()=>{Object.defineProperty(navigator,'userAgent',{configurable:true,value:'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'});Object.defineProperty(navigator,'platform',{configurable:true,value:'Win32'});Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{addEventListener(){},ready:Promise.resolve({}),register(){return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
- await page.goto('/firefox-install/mobile/index.html');await page.getByRole('button',{name:'Install',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Install Sela'});await expect(dialog).toContainText('Firefox for Windows 143 or newer (150 or newer when installed from the Microsoft Store)');await expect(dialog).toContainText('Detected browser: Firefox · Windows');
+ await page.goto('/firefox-install/mobile/index.html');await page.getByRole('button',{name:'Install',exact:true}).click();const guide=page.locator('.install-guide');await expect(guide).toContainText('Firefox for Windows 143 or newer (150 or newer when installed from the Microsoft Store)');await expect(guide).toContainText('Detected browser: Firefox · Windows');
 });
 
 test('install guidance detects major browser and operating-system combinations',async({page})=>{
@@ -61,6 +62,6 @@ test('install guidance detects major browser and operating-system combinations',
  for(const item of cases){
   await page.route(`**/${item.id}/mobile/index.html`,route=>route.fulfill({contentType:'text/html',body:'<button id="install-mobile-app">Install</button><p id="mobile-offline-status"></p><script type="module" src="./pwa.js"></script>'}));await routePwaFixture(page,item.id);
   await page.addInitScript(({ua,platform})=>{Object.defineProperty(navigator,'userAgent',{configurable:true,value:ua});Object.defineProperty(navigator,'platform',{configurable:true,value:platform});Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{addEventListener(){},ready:Promise.resolve({}),register(){return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});},item);
-  await page.goto(`/${item.id}/mobile/index.html`);await page.getByRole('button',{name:'Install',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Install Sela'});await expect(dialog).toContainText('Detected browser: '+item.name);await expect(dialog).toContainText(item.help);await page.keyboard.press('Escape');await expect(dialog).toBeHidden();
+  await page.goto(`/${item.id}/mobile/index.html`);await page.getByRole('button',{name:'Install',exact:true}).click();const guide=page.locator('.install-guide');await expect(guide).toContainText('Detected browser: '+item.name);await expect(guide).toContainText(item.help);await page.getByRole('button',{name:'Install Sela · Close'}).click();await expect(guide).toBeHidden();
  }
 });

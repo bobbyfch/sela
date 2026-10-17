@@ -1,4 +1,4 @@
-# Sela Reader 1.5
+# Sela Books 1.5
 
 Two products: Reader is a private installable web app on desktop, tablet and phone. Viewer is a lightweight CDN/ESM plugin for websites/frameworks, inline or fullscreen. Browser-extension distribution is discontinued.
 

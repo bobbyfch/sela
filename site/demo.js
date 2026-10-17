@@ -81,9 +81,18 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
   } catch (e) {
   }
   var languageChosen = !!sharedLanguage || !!read("language", "");
+  function updateLanguageFlag(locale) {
+    var country = { "en-US": "en", "id-ID": "id", "ja-JP": "jp" }[locale] || "en";
+    var image = document.querySelector("#language-flag");
+    if (image) {
+      image.src = new URL(`site/flag-${country}.svg`, document.baseURI).href;
+      image.alt = "";
+    }
+  }
   function localize(persist) {
     var locale = language.value, base = localeBase(locale), id = base === "id";
     document.documentElement.lang = locale;
+    updateLanguageFlag(locale);
     for (var i2 = 0; i2 < nodes.length; i2++) {
       var key = nodes[i2].getAttribute("data-i18n"), indonesian = translations[key] || original[i2];
       nodes[i2].innerHTML = id ? indonesian : base === "en" ? original[i2] : translate(original[i2], indonesian, locale);
@@ -149,7 +158,14 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     return { ui: "app", presentation: document.querySelector("#demo-presentation").value, mode: document.querySelector("#demo-mode").value, filter: document.querySelector("#demo-filter").value, pageGap: +document.querySelector("#demo-gap").value, duration: +document.querySelector("#demo-duration").value, paperTexture: document.querySelector("#demo-paper").checked, wheelZoom: document.querySelector("#demo-wheel").checked, soundEnabled: document.querySelector("#demo-sound").checked };
   }
   function showCode() {
-    document.querySelector("#config-code").textContent = "new Sela(" + JSON.stringify(options(), null, 2) + ");";
+    var sample = document.querySelector("#sample").value;
+    var extension = selectedFile ? selectedFile.name.split(".").pop().toLowerCase().replace(/^djv$/, "djvu").replace(/^htm$/, "html") : "pdf";
+    var config = options();
+    config.url = selectedFile ? "/path/to/your-document." + extension : new URL(samples[sample], document.baseURI).href;
+    config.theme = theme.value;
+    if (config.presentation === "inline") config.container = "#reader";
+    var snippet = '// Load Sela Viewer once before this snippet.\n// For inline mode, add: <div id="reader" style="height:600px"></div>\nconst reader = new Sela(' + JSON.stringify(config, null, 2) + ");\nreader.open();";
+    document.querySelector("#config-code").textContent = snippet;
   }
   function selectFile(file) {
     if (file && (!/\.(pdf|epub|cbz|djvu|djv|txt|md|html|htm|fb2|docx|odt)$/i.test(file.name) || file.size > 64 * 1024 * 1024)) {
@@ -160,7 +176,10 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     if (selectedUrl) URL.revokeObjectURL(selectedUrl);
     selectedFile = file;
     selectedUrl = file ? URL.createObjectURL(file) : null;
-    document.querySelector(".file-selection").hidden = !file;
+    var selection = document.querySelector(".file-selection");
+    selection.hidden = !file;
+    selection.classList.toggle("tw:hidden", !file);
+    selection.classList.toggle("tw:flex", !!file);
     document.querySelector("#file-name").textContent = file ? file.name + " \xB7 " + (file.size / 1024 / 1024).toFixed(2) + " MiB" : "";
     status.textContent = "";
     showCode();
@@ -176,13 +195,13 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
   ["dragenter", "dragover"].forEach(function(name) {
     drop.addEventListener(name, function(e) {
       e.preventDefault();
-      drop.classList.add("is-dragging");
+      drop.setAttribute("data-dragging", "true");
     });
   });
   ["dragleave", "drop"].forEach(function(name) {
     drop.addEventListener(name, function(e) {
       e.preventDefault();
-      drop.classList.remove("is-dragging");
+      drop.removeAttribute("data-dragging");
       if (name === "drop" && window.URL && URL.createObjectURL) selectFile(e.dataTransfer.files[0]);
     });
   });
@@ -226,6 +245,18 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
   settings.addEventListener("input", function(event) {
     if (event.target.id === "demo-zoom") applySettings(event);
   });
+  document.querySelector("#copy-config").addEventListener("click", function() {
+    var code = document.querySelector("#config-code").textContent;
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      status.textContent = localeBase(language.value) === "id" ? "Salin kode secara manual dari kotak konfigurasi." : "Copy the code manually from the setup box.";
+      return;
+    }
+    navigator.clipboard.writeText(code).then(function() {
+      status.textContent = localeBase(language.value) === "id" ? "Konfigurasi disalin." : "Setup copied.";
+    }).catch(function() {
+      status.textContent = localeBase(language.value) === "id" ? "Izin clipboard ditolak. Salin kode secara manual." : "Clipboard access was denied. Copy the code manually.";
+    });
+  });
   function open(trigger, forceSample, startPage) {
     var seq = ++generation;
     if (viewer) viewer.close();
@@ -241,7 +272,7 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
       var config = options();
       config.pdfUrl = url;
       config.format = format;
-      config.language = localeBase(language.value);
+      config.language = normalizeLocale(language.value);
       config.theme = theme.value;
       config.trigger = trigger;
       config.startPage = startPage || 1;
@@ -254,7 +285,7 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
       embed.hidden = config.presentation !== "inline";
       if (config.presentation === "inline") config.container = embed;
       if (!selectedFile && ["pdf", "epub"].includes(format)) config.metadata = { title: "Yang Tidak Ikut Pulang", author: "Bobby Fajar Christian", year: "2026", language: "id", description: "A return to an old house, a recording that should not exist, and the people left between memory and distance." };
-      config.language = localeBase(language.value) === "id" ? "id" : "en";
+      config.language = normalizeLocale(language.value);
       viewer = new Sela(config);
       var current = viewer;
       void import("../dist/js/sela.host.js").then((module) => {

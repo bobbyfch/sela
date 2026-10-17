@@ -29,6 +29,7 @@ reader.on('progressChanged',detail=>console.log(detail.url));
 reader.open(42);
 
 import {createReaderHost, type ReaderStorage} from '../../dist/types/host-integration.js';
+import {createScriptureDocument,getDailyScripture,getQuranChapter,SCRIPTURE_PROVIDERS} from '../../dist/types/scriptures.js';
 const annotationStorage:ReaderStorage={read:async()=>[],write:async()=>{}};
 const host=createReaderHost(reader,{storage:annotationStorage,documentKey:'book',dictionary:async text=>text});
 host.open(new Uint8Array([1,2,3]));
@@ -37,3 +38,9 @@ host.saveAnnotations([{id:'note',page:1,text:'Quote'}]);
 host.saveAnnotations([{id:'note',page:'one',text:'Quote'}]);
 // @ts-expect-error translation returns text, never an arbitrary document
 createReaderHost(reader,{translation:async()=>new Blob()});
+
+getDailyScripture('islam','id-ID').then(passage=>createScriptureDocument(passage.title,[{reference:passage.reference,text:passage.text,direction:passage.direction}],passage.attribution));
+getQuranChapter(1,'id').then(chapter=>console.log(chapter.translationKey,chapter.verses.length));
+console.log(SCRIPTURE_PROVIDERS.map(provider=>provider.faith));
+// @ts-expect-error scripture providers are explicitly enumerated
+getDailyScripture('unknown-faith');

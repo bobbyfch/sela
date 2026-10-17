@@ -129,9 +129,10 @@ export async function personalBook(book, { t, refresh, openBook }) {
   });
 }
 export function mountPersonal({ home, settings, library, t, refresh, openBook, navigate }) {
-  let books = [], coverURLs = [], backgroundURL = "";
+  let books = [], coverURLs = [], previewURLs = [], backgroundURL = "", roomSettingsButton, faithSettingsButton;
   window.addEventListener("pagehide", () => {
     coverURLs.forEach(URL.revokeObjectURL);
+    previewURLs.forEach(URL.revokeObjectURL);
     if (backgroundURL) URL.revokeObjectURL(backgroundURL);
   }, { once: true });
   const applyBackground = (blob) => {
@@ -144,59 +145,15 @@ export function mountPersonal({ home, settings, library, t, refresh, openBook, n
       delete home.dataset.customBackground;
       home.style.removeProperty("--home-user-background");
     }
+    document.dispatchEvent(new Event("sela:background"));
   };
   void getAsset("home-background").then(applyBackground).catch((error) => notify(error.message, "error"));
   const desk = make("section", home);
-  desk.className = "personal-desk";
+  desk.className = "personal-desk tw:grid tw:grid-cols-1 tw:gap-2";
   home.insertBefore(desk, home.querySelector(".focus-card") || null);
   const tools = make("section", settings);
   tools.className = "settings-card personal-settings";
-  const personalHeading = make("h3", tools, t("My room", "Ruangku"));
-  if (document.body.dataset.product === "mobile") {
-    const intro = home.querySelector(".room-intro");
-    if (intro) {
-      const backgroundButton = document.createElement("button");
-      backgroundButton.type = "button";
-      backgroundButton.className = "home-background-picker";
-      iconAction(backgroundButton, "image", t("Change home background", "Ganti latar beranda"));
-      backgroundButton.onclick = () => sheet(t("A little backdrop", "Latar ruang kecil"), (body) => {
-        const description = make("p", body, t("Choose a JPG, PNG, WebP, or AVIF image up to 8 MiB. It stays on this device and Sela softens it behind the page for clear reading.", "Pilih gambar JPG, PNG, WebP, atau AVIF hingga 8 MiB. Gambar tersimpan di perangkat ini dan Sela melapisinya agar bacaan tetap jelas."));
-        description.className = "background-help";
-        const label = make("label", body, t("Choose an image", "Pilih gambar"));
-        const input = make("input", label);
-        input.type = "file";
-        input.accept = "image/jpeg,image/png,image/webp,image/avif";
-        input.setAttribute("aria-label", t("Choose a home background image", "Pilih gambar latar beranda"));
-        input.onchange = async () => {
-          const file = input.files?.[0];
-          if (!file) return;
-          try {
-            if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type)) throw new Error(t("Choose a JPG, PNG, WebP, or AVIF image.", "Pilih gambar JPG, PNG, WebP, atau AVIF."));
-            if (!file.size || file.size > 8 * 1048576) throw new Error(t("Choose an image smaller than 8 MiB.", "Pilih gambar berukuran di bawah 8 MiB."));
-            if (typeof createImageBitmap === "function") {
-              const bitmap = await createImageBitmap(file);
-              const valid = bitmap.width >= 320 && bitmap.height >= 200 && bitmap.width <= 12e3 && bitmap.height <= 12e3;
-              bitmap.close();
-              if (!valid) throw new Error(t("Choose an image between 320 \xD7 200 and 12000 \xD7 12000 pixels.", "Pilih gambar antara 320 \xD7 200 hingga 12000 \xD7 12000 piksel."));
-            }
-            await setAsset("home-background", file);
-            applyBackground(file);
-            notify(t("Home background saved on this device.", "Latar beranda tersimpan di perangkat ini."), "success");
-          } catch (error) {
-            notify(error instanceof Error ? error.message : String(error), "error");
-          } finally {
-            input.value = "";
-          }
-        };
-        action(body, t("Use the original Sela room", "Gunakan ruang Sela"), async () => {
-          await setAsset("home-background", null);
-          applyBackground();
-          notify(t("Original room restored.", "Ruang awal dipulihkan."), "success");
-        });
-      });
-      intro.append(backgroundButton);
-    }
-  }
+  const personalHeading = make("h3", tools, t("Personalize your space", "Atur ruang pribadimu"));
   const notebook = () => sheet(t("My notebook", "Notebook-ku"), (body) => {
     const rows = [];
     const search = make("input", body);
@@ -260,63 +217,193 @@ ${r.text}
     make("p", body, Math.round(recent.reduce((n, s) => n + s.seconds, 0) / 60) + " " + t("minutes this week", "menit minggu ini") + (prefs.weeklyTarget ? " / " + prefs.weeklyTarget + " min" : ""));
     for (const session of sessions.slice(-30).reverse()) make("p", body, new Date(session.at).toLocaleDateString(document.documentElement.lang) + " \xB7 " + (books.find((b) => b.id === session.book)?.name || t("Reading", "Membaca")) + " \xB7 " + Math.round(session.seconds / 60) + " min");
   }));
-  action(tools, t("Personalize my room", "Atur ruangku"), () => sheet(t("My room", "Ruangku"), (body) => {
-    const p = readPersonal();
-    const roomLabel = make("label", body, t("Room name", "Nama ruang"));
+  roomSettingsButton = action(tools, t("Personalize my room", "Atur ruangku"), () => sheet(t("Make this space yours", "Buat ruang ini terasa milikmu"), (body) => {
+    const intro = make("p", body, t("Choose a background, a companion, and the small details of your home.", "Pilih latar, teman, dan hal kecil yang membuat berandamu terasa milikmu."));
+    intro.className = "room-setting-intro";
+    const section = (titleEn, titleId, icon) => {
+      const group = make("section", body);
+      group.className = "room-setting-group";
+      const heading = make("div", group);
+      heading.className = "room-setting-heading";
+      const mark = make("span", heading);
+      mark.className = "room-setting-icon";
+      mark.append(controlIcon(icon));
+      make("h3", heading, t(titleEn, titleId));
+      return group;
+    };
+    const roomGroup = section("Name your space", "Beri nama ruangmu", "person");
+    const roomLabel = make("label", roomGroup, t("Room name", "Nama ruang"));
     const name = make("input", roomLabel);
     name.placeholder = t("Add a little room name", "Beri nama kecil untuk ruangmu");
     name.maxLength = 80;
-    name.value = p.room;
+    name.value = readPersonal().room;
     name.onchange = () => editPersonal((x) => {
       x.room = name.value;
     });
-    const companionSet = make("fieldset", body);
+    const backgroundGroup = section("Home background", "Latar beranda", "image");
+    const help = make("p", backgroundGroup, t("Pick a photo or illustration. Sela softens it so the page stays easy to read.", "Pilih foto atau ilustrasi. Sela melembutkan latar agar isi halaman tetap mudah dibaca."));
+    help.className = "background-help";
+    const backgroundLabel = make("label", backgroundGroup, t("Choose a background image", "Pilih gambar latar"));
+    backgroundLabel.className = "room-image-picker";
+    const backgroundInput = make("input", backgroundLabel);
+    backgroundInput.type = "file";
+    backgroundInput.accept = "image/jpeg,image/png,image/webp,image/avif";
+    backgroundInput.setAttribute("aria-label", t("Choose a home background image", "Pilih gambar latar beranda"));
+    const backgroundPreview = make("img", backgroundGroup);
+    backgroundPreview.className = "room-image-preview";
+    backgroundPreview.alt = t("Preview of your home background", "Pratinjau gambar latar beranda");
+    backgroundPreview.hidden = !backgroundURL;
+    if (backgroundURL) backgroundPreview.src = backgroundURL;
+    backgroundInput.onchange = async () => {
+      const file = backgroundInput.files?.[0];
+      if (!file) return;
+      try {
+        if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type)) throw new Error(t("Choose a JPG, PNG, WebP, or AVIF image.", "Pilih gambar JPG, PNG, WebP, atau AVIF."));
+        if (!file.size || file.size > 8 * 1048576) throw new Error(t("Choose an image smaller than 8 MiB.", "Pilih gambar di bawah 8 MiB."));
+        if (typeof createImageBitmap === "function") {
+          const bitmap = await createImageBitmap(file);
+          const valid = bitmap.width >= 320 && bitmap.height >= 200 && bitmap.width <= 12e3 && bitmap.height <= 12e3;
+          bitmap.close();
+          if (!valid) throw new Error(t("Choose an image between 320 \xD7 200 and 12000 \xD7 12000 pixels.", "Pilih gambar antara 320 \xD7 200 hingga 12000 \xD7 12000 piksel."));
+        }
+        await setAsset("home-background", file);
+        applyBackground(file);
+        backgroundPreview.src = backgroundURL;
+        backgroundPreview.hidden = false;
+        notify(t("Background saved on this device.", "Latar tersimpan di perangkat ini."), "success");
+      } catch (error) {
+        notify(error instanceof Error ? error.message : String(error), "error");
+      } finally {
+        backgroundInput.value = "";
+      }
+    };
+    const restoreBackground = action(backgroundGroup, t("Restore original background", "Kembalikan latar awal"), async () => {
+      await setAsset("home-background", null);
+      applyBackground();
+      backgroundPreview.removeAttribute("src");
+      backgroundPreview.hidden = true;
+      notify(t("Original background restored.", "Latar awal dipulihkan."), "success");
+    });
+    restoreBackground.classList.add("room-secondary-action");
+    const companionGroup = section("Choose a companion", "Pilih teman", "sparkles");
+    const companionSet = make("fieldset", companionGroup);
     companionSet.className = "companion-options";
-    companionSet.setAttribute("aria-label", t("Reading companion", "Teman membaca"));
-    make("legend", companionSet, t("Choose a little companion", "Pilih teman kecil"));
-    for (const [value, en, id] of [["cat", "Cat", "Kucing"], ["hamster", "Hamster", "Hamster"], ["rabbit", "Rabbit", "Kelinci"], ["fox", "Fox", "Rubah"], ["owl", "Owl", "Burung hantu"], ["turtle", "Turtle", "Kura-kura"], ["red-panda", "Red panda", "Panda merah"], ["penguin", "Penguin", "Penguin"], ["shiba", "Shiba", "Anjing Shiba"], ["fawn", "Fawn", "Rusa"], ["plant", "Plant", "Tanaman"]]) {
+    companionSet.setAttribute("aria-label", t("Choose your companion", "Pilih temanmu"));
+    make("legend", companionSet, t("Choose your companion", "Pilih temanmu"));
+    const companions = [["fox", "Fox", "Rubah", "0% 0%"], ["tanuki", "Tanuki", "Tanuki", "100% 0%"], ["crane", "Crane", "Bangau", "0% 100%"], ["rabbit", "Rabbit", "Kelinci", "100% 100%"], ["plant", "Little plant", "Tanaman kecil", ""]];
+    for (const [value, en, id, position] of companions) {
       const label = make("label", companionSet);
       label.className = "companion-option";
       const input = make("input", label);
       input.type = "radio";
       input.name = "sela-reading-companion";
       input.value = value;
-      input.checked = p.companion === value;
+      input.checked = readPersonal().companion === value;
       const face = make("span", label);
       face.className = "companion-option-face";
       face.setAttribute("aria-hidden", "true");
-      if (value === "plant") face.textContent = "\u{1F331}";
+      if (value === "plant") face.append(controlIcon("leaf"));
       else {
-        const image = document.createElement("img");
-        image.src = "../library/assets/" + value + ".webp";
-        image.alt = "";
-        image.loading = "lazy";
-        face.append(image);
+        face.dataset.mascot = value;
+        face.style.backgroundImage = 'url("../library/assets/jculture-companions-v3.webp")';
+        face.style.backgroundPosition = position;
+        face.style.backgroundSize = "200% 200%";
       }
       const caption = make("span", label, t(en, id));
       caption.className = "companion-option-label";
-      input.onchange = () => {
-        if (input.checked) editPersonal((x) => {
+      input.onchange = async () => {
+        if (!input.checked) return;
+        editPersonal((x) => {
           x.companion = value;
         });
+        await setAsset("home-mascot", null);
+        customPreview.hidden = true;
+        customPreview.removeAttribute("src");
+        document.dispatchEvent(new Event("sela:mascot"));
       };
     }
+    const mascotGroup = section("Use your own picture", "Pakai gambarmu sendiri", "image");
+    const mascotHelp = make("p", mascotGroup, t("Or choose a favorite picture. It stays on this device and replaces the companion above.", "Atau pilih gambar favorit. Gambar tersimpan di perangkat ini dan menggantikan teman di atas."));
+    mascotHelp.className = "background-help";
+    const mascotLabel = make("label", mascotGroup, t("Upload a mascot image", "Unggah gambar maskot"));
+    mascotLabel.className = "room-image-picker";
+    const mascotInput = make("input", mascotLabel);
+    mascotInput.type = "file";
+    mascotInput.accept = "image/jpeg,image/png,image/webp,image/avif";
+    mascotInput.setAttribute("aria-label", t("Upload your own mascot image", "Unggah gambar maskot sendiri"));
+    const customPreview = make("img", mascotGroup);
+    customPreview.className = "room-mascot-preview";
+    customPreview.alt = t("Preview of your uploaded companion", "Pratinjau teman yang kamu unggah");
+    customPreview.hidden = true;
+    const updateCustomPreview = (blob) => {
+      if (customPreview.src.startsWith("blob:")) {
+        URL.revokeObjectURL(customPreview.src);
+        previewURLs = previewURLs.filter((url2) => url2 !== customPreview.src);
+      }
+      if (!blob) {
+        customPreview.removeAttribute("src");
+        customPreview.hidden = true;
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      previewURLs.push(url);
+      customPreview.src = url;
+      customPreview.hidden = false;
+    };
+    void getAsset("home-mascot").then(updateCustomPreview);
+    mascotInput.onchange = async () => {
+      const file = mascotInput.files?.[0];
+      if (!file) return;
+      try {
+        if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type) || file.size > 5 * 1048576 || !file.size) throw new Error(t("Choose a JPG, PNG, WebP, or AVIF image smaller than 5 MiB.", "Pilih gambar JPG, PNG, WebP, atau AVIF di bawah 5 MiB."));
+        if (typeof createImageBitmap === "function") {
+          const bitmap = await createImageBitmap(file);
+          const valid = bitmap.width >= 64 && bitmap.height >= 64 && bitmap.width <= 6e3 && bitmap.height <= 6e3;
+          bitmap.close();
+          if (!valid) throw new Error(t("Choose an image between 64 and 6000 pixels in each direction.", "Pilih gambar berukuran 64 hingga 6000 piksel pada setiap sisi."));
+        }
+        await setAsset("home-mascot", file);
+        updateCustomPreview(file);
+        document.dispatchEvent(new Event("sela:mascot"));
+        notify(t("Your companion is ready.", "Temanmu siap menemani."), "success");
+      } catch (error) {
+        notify(error instanceof Error ? error.message : String(error), "error");
+      } finally {
+        mascotInput.value = "";
+      }
+    };
+    action(mascotGroup, t("Use the selected built-in friend", "Pakai teman bawaan yang dipilih"), async () => {
+      await setAsset("home-mascot", null);
+      updateCustomPreview();
+      document.dispatchEvent(new Event("sela:mascot"));
+      notify(t("Built-in companion restored.", "Teman bawaan dipulihkan."), "success");
+    });
+    const extras = section("Home comforts", "Kenyamanan beranda", "sliders");
+    const prefs = readPersonal();
     for (const [key, en, id] of [["quiet", "Quiet room", "Ruang tenang"], ["quote", "Show quotes", "Tampilkan kutipan"], ["timer", "Show reading session", "Tampilkan sesi baca"], ["rediscover", "Rediscover books", "Temukan kembali"]]) {
-      const label = make("label", body, t(en, id));
+      const label = make("label", extras, t(en, id));
+      label.className = "room-preference-row";
       const input = make("input", label);
       input.type = "checkbox";
-      input.checked = key === "quiet" ? p.quiet : !p.hidden.includes(key);
+      input.checked = key === "quiet" ? prefs.quiet : !prefs.hidden.includes(key);
       input.onchange = () => editPersonal((x) => {
         if (key === "quiet") x.quiet = input.checked;
         else x.hidden = input.checked ? x.hidden.filter((k) => k !== key) : [.../* @__PURE__ */ new Set([...x.hidden, key])];
       });
     }
-    action(body, t("Reset room preferences", "Reset pengaturan ruang"), () => editPersonal((x) => {
-      x.room = "";
-      x.companion = "cat";
-      x.quiet = false;
-      x.hidden = [];
-    }));
+    action(body, t("Reset room", "Atur ulang ruang"), async () => {
+      editPersonal((x) => {
+        x.room = "";
+        x.companion = "tanuki";
+        x.quiet = false;
+        x.hidden = [];
+      });
+      await setAsset("home-background", null);
+      await setAsset("home-mascot", null);
+      applyBackground();
+      document.dispatchEvent(new Event("sela:mascot"));
+      notify(t("Your room is back to its original setup.", "Pengaturan ruang dikembalikan ke awal."), "success");
+    });
   }));
   action(tools, t("Smart shelves", "Rak otomatis"), () => sheet(t("Smart shelves", "Rak otomatis"), (body) => {
     for (const [rule2, en, id] of [["unread", "Unread", "Belum dibaca"], ["reading", "Reading", "Sedang dibaca"], ["finished", "Finished", "Selesai"], ["favorite", "Favorites", "Favorit"], ...["pdf", "epub", "cbz"].map((f) => ["format:" + f, f.toUpperCase(), f.toUpperCase()])]) action(body, t(en, id), () => sheet(t(en, id), (list) => {
@@ -440,9 +527,42 @@ ${r.text}
       }));
     });
   }));
+  faithSettingsButton = action(tools, t("Faith & scripture", "Agama & kitab suci"), () => {
+    let modal;
+    modal = sheet(t("Choose your scripture", "Pilih kitab suci"), (body) => {
+      const intro = make("p", body, t("This stays on your device. Sela will show a sourced reading on Home for your selection.", "Pilihan ini tersimpan di perangkatmu. Sela akan menampilkan bacaan bersumber di Beranda."));
+      intro.className = "tw:mb-3 tw:text-sm tw:leading-6 tw:text-sela-muted";
+      const choices = [["none", "No preference", "Tidak memilih"], ["islam", "Islam", "Islam"], ["protestantism", "Protestant Christianity", "Kristen Protestan"], ["catholicism", "Catholic Christianity", "Katolik"], ["hinduism", "Hinduism", "Hindu"], ["buddhism", "Buddhism", "Buddha"], ["confucianism", "Confucianism", "Konghucu"]];
+      const current = readPersonal().faith;
+      const group = make("fieldset", body);
+      group.className = "tw:grid tw:gap-2";
+      make("legend", group, t("Choose one", "Pilih satu")).className = "tw:mb-2 tw:text-sm tw:font-semibold";
+      for (const [value, en, id] of choices) {
+        const row = make("label", group, t(en, id));
+        row.className = "tw:flex tw:min-h-12 tw:items-center tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:py-2 tw:text-sm tw:font-medium tw:text-sela-ink";
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "sela-faith-preference";
+        input.value = value;
+        input.checked = current === value;
+        input.className = "tw:size-4 tw:accent-sela-accent";
+        row.prepend(input);
+        input.onchange = () => {
+          if (!input.checked) return;
+          editPersonal((data) => {
+            data.faith = value;
+          });
+          modal.close();
+          notify(t("Home scripture preference updated.", "Pilihan kitab di Beranda diperbarui."), "success");
+        };
+      }
+      const sourceNote = make("small", body, t("Each reading names its edition and source. Text is shown only when an identifiable source is available.", "Setiap bacaan mencantumkan edisi dan sumber. Teks hanya ditampilkan jika sumbernya dapat dikenali."));
+      sourceNote.className = "tw:mt-3 tw:block tw:text-xs tw:leading-5 tw:text-sela-muted";
+    });
+  });
   const filter = make("section", library);
   filter.className = "personal-shelf-tools";
-  action(filter, t("My smart shelves", "Rak otomatisku"), () => tools.querySelectorAll("button")[3]?.click());
+  action(filter, t("My smart shelves", "Rak otomatisku"), () => tools.querySelector('[data-settings-action="smart-shelves"]')?.click());
   function render(next) {
     coverURLs.forEach(URL.revokeObjectURL);
     coverURLs = [];
@@ -457,7 +577,7 @@ ${r.text}
     const queued = p.queue.map((id) => books.find((b) => b.id === id)).filter(Boolean);
     for (const book of queued) {
       const row = make("div", desk);
-      row.className = "desk-book";
+      row.className = "desk-book tw:w-full tw:max-w-[420px]";
       row.draggable = true;
       row.dataset.id = book.id;
       row.ondragstart = (e) => e.dataTransfer.setData("text/plain", book.id);
@@ -521,27 +641,48 @@ ${r.text}
     }
     home.querySelector(".catalog-section")?.toggleAttribute("hidden", books.length > 0);
   }
-  const names = [["Notebook & memories", "Notebook & kenangan"], ["Reading journal", "Journal baca"], ["Personalize my room", "Atur ruangku"], ["Smart shelves", "Rak otomatis"], ["Travel shelf \xB7 check offline", "Rak perjalanan \xB7 cek offline"], ["Care for my library", "Rapikan bukuku"], ["Create a collection card", "Buat kartu koleksi"]], icons = ["journal", "clock", "person", "collection", "read", "storage", "sparkles"];
-  for (const [i, button] of [...tools.querySelectorAll(":scope>button")].entries()) {
-    const label = button.textContent || "";
+  const names = [["Notebook & memories", "Notebook & kenangan"], ["Reading journal", "Journal baca"], ["Personalize my room", "Atur ruangku"], ["Smart shelves", "Rak otomatis"], ["Travel shelf \xB7 check offline", "Rak perjalanan \xB7 cek offline"], ["Care for my library", "Rapikan bukuku"], ["Create a collection card", "Buat kartu koleksi"], ["Faith & scripture", "Agama & kitab suci"]], icons = ["journal", "clock", "person", "collection", "read", "storage", "sparkles", "read"], buttons = [...tools.querySelectorAll(":scope>button")];
+  const homeGroup = make("h4", tools, t("Your home", "Beranda & identitas"));
+  homeGroup.className = "settings-group-heading";
+  homeGroup.dataset.settingsGroup = "home";
+  const libraryGroup = make("h4", tools, t("Reading & collections", "Bacaan & koleksi"));
+  libraryGroup.className = "settings-group-heading";
+  libraryGroup.dataset.settingsGroup = "library";
+  const order = [2, 7, 0, 1, 3, 4, 5, 6];
+  for (const index of order) {
+    const button = buttons[index];
+    if (!button) continue;
+    button.dataset.settingsAction = ["notebook", "journal", "room", "smart-shelves", "travel", "care", "collection-card", "faith"][index];
+    button.dataset.settingsName = String(index);
     button.classList.add("settings-action-row");
-    button.replaceChildren(controlIcon(icons[i] || "sparkles"));
-    const copy = make("span", button, label);
+    button.replaceChildren(controlIcon(icons[index] || "sparkles"));
+    const copy = make("span", button, t(...names[index]));
     copy.className = "settings-action-label";
     button.append(controlIcon("chevron"));
+    tools.append(button);
+    if (index === 7) tools.insertBefore(libraryGroup, button.nextSibling);
   }
+  tools.insertBefore(homeGroup, buttons[2]);
+  tools.insertBefore(buttons[7], libraryGroup);
+  tools.insertBefore(libraryGroup, buttons[0]);
   document.addEventListener("sela:personal", () => render(books));
   document.addEventListener("sela:book-details", (e) => {
     const book = books.find((b) => b.id === e.detail);
     if (book) void personalBook(book, { t, refresh, openBook });
   });
-  return { render, localize: () => {
+  return { render, openRoomSettings() {
+    roomSettingsButton?.click();
+  }, openFaithSettings() {
+    faithSettingsButton?.click();
+  }, localize: () => {
     const title = personalHeading.querySelector(".settings-heading-label");
-    if (title) title.textContent = t("My room", "Ruangku");
-    else personalHeading.textContent = t("My room", "Ruangku");
-    for (const [i, button] of [...tools.querySelectorAll(":scope>button")].entries()) {
-      const label = button.querySelector(".settings-action-label");
-      if (label) label.textContent = t(...names[i]);
+    if (title) title.textContent = t("Personalize your space", "Atur ruang pribadimu");
+    else personalHeading.textContent = t("Personalize your space", "Atur ruang pribadimu");
+    homeGroup.textContent = t("Your home", "Beranda & identitas");
+    libraryGroup.textContent = t("Reading & collections", "Bacaan & koleksi");
+    for (const button of buttons) {
+      const label = button.querySelector(".settings-action-label"), index = Number(button.dataset.settingsName);
+      if (label && Number.isInteger(index) && names[index]) label.textContent = t(...names[index]);
     }
     filter.querySelector("button").textContent = t("My smart shelves", "Rak otomatisku");
     render(books);

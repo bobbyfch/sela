@@ -28,6 +28,16 @@ export const iconPaths = {
   image:'M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 9h.01',
   shelf:'M3 5h18M3 12h18M3 19h18M5 5v7m7-7v7m7-7v7M7 12v7m10-7v7',
   grid:'M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z',
+  leaf:'M20 4c-9 0-15 4-15 11 0 3 2 5 5 5 7 0 11-6 10-16ZM5 19l8-8',
+  books:'M4 4h4v16H4zM10 3h4v17h-4zM16 5h4v15h-4zM5.5 7h1m5-1h1m5 2h1',
+  compass:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm4-14-2.5 6.5L7 17l2.5-6.5L16 8Z',
+  store:'M3 10h18l-2-6H5l-2 6Zm1 0v10h16V10M8 20v-6h8v6M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0',
+  planet:'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm-8-6c-2 0-3-.7-3-2s1-2 3-2m16 0c2 0 3 .7 3 2s-1 2-3 2',
+  smile:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm-3-9s1 3 3 3 3-3 3-3M9 9h.01M15 9h.01',
+  lightbulb:'M9 18h6m-5 4h4m-5-7a7 7 0 1 1 6 0c-1 .7-1 1.5-1 3h-4c0-1.5 0-2.3-1-3Z',
+  calendar:'M4 5h16v16H4zM8 3v4m8-4v4M4 9h16m-12 4h.01m4 0h.01m4 0h.01m-8 4h.01m4 0h.01',
+  newspaper:'M4 4h16v16H4zM8 8h8m-8 4h8m-8 4h4M2 7v12a2 2 0 0 0 2 2m14-17v4h4',
+  external:'M14 4h6v6m0-6L10 14m7-1v7H4V7h7',
 } as const;
 export type ControlIcon = keyof typeof iconPaths;
 export function controlIcon(name: ControlIcon): SVGSVGElement {
@@ -63,15 +73,24 @@ export function toolbar(label: string): HTMLDivElement {
   const element=document.createElement('div');element.className='control-toolbar';
   element.setAttribute('role','group');element.setAttribute('aria-label',label);return element;
 }
-/** Native modal supplies focus containment, Escape, and background inertness. */
+/** Keeps the legacy HTMLDialogElement API while the React shell supplies Base UI modality. */
 export function bottomSheet(title: string, content: HTMLElement): {element:HTMLDialogElement;setTitle(value:string,closeLabel?:string):void;open():void;close():void;destroy():void} {
-  const dialog=document.createElement('dialog');dialog.className='control-sheet';
+  const dialog=document.createElement('dialog');dialog.className='control-sheet tw:z-[51]';dialog.style.zIndex='calc(var(--sela-z-index, 12010) + 10)';dialog.setAttribute('role','document');
   const heading=document.createElement('h2');heading.textContent=title;
-  const id='sheet-'+crypto.randomUUID();heading.id=id;dialog.setAttribute('aria-labelledby',id);
+  const id='sheet-'+crypto.randomUUID();heading.id=id;dialog.id='control-'+id;dialog.setAttribute('aria-labelledby',id);
   const close=iconAction(document.createElement('button'),'close',title+' · Close');close.type='button';
   close.addEventListener('click',()=>dialog.close());const header=document.createElement('header');header.className='control-sheet-header';header.append(heading,close);dialog.append(header,content);document.body.append(dialog);
-  const finish=animateDialog(dialog);
-  return {element:dialog,setTitle(value,closeLabel='Close'){heading.textContent=value;iconAction(close,'close',closeLabel);},open(){if(!dialog.open)dialog.showModal();},close(){dialog.close();},destroy(){finish();dialog.remove();}};
+  let isOpen=false,run=0,opener:HTMLElement|null=null;
+  const nativeClose=dialog.close.bind(dialog);
+  const emit=(action:'register'|'state'|'unregister',open?:boolean)=>document.dispatchEvent(new CustomEvent('sela:control-sheet',{detail:{action,dialog,open}}));
+  const finishClose=(token:number,value?:string)=>{if(token!==run||!isOpen)return;isOpen=false;dialog.dataset.closing='false';nativeClose(value);emit('state',false);};
+  const open=()=>{if(isOpen)return;++run;opener=document.activeElement instanceof HTMLElement?document.activeElement:null;isOpen=true;dialog.dataset.closing='false';dialog.setAttribute('open','');emit('state',true);};
+  const closeSheet=(value?:string)=>{if(!isOpen)return;const token=++run;if(matchMedia('(prefers-reduced-motion:reduce)').matches){finishClose(token,value);return;}dialog.dataset.closing='true';setTimeout(()=>finishClose(token,value),180);};
+  dialog.showModal=open;
+  dialog.close=closeSheet;
+  dialog.addEventListener('close',()=>{dialog.dataset.closing='false';requestAnimationFrame(()=>{if(document.querySelector('.library-reader-overlay')&&!opener?.closest('.library-reader-overlay'))return;if(opener?.isConnected&&opener.getClientRects().length&&!opener.closest('dialog:not([open])'))opener.focus();});});
+  emit('register',false);
+  return {element:dialog,setTitle(value,closeLabel='Close'){heading.textContent=value;iconAction(close,'close',closeLabel);emit('state',isOpen);},open,close:closeSheet,destroy(){++run;if(isOpen){isOpen=false;dialog.dataset.closing='false';nativeClose();}dialog.dataset.controlSheetDestroyed='true';emit('unregister');dialog.remove();}};
 }
 export function segmentedControl<T extends string>(label:string, choices:readonly {value:T;label:string}[], initial:T, change:(value:T)=>void) {
   const group=toolbar(label);group.classList.add('control-segmented');

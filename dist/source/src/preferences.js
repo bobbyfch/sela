@@ -7,7 +7,10 @@ export function readingPreferences(value = {}) {
   if (typeof value.mode === "string" && MODES.includes(value.mode)) result.mode = value.mode;
   if (typeof value.fit === "string" && ["page", "width", "original"].includes(value.fit)) result.fit = value.fit;
   if (typeof value.filter === "string" && Object.prototype.hasOwnProperty.call(FILTERS, value.filter)) result.filter = value.filter;
-  if (typeof value.pageSurface === "string" && ["smooth", "rough", "vellum", "lined", "laid", "oak", "walnut", "woven"].includes(value.pageSurface)) result.pageSurface = value.pageSurface;
+  if (typeof value.pageSurface === "string" && ["smooth", "rough", "vellum", "lined", "laid", "oak", "walnut", "woven"].includes(value.pageSurface)) {
+    const legacySurface = { oak: "rough", walnut: "vellum" };
+    result.pageSurface = legacySurface[value.pageSurface] || value.pageSurface;
+  }
   for (const [key, min, max] of [["brightness", 0.35, 1.25], ["fontSize", 12, 36], ["lineHeight", 1.2, 2.4], ["textMargin", 0, 64], ["cropMargin", 0, 15]]) {
     if (typeof value[key] === "number" && Number.isFinite(value[key])) result[key] = Math.min(max, Math.max(min, value[key]));
   }

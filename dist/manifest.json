@@ -1,16 +1,16 @@
 {
-  "version": "0.9.0-beta.3",
+  "version": "0.9.0-beta.4",
   "pdfjs": "6.4.299",
   "assets": {
     "dist/js/sela.min.js": {
-      "bytes": 92192,
-      "gzip": 28517,
-      "sha256": "51b54b41f8808eca5e934be9168630b4b6b0df10dc3b5c05a6b1ee03661a52d6"
+      "bytes": 93407,
+      "gzip": 28987,
+      "sha256": "a8c025f23f41f2e43277e66af5620743cf924ee42d0c7b51f7e5db854535ef60"
     },
     "dist/js/sela.esm.js": {
-      "bytes": 92244,
-      "gzip": 28537,
-      "sha256": "4c4c18da1eaa3a93e005a8f6b845c46b1ad9c51a5b56638fac1fe04534b4b779"
+      "bytes": 93459,
+      "gzip": 29001,
+      "sha256": "c39153df84a33304bfa5efb1d4ceed8f134125c3296a9445c56dc5cc494557ab"
     },
     "dist/js/sela.compat.js": {
       "bytes": 1639,
@@ -33,14 +33,14 @@
       "sha256": "96abd2fe987f70f0b7d22cafd73e36fb908e99cc709b1925be71980ced7f89b0"
     },
     "dist/js/sela.tools.js": {
-      "bytes": 26452,
-      "gzip": 10392,
-      "sha256": "0d88560c55d15986012e050676b7a3c085e8ceec4f593cd16394f3529f7e39e6"
+      "bytes": 26478,
+      "gzip": 10380,
+      "sha256": "f13762fc70092be188d45f3b4682413cfff8d52faa337c24f5504ff90afac24f"
     },
     "dist/js/sela.text.js": {
-      "bytes": 10993,
-      "gzip": 4449,
-      "sha256": "0cd8c49ddcaba8327f6054af9696cb4fbda1cf7f876b439a8c262350fdb7b14c"
+      "bytes": 12855,
+      "gzip": 5140,
+      "sha256": "0e3194148174af16531d3e08b4189dfcf4220ae416bc13038f777516b3ef5800"
     },
     "dist/js/sela.office.js": {
       "bytes": 9289,
@@ -48,9 +48,9 @@
       "sha256": "42a00f725c4b1e5723096f0d5e951cb82d2ef7ccaa2354dae9a23bc136609c67"
     },
     "dist/js/sela.app.js": {
-      "bytes": 72814,
-      "gzip": 25108,
-      "sha256": "11a29b9e53e904741ebc48ac981329e0971ba2f55d242d1c3df1048f232753d4"
+      "bytes": 127385,
+      "gzip": 40978,
+      "sha256": "bf3b56a4b53eb39609d341d7bfc4cc45682f05a2a77378b54c3922ce74038ad3"
     },
     "dist/js/sela.metadata.js": {
       "bytes": 3407,
@@ -58,19 +58,29 @@
       "sha256": "ab9a376dd4137786437c56c9f167a32af1e6ef35552bc71a5d2261c7b7d924d9"
     },
     "dist/js/sela.profiles.js": {
-      "bytes": 6145,
-      "gzip": 2504,
-      "sha256": "7b10a300da2026e857cb47deaee44ad711a510fd08b5b96efbc70f582dde7f40"
+      "bytes": 6191,
+      "gzip": 2520,
+      "sha256": "94ad7e02eeaea5a25ca8a5a0a671b0894cf9d3b75e499798b1959153bf6d1310"
+    },
+    "dist/js/sela.locales.js": {
+      "bytes": 62969,
+      "gzip": 17514,
+      "sha256": "acf94653a80f2482cfdf9f77a76c6c8d2e1cd3d69407c3794c7fbf08aa9f09f3"
+    },
+    "dist/js/sela.scriptures.js": {
+      "bytes": 19168,
+      "gzip": 7402,
+      "sha256": "ef2a6e6890e20d201b3db431f091b78a50ff7d5b6e256b24de8887830d5fa26b"
     },
     "dist/css/sela.app.css": {
-      "bytes": 93810,
-      "gzip": 15359,
-      "sha256": "aeac587fc24a58215aa5789aa712665e195899a95a115ccd741e4343c4b1373e"
+      "bytes": 250314,
+      "gzip": 31006,
+      "sha256": "7ea922aedd1a0ce579f0ace25e126044f7be70bef9e3a1222c58c68fd691b112"
     },
     "dist/css/sela.min.css": {
-      "bytes": 15301,
-      "gzip": 3909,
-      "sha256": "d43f469634e12fa77bbbd433996208e3c8ac525c86f6064ffed1b104f07f4215"
+      "bytes": 20103,
+      "gzip": 4152,
+      "sha256": "5fc3d4ffe9441f14cac911812677204176953d0257f4d86102e5d3b148aa4390"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

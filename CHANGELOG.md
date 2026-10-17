@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0-beta.4 — Adaptive reading space (2026-10-17)
+
+- Rework Explore around swipeable curated shelves and genre rails, with clear controls to expand a shelf or show all results.
+- Keep book titles and authors readable beside compact cover artwork, and generate missing covers from the active Sela palette.
+- Show the installed version alongside the latest version in update feedback.
+- Refine adaptive Home, Shelf, Explore and Settings layouts for phones, tablets and wide screens; keep the existing local library, reader, and source behavior.
+- Refresh the public page and app presentation while keeping keyboard, theme, language, and reduced-motion support.
+
 ## 0.9.0-beta.3 — Publishing & discovery polish (2026-10-13)
 
 - Expand open-catalog discovery and book-cover lookup while preserving generated covers when providers have no artwork.
@@ -56,7 +64,7 @@
 
 Sela is a standalone, open-source reading application and embeddable viewer. This beta is the project's first release.
 
-### Sela Reader
+### Sela Books
 
 - Installable web app for desktop, tablet and phone, with responsive side/bottom navigation and a private local library.
 - Offline books, saved progress, favorites, sorting, filters and grid, compact list or wooden bookshelf views.

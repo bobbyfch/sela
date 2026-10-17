@@ -14,7 +14,7 @@ export function mountReadingDesk(home, { t, navigate, filter }) {
     };
     return { key, value, label, en, id };
   });
-  const focus = node(home, "section", "", "focus-card"), heading = node(focus, "h2", t("A little reading time", "Waktu untuk membaca")), description = node(focus, "p", t("Make room for a chapter.", "Sisihkan waktu untuk satu bab."));
+  const focus = node(home, "section", "", "focus-card tw:max-w-[360px]"), heading = node(focus, "h2", t("A little reading time", "Waktu untuk membaca")), description = node(focus, "p", t("Make room for a chapter.", "Sisihkan waktu untuk satu bab."));
   const controls = node(focus, "div", "", "focus-controls"), duration = node(controls, "select");
   duration.setAttribute("aria-label", t("Reading timer duration", "Durasi timer baca"));
   for (const n of [15, 25, 45]) {
@@ -33,9 +33,11 @@ export function mountReadingDesk(home, { t, navigate, filter }) {
   read.onclick = () => document.dispatchEvent(new CustomEvent("sela:open-book", { detail: bookPicker.value }));
   const finish = node(actions, "button", t("Finish session", "Akhiri sesi"));
   finish.type = "button";
+  finish.hidden = true;
   function saveSession() {
     if (activeSeconds > 0) editPersonal((p) => p.sessions.push({ book: bookId || bookPicker.value, at: Date.now(), seconds: Math.round(activeSeconds) }));
     activeSeconds = 0;
+    finish.hidden = true;
   }
   finish.onclick = () => {
     saveSession();
@@ -52,6 +54,7 @@ export function mountReadingDesk(home, { t, navigate, filter }) {
     const now = Date.now();
     if (deadline && !document.hidden && document.querySelector(".library-reader-overlay")) activeSeconds += Math.min(2, (now - lastTick) / 1e3);
     lastTick = now;
+    finish.hidden = activeSeconds <= 0;
     const sec = deadline ? Math.max(0, Math.ceil((deadline - Date.now()) / 1e3)) : remaining;
     output.textContent = Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
     start.textContent = deadline ? t("Pause", "Jeda") : t("Start", "Mulai");
@@ -111,6 +114,8 @@ export function mountReadingDesk(home, { t, navigate, filter }) {
     heading.textContent = t("A little reading time", "Waktu untuk membaca");
     description.textContent = t("Make room for a chapter.", "Sisihkan waktu untuk satu bab.");
     read.textContent = t("Read", "Baca");
+    start.textContent = deadline ? t("Pause", "Jeda") : t("Start", "Mulai");
+    reset.textContent = t("Reset", "Atur ulang");
     finish.textContent = t("Finish session", "Akhiri sesi");
     bookPicker.setAttribute("aria-label", t("Session book", "Buku sesi"));
     duration.setAttribute("aria-label", t("Reading timer duration", "Durasi timer baca"));

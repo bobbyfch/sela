@@ -9,18 +9,15 @@ export function coverFor(book) {
     parent.append(e);
     return e;
   };
-  const themes = [["#385b54", "#a9bd96", "#e8d7b7"], ["#684d60", "#d0a58d", "#f1ddc2"], ["#49576f", "#c69e6f", "#e7dfc9"], ["#6c573d", "#b9aa81", "#efe3c9"]];
-  const seed = [...String(book.id)].reduce((sum, char) => sum + char.charCodeAt(0), 0), [color, accent, paper] = themes[seed % themes.length];
+  const seed = [...String(book.id)].reduce((sum, char) => sum + char.charCodeAt(0), 0), styles = getComputedStyle(document.documentElement), color = styles.getPropertyValue("--accent").trim() || "#4b83d8", accent = ["#78b9d5", "#9a88d8", "#e786a7", "#61ad95", "#edaa62"][seed % 5], paper = styles.getPropertyValue("--palette-soft").trim() || "#eef4ff", ink = styles.getPropertyValue("--fg").trim() || "#26334c";
   const defs = add(svg, "defs", {}), gradient = add(defs, "linearGradient", { id: "cover-wash", x1: "0", y1: "0", x2: "1", y2: "1" });
   add(gradient, "stop", { offset: "0", "stop-color": color });
   add(gradient, "stop", { offset: "1", "stop-color": paper });
-  const grain = add(defs, "pattern", { id: "cover-grain", width: "8", height: "8", patternUnits: "userSpaceOnUse", patternTransform: "rotate(35)" });
-  add(grain, "path", { d: "M0 0v8M4 0v8", stroke: "#fff", "stroke-opacity": ".13", "stroke-width": ".7" });
   add(svg, "rect", { width: 240, height: 360, fill: "url(#cover-wash)" });
-  add(svg, "rect", { width: 240, height: 360, fill: "url(#cover-grain)", opacity: ".65" });
-  add(svg, "rect", { x: 14, y: 14, width: 212, height: 332, rx: 3, fill: "none", stroke: "#fff", "stroke-opacity": ".42" });
-  add(svg, "path", { d: "M35 42h170", stroke: "#fff", "stroke-opacity": ".56" });
-  add(svg, "text", { x: 35, y: 34, fill: "#fff", "fill-opacity": ".78", "font-family": "sans-serif", "font-size": 8, "letter-spacing": 2 }, "OPEN EDITION");
+  add(svg, "rect", { x: 12, y: 12, width: 216, height: 336, rx: 18, fill: "none", stroke: ink, "stroke-opacity": ".16" });
+  add(svg, "circle", { cx: 198, cy: 74, r: 30, fill: accent, "fill-opacity": ".3" });
+  add(svg, "path", { d: "M35 48h170", stroke: ink, "stroke-opacity": ".22" });
+  add(svg, "text", { x: 35, y: 37, fill: ink, "fill-opacity": ".72", "font-family": "sans-serif", "font-size": 8, "font-weight": 700, "letter-spacing": 1.4 }, "OPEN EDITION");
   const motif = seed % 4;
   if (motif === 0) {
     add(svg, "path", { d: "M56 210V151a64 64 0 0 1 128 0v59Z", fill: accent, "fill-opacity": ".76" });
@@ -30,12 +27,12 @@ export function coverFor(book) {
     for (const d of ["M105 117c-22-2-34-15-36-32 22 1 35 13 36 32Z", "M136 164c3-23 18-38 39-43-2 22-17 38-39 43Z", "M102 157c-21-4-32-18-33-37 21 4 32 17 33 37Z"]) add(svg, "path", { d, fill: accent, stroke: paper, "stroke-width": 1 });
   } else if (motif === 2) {
     add(svg, "path", { d: "M20 188c33-42 67-42 100 0s67 42 100 0v22H20Zm0-50c33-42 67-42 100 0s67 42 100 0v22c-33 42-67 42-100 0s-67-42-100 0Z", fill: accent, "fill-opacity": ".82" });
-    add(svg, "path", { d: "M20 138c33-42 67-42 100 0s67 42 100 0", fill: "none", stroke: paper, "stroke-opacity": ".9", "stroke-width": 2 });
+    add(svg, "path", { d: "M20 138c33-42 67-42 100 0s67 42 100 0", fill: "none", stroke: ink, "stroke-opacity": ".65", "stroke-width": 2 });
   } else {
     add(svg, "path", { d: "M65 205V93h110v112M83 205v-90h74v90M55 205h130", fill: accent, "fill-opacity": ".77", stroke: paper, "stroke-opacity": ".9", "stroke-width": 2 });
     add(svg, "path", { d: "M94 141h51m-51 16h51m-51 16h51", stroke: paper, "stroke-opacity": ".85", "stroke-width": 2 });
   }
-  add(svg, "path", { d: "M35 218h170", stroke: "#fff", "stroke-opacity": ".55" });
+  add(svg, "path", { d: "M35 218h170", stroke: ink, "stroke-opacity": ".24" });
   const words = String(book.title || "Untitled").split(/\s+/);
   let lines = [], line = "";
   for (const word of words) {
@@ -46,7 +43,7 @@ export function coverFor(book) {
   }
   if (line) lines.push(line);
   if (lines.length > 4) lines[3] = lines[3].slice(0, 17) + "\u2026";
-  lines.slice(0, 4).forEach((value, index) => add(svg, "text", { x: 120, y: 250 + index * 20, "text-anchor": "middle", fill: "#faf4e6", "font-family": "Georgia, serif", "font-size": 17, "font-weight": 600 }, value));
-  add(svg, "text", { x: 120, y: 326, "text-anchor": "middle", fill: "#fff", "fill-opacity": ".8", "font-family": "sans-serif", "font-size": 10 }, String(book.author || "").slice(0, 30));
+  lines.slice(0, 4).forEach((value, index) => add(svg, "text", { x: 120, y: 252 + index * 21, "text-anchor": "middle", fill: ink, "font-family": "sans-serif", "font-size": 16, "font-weight": 650 }, value));
+  add(svg, "text", { x: 120, y: 330, "text-anchor": "middle", fill: ink, "fill-opacity": ".72", "font-family": "sans-serif", "font-size": 10 }, String(book.author || "").slice(0, 30));
   return new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" });
 }

@@ -1,0 +1,97 @@
+@utility home-room-responsive {
+  @media (min-width: 1200px) {
+    body[data-product="mobile"] .home-page .room-intro& {
+      grid-template-columns: minmax(220px, .78fr) minmax(330px, 1.2fr) minmax(300px, .98fr) !important;
+      grid-template-rows: minmax(330px, auto) !important;
+      align-items: stretch !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type,
+    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage,
+    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+      grid-row: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
+      grid-column: 2 !important;
+      align-self: stretch;
+      height: 100%;
+      min-height: 320px;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+      grid-column: 3 !important;
+      width: 100% !important;
+    }
+  }
+
+  @media (min-width: 861px) and (max-width: 1199px) {
+    body[data-product="mobile"] .home-page .room-intro& {
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+      grid-template-rows: auto auto !important;
+      align-items: stretch !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      height: clamp(270px, 31vw, 330px);
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+      grid-column: 1 / -1 !important;
+      grid-row: 2 !important;
+      grid-template-columns: minmax(0, .7fr) minmax(0, .9fr) minmax(0, 1.5fr) !important;
+      align-items: center;
+      width: 100% !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .focus-card {
+      grid-column: 3 !important;
+      grid-row: 1 / span 2;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .clock {
+      grid-column: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .weather-widget {
+      grid-column: 2 !important;
+      grid-row: 1;
+      padding-inline: 14px 0;
+      border-left: 1px solid color-mix(in srgb, var(--fg) 9%, transparent);
+    }
+  }
+
+  @media (max-width: 860px) {
+    body[data-product="mobile"] .home-page .room-intro& {
+      grid-template-columns: minmax(0, 1fr) !important;
+      grid-template-rows: auto auto auto !important;
+      align-items: start !important;
+      min-height: 0;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+      height: clamp(190px, 42vw, 270px);
+      min-height: 0;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+      grid-column: 1 !important;
+      grid-row: 3 !important;
+      width: 100% !important;
+    }
+  }
+}

@@ -11,7 +11,10 @@ async function files(folder: string): Promise<string[]> {
 
 test('authored code uses TypeScript and browser assets resolve without TypeScript imports', async () => {
   for (const folder of ['src', 'app', 'ui', 'web', 'scripts', 'tests']) {
-    assert.deepEqual((await files(folder)).filter(file => /\.(?:js|mjs)$/.test(file)), [], folder + ' must contain TypeScript sources');
+    for (const file of (await files(folder)).filter(file => /\.(?:js|mjs)$/.test(file))) {
+      const code = await readFile(file, 'utf8');
+      assert.match(code, /^\/\/ Generated from .*\.tsx? by npm run build\. Do not edit\./, file + ' must be generated from TypeScript');
+    }
   }
   const runtime = [...await files('library'), ...await files('mobile'), ...await files('site'), ...await files('dist/source'), 'examples/web-component.js'].filter(file => file.endsWith('.js'));
   for (const file of runtime) {
@@ -35,12 +38,12 @@ test('authored code uses TypeScript and browser assets resolve without TypeScrip
 test('offline manifests contain runtime assets and never TypeScript sources', async () => {
   const manifest: {allowed: string[]; shell: string[]; mobileShell: string[]} = JSON.parse(await readFile('offline-assets.json', 'utf8'));
   for (const path of [...manifest.allowed, ...manifest.shell, ...manifest.mobileShell]) {
-    assert(!/\.tsx?(?:[?#]|$)/.test(path) && !path.startsWith('app/'), 'Offline cache contains source: ' + path);
+    assert(!/\.tsx?(?:[?#]|$)/.test(path), 'Offline cache contains TypeScript source: ' + path);
     await access(path.split('?')[0]);
   }
   assert(manifest.mobileShell.includes('mobile/app.js'));
+  assert(manifest.mobileShell.includes('app/app.js'));
+  assert(manifest.mobileShell.includes('app/index.html'));
   assert(manifest.mobileShell.includes('dist/js/sela.esm.js'));
-  for (const name of ['reading-room','cat','hamster','rabbit','fox','owl','turtle','red-panda','penguin','shiba','fawn']) {
-    assert(manifest.mobileShell.includes('library/assets/' + name + '.webp'), 'Offline cache omits Home artwork: ' + name);
-  }
+  assert(manifest.mobileShell.includes('library/assets/jculture-isometric.webp'), 'Offline cache omits the Home companion atlas');
 });

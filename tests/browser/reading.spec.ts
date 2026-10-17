@@ -70,7 +70,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   expect(schema.softwareVersion).toBe(JSON.parse(await readFile('package.json','utf8')).version);
   await page.locator('[data-theme-choice=auto]').click();
   await page.emulateMedia({ colorScheme: 'dark' });
-  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(38, 46, 41)');
+  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(23, 25, 35)');
 });
 
 test('compatibility entry avoids modern bundle on missing browser capabilities', async ({ page, browserName }) => {
@@ -81,6 +81,7 @@ test('compatibility entry avoids modern bundle on missing browser capabilities',
   expect(await page.evaluate(() => Sela.supported)).toBe(false);
   expect(modern).toEqual([]);
   await expect(page.locator('a[href="example/yang-tidak-ikut-pulang.pdf"]').first()).toBeVisible();
+  await page.locator('#install-viewer > summary').click();
   await expect(page.locator('[data-mode]')).toHaveCount(4);
   await page.route('**/example/yang-tidak-ikut-pulang.pdf', async route => route.fulfill({
     contentType: 'application/pdf',
