@@ -531,7 +531,7 @@
 
     body[data-product=mobile] & .home-prayer-times {
       max-width: none;
-      padding: 8px 12px;
+      padding: 6px 12px;
     }
 
     body[data-product=mobile] & .home-prayer-times dl {
@@ -540,7 +540,7 @@
     }
 
     body[data-product=mobile] & .home-prayer-times dl > div {
-      padding: 5px 2px;
+      padding: 3px 2px;
     }
 
     body[data-product=mobile] & .home-prayer-times > p {
