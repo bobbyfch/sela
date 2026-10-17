@@ -63,6 +63,7 @@ test('Home presents one Quran passage and Quran-only controls work directly in t
 test('Indonesian news aggregation keeps thumbnails and source attribution in compact rows',async({page})=>{
  await page.route('https://api.gdeltproject.org/api/v2/doc/doc?**',route=>route.fulfill({status:429,body:'rate limited'}));
  await page.route('https://www.antaranews.com/rss/**',route=>route.fulfill({contentType:'application/rss+xml',body:'<rss><channel><item><title>Berita buku hari ini</title><link>https://www.antaranews.com/berita/123/buku</link><description>Ringkasan berita buku.</description><enclosure url="https://cdn.antaranews.com/cache/800x533/buku.jpg" /></item></channel></rss>'}));
+ await page.route('https://cdn.antaranews.com/cache/**',route=>route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADUlEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC','base64')}));
  await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('#language').selectOption('id-ID');const news=page.locator('.home-feed-card').filter({has:page.locator('h2', {hasText:'Kabar dari berbagai tempat'})});await expect(news.locator('.home-feed-item')).toContainText('Berita buku hari ini');await expect(news.locator('.home-feed-item img')).toHaveAttribute('src','https://cdn.antaranews.com/cache/800x533/buku.jpg');await expect(news.locator('.home-feed-item')).toContainText('ANTARA');
 });
 
