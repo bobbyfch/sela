@@ -39,8 +39,6 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   const resultsHeading = node(resultsCopy, "h2", t("Top reads", "Bacaan populer"), "discovery-results-heading tw:mb-1 tw:text-xl tw:font-semibold tw:tracking-tight tw:text-sela-ink");
   const resultsIntro = node(resultsCopy, "p", t("A few good books to start with.", "Beberapa buku pilihan untuk memulai."), "discovery-results-intro tw:m-0 tw:text-sm tw:leading-6 tw:text-sela-muted");
   const resultsActions = node(resultsHeader, "div", "", "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:gap-2");
-  const showAllBooks = node(resultsActions, "button", t("Show all", "Lihat semua"), "tw:inline-flex tw:min-h-10 tw:items-center tw:justify-center tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3.5 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent");
-  showAllBooks.type = "button";
   const more = node(resultsActions, "button", t("More books", "Buku lainnya"), "tw:inline-flex tw:min-h-10 tw:items-center tw:justify-center tw:rounded-xl tw:bg-sela-accent tw:px-3.5 tw:text-sm tw:font-semibold tw:text-white tw:transition-colors tw:hover:opacity-90");
   more.type = "button";
   more.hidden = true;
@@ -51,10 +49,29 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   let activeCategoryKey = "trending";
   let changingCategory = false;
   let lastFirstId = "";
-  const categoryOptions = [["trending", "Top reads", "Buku populer", "", "Reader favourites, refreshed daily.", "Pilihan pembaca yang diperbarui setiap hari.", "books"], ["hidden", "Hidden gems", "Temuan tersembunyi", "fiction", "A little outside the usual lists.", "Pilihan menarik di luar daftar populer.", "sparkle"], ["new", "New releases", "Rilisan terbaru", "new", "Recent editions from bookshops.", "Edisi terbaru dari toko buku.", "clock"], ["all", "For you", "Untukmu", "", "A mix from open collections.", "Campuran dari koleksi terbuka.", "compass"], ["open", "Open editions", "Edisi terbuka", "", "Read or check the edition terms.", "Baca atau cek ketentuan edisinya.", "open"], ["free", "Free eBooks", "E-book gratis", "new", "Find editions marked free.", "Cari edisi yang ditandai gratis.", "download"], ["paid", "Preview & buy", "Pratinjau & beli", "new", "Availability depends on region.", "Ketersediaan bergantung wilayah.", "store"], ["fiction", "Fiction", "Fiksi", "fiction", "", "", "book"], ["fantasy", "Fantasy", "Fantasi", "fantasy", "", "", "sparkle"], ["mystery", "Mystery", "Misteri", "mystery_and_detective_stories", "", "", "magnifying-glass"], ["romance", "Romance", "Romansa", "romance", "", "", "heart"], ["science_fiction", "Science fiction", "Fiksi ilmiah", "science_fiction", "", "", "planet"], ["history", "History", "Sejarah", "history", "", "", "scroll"], ["poetry", "Poetry", "Puisi", "poetry", "", "", "feather"], ["children", "Children", "Anak-anak", "childrens_literature", "", "", "smiley"], ["philosophy", "Philosophy", "Filsafat", "philosophy", "", "", "lightbulb"], ["biography", "Biography", "Biografi", "biography", "", "", "user"]];
+  const categoryOptions = [
+    ["free", "Free eBooks", "E-book gratis", "new", "Find free editions that can be opened or saved.", "Cari edisi gratis yang dapat dibuka atau disimpan.", "download"],
+    ["trending", "Top reads", "Buku populer", "", "Reader favourites, refreshed daily.", "Pilihan pembaca yang diperbarui setiap hari.", "books"],
+    ["open", "Open editions", "Edisi terbuka", "", "Read or check the edition terms.", "Baca atau cek ketentuan edisinya.", "open"],
+    ["new", "New releases", "Rilisan terbaru", "new", "Recent editions from bookshops.", "Edisi terbaru dari toko buku.", "clock"],
+    ["hidden", "Hidden gems", "Temuan tersembunyi", "fiction", "A little outside the usual lists.", "Pilihan menarik di luar daftar populer.", "sparkle"],
+    ["paid", "Preview & buy", "Pratinjau & beli", "new", "Availability depends on region.", "Ketersediaan bergantung wilayah.", "store"],
+    ["all", "For you", "Untukmu", "", "A mix from open collections.", "Campuran dari koleksi terbuka.", "compass"],
+    ["fiction", "Novels & fiction", "Novel & fiksi", "fiction", "", "", "book"],
+    ["comics", "Comics & manga", "Komik & manga", "comics", "", "", "book"],
+    ["nonfiction", "Non-fiction", "Nonfiksi", "nonfiction", "", "", "journal"],
+    ["children", "Children", "Anak-anak", "childrens_literature", "", "", "smiley"],
+    ["history", "History", "Sejarah", "history", "", "", "scroll"],
+    ["fantasy", "Fantasy", "Fantasi", "fantasy", "", "", "sparkle"],
+    ["mystery", "Mystery", "Misteri", "mystery_and_detective_stories", "", "", "magnifying-glass"],
+    ["romance", "Romance", "Romansa", "romance", "", "", "heart"],
+    ["science_fiction", "Science fiction", "Fiksi ilmiah", "science_fiction", "", "", "planet"],
+    ["poetry", "Poetry", "Puisi", "poetry", "", "", "feather"],
+    ["philosophy", "Philosophy", "Filsafat", "philosophy", "", "", "lightbulb"],
+    ["biography", "Biography", "Biografi", "biography", "", "", "user"]
+  ];
   const discoveryIcons = { books: "books", sparkle: "sparkles", clock: "clock", compass: "compass", open: "read", download: "download", store: "store", book: "read", "magnifying-glass": "search", heart: "favorite", planet: "planet", scroll: "journal", feather: "leaf", smiley: "smile", lightbulb: "lightbulb", user: "person" };
   const categoryButtons = /* @__PURE__ */ new Map();
-  const categoryRows = [];
   let surprise;
   function markCategory(value) {
     for (const [key, button] of categoryButtons) button.setAttribute("aria-pressed", String(key === value));
@@ -62,14 +79,11 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   function setResultsExpanded(expanded) {
     resultsExpanded = expanded;
     results.className = "open-results tw:min-w-0 tw:gap-4 tw:pb-4 " + (expanded ? "tw:grid tw:grid-cols-2 tw:sm:grid-cols-3 tw:lg:grid-cols-4 tw:xl:grid-cols-5" : "tw:flex tw:snap-x tw:snap-mandatory tw:overflow-x-auto tw:overscroll-x-contain");
-    showAllBooks.textContent = expanded ? t("Show as a shelf", "Tampilkan sebagai rak") : t("Show all", "Lihat semua");
-    showAllBooks.setAttribute("aria-expanded", String(expanded));
     render();
   }
-  showAllBooks.onclick = () => setResultsExpanded(!resultsExpanded);
   const categorySections = node(parent, "div", "", "discovery-browse-sections tw:my-8 tw:space-y-8 tw:max-[370px]:my-2 tw:max-[370px]:space-y-4");
   categorySections.setAttribute("aria-label", t("Browse the bookshop", "Jelajahi toko buku"));
-  const categoryGroups = [{ title: ["Curated shelves", "Rak pilihan"], keys: ["trending", "hidden", "new", "all", "open", "free", "paid"] }, { title: ["Browse by genre", "Jelajahi genre"], keys: ["fiction", "fantasy", "mystery", "romance", "science_fiction", "history", "poetry", "children", "philosophy", "biography"] }];
+  const categoryGroups = [{ title: ["Curated shelves", "Rak pilihan"], keys: ["free", "trending", "open", "new", "hidden", "paid", "all"] }, { title: ["Formats & genres", "Format & genre"], keys: ["fiction", "comics", "nonfiction", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "poetry", "philosophy", "biography"] }];
   function updateResultsHeading() {
     const option = categoryOptions.find((item) => item[0] === activeCategoryKey), searching = !!query.value.trim();
     const label = searching ? t("Search results", "Hasil pencarian") : t(option?.[1] || "Books", option?.[2] || "Buku");
@@ -95,25 +109,9 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     const header = node(section, "div", "", "tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3");
     const heading = node(header, "h3", t(...group.title), "tw:m-0 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink");
     const actions = node(header, "div", "", "tw:flex tw:items-center tw:gap-2");
-    const toggle = node(actions, "button", t("Show all", "Lihat semua"), "tw:inline-flex tw:min-h-9 tw:items-center tw:rounded-lg tw:px-2.5 tw:text-sm tw:font-semibold tw:text-sela-accent tw:transition-colors tw:hover:bg-sela-accent/10");
-    toggle.type = "button";
-    const row = node(section, "div", "", "tw:flex tw:min-w-0 tw:snap-x tw:snap-mandatory tw:gap-3 tw:overflow-x-auto tw:overscroll-x-contain tw:pb-2");
+    const row = node(section, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-2 tw:gap-3 tw:sm:grid-cols-3 tw:lg:grid-cols-4 tw:xl:grid-cols-5");
     row.setAttribute("role", "group");
     row.setAttribute("aria-labelledby", heading.id || (heading.id = "discovery-" + group.title[0].toLowerCase().replace(/[^a-z]+/g, "-")));
-    const rowState = { row, buttons: [], toggle, expanded: false };
-    categoryRows.push(rowState);
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.onclick = () => {
-      rowState.expanded = !rowState.expanded;
-      row.className = "tw:min-w-0 tw:gap-3 tw:pb-2 " + (rowState.expanded ? "tw:flex tw:flex-wrap tw:overflow-visible" : "tw:flex tw:snap-x tw:snap-mandatory tw:overflow-x-auto tw:overscroll-x-contain");
-      toggle.textContent = rowState.expanded ? t("Show less", "Tampilkan lebih sedikit") : t("Show all", "Lihat semua");
-      toggle.setAttribute("aria-expanded", String(rowState.expanded));
-      for (const item of rowState.buttons) {
-        item.button.className = rowState.expanded ? "discovery-category tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3.5 tw:text-sm tw:font-semibold tw:text-sela-muted tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent" : "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:max-[370px]:min-h-16 tw:max-[370px]:flex-row tw:max-[370px]:items-center tw:max-[370px]:justify-start tw:max-[370px]:gap-2 tw:max-[370px]:p-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent";
-        item.icon.hidden = rowState.expanded;
-        item.description.hidden = rowState.expanded;
-      }
-    };
     if (group.keys.includes("trending")) {
       surprise = node(actions, "button", t("Surprise me", "Beri kejutan"), "tw:inline-flex tw:min-h-9 tw:items-center tw:gap-1.5 tw:rounded-lg tw:px-2.5 tw:text-sm tw:font-semibold tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-accent/10 tw:hover:text-sela-accent");
       surprise.type = "button";
@@ -124,7 +122,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     }
     for (const key of group.keys) {
       const option = categoryOptions.find((item) => item[0] === key);
-      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:max-[370px]:min-h-16 tw:max-[370px]:flex-row tw:max-[370px]:items-center tw:max-[370px]:justify-start tw:max-[370px]:gap-2 tw:max-[370px]:p-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-14 tw:w-full tw:min-w-0 tw:flex-row tw:items-center tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
       button.type = "button";
       button.setAttribute("aria-pressed", String(key === "trending"));
       const icon = node(button, "span", "", "tw:grid tw:size-9 tw:max-[370px]:size-8 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-accent/10 tw:text-sela-accent");
@@ -132,12 +130,11 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       icon.append(controlIcon(discoveryIcons[option[6]] || "read"));
       const copy = node(button, "span", "", "tw:block tw:min-w-0");
       node(copy, "span", t(option[1], option[2]), "tw:block tw:truncate tw:text-sm tw:font-semibold tw:text-sela-ink");
-      const descriptionCopy = node(copy, "span", t(option[4], option[5]), "tw:mt-1 tw:block tw:line-clamp-2 tw:text-xs tw:leading-5 tw:text-sela-muted tw:max-[370px]:hidden");
+      if (option[4]) node(copy, "span", t(option[4], option[5]), "tw:mt-1 tw:block tw:line-clamp-2 tw:text-xs tw:leading-5 tw:text-sela-muted");
       button.setAttribute("aria-label", t(option[1], option[2]));
       if (option[4]) button.setAttribute("aria-description", t(option[4], option[5]));
       button.onclick = () => chooseCategory(key);
       categoryButtons.set(key, button);
-      rowState.buttons.push({ button, icon, description: descriptionCopy });
     }
   }
   parent.insertBefore(categorySections, resultsSection);
@@ -292,7 +289,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
         if (highResCover) {
           const saveCover = node(actionBar, "button");
           saveCover.type = "button";
-          iconAction(saveCover, "download", t("Download the best available cover", "Unduh cover terbaik yang tersedia"));
+          iconAction(saveCover, "download", t("Download cover image", "Unduh gambar sampul"));
           saveCover.onclick = async () => {
             saveCover.disabled = true;
             try {
@@ -583,7 +580,6 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     source.setAttribute("aria-label", t("Book source", "Sumber buku"));
     iconAction(submit, "search", t("Search", "Cari"));
     more.textContent = t("More books", "Buku lainnya");
-    showAllBooks.textContent = resultsExpanded ? t("Show as a shelf", "Tampilkan sebagai rak") : t("Show all", "Lihat semua");
     for (const [key, en, id, , descriptionEn, descriptionId] of categoryOptions) {
       const button = categoryButtons.get(key);
       if (button) {
@@ -602,8 +598,6 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       section?.setAttribute("aria-label", t(...group.title));
       const heading = section?.querySelector("h3");
       if (heading) heading.textContent = t(...group.title);
-      const row = categoryRows[index];
-      if (row) row.toggle.textContent = row.expanded ? t("Show less", "Tampilkan lebih sedikit") : t("Show all", "Lihat semua");
     }
     categorySections.setAttribute("aria-label", t("Browse the bookshop", "Jelajahi toko buku"));
     surprise.textContent = t("Surprise me", "Beri kejutan");

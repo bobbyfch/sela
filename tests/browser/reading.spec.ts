@@ -81,7 +81,6 @@ test('compatibility entry avoids modern bundle on missing browser capabilities',
   expect(await page.evaluate(() => Sela.supported)).toBe(false);
   expect(modern).toEqual([]);
   await expect(page.locator('a[href="example/yang-tidak-ikut-pulang.pdf"]').first()).toBeVisible();
-  await page.locator('#install-viewer > summary').click();
   await expect(page.locator('[data-mode]')).toHaveCount(4);
   await page.route('**/example/yang-tidak-ikut-pulang.pdf', async route => route.fulfill({
     contentType: 'application/pdf',

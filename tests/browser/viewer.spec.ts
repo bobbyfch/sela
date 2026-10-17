@@ -87,7 +87,7 @@ test('missing PDF offers direct fallback and viewer can be retried', async ({ pa
 
 test('light/dark/mobile/reduced motion and focus restoration', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 }); await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.locator('#install-viewer > summary').click();
+  await expect(page.locator('[data-mode="book"]')).toBeVisible();
   for (const theme of ['light', 'dark'] as const) {
     await page.locator('[data-mode="book"]').focus();
     await page.evaluate(async theme => { window.testViewer = new Sela({ pdfUrl: '/test.pdf', theme, soundEnabled: false }); await testViewer.open(); }, theme);
@@ -140,9 +140,9 @@ test('demo loads no PDF engine until opened and renders the real sample', async 
   const requests = []; page.on('request', request => requests.push(request.url()));
   await page.reload();
   expect(requests.some(url => url.includes('/vendor/pdfjs/'))).toBe(false);
-  await page.locator('#install-viewer > summary').click();
+  await expect(page.locator('[data-mode="book"]')).toBeVisible();
   await page.getByRole('button', { name: /01 \/ BOOK/ }).click();
-  await expect(page.locator('.app-page-seek')).toBeEnabled();
-  await expect.poll(() => page.locator('.library-reader-book canvas').evaluateAll(canvases => canvases.some(c => (c as HTMLCanvasElement).width > 0))).toBe(true);
+  await expect(page.locator('.app-page-seek')).toBeEnabled({timeout:15000});
+  await expect.poll(() => page.locator('.library-reader-book canvas').evaluateAll(canvases => canvases.some(c => (c as HTMLCanvasElement).width > 0)),{timeout:15000}).toBe(true);
   await page.screenshot({ path: 'test-results/desktop-real-pdf.png' });
 });

@@ -1,9 +1,11 @@
 name: GitHub Pages
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [Viewer checks]
+    types: [completed]
   workflow_dispatch:
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -12,33 +14,49 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Download validated site from Viewer checks
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          node-version: 22
+          name: sela-pages-site
+          path: .pages
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Build site for manual deployment
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up Node for manual deployment
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
           cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm run test:types
-      - run: npm run typecheck
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:browser
-      - run: |
+      - name: Build manual deployment
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          npm ci
+          npm run build
           mkdir -p .pages
           cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt manifest.webmanifest sela-sw.js offline-assets.json README.md README.id.md THIRD_PARTY_NOTICES.md .pages/
           cp -r site dist example mobile library docs .pages/
           mkdir -p .pages/app
           cp app/index.html app/*.js app/*.webmanifest app/*-LICENSE.txt .pages/app/
           touch .pages/.nojekyll
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: .pages
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
         id: deployment

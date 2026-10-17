@@ -15,7 +15,7 @@ function monthStart(date:Date){return new Date(date.getFullYear(),date.getMonth(
 function shiftMonth(date:Date,amount:number){return new Date(date.getFullYear(),date.getMonth()+amount,1,12);}
 
 function makeCalendar(t:Translator){
- const card=node('section','home-widget-card home-calendar-widget');card.setAttribute('aria-labelledby','home-calendar-title');
+ const card=node('section','home-widget-card home-calendar-widget tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5');card.setAttribute('aria-labelledby','home-calendar-title');
  const header=node('div','home-widget-heading',card),copy=node('div','',header),title=node('h2','',copy);title.id='home-calendar-title';
  const subtitle=node('p','home-widget-subtitle',copy),monthControls=node('div','home-calendar-controls',header);
  const previous=iconAction(node('button','',monthControls),'chevron',t('Previous month','Bulan sebelumnya'));previous.type='button';previous.classList.add('home-month-arrow','is-previous');
@@ -48,7 +48,7 @@ function makeCalendar(t:Translator){
 }
 
 function makeWaterWidget(t:Translator){
- const card=node('section','home-widget-card home-water-widget');card.setAttribute('aria-labelledby','home-water-title');
+ const card=node('section','home-widget-card home-water-widget tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5');card.setAttribute('aria-labelledby','home-water-title');
  const heading=node('div','home-widget-heading',card),icon=node('span','home-water-icon',heading);icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2.5s-6.5 7.1-6.5 12.1a6.5 6.5 0 1 0 13 0C18.5 9.6 12 2.5 12 2.5Z"/></svg>';
  const copy=node('div','',heading),title=node('h2','',copy);title.id='home-water-title';const subtitle=node('p','home-widget-subtitle',copy);
  const row=node('div','home-water-row tw:!flex-wrap tw:gap-3',card),stat=node('div','home-water-stat tw:min-w-0',row),value=node('strong','home-water-value',stat),label=node('span','home-water-label',stat);stat.setAttribute('aria-live','polite');stat.setAttribute('aria-atomic','true');
@@ -77,7 +77,7 @@ function appendFeedEmptyScene(parent:HTMLElement,kind:'on-this-day'|'news'){
  scene.innerHTML=kind==='news'?'<svg viewBox="0 0 120 86"><path d="M16 27 60 13l44 14v45L60 59 16 72Z"/><path d="M60 13v46M27 34l22-7m-22 17 22-7m22-3 22 7m-22 3 22 7"/><circle cx="91" cy="19" r="9"/><path d="m91 13 1.8 4.2L97 19l-4.2 1.8L91 25l-1.8-4.2L85 19l4.2-1.8Z"/></svg>':'<svg viewBox="0 0 120 86"><rect x="25" y="12" width="70" height="61" rx="12"/><path d="M25 30h70M43 8v12m34-12v12M42 45h10m16 0h10m-36 14h10m16 0h10"/><path d="m83 45 2.5 5 5.5 2.5-5.5 2.5-2.5 5-2.5-5L75 52.5l5.5-2.5Z"/></svg>';
 }
 function makeFeedWidget(kind:'on-this-day'|'news',t:Translator){
- const card=node('article','home-widget-card home-feed-card tw:rounded-3xl tw:border tw:border-sela-line tw:bg-sela-surface/90 tw:p-4 tw:shadow-sm tw:sm:p-5');
+ const card=node('article','home-widget-card home-feed-card tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5');
  const header=node('div','home-widget-heading tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3',card),copy=node('div','tw:min-w-0 tw:flex-1'),title=node('h2','tw:mb-1 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink',copy),subtitle=node('p','home-widget-subtitle tw:m-0 tw:text-xs tw:leading-5 tw:text-sela-muted',copy);header.append(copy);
  const controls=node('div','tw:flex tw:shrink-0 tw:items-center tw:gap-1',header),list=node('div','home-feed-list tw:mt-3 tw:space-y-1');list.setAttribute('aria-live','polite');list.setAttribute('aria-busy','false');card.append(list);
  const refresh=iconAction(node('button','tw:grid tw:size-10 tw:place-items-center tw:rounded-full tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-accent',controls),'refresh',t('Refresh stories','Muat ulang cerita'));refresh.type='button';

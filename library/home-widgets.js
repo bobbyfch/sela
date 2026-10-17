@@ -25,7 +25,7 @@ function shiftMonth(date, amount) {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1, 12);
 }
 function makeCalendar(t) {
-  const card = node("section", "home-widget-card home-calendar-widget");
+  const card = node("section", "home-widget-card home-calendar-widget tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5");
   card.setAttribute("aria-labelledby", "home-calendar-title");
   const header = node("div", "home-widget-heading", card), copy = node("div", "", header), title = node("h2", "", copy);
   title.id = "home-calendar-title";
@@ -211,7 +211,7 @@ function makeCalendar(t) {
   return { card, localize: render };
 }
 function makeWaterWidget(t) {
-  const card = node("section", "home-widget-card home-water-widget");
+  const card = node("section", "home-widget-card home-water-widget tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5");
   card.setAttribute("aria-labelledby", "home-water-title");
   const heading = node("div", "home-widget-heading", card), icon = node("span", "home-water-icon", heading);
   icon.setAttribute("aria-hidden", "true");
@@ -383,7 +383,7 @@ function appendFeedEmptyScene(parent, kind) {
   scene.innerHTML = kind === "news" ? '<svg viewBox="0 0 120 86"><path d="M16 27 60 13l44 14v45L60 59 16 72Z"/><path d="M60 13v46M27 34l22-7m-22 17 22-7m22-3 22 7m-22 3 22 7"/><circle cx="91" cy="19" r="9"/><path d="m91 13 1.8 4.2L97 19l-4.2 1.8L91 25l-1.8-4.2L85 19l4.2-1.8Z"/></svg>' : '<svg viewBox="0 0 120 86"><rect x="25" y="12" width="70" height="61" rx="12"/><path d="M25 30h70M43 8v12m34-12v12M42 45h10m16 0h10m-36 14h10m16 0h10"/><path d="m83 45 2.5 5 5.5 2.5-5.5 2.5-2.5 5-2.5-5L75 52.5l5.5-2.5Z"/></svg>';
 }
 function makeFeedWidget(kind, t) {
-  const card = node("article", "home-widget-card home-feed-card tw:rounded-3xl tw:border tw:border-sela-line tw:bg-sela-surface/90 tw:p-4 tw:shadow-sm tw:sm:p-5");
+  const card = node("article", "home-widget-card home-feed-card tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5");
   const header = node("div", "home-widget-heading tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3", card), copy = node("div", "tw:min-w-0 tw:flex-1"), title = node("h2", "tw:mb-1 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink", copy), subtitle = node("p", "home-widget-subtitle tw:m-0 tw:text-xs tw:leading-5 tw:text-sela-muted", copy);
   header.append(copy);
   const controls = node("div", "tw:flex tw:shrink-0 tw:items-center tw:gap-1", header), list = node("div", "home-feed-list tw:mt-3 tw:space-y-1");

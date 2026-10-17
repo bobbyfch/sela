@@ -68,6 +68,8 @@ export declare const QURAN_STUDY_SOURCES: {
 };
 export declare function quranKemenagSurahUrl(number: number, verseCount?: number): string;
 export declare const QURAN_PATTERN_BACKGROUND: string;
+/** Deterministic, distinct geometric scene for each surah; decorative art only, not religious text. */
+export declare function quranSceneBackgroundForSurah(number: number): string;
 export declare const QURAN_SCENE_BACKGROUND: string;
 export declare function quranSurahName(number: number): string;
 export declare function quranSurahCatalog(): {

@@ -48,9 +48,9 @@
       "sha256": "42a00f725c4b1e5723096f0d5e951cb82d2ef7ccaa2354dae9a23bc136609c67"
     },
     "dist/js/sela.app.js": {
-      "bytes": 127385,
-      "gzip": 40978,
-      "sha256": "bf3b56a4b53eb39609d341d7bfc4cc45682f05a2a77378b54c3922ce74038ad3"
+      "bytes": 127312,
+      "gzip": 41267,
+      "sha256": "480b5500537fd6a6f4b7f8ae03d2308d507e24435c5968b2b039a5341ba9fbb8"
     },
     "dist/js/sela.metadata.js": {
       "bytes": 3407,
@@ -68,9 +68,9 @@
       "sha256": "acf94653a80f2482cfdf9f77a76c6c8d2e1cd3d69407c3794c7fbf08aa9f09f3"
     },
     "dist/js/sela.scriptures.js": {
-      "bytes": 19168,
-      "gzip": 7402,
-      "sha256": "ef2a6e6890e20d201b3db431f091b78a50ff7d5b6e256b24de8887830d5fa26b"
+      "bytes": 19070,
+      "gzip": 7831,
+      "sha256": "b015fe1cb17a867db41fd2b657aa1da18ac54c671690a109297cb38fd88b9901"
     },
     "dist/css/sela.app.css": {
       "bytes": 250314,

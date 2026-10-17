@@ -18,7 +18,7 @@ test('public landing and sample shelf follow every app language without layout o
   await expect(page.locator('h1[data-i18n=headline]')).not.toHaveText('Your books. Within reach.');
   await expect(page.locator('.sample-gallery h2')).not.toHaveText('Open a book. Try your own.');
   await expect(page.locator('.trial-upload strong')).not.toHaveText('Try your document');
-  await expect(page.locator('.product-help summary').first()).not.toHaveText('Install on your device');
+  await expect(page.locator('.product-help h3').first()).not.toHaveText('Install on your device');
  }
  for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
 });
@@ -31,12 +31,18 @@ test('Tailwind page layouts switch at safe widths and preserve the fixed bookshe
   const metrics=await page.evaluate(()=>({
    heroColumns:getComputedStyle(document.querySelector('.hero')!).gridTemplateColumns.split(' ').length,
    playgroundTag:document.querySelector('#install-viewer')!.tagName,
-   demoInsideConfig:!!document.querySelector('#install-viewer #playground #demo-mode'),
+   demoInsideConfig:!!document.querySelector('#install-viewer #demo-mode')&&!!document.querySelector('#install-viewer #playground'),
+   setupVisible:document.querySelector('#install-viewer')!.getClientRects().length>0,
+   setupColumns:getComputedStyle([...document.querySelector('#install-viewer')!.children].find(element=>element.classList.contains('tw:grid'))!).gridTemplateColumns.split(' ').length,
+   productHeights:[...document.querySelectorAll<HTMLElement>('#products article')].map(element=>Math.round(element.getBoundingClientRect().height)),
    overflow:document.documentElement.scrollWidth>innerWidth,
   }));
   expect(metrics.heroColumns,`public hero at ${width}px`).toBe(heroColumns);
-  expect(metrics.playgroundTag,`unified Viewer configuration at ${width}px`).toBe('DETAILS');
+  expect(metrics.playgroundTag,`unified Viewer configuration at ${width}px`).toBe('SECTION');
   expect(metrics.demoInsideConfig,`Viewer controls stay together at ${width}px`).toBe(true);
+  expect(metrics.setupVisible,`Viewer setup is visible by default at ${width}px`).toBe(true);
+  expect(metrics.setupColumns,`Viewer and configuration columns at ${width}px`).toBe(width>=1280?2:1);
+  if(width>=1024)expect(Math.max(...metrics.productHeights)-Math.min(...metrics.productHeights),`equal product card heights at ${width}px`).toBeLessThanOrEqual(1);
   expect(metrics.overflow,`public page at ${width}px`).toBe(false);
  }
  await page.goto('/mobile/');

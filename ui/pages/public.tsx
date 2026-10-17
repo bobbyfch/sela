@@ -1,6 +1,49 @@
 import React from "react";
 import { Button } from "../components/ui/button.tsx";
 import { NativeSelect } from "../components/ui/native-select.tsx";
+import {
+  siAstro,
+  siBootstrap,
+  siCodeigniter,
+  siHtml5,
+  siLaravel,
+  siReact,
+  siTailwindcss,
+  siVuedotjs,
+  type SimpleIcon,
+} from "simple-icons";
+
+const supportedStack: ReadonlyArray<{ label: string; icon: SimpleIcon }> = [
+  { label: "HTML", icon: siHtml5 },
+  { label: "CodeIgniter", icon: siCodeigniter },
+  { label: "Laravel", icon: siLaravel },
+  { label: "Bootstrap", icon: siBootstrap },
+  { label: "React", icon: siReact },
+  { label: "Vue", icon: siVuedotjs },
+  { label: "Astro", icon: siAstro },
+  { label: "Tailwind CSS", icon: siTailwindcss },
+];
+
+function BrandMark({ icon }: { icon: SimpleIcon }) {
+  return (
+    <svg viewBox="0 0 24 24" className="tw:size-5 tw:shrink-0" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d={icon.path} />
+    </svg>
+  );
+}
+
+function StackLogos() {
+  return (
+    <ul className="tw:mt-4 tw:flex tw:flex-wrap tw:gap-2 tw:p-0" aria-label="Supported web stacks">
+      {supportedStack.map(({ label, icon }) => (
+        <li key={label} className="tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-xl tw:border tw:border-sela-line/80 tw:bg-sela-canvas/80 tw:px-3 tw:text-xs tw:font-semibold tw:text-sela-ink tw:transition-all tw:duration-200 tw:hover:-translate-y-0.5 tw:hover:border-sela-accent/50 tw:hover:bg-sela-surface tw:hover:shadow-sm">
+          <BrandMark icon={icon} />
+          <span>{label}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 export function PublicHead() {
   return (
     <>
@@ -155,27 +198,22 @@ function PublicContent() {
       {"\n"}
       <Hero />
       {"\n"}
-      <SampleGallery />
-      {"\n"}
-      <ReadingCorner />
-      {"\n"}
       <Products />
       <p className="tw:mx-auto tw:my-3 tw:max-w-6xl tw:text-sm tw:font-medium tw:text-sela-accent" id={"product-status"} role={"status"} aria-live={"polite"}></p>
-      <details id={"install-viewer"} className={"developer-playground tw:my-12 tw:overflow-hidden tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:shadow-sm"}>
-        <summary className="tw:flex tw:min-h-16 tw:cursor-pointer tw:list-none tw:items-center tw:gap-3 tw:px-5 tw:py-4 tw:font-semibold tw:text-sela-ink tw:sm:px-7 tw:[&::-webkit-details-marker]:hidden">
-          <span className="tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-violet/10 tw:text-sela-accent"><i className="ph-fill ph-sliders-horizontal tw:text-xl" aria-hidden={true}></i></span>
-          <span className="tw:min-w-0 tw:flex-1" data-en={"Try the viewer & get your setup"} data-id={"Coba viewer & dapatkan konfigurasinya"}>
-            {"Try the viewer & get your setup"}
-          </span>
-          <small className="tw:text-xs tw:font-normal tw:text-sela-muted tw:max-[560px]:hidden"
-            data-en={"One place to try and configure it"}
-            data-id={"Satu tempat untuk mencoba dan mengaturnya"}
-          >
-            {"One place to try and configure it"}
-          </small>
-        </summary>
+      <section id={"install-viewer"} className={"developer-playground tw:my-12 tw:scroll-mt-24 tw:overflow-hidden tw:rounded-[1.75rem] tw:border tw:border-sela-line/80 tw:bg-sela-surface/90 tw:shadow-sm tw:backdrop-blur-xl"} aria-labelledby="setup-heading">
+        <header className="tw:flex tw:flex-wrap tw:items-center tw:gap-4 tw:border-b tw:border-sela-line/80 tw:px-5 tw:py-5 tw:sm:px-7 tw:sm:py-6">
+          <span className="tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-violet/10 tw:text-sela-accent"><i className="ph-fill ph-sliders-horizontal tw:text-2xl" aria-hidden="true"></i></span>
+          <div className="tw:min-w-0 tw:flex-1">
+            <p className="tw:mb-1 tw:text-[10px] tw:font-bold tw:tracking-[.18em] tw:text-sela-accent">{"TRY IT · MAKE IT YOURS"}</p>
+            <h2 id="setup-heading" className="tw:m-0 tw:text-xl tw:font-semibold tw:tracking-tight tw:text-sela-ink tw:sm:text-2xl" data-en="Try the reader and get your setup" data-id="Coba reader dan siapkan konfigurasinya">{"Try the reader and get your setup"}</h2>
+          </div>
+          <p className="tw:m-0 tw:max-w-sm tw:text-sm tw:leading-6 tw:text-sela-muted" data-en="Choose a sample, pick a reading style, then copy the ready-to-use snippet." data-id="Pilih contoh, tentukan cara membaca, lalu salin konfigurasi yang siap dipakai.">{"Choose a sample, pick a reading style, then copy the ready-to-use snippet."}</p>
+        </header>
+        <div className="tw:grid tw:items-stretch tw:gap-4 tw:p-4 tw:sm:gap-5 tw:sm:p-6 tw:xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)] tw:xl:gap-6 tw:lg:p-7">
+        <div className="tw:min-w-0 tw:rounded-2xl tw:border tw:border-sela-line/80 tw:bg-sela-surface/80 tw:px-4 tw:sm:px-5">
         <Demo />
-        <form className={"playground tw:border-t tw:border-sela-line tw:p-4 tw:sm:p-7"} id={"playground"}>
+        </div>
+        <form className={"playground tw:min-w-0 tw:rounded-2xl tw:border tw:border-sela-line/80 tw:bg-sela-surface/80 tw:p-4 tw:sm:p-5"} id={"playground"}>
           <ol className="tw:mb-6 tw:grid tw:grid-cols-1 tw:gap-2 tw:pl-0 tw:sm:grid-cols-3">
             <li className="tw:flex tw:items-center tw:gap-3 tw:rounded-xl tw:bg-sela-canvas tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-violet/10 tw:font-bold tw:text-sela-accent">1</span><span data-en="Choose a sample or your own file." data-id="Pilih contoh atau file milikmu.">Choose a sample or your own file.</span></li>
             <li className="tw:flex tw:items-center tw:gap-3 tw:rounded-xl tw:bg-sela-canvas tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted"><span className="tw:grid tw:size-7 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sela-sky/15 tw:font-bold tw:text-sela-sky">2</span><span data-en="Pick how you want to read." data-id="Pilih cara membaca.">Pick how you want to read.</span></li>
@@ -315,8 +353,12 @@ function PublicContent() {
             hidden={true}
           ></div>
         </form>
+        </div>
         <Install />
-      </details>
+      </section>
+      <SampleGallery />
+      {"\n"}
+      <ReadingCorner />
       {"\n"}
       <Notes />
       {"\n"}
@@ -338,13 +380,6 @@ function PublicFooter() {
         <a href={"https://bobbyfch.github.io/"}>{"Bobby Fajar Christian"}</a>
       </span>
       <Nav />
-      <nav className="tw:order-5 tw:flex tw:flex-wrap tw:items-center tw:gap-x-3 tw:gap-y-2 tw:text-xs tw:font-semibold" aria-label={"Bobby Fajar Christian links"}>
-        <a href={"https://bobbyfch.github.io/"} target={"_blank"} rel={"noopener noreferrer"} data-en={"About Bobby"} data-id={"Tentang Bobby"}>{"About Bobby"}</a>
-        <a href={"https://github.com/bobbyfch"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on GitHub"}>{"GitHub"}</a>
-        <a href={"https://www.instagram.com/bobbyfch/"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on Instagram"}>{"Instagram"}</a>
-        <a href={"https://www.threads.com/@bobby.fch"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on Threads"}>{"Threads"}</a>
-        <a href={"https://id.linkedin.com/in/bobbyfajarc"} target={"_blank"} rel={"noopener noreferrer"} aria-label={"Bobby on LinkedIn"}>{"LinkedIn"}</a>
-      </nav>
       <a
         className="tw:order-3 tw:ml-auto tw:text-xs tw:font-semibold tw:text-sela-ink tw:underline-offset-4 hover:tw:underline"
         href={
@@ -680,11 +715,11 @@ function Products() {
   return (
     <section
       id={"products"}
-      className={"installation-guide tw:my-10 tw:mx-auto tw:grid tw:w-full tw:max-w-6xl tw:grid-cols-1 tw:items-start tw:gap-4 tw:lg:grid-cols-2 tw:lg:gap-6"}
+      className={"installation-guide tw:my-10 tw:mx-auto tw:grid tw:w-full tw:max-w-6xl tw:grid-cols-1 tw:items-stretch tw:gap-4 tw:lg:grid-cols-2 tw:lg:gap-6"}
       aria-label={"Sela Books and Viewer"}
     >
       {"\n"}
-      <article className="tw:min-w-0 tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:p-5 tw:shadow-sm tw:sm:p-7" id={"install-mobile"}>
+      <article className="tw:flex tw:h-full tw:min-w-0 tw:flex-col tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line/80 tw:bg-sela-surface/90 tw:p-5 tw:shadow-sm tw:backdrop-blur-xl tw:sm:p-7" id={"install-mobile"}>
         <div className={"product-heading tw:flex tw:items-center tw:gap-3"}>
           <span className={"route-icon tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-violet/10 tw:text-sela-violet"}>
             <i className="ph-fill ph-books tw:text-2xl" aria-hidden={true}></i>
@@ -744,7 +779,7 @@ function Products() {
           <aside className="tw:mt-3 tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-sky/25 tw:bg-sela-sky/10 tw:p-3" role="note"><i className="ph-fill ph-info tw:mt-0.5 tw:shrink-0 tw:text-lg tw:text-sela-sky" aria-hidden={true}></i><p className="install-footnote tw:m-0 tw:text-[11px] tw:leading-5 tw:text-sela-ink/80" data-en={"Sela checks whether this browser has already installed the app and hides the install action when it confirms. Options vary by browser and operating system."} data-id={"Sela memeriksa apakah aplikasi sudah terpasang dan menyembunyikan tombol setelah browser mengonfirmasinya. Pilihan berbeda menurut browser dan sistem operasi."}>{"Sela checks whether this browser has already installed the app and hides the install action when it confirms. Options vary by browser and operating system."}</p></aside>
         </details>
       </article>
-      <article className="tw:min-w-0 tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line tw:bg-sela-surface tw:p-5 tw:shadow-sm tw:sm:p-7">
+      <article className="tw:flex tw:h-full tw:min-w-0 tw:flex-col tw:scroll-mt-24 tw:rounded-[1.75rem] tw:border tw:border-sela-line/80 tw:bg-sela-surface/90 tw:p-5 tw:shadow-sm tw:backdrop-blur-xl tw:sm:p-7">
         <div className={"product-heading tw:flex tw:items-center tw:gap-3"}>
           <span className={"route-icon tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-sky/15 tw:text-sela-sky"}>
             <i className="ph-fill ph-code tw:text-2xl" aria-hidden={true}></i>
@@ -801,17 +836,11 @@ function Products() {
             </span>
           </a>
         </div>
-        <details className={"product-help tw:mt-5 tw:border-t tw:border-sela-line tw:pt-4"}>
-          <summary className="tw:cursor-pointer tw:list-none tw:font-semibold tw:text-sela-ink tw:[&::-webkit-details-marker]:hidden">
-            <span
-              data-en={"Works with your stack"}
-              data-id={"Cocok dengan stack kamu"}
-            >
-              {"Works with your stack"}
-            </span>
-          </summary>
+        <div className={"product-help tw:mt-auto tw:border-t tw:border-sela-line tw:pt-4"}>
+          <h3 className="tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink" data-en="Works with your stack" data-id="Cocok dengan stack kamu">{"Works with your stack"}</h3>
           <p className="tw:mb-0 tw:mt-3 tw:text-xs tw:leading-6 tw:text-sela-muted" data-en={"Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional."} data-id={"Gunakan Viewer yang sama dari HTML, CI3, Laravel, React, Vue, Svelte, Astro, dan host lainnya. Bootstrap dan Tailwind bersifat opsional."}>{"Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional."}</p>
-        </details>
+          <StackLogos />
+        </div>
       </article>
     </section>
   );
