@@ -274,7 +274,6 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     link.append(controlIcon("share"));
     text(el("span", "", link), label, idLabel);
   };
-  addProfileLink("About Bobby", "https://bobbyfch.github.io/", "Tentang Bobby");
   addProfileLink("GitHub", "https://github.com/bobbyfch");
   addProfileLink("Instagram", "https://www.instagram.com/bobbyfch/");
   addProfileLink("Threads", "https://www.threads.com/@bobby.fch");

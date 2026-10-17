@@ -312,19 +312,6 @@ function Main() {
     </main>
   );
 }
-function Nav() {
-  return (
-    <nav aria-label={"Project links"}>
-      <a
-        href={"https://github.com/bobbyfch/sela"}
-        target={"_blank"}
-        rel={"noopener noreferrer"}
-      >
-        {"Sela on GitHub"}
-      </a>
-    </nav>
-  );
-}
 function Footer() {
   return (
     <footer className={"app-footer"}>
@@ -345,9 +332,7 @@ function Footer() {
           {"Bobby Fajar Christian"}
         </a>
       </span>
-      <Nav />
       <nav className="app-footer-social" aria-label={"Bobby Fajar Christian links"}>
-        <a href={"https://bobbyfch.github.io/"} target={"_blank"} rel={"noopener noreferrer"}>{"About Bobby"}</a>
         <a href={"https://github.com/bobbyfch"} target={"_blank"} rel={"noopener noreferrer"}>{"GitHub"}</a>
         <a href={"https://www.instagram.com/bobbyfch/"} target={"_blank"} rel={"noopener noreferrer"}>{"Instagram"}</a>
         <a href={"https://www.threads.com/@bobby.fch"} target={"_blank"} rel={"noopener noreferrer"}>{"Threads"}</a>
