@@ -33,8 +33,8 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   iconAction(submit, "search", t("Search", "Cari"));
   const feedback = node(parent, "p", "", "tw:min-h-6 tw:text-sm tw:text-sela-muted");
   feedback.setAttribute("role", "status");
-  const resultsSection = node(parent, "section", "", "discovery-results-section tw:mt-10");
-  const resultsHeader = node(resultsSection, "div", "", "tw:mb-4 tw:flex tw:min-w-0 tw:flex-wrap tw:items-end tw:justify-between tw:gap-3");
+  const resultsSection = node(parent, "section", "", "discovery-results-section tw:mt-10 tw:max-[370px]:mt-4");
+  const resultsHeader = node(resultsSection, "div", "", "tw:mb-4 tw:max-[370px]:mb-2 tw:flex tw:min-w-0 tw:flex-wrap tw:items-end tw:justify-between tw:gap-3");
   const resultsCopy = node(resultsHeader, "div", "", "tw:min-w-0");
   const resultsHeading = node(resultsCopy, "h2", t("Top reads", "Bacaan populer"), "discovery-results-heading tw:mb-1 tw:text-xl tw:font-semibold tw:tracking-tight tw:text-sela-ink");
   const resultsIntro = node(resultsCopy, "p", t("A few good books to start with.", "Beberapa buku pilihan untuk memulai."), "discovery-results-intro tw:m-0 tw:text-sm tw:leading-6 tw:text-sela-muted");
@@ -67,7 +67,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     render();
   }
   showAllBooks.onclick = () => setResultsExpanded(!resultsExpanded);
-  const categorySections = node(parent, "div", "", "discovery-browse-sections tw:my-8 tw:space-y-8");
+  const categorySections = node(parent, "div", "", "discovery-browse-sections tw:my-8 tw:space-y-8 tw:max-[370px]:my-2 tw:max-[370px]:space-y-4");
   categorySections.setAttribute("aria-label", t("Browse the bookshop", "Jelajahi toko buku"));
   const categoryGroups = [{ title: ["Curated shelves", "Rak pilihan"], keys: ["trending", "hidden", "new", "all", "open", "free", "paid"] }, { title: ["Browse by genre", "Jelajahi genre"], keys: ["fiction", "fantasy", "mystery", "romance", "science_fiction", "history", "poetry", "children", "philosophy", "biography"] }];
   function updateResultsHeading() {
@@ -109,7 +109,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       toggle.textContent = rowState.expanded ? t("Show less", "Tampilkan lebih sedikit") : t("Show all", "Lihat semua");
       toggle.setAttribute("aria-expanded", String(rowState.expanded));
       for (const item of rowState.buttons) {
-        item.button.className = rowState.expanded ? "discovery-category tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3.5 tw:text-sm tw:font-semibold tw:text-sela-muted tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent" : "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent";
+        item.button.className = rowState.expanded ? "discovery-category tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3.5 tw:text-sm tw:font-semibold tw:text-sela-muted tw:transition-colors tw:hover:border-sela-accent tw:hover:text-sela-accent" : "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:max-[370px]:min-h-16 tw:max-[370px]:flex-row tw:max-[370px]:items-center tw:max-[370px]:justify-start tw:max-[370px]:gap-2 tw:max-[370px]:p-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent";
         item.icon.hidden = rowState.expanded;
         item.description.hidden = rowState.expanded;
       }
@@ -124,15 +124,15 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     }
     for (const key of group.keys) {
       const option = categoryOptions.find((item) => item[0] === key);
-      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-24 tw:w-48 tw:shrink-0 tw:snap-start tw:flex-col tw:items-start tw:justify-between tw:gap-3 tw:max-[370px]:min-h-16 tw:max-[370px]:flex-row tw:max-[370px]:items-center tw:max-[370px]:justify-start tw:max-[370px]:gap-2 tw:max-[370px]:p-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
       button.type = "button";
       button.setAttribute("aria-pressed", String(key === "trending"));
-      const icon = node(button, "span", "", "tw:grid tw:size-9 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-accent/10 tw:text-sela-accent");
+      const icon = node(button, "span", "", "tw:grid tw:size-9 tw:max-[370px]:size-8 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-accent/10 tw:text-sela-accent");
       icon.setAttribute("aria-hidden", "true");
       icon.append(controlIcon(discoveryIcons[option[6]] || "read"));
       const copy = node(button, "span", "", "tw:block tw:min-w-0");
       node(copy, "span", t(option[1], option[2]), "tw:block tw:truncate tw:text-sm tw:font-semibold tw:text-sela-ink");
-      const descriptionCopy = node(copy, "span", t(option[4], option[5]), "tw:mt-1 tw:block tw:line-clamp-2 tw:text-xs tw:leading-5 tw:text-sela-muted");
+      const descriptionCopy = node(copy, "span", t(option[4], option[5]), "tw:mt-1 tw:block tw:line-clamp-2 tw:text-xs tw:leading-5 tw:text-sela-muted tw:max-[370px]:hidden");
       button.setAttribute("aria-label", t(option[1], option[2]));
       if (option[4]) button.setAttribute("aria-description", t(option[4], option[5]));
       button.onclick = () => chooseCategory(key);
@@ -349,6 +349,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       const read = node(actions, "button", t("Read", "Baca")), save = node(actions, "button", t("Save offline", "Simpan offline"));
       read.type = save.type = "button";
       iconAction(read, "read", t("Read", "Baca"));
+      read.classList.add("tw:max-[599px]:!gap-1", "tw:max-[599px]:!px-1.5", "tw:max-[599px]:!text-[11px]");
       iconAction(save, "download", t("Save offline", "Simpan offline"));
       async function acquire(open) {
         read.disabled = save.disabled = true;

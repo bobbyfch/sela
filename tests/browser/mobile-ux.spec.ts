@@ -63,18 +63,18 @@ test('primary Home and public controls keep comfortable touch sizes without mobi
       overflow:document.documentElement.scrollWidth>innerWidth,
       targets:[...document.querySelectorAll('.home-month-arrow,.home-calendar-day,.home-calendar-view,.focus-controls select,.focus-controls button,.home-install-action,.home-background-picker,.home-water-add,.home-water-undo,.home-page .catalog-info')]
         .filter(element=>element.checkVisibility({checkOpacity:true}))
-        .map(element=>{const box=element.getBoundingClientRect();return {width:box.width,height:box.height};})
+        .map(element=>{const box=element.getBoundingClientRect();return {width:box.width,height:box.height,minHeight:getComputedStyle(element).minHeight,computedHeight:getComputedStyle(element).height,label:element.getAttribute('aria-label')||element.textContent?.trim()||String(element.className)};})
     }));
     expect(app.overflow,`Reader Home at ${width}px`).toBe(false);
     expect(app.targets.length,`visible Home targets at ${width}px`).toBeGreaterThan(10);
-    for(const target of app.targets)expect(target.height,`Home target at ${width}px`).toBeGreaterThanOrEqual(43.5);
+    for(const target of app.targets)expect(target.height,'Home target at '+width+'px: '+JSON.stringify(target)).toBeGreaterThanOrEqual(43.5);
 
     await page.goto('/');
     const publicPage=await page.evaluate(()=>({
       overflow:document.documentElement.scrollWidth>innerWidth,
       targets:[...document.querySelectorAll('[data-theme-choice],#language,.hero-link')]
         .filter(element=>element.checkVisibility({checkOpacity:true}))
-        .map(element=>{const box=element.getBoundingClientRect();return {width:box.width,height:box.height};})
+        .map(element=>{const box=element.getBoundingClientRect();return {width:box.width,height:box.height,minHeight:getComputedStyle(element).minHeight,computedHeight:getComputedStyle(element).height,label:element.getAttribute('aria-label')||element.textContent?.trim()||String(element.className)};})
     }));
     expect(publicPage.overflow,`public page at ${width}px`).toBe(false);
     expect(publicPage.targets).toHaveLength(5);

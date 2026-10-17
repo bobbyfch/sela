@@ -10,12 +10,12 @@ test.beforeEach(async({page})=>{
 });
 
 test('Home scene keeps the title and weather readable from phone through desktop',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-world-canvas.is-visible')).toBeVisible();
+ await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-world-stage')).toBeVisible();await expect(page.locator('.home-world-art')).toBeVisible();
  for(const width of [320,390,640,768,860,1024,1440]){
   await page.setViewportSize({width,height:900});
-  const intro=page.locator('.home-page .room-intro'),title=intro.locator('h1'),canvas=page.locator('.home-world-canvas'),weather=intro.locator('.weather-widget');
-  await expect(title).toBeVisible();await expect(weather).toBeVisible();await expect(canvas).toBeVisible();
-  const layout=await page.evaluate(()=>{const intro=document.querySelector('.room-intro')!,title=intro.querySelector('h1')!,weather=intro.querySelector('.weather-widget')!,time=intro.querySelector('.clock time')!,canvas=document.querySelector('.home-world-canvas')!;const rect=(el:Element)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {intro:rect(intro),title:rect(title),weather:rect(weather),time:rect(time),scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,weatherDisplay:getComputedStyle(weather).display,canvasVisible:canvas.classList.contains('is-visible')}});
+  const intro=page.locator('.home-page .room-intro'),title=intro.locator('h1'),stage=intro.locator('.home-world-stage'),art=stage.locator('.home-world-art'),weather=intro.locator('.weather-widget');
+  await expect(title).toBeVisible();await expect(weather).toBeVisible();await expect(stage).toBeVisible();await expect(art).toBeVisible();
+  const layout=await page.evaluate(()=>{const intro=document.querySelector('.room-intro')!,title=intro.querySelector('h1')!,weather=intro.querySelector('.weather-widget')!,time=intro.querySelector('.clock time')!,canvas=document.querySelector('.home-world-canvas');const rect=(el:Element)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {intro:rect(intro),title:rect(title),weather:rect(weather),time:rect(time),scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,weatherDisplay:getComputedStyle(weather).display,canvasVisible:!canvas||canvas.classList.contains('is-visible')}});
   expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.title.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.title.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.weather.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.width).toBeGreaterThan(80);expect(layout.time.height).toBeLessThan(40);expect(layout.canvasVisible).toBe(true);
  }
 });
@@ -98,16 +98,15 @@ test('calendar fetches localized public holidays for the selected language regio
  await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await page.locator('[data-tab=home]').click();const indonesian=page.locator('.home-calendar-day[data-date="2026-01-16"]');await expect(indonesian).toHaveClass(/has-holiday/);await expect(indonesian).toHaveAttribute('title','Isra Mi’raj');await indonesian.click();await expect(page.locator('.home-calendar-detail')).toContainText('Libur nasional · Isra Mi’raj');expect(requests).toContain('/api/v3/PublicHolidays/2026/ID');
 });
 
-test('empty news and on-this-day feeds keep illustrated empty states and matched heights',async({page})=>{
+test('empty news and history feeds stay illustrated and fit desktop and mobile columns',async({page})=>{
  await page.route(/^https:\/\/[^/]+\.wikipedia\.org\/api\/rest_v1\/feed\/onthisday\//,route=>route.fulfill({json:{selected:[]}}));
  await page.route('https://api.gdeltproject.org/api/v2/doc/doc?**',route=>route.fulfill({status:429,body:'rate limited'}));
  await page.route('https://api.rss2json.com/**',route=>route.fulfill({status:503,body:'offline'}));
  await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  const lists=page.locator('.home-feed-card .home-feed-list');await expect(lists.nth(0)).toHaveAttribute('data-feed-state','empty');await expect(lists.nth(1)).toHaveAttribute('data-feed-state','error');
  await expect(page.locator('.home-feed-empty-scene svg')).toHaveCount(2);
- for(const width of [1440,390]){await page.setViewportSize({width,height:900});const heights=await page.locator('.home-feed-card').evaluateAll(cards=>cards.map(card=>card.getBoundingClientRect().height));expect(heights).toHaveLength(2);expect(Math.abs(heights[0]-heights[1])).toBeLessThanOrEqual(2);}
+ for(const width of [1440,390]){await page.setViewportSize({width,height:900});const cards=await page.locator('.home-feed-card').evaluateAll(elements=>elements.map(card=>({width:card.clientWidth,scrollWidth:card.scrollWidth,height:card.getBoundingClientRect().height,contentWidth:(card.querySelector('.home-feed-list') as HTMLElement).scrollWidth,listWidth:(card.querySelector('.home-feed-list') as HTMLElement).clientWidth})));expect(cards).toHaveLength(2);for(const card of cards){expect(card.width).toBeGreaterThan(0);expect(card.height).toBeGreaterThan(150);expect(card.scrollWidth).toBeLessThanOrEqual(card.width+1);expect(card.contentWidth).toBeLessThanOrEqual(card.listWidth+1);}expect(Math.max(cards[0].width,cards[1].width)/Math.min(cards[0].width,cards[1].width),'feed card width balance at '+width+'px: '+JSON.stringify(cards)).toBeLessThanOrEqual(1.1);}
 });
-
 test('the single news shelf lets people change provider and remembers the choice',async({page})=>{
  const providers:string[]=[];
  await page.route(/^https:\/\/api\.rss2json\.com\/v1\/api\.json\?/,route=>{providers.push('google');return route.fulfill({json:{status:'ok',items:[{title:'A book story - Publisher',link:'https://news.google.com/rss/articles/book',pubDate:'2026-10-14'}]}});});

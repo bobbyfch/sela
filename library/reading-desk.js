@@ -15,13 +15,16 @@ export function mountReadingDesk(home, { t, navigate, filter }) {
     return { key, value, label, en, id };
   });
   const focus = node(home, "section", "", "focus-card tw:max-w-[360px]"), heading = node(focus, "h2", t("A little reading time", "Waktu untuk membaca")), description = node(focus, "p", t("Make room for a chapter.", "Sisihkan waktu untuk satu bab."));
-  const controls = node(focus, "div", "", "focus-controls"), duration = node(controls, "select");
+  const controls = node(focus, "div", "", "focus-controls tw:grid tw:min-w-0 tw:max-[1199px]:!grid-cols-[minmax(0,1fr)_auto]"), duration = node(controls, "select");
+  duration.classList.add("tw:!h-11", "tw:!min-h-11");
   duration.setAttribute("aria-label", t("Reading timer duration", "Durasi timer baca"));
   for (const n of [15, 25, 45]) {
     const opt = node(duration, "option", n + " " + t("min", "menit"));
     opt.value = String(n);
   }
   const output = node(controls, "output", "15:00"), start = node(controls, "button", t("Start", "Mulai")), reset = node(controls, "button", t("Reset", "Reset"));
+  start.classList.add("tw:!h-11", "tw:!min-h-11");
+  reset.classList.add("tw:!h-11", "tw:!min-h-11");
   start.type = reset.type = "button";
   const message = node(focus, "p", "", "focus-message");
   message.setAttribute("role", "status");

@@ -1309,7 +1309,7 @@
     line-height: 1.4;
   }
   body[data-product=mobile] #mobile-app .home-page .room-intro .focus-controls { gap: 5px; }
-  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-controls :where(select, button) { min-height: 40px; }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-controls :where(select, button) { min-height: 44px; }
 }
 
 @media (max-width: 370px) {

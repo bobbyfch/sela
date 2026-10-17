@@ -6,6 +6,8 @@
 @import "./home-responsive-utilities.css";
 @import "./app-redesign-utilities.css";
 
+@source inline("tw:max-[1199px]:!grid-cols-[minmax(0,1fr)_auto] tw:max-[599px]:!gap-1 tw:max-[599px]:!px-1.5 tw:max-[599px]:!text-[11px]");
+
 @source inline("tw:app-redesign");
 
 @source "./pages/reader.tsx";
