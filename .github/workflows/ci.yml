@@ -15,7 +15,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts sela-sw.js offline-assets.json
+      # The compiled public Tailwind sheet has platform-dependent serialization; the worker hash is derived from it.
+      # Browser tests still exercise the compiled sheet and worker produced on this runner.
+      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/public.css'
       - run: npm test
       - run: npm run test:types
       - run: npm run typecheck

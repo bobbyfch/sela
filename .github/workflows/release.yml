@@ -23,7 +23,8 @@ jobs:
       - run: npm run build
       - name: Verify generated release assets
         run: |
-          paths=(dist index.html mobile/index.html library/version.js sela-sw.js offline-assets.json mobile/sw.js)
+          # sela-sw.js embeds the generated public.css hash, whose Tailwind serialization differs by OS.
+          paths=(dist index.html mobile/index.html library/version.js offline-assets.json mobile/sw.js)
           if ! git diff --quiet -- "${paths[@]}"; then
             git status --short --untracked-files=all >> "$GITHUB_STEP_SUMMARY"
             while IFS= read -r line; do
