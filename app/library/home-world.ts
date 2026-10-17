@@ -48,13 +48,24 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   canvas.setAttribute('aria-hidden', 'true');
   worldPanel.append(art, canvas, paletteDoodle);
   intro.insertBefore(worldPanel, intro.querySelector('.ritual'));
+  const applyScene = () => {
+    const hour = new Date().getHours();
+    worldPanel.dataset.daypart = hour >= 5 && hour < 10 ? 'morning' : hour >= 10 && hour < 16 ? 'day' : hour >= 16 && hour < 19 ? 'sunset' : 'night';
+    worldPanel.dataset.weather = document.documentElement.dataset.weather || 'neutral';
+  };
+  let artOnlyTimer = 0;
   const cleanupArtOnly = () => {
     document.removeEventListener('sela:palette', syncPaletteDoodle);
+    document.removeEventListener('sela:weather', applyScene);
+    if (artOnlyTimer) clearInterval(artOnlyTimer);
     window.removeEventListener('pagehide', cleanupArtOnly);
     worldPanel.remove();
   };
   const useArtOnly = () => {
     home.dataset.world = 'art-only';
+    applyScene();
+    document.addEventListener('sela:weather', applyScene);
+    artOnlyTimer = window.setInterval(applyScene, 60000);
     canvas.remove();
     window.addEventListener('pagehide', cleanupArtOnly, { once: true });
     return cleanupArtOnly;
@@ -230,11 +241,6 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     canvas.classList.toggle('tw:opacity-75', visible && home.dataset.customBackground !== 'true');
     canvas.classList.toggle('tw:opacity-35', visible && home.dataset.customBackground === 'true');
     art.style.opacity = home.dataset.customBackground === 'true' ? '.42' : '.84';
-  };
-  const applyScene = () => {
-    const hour=new Date().getHours();
-    worldPanel.dataset.daypart=hour>=5&&hour<10?'morning':hour>=10&&hour<16?'day':hour>=16&&hour<19?'sunset':'night';
-    worldPanel.dataset.weather=document.documentElement.dataset.weather||'neutral';
   };
   const sync = () => {
     if (disposed) return;

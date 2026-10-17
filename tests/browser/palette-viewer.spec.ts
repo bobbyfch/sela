@@ -126,4 +126,8 @@ test('art-only Home fallback keeps its palette when WebGL is unavailable',async(
  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
  await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
  await expect(stage).toHaveAttribute('data-palette','sakura');
+ await expect(stage).toHaveAttribute('data-daypart',/^(morning|day|sunset|night)$/);
+ await page.locator('html').evaluate(element=>{element.setAttribute('data-weather','rain');document.dispatchEvent(new Event('sela:weather'));});
+ await expect(stage).toHaveAttribute('data-weather','rain');
+ await expect.poll(()=>stage.locator('.home-world-art').evaluate(element=>getComputedStyle(element).getPropertyValue('--world-filter-weather'))).toContain('saturate');
 });
