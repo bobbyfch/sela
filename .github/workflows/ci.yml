@@ -15,9 +15,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # The compiled public Tailwind sheet has platform-dependent serialization; the worker hash is derived from it.
-      # Browser tests still exercise the compiled sheet and worker produced on this runner.
-      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/public.css'
+      # Tailwind serializes both shipped CSS bundles differently across OSes; mobile/sw.js embeds those CSS hashes.
+      # Cache identity unit tests and browser tests validate the CSS and matching workers built on this runner.
+      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/mobile-app.css' ':(exclude)site/public.css' ':(exclude)mobile/sw.js'
       - run: npm test
       - run: npm run test:types
       - run: npm run typecheck
