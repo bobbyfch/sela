@@ -13,10 +13,10 @@ export interface ScriptureSection {reference:string;text:string;direction?:'ltr'
 export const SCRIPTURE_PROVIDERS=[
  {faith:'islam',name:'QuranEnc · Kementerian Agama / Saheeh International / Saeed Sato',textLanguages:['id','en','ja'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://quranenc.com/en/home/api/'},
  {faith:'protestantism',name:'World English Bible · eBible.org',textLanguages:['en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://ebible.org/engwebp/'},
- {faith:'catholicism',name:'Bible API · Lembaga Alkitab Indonesia',textLanguages:['id'],appLanguages:['id','en','ja'],requiresKey:true,source:'https://bible-api.alkitab.or.id/'},
+ {faith:'catholicism',name:'Douay-Rheims 1899 · Public Domain · eBible.org',textLanguages:['en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://ebible.org/engDRA/'},
  {faith:'buddhism',name:'SuttaCentral · Bhikkhu Sujato',textLanguages:['en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://suttacentral.net/api/docs/index.html'},
- {faith:'hinduism',name:'Bhagavad Gita API · Sanskrit source and English rendering',textLanguages:['sa','en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://vedicscriptures.github.io/'},
- {faith:'confucianism',name:'Chinese Text Project · Analects',textLanguages:['zh','en'],appLanguages:['id','en','ja'],requiresKey:true,source:'https://ctext.org/tools/api/ens'}
+ {faith:'hinduism',name:'The Song Celestial · Sir Edwin Arnold · Public Domain',textLanguages:['en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://www.gutenberg.org/ebooks/2388'},
+ {faith:'confucianism',name:'Confucian Analects · James Legge · Public Domain',textLanguages:['en'],appLanguages:['id','en','ja'],requiresKey:false,source:'https://www.gutenberg.org/ebooks/3330'}
 ] as const;
 
 /** Fetch today's cited passage. The app locale chooses a source edition where one is available. */

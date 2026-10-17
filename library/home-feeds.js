@@ -68,7 +68,7 @@ export async function loadOnThisDay(language, date = /* @__PURE__ */ new Date(),
   const lang = localeBase(language), key = `sela-home:on-this-day:${lang}:${date.getMonth() + 1}-${date.getDate()}`;
   const cached = cacheRead(key, 24 * 60 * 60 * 1e3);
   if (cached) return cached;
-  const candidates = [.../* @__PURE__ */ new Set([wikiLanguages.has(lang) ? lang : "en", "en"])], day = todayKey(date);
+  const candidates = lang === "id" ? ["id"] : [.../* @__PURE__ */ new Set([wikiLanguages.has(lang) ? lang : "en", "en"])], day = todayKey(date);
   for (const candidate of candidates) {
     try {
       const response = await fetch(`https://${candidate}.wikipedia.org/api/rest_v1/feed/onthisday/selected/${day}`, { signal: requestSignal(signal), headers: { Accept: "application/json" }, credentials: "omit", referrerPolicy: "no-referrer" });
@@ -127,7 +127,7 @@ export function parseAntaraRss(xml) {
     if (!title || !url) continue;
     const source = safeLink(rssTag(row, "source"), /^www\.antaranews\.com$/), description = stripMarkup(rssTag(row, "description")).slice(0, 500);
     const enclosure = /<enclosure\b[^>]*\burl\s*=\s*(["'])(.*?)\1[^>]*>/i.exec(row)?.[2] || /<(?:[\w.-]+:)?(?:content|thumbnail)\b[^>]*\burl\s*=\s*(["'])(.*?)\1[^>]*>/i.exec(row)?.[2];
-    const image = safeLink(enclosure ? decodeXml(enclosure) : "", /^cdn\.antaranews\.com$/);
+    const image = safeLink(enclosure ? decodeXml(enclosure) : "", /^(?:cdn|img)\.antaranews\.com$/);
     const date = rssTag(row, "pubDate");
     items.push({ title: title.slice(0, 300), description, url, source: source || "ANTARA", date: date || void 0, image });
     if (items.length === 12) break;

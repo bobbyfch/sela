@@ -59,3 +59,42 @@ Room/companion/material SVG artwork and bilingual offline reflections are origin
 Explore and optional quote/dictionary features fetch content only when requested. GITenberg/Gutenberg editions retain their source notices and jurisdiction-specific rights. Wikisource/Wikiquote contributions retain attribution and their applicable CC BY-SA terms; underlying works and quotations may carry separate rights. Open Library/DOAB/OpenStax/Standard Ebooks metadata links do not imply ownership or permission to redistribute every edition. Online quote passages retain their source attribution; original reflections are labelled separately.
 
 Dictionary packs are supplied by the user; no third-party dictionary dataset is bundled. Optional dictionaryapi.dev/MyMemory calls follow provider terms and receive the submitted word/passage. Local audio is user-supplied; rain ambience is synthesized locally. WebDAV sends an explicitly requested private backup to the user-selected server. See docs/library-sources.md for provider scope and availability.
+
+The lazy-loaded local book-search module bundles Orama 3.1.18 and @orama/stemmers 3.1.18, both Apache-2.0 licensed. Their license texts are preserved in `dist/orama-LICENSE.md` and `dist/orama-stemmers-LICENSE.md`.
+
+## Local faith-reading editions
+
+The optional local reading library contains complete English text editions loaded only after the reader chooses a tradition: World English Bible (66 books, public domain; https://ebible.org/engwebp/), Douay-Rheims 1899 American Edition (73 books, public domain; https://ebible.org/engDRA/), Dhammapada translated by Bhikkhu Sujato (423 verses, CC0 1.0; https://github.com/suttacentral/bilara-data/blob/published/LICENSE.md), The Song Celestial / Bhagavad-Gita translated by Sir Edwin Arnold (18 chapters, Project Gutenberg #2388; https://www.gutenberg.org/ebooks/2388), and The Analects of Confucius translated by James Legge (20 books, Project Gutenberg #3330; https://www.gutenberg.org/ebooks/3330). The Gutenberg editions are public domain in the United States; check applicable local law before redistribution. The selected edition, translator when applicable, source and license are shown with the reading. These English editions are not Indonesian translations.
+
+## Curated reading directories and open textbooks
+
+Selected classics in `library/public-books.json` are metadata plus pinned links to
+GITenberg text files. Text bytes are fetched only after the reader chooses Read
+or Save offline; no Gutenberg text files are bundled in this repository. Sela
+keeps each edition's Project Gutenberg notice in imported text and links to its
+official ebook landing page. Project Gutenberg identifies the selected works
+as public domain in the United States, but rights can vary by country and by
+translator or edition. The copyrighted David Wyllie translation of
+*Metamorphosis* (ebook 5200) is deliberately excluded from this offline list.
+The U.S. public-domain label does not establish Indonesian status; check the
+edition and applicable law, including Indonesia's [Copyright Act (UU 28/2014)](https://peraturan.bpk.go.id/Details/38690/uu-no-28-tahun-2014), before redistribution.
+
+The selected Indonesian programming links in
+`library/indonesia-tech-books.json` are an adapted, curated subset of
+EbookFoundation's `free-programming-books-id.md` directory, licensed CC BY 4.0.
+Attribution: “EbookFoundation contributors, Free Programming Books Indonesia,”
+https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-id.md.
+Descriptions are written for Sela. Each linked work retains its own license
+and access conditions. Sela stores only titles, short descriptions, and
+outbound HTTPS URLs for these links; it does not copy their book content.
+
+OpenStax entries in Explore link to official textbook pages. Textbook rights
+are edition-specific (including CC BY and CC BY-NC-SA); books and PDF files are
+not bundled. Check each source edition before reuse.
+
+The following user-supplied GitHub repositories were reviewed as discovery
+indexes: `sindresorhus/awesome` (CC0-1.0), `GitIndonesia/awesome-indonesia-repo`
+(CC BY 4.0 for the index), and `rujukan/made-in-indonesia` (no repository
+license was found). Sela copies no descriptions or project code from the latter
+two indexes and does not treat a linked project's public availability as a
+reuse license. Their URLs are documented in `docs/library-sources.md`.

@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { readPersonal } from './personal-store.ts';
 import { getAsset } from './storage.ts';
+import { controlIcon } from './controls.ts';
+import { getPaletteDefinition } from './themes.ts';
 
 type Companion = 'fox' | 'tanuki' | 'crane' | 'rabbit' | 'plant';
 type Mascot = Exclude<Companion, 'plant'>;
-const artUrl = new URL('../site/illustrations/home-reading-jakarta.webp', location.href).href;
+const artUrl = new URL('../site/art/sela-mage-sky.webp', location.href).href;
 const atlasUrl = new URL('../library/assets/jculture-companions-v3.webp', location.href).href;
 const mascotCell: Record<Mascot, { column: number; row: number }> = {
   fox: { column: 0, row: 0 },
@@ -20,6 +22,15 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   const worldPanel = document.createElement('div');
   worldPanel.className = 'home-world-stage tw:relative tw:isolate tw:min-w-0 tw:overflow-hidden tw:rounded-[24px]';
   worldPanel.setAttribute('aria-hidden', 'true');
+  const paletteDoodle = document.createElement('span');
+  paletteDoodle.className = 'home-world-doodle';
+  const syncPaletteDoodle = () => {
+    const key = document.documentElement.dataset.palette || 'white';
+    const palette = getPaletteDefinition(key);
+    worldPanel.dataset.palette = key;
+    paletteDoodle.replaceChildren(controlIcon(palette.motif));
+  };
+  syncPaletteDoodle();
 
   const art = document.createElement('img');
   art.className = 'home-world-art';
@@ -33,7 +44,7 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   const canvas = document.createElement('canvas');
   canvas.className = 'home-world-canvas tw:absolute tw:inset-0 tw:z-[1] tw:block tw:h-full tw:min-h-0 tw:w-full tw:pointer-events-none tw:opacity-0 tw:transition-opacity tw:duration-500';
   canvas.setAttribute('aria-hidden', 'true');
-  worldPanel.append(art, canvas);
+  worldPanel.append(art, canvas, paletteDoodle);
   intro.insertBefore(worldPanel, intro.querySelector('.ritual'));
 
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -108,9 +119,10 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     camera.updateProjectionMatrix();
     renderer.setSize(Math.max(1, size.width), Math.max(1, size.height), false);
 
-    // Keep the companion in the lower right of its own illustration panel.
-    petX = aspect * viewHeight / 2 - .426 * viewHeight;
-    petY = -.132 * viewHeight;
+    // The illustration keeps open sky on the left; place the companion there,
+    // away from the mage and the animals baked into the artwork.
+    petX = -aspect * viewHeight / 2 + .405 * viewHeight;
+    petY = -.16 * viewHeight;
     petHeight = compact ? .68 : tablet ? .78 : .82;
     if (pet && petTexture) {
       const ratio = (petTexture.image.width || 1) / (petTexture.image.height || 1);
@@ -207,8 +219,14 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     canvas.classList.toggle('tw:opacity-35', visible && home.dataset.customBackground === 'true');
     art.style.opacity = home.dataset.customBackground === 'true' ? '.42' : '.84';
   };
+  const applyScene = () => {
+    const hour=new Date().getHours();
+    worldPanel.dataset.daypart=hour>=5&&hour<10?'morning':hour>=10&&hour<16?'day':hour>=16&&hour<19?'sunset':'night';
+    worldPanel.dataset.weather=document.documentElement.dataset.weather||'neutral';
+  };
   const sync = () => {
     if (disposed) return;
+    applyScene();
     updateCanvasOpacity();
     quiet = readPersonal().quiet;
     void updatePet();
@@ -229,9 +247,12 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   sizeObserver.observe(worldPanel);
   const resize = () => layout();
   const powerControl = document.querySelector('#default-low-power');
+  const sceneTimer=window.setInterval(applyScene,60000);
   window.addEventListener('resize', resize, { passive: true });
   document.addEventListener('visibilitychange', sync);
   document.addEventListener('sela:personal', sync);
+  document.addEventListener('sela:weather', applyScene);
+  document.addEventListener('sela:palette', syncPaletteDoodle);
   document.addEventListener('sela:mascot', mascotSync);
   document.addEventListener('sela:background', updateCanvasOpacity);
   powerControl?.addEventListener('change', sync);
@@ -247,10 +268,13 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     window.removeEventListener('resize', resize);
     document.removeEventListener('visibilitychange', sync);
     document.removeEventListener('sela:personal', sync);
+    document.removeEventListener('sela:weather', applyScene);
+    document.removeEventListener('sela:palette', syncPaletteDoodle);
     document.removeEventListener('sela:mascot', mascotSync);
     document.removeEventListener('sela:background', updateCanvasOpacity);
     powerControl?.removeEventListener('change', sync);
     reducedMotion.removeEventListener('change', sync);
+    clearInterval(sceneTimer);
     removePet();
     atlas.dispose();
     if (customTextureURL) URL.revokeObjectURL(customTextureURL);

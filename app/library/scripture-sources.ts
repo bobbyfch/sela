@@ -1,9 +1,14 @@
 import {responseText} from './network.ts';
+import {localFaithReading} from './local-faith-readings.ts';
 
 export type FaithPreference='none'|'islam'|'protestantism'|'catholicism'|'buddhism'|'hinduism'|'confucianism';
 /** Legacy ids remain readable for existing integrations; the preference UI only exposes Indonesia's six religions. */
 export type FaithId=FaithPreference|'christianity'|'judaism'|'sikhism';
-export interface FaithReading {faith:FaithId;title:string;text:string;reference:string;attribution:string;sourceUrl:string;language:string;license?:string;direction?:'ltr'|'rtl';}
+export interface FaithReading {faith:FaithId;title:string;text:string;reference:string;attribution:string;sourceUrl:string;language:string;license?:string;direction?:'ltr'|'rtl';note?:string;}
+export interface FaithTextVerse {number:number;text:string;}
+export interface FaithTextChapter {number:number;title?:string;verses?:FaithTextVerse[];text?:string;}
+export interface FaithTextBook {id?:string;name?:string;number?:number;title?:string;chapters?:FaithTextChapter[];text?:string;}
+export interface FaithTextLibrary {edition?:string;title?:string;translator?:string;source?:string;license?:string;books?:FaithTextBook[];chapters?:FaithTextChapter[];}
 export interface QuranVerse {sura:number;aya:number;arabic:string;translation:string;footnotes:string;}
 export interface QuranSurah {number:number;name:string;translationKey:string;translationTitle:string;version:string;language:string;verses:QuranVerse[];sourceUrl:string;}
 export interface QuranTranslationEdition {key:string;title:string;version:string;language:string;description:string;}
@@ -94,9 +99,10 @@ async function quranOfTheDay(language:string,date:Date,signal?:AbortSignal):Prom
 
 const bibleReferences=['John 3:16','Psalm 23:1','Matthew 5:9','Romans 12:12','Philippians 4:6'];
 async function christianReading(date:Date,signal?:AbortSignal,faith:'christianity'|'protestantism'|'catholicism'='christianity'):Promise<FaithReading>{
- const ref=bibleReferences[dailyIndex(date,bibleReferences.length)],data=await getJson(`https://bible-api.com/${encodeURIComponent(ref)}?translation=web`,signal,256*1024),text=asText(data.text).trim();
+ const ref=bibleReferences[dailyIndex(date,bibleReferences.length)],edition=faith==='catholicism'?'dra':'web',data=await getJson(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${edition}`,signal,256*1024),text=asText(data.text).trim();
  if(!text)throw Error('The Bible source returned an empty passage.');
- return {faith,title:'Bible reading',text,reference:asText(data.reference)||ref,attribution:'World English Bible · Public Domain · eBible.org · English text',sourceUrl:'https://ebible.org/engwebp/',language:'en'};
+ const title=faith==='catholicism'?'Catholic Bible reading':'Bible reading',sourceUrl=edition==='dra'?'https://ebible.org/engDRA/':'https://ebible.org/engwebp/';
+ return {faith,title,text,reference:asText(data.reference)||ref,attribution:`${asText(data.translation_name)||'Bible translation'} · ${asText(data.translation_note)||'edition details'} · eBible.org`,sourceUrl,language:'en',license:asText(data.translation_note)};
 }
 
 const torahReferences=['Genesis 1:1','Psalms 23:1','Deuteronomy 6:4','Proverbs 3:5'];
@@ -116,12 +122,8 @@ async function buddhistReading(date:Date,signal?:AbortSignal):Promise<FaithReadi
  return {faith:'buddhism',title:'Dhamma reading',text:asText(row.epigraph),reference,attribution:'SuttaCentral · Bhikkhu Sujato · CC0',sourceUrl:`https://suttacentral.net/${uid.split('#')[0]}`,language:uid.split('/')[1]||'en'};
 }
 
-const gitaReferences:[[number,number],[number,number],[number,number],[number,number],[number,number]]=[[2,47],[2,48],[4,7],[4,8],[6,5]];
-async function hinduReading(language:string,date:Date,signal?:AbortSignal):Promise<FaithReading>{
- const [chapter,verse]=gitaReferences[dailyIndex(date,gitaReferences.length)],url=`https://vedicscriptures.github.io/slok/${chapter}/${verse}`,data=await getJson(url,signal,256*1024),text=asText(data.slok);
- if(!text)throw Error('The Bhagavad Gita source returned no Sanskrit verse.');
- const english=localeBase(language)==='en'?asText(data.siva?.et):'';
- return {faith:'hinduism',title:'Bhagavad Gita',text:english||text,reference:`${chapter}.${verse}`,attribution:english?'Bhagavad Gita API · Swami Sivananda English rendering':'Bhagavad Gita API · Sanskrit source text',sourceUrl:url,language:english?'en':'sa'};
+function hinduReading(date:Date):FaithReading{
+ const reading=localFaithReading('hinduism',date);if(!reading)throw Error('The public-domain Bhagavad Gita excerpt is unavailable.');return reading;
 }
 
 async function sikhReading(signal?:AbortSignal):Promise<FaithReading>{
@@ -133,11 +135,44 @@ async function sikhReading(signal?:AbortSignal):Promise<FaithReading>{
 
 /** Chinese Text Project requires a registered IP or API key; keep this as a safe source link until a key is configured. */
 export function faithSource(faith:FaithId):string{
- switch(faith){case 'confucianism':return 'https://ctext.org/analects/xue-er?if=en';case 'islam':return 'https://quranenc.com/en/home/api/';case 'catholicism':return 'https://bible-api.alkitab.or.id/';case 'protestantism':case 'christianity':return 'https://ebible.org/engwebp/';case 'hinduism':return 'https://vedicscriptures.github.io/';case 'buddhism':return 'https://suttacentral.net/api/docs/index.html';case 'judaism':return 'https://developers.sefaria.org/reference/get-v3-texts';case 'sikhism':return 'https://api.banidb.com/v2/api-docs/';default:return 'https://quranenc.com/en/home/api/';}
+ switch(faith){case 'confucianism':return 'https://www.gutenberg.org/ebooks/3330';case 'islam':return 'https://quranenc.com/en/home/api/';case 'catholicism':return 'https://ebible.org/engDRA/';case 'protestantism':case 'christianity':return 'https://ebible.org/engwebp/';case 'hinduism':return 'https://www.gutenberg.org/ebooks/2388';case 'buddhism':return 'https://suttacentral.net/licensing';case 'judaism':return 'https://developers.sefaria.org/reference/get-v3-texts';case 'sikhism':return 'https://api.banidb.com/v2/api-docs/';default:return 'https://quranenc.com/en/home/api/';}
+}
+
+const faithLibraryFiles:Partial<Record<FaithId,string>>={
+ protestantism:'faith-bible-web.json',christianity:'faith-bible-web.json',catholicism:'faith-bible-dra.json',
+ buddhism:'faith-dhammapada.json',hinduism:'faith-bhagavad-gita.json',confucianism:'faith-analects.json'
+};
+const faithLibraryCache=new Map<string,Promise<FaithTextLibrary>>();
+/** Load a source-attributed text pack only when the reader asks to browse it. */
+export async function loadFaithLibrary(faith:FaithId,signal?:AbortSignal):Promise<FaithTextLibrary>{
+ const file=faithLibraryFiles[faith];if(!file)throw new RangeError('A browsable local edition is not available for this tradition.');
+ let pending=faithLibraryCache.get(file);
+ if(!pending){
+  pending=getJson(new URL('./assets/'+file,import.meta.url).href,signal,16*1024*1024).then(value=>{
+   if(!value||typeof value!=='object')throw Error('The local scripture edition could not be read.');
+   return value as FaithTextLibrary;
+  });
+  faithLibraryCache.set(file,pending);
+  pending.catch(()=>{if(faithLibraryCache.get(file)===pending)faithLibraryCache.delete(file);});
+ }
+ return pending;
 }
 
 export async function loadFaithReading(faith:FaithId,language:string,date=new Date(),signal?:AbortSignal):Promise<FaithReading|null>{
- switch(faith){case 'islam':return quranOfTheDay(language,date,signal);case 'christianity':return christianReading(date,signal);case 'protestantism':return christianReading(date,signal,'protestantism');case 'catholicism':return null;case 'judaism':return jewishReading(date,signal);case 'buddhism':return buddhistReading(date,signal);case 'hinduism':return hinduReading(language,date,signal);case 'sikhism':return sikhReading(signal);case 'confucianism':return null;default:return null;}
+ switch(faith){
+  case 'islam':return quranOfTheDay(language,date,signal);
+  case 'christianity':case 'protestantism':case 'catholicism':{
+   try{return await christianReading(date,signal,faith);}catch(error){if(signal?.aborted)throw error;return localFaithReading(faith,date);}
+  }
+  case 'judaism':return jewishReading(date,signal);
+  case 'buddhism':{
+   try{return await buddhistReading(date,signal);}catch(error){if(signal?.aborted)throw error;return localFaithReading(faith,date);}
+  }
+  case 'hinduism':return hinduReading(date);
+  case 'sikhism':return sikhReading(signal);
+  case 'confucianism':return localFaithReading(faith,date);
+  default:return null;
+ }
 }
 
 const islamicReadingSlugs=new Set(['waking-up','morning-adhkar','after-salah','evening-adhkar','before-sleep','quranic-duas','home','food-drink','travel']);
@@ -160,9 +195,10 @@ export async function openIslamicReadingInSela(slug:string,title:string,openBook
 }
 
 function escapeHtml(value:string):string{return value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));}
-export function faithReadingHtml(title:string,rows:{reference:string;text:string;direction?:'ltr'|'rtl'}[],attribution:string,language='en'):string{
- const body=rows.map(row=>`<section><h2>${escapeHtml(row.reference)}</h2><p dir="${row.direction==='rtl'?'rtl':'auto'}">${escapeHtml(row.text)}</p></section>`).join('\n');
- return `<!doctype html><html lang="${escapeHtml(language)}"><head><meta charset="utf-8"><meta name="author" content="Sela Books"><title>${escapeHtml(title)}</title></head><body><h1>${escapeHtml(title)}</h1><p>${escapeHtml(attribution)}</p>${body}</body></html>`;
+export function faithReadingHtml(title:string,rows:{reference:string;text:string;direction?:'ltr'|'rtl';note?:string}[],attribution:string,language='en',sourceUrl=''):string{
+ const body=rows.map(row=>`<article class="reading-entry"><h2>${escapeHtml(row.reference)}</h2><p dir="${row.direction==='rtl'?'rtl':'auto'}">${escapeHtml(row.text)}</p>${row.note?`<p class="reading-note">${escapeHtml(row.note)}</p>`:''}</article>`).join('\n');
+ let source='';try{const safe=new URL(sourceUrl);if(safe.protocol==='https:')source=`<a href="${escapeHtml(safe.href)}" target="_blank" rel="noopener noreferrer">${language.startsWith('id')?'Buka sumber':'Open source'} ↗</a>`;}catch{}
+ return `<!doctype html><html lang="${escapeHtml(language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Sela Books"><title>${escapeHtml(title)}</title><style>*{box-sizing:border-box}body{max-width:52rem;margin:0 auto;padding:clamp(1rem,4vw,2.5rem);font:400 1rem/1.8 system-ui,sans-serif;color:inherit;background:transparent}header{display:grid;gap:.45rem;margin-bottom:1.2rem;padding:clamp(1rem,4vw,1.6rem);border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:1.5rem;background:color-mix(in srgb,currentColor 4%,transparent)}.eyebrow{font-size:.7rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase;opacity:.65}h1{margin:0;font-size:clamp(1.45rem,4vw,2.1rem);line-height:1.2;overflow-wrap:anywhere}.attribution{margin:0;font-size:.82rem;line-height:1.55;opacity:.72}.reading-entry{margin:1rem 0;padding:clamp(1rem,3vw,1.5rem);border:1px solid color-mix(in srgb,currentColor 12%,transparent);border-radius:1.35rem;background:color-mix(in srgb,currentColor 3%,transparent)}.reading-entry h2{margin:0 0 .7rem;font-size:.95rem;line-height:1.4}.reading-entry p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.reading-note{margin-top:1rem!important;padding-top:.8rem;border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);font-size:.85rem;opacity:.72}.source{margin-top:1.2rem;font-size:.85rem}.source a{display:inline-flex;min-height:2.6rem;align-items:center;padding:.45rem .85rem;border:1px solid color-mix(in srgb,currentColor 15%,transparent);border-radius:999px;color:inherit;text-decoration:none}.source a:hover,.source a:focus-visible{border-color:currentColor;text-decoration:underline;text-underline-offset:3px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}</style></head><body><main><header><span class="eyebrow">Sela Books · ${language.startsWith('id')?'Bacaan bersumber':'Sourced reading'}</span><h1>${escapeHtml(title)}</h1><p class="attribution">${escapeHtml(attribution)}</p></header>${body}${source?`<footer class="source">${source}</footer>`:''}</main></body></html>`;
 }
 
 export interface QuranDisplayOptions {translationKey?:string;arabicSize?:number;translationSize?:number;verse?:number;}
@@ -192,6 +228,6 @@ export async function openQuranInSela(number:number,language:string,openBook:(bo
 }
 
 export async function openFaithReadingInSela(reading:FaithReading,openBook:(book:Record<string,unknown>)=>unknown):Promise<void>{
- const title=`${reading.title} · ${reading.reference}`,file=new File([faithReadingHtml(title,[{reference:reading.reference,text:reading.text,direction:reading.direction}],reading.attribution,reading.language)],`scripture-${reading.faith}.html`,{type:'text/html'});
+ const title=`${reading.title} · ${reading.reference}`,file=new File([faithReadingHtml(title,[{reference:reading.reference,text:reading.text,direction:reading.direction,note:reading.note}],reading.attribution,reading.language,reading.sourceUrl)],`scripture-${reading.faith}.html`,{type:'text/html'});
  await openBook({previewFile:file,format:'html',name:title,metadata:{title,author:reading.attribution,language:reading.language,rights:reading.license||reading.attribution,description:reading.sourceUrl}});
 }

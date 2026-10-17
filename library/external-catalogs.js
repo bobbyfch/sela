@@ -1,7 +1,7 @@
 // Generated from app/library/external-catalogs.ts by npm run build. Do not edit.
 import { responseText } from "./network.js";
 import { catalogCoverUrl } from "./covers.js";
-export const catalogSources = [["wikisource", "Wikisumber \xB7 Indonesia"], ["gitenberg", "GITenberg \xB7 Classics"], ["gutendex", "Gutenberg \xB7 Public-domain books"], ["wiki-en", "Wikisource \xB7 English"], ["wiki-fr", "Wikisource \xB7 Fran\xE7ais"], ["wiki-es", "Wikisource \xB7 Espa\xF1ol"], ["wiki-jv", "Wikisumber \xB7 Jawa"], ["wiki-su", "Wikisumber \xB7 Sunda"], ["wiki-de", "Wikisource \xB7 Deutsch"], ["wiki-nl", "Wikisource \xB7 Nederlands"], ["wiki-pt", "Wikisource \xB7 Portugu\xEAs"], ["wiki-it", "Wikisource \xB7 Italiano"], ["wiki-zh", "Wikisource \xB7 \u4E2D\u6587"], ["wiki-ja", "Wikisource \xB7 \u65E5\u672C\u8A9E"], ["wiki-ru", "Wikisource \xB7 \u0420\u0443\u0441\u0441\u043A\u0438\u0439"], ["wiki-ar", "Wikisource \xB7 \u0627\u0644\u0639\u0631\u0628\u064A\u0629"], ["openlibrary-trending", "Open Library \xB7 Top reads"], ["openlibrary-hidden", "Open Library \xB7 Hidden gems"], ["google-books", "Google Books \xB7 New releases"], ["google-books-free", "Google Books \xB7 Free eBooks"], ["google-books-paid", "Google Books \xB7 Paid & preview"], ["openlibrary", "Open Library \xB7 Discovery"], ["doab", "DOAB \xB7 Open research"], ["openstax", "OpenStax \xB7 Textbooks"], ["standard", "Standard Ebooks \xB7 New releases"], ["local", "Sela \xB7 Selected classics"], ["opds", "OPDS \xB7 My catalogs"]];
+export const catalogSources = [["wikisource", "Wikisumber \xB7 Indonesia"], ["gitenberg", "GITenberg \xB7 Classics"], ["gutendex", "Gutenberg \xB7 Public-domain books"], ["wiki-en", "Wikisource \xB7 English"], ["wiki-fr", "Wikisource \xB7 Fran\xE7ais"], ["wiki-es", "Wikisource \xB7 Espa\xF1ol"], ["wiki-jv", "Wikisumber \xB7 Jawa"], ["wiki-su", "Wikisumber \xB7 Sunda"], ["wiki-de", "Wikisource \xB7 Deutsch"], ["wiki-nl", "Wikisource \xB7 Nederlands"], ["wiki-pt", "Wikisource \xB7 Portugu\xEAs"], ["wiki-it", "Wikisource \xB7 Italiano"], ["wiki-zh", "Wikisource \xB7 \u4E2D\u6587"], ["wiki-ja", "Wikisource \xB7 \u65E5\u672C\u8A9E"], ["wiki-ru", "Wikisource \xB7 \u0420\u0443\u0441\u0441\u043A\u0438\u0439"], ["wiki-ar", "Wikisource \xB7 \u0627\u0644\u0639\u0631\u0628\u064A\u0629"], ["openlibrary-trending", "Open Library \xB7 Top reads"], ["openlibrary-hidden", "Open Library \xB7 Hidden gems"], ["google-books", "Google Books \xB7 New releases"], ["google-books-free", "Google Books \xB7 Free eBooks"], ["google-books-paid", "Google Books \xB7 Paid & preview"], ["openlibrary", "Open Library \xB7 Discovery"], ["doab", "DOAB \xB7 Open research"], ["openstax", "OpenStax \xB7 Open textbooks"], ["id-tech", "Indonesian \xB7 Tech reading"], ["standard", "Standard Ebooks \xB7 New releases"], ["local", "Sela \xB7 Selected classics"], ["opds", "OPDS \xB7 My catalogs"]];
 const catalogCache = /* @__PURE__ */ new Map();
 async function json(url, signal) {
   const cached = catalogCache.get(url);
@@ -74,8 +74,44 @@ export async function externalBooks({ source, query = "", page = 1, category = "
     }), next: rows.length === 24 };
   }
   if (source === "openstax") {
-    const titles = ["Biology 2e", "Chemistry 2e", "College Physics 2e", "Psychology 2e", "Introduction to Sociology 3e", "Principles of Economics 3e", "Introduction to Computer Science", "Calculus Volume 1"];
-    return { books: titles.filter((title) => title.toLowerCase().includes(query.toLowerCase())).map((title) => ({ id: "openstax-" + title, title, author: "OpenStax", source, genre: "Learning", language: "en", rights: "Open textbook; see edition license and available PDF at source.", external: "https://openstax.org/details/books/" + title.toLowerCase().replaceAll(" ", "-") })), next: false };
+    const titles = [
+      ["Anatomy and Physiology 2e", "anatomy-and-physiology-2e", "Health sciences"],
+      ["Biology 2e", "biology-2e", "Life sciences"],
+      ["Concepts of Biology", "concepts-biology", "Life sciences"],
+      ["Microbiology", "microbiology", "Life sciences"],
+      ["Chemistry 2e", "chemistry-2e", "Physical sciences"],
+      ["College Physics 2e", "college-physics-2e", "Physical sciences"],
+      ["University Physics Volume 1", "university-physics-volume-1", "Physical sciences"],
+      ["University Physics Volume 2", "university-physics-volume-2", "Physical sciences"],
+      ["University Physics Volume 3", "university-physics-volume-3", "Physical sciences"],
+      ["Psychology 2e", "psychology-2e", "Social sciences"],
+      ["Introduction to Sociology 3e", "introduction-to-sociology-3e", "Social sciences"],
+      ["Introduction to Anthropology", "introduction-anthropology", "Social sciences"],
+      ["Introduction to Philosophy", "introduction-philosophy", "Humanities"],
+      ["Principles of Economics 3e", "principles-economics-3e", "Economics"],
+      ["Principles of Microeconomics 3e", "principles-microeconomics-3e", "Economics"],
+      ["Principles of Macroeconomics 3e", "principles-macroeconomics-3e", "Economics"],
+      ["Business Ethics", "business-ethics", "Business"],
+      ["Introduction to Business", "introduction-business", "Business"],
+      ["Organizational Behavior", "organizational-behavior", "Business"],
+      ["Calculus Volume 1", "calculus-volume-1", "Mathematics"],
+      ["Calculus Volume 2", "calculus-volume-2", "Mathematics"],
+      ["Calculus Volume 3", "calculus-volume-3", "Mathematics"],
+      ["Precalculus 2e", "precalculus-2e", "Mathematics"],
+      ["College Algebra 2e", "college-algebra-2e", "Mathematics"],
+      ["Algebra and Trigonometry 2e", "algebra-and-trigonometry-2e", "Mathematics"],
+      ["Introductory Statistics", "introductory-statistics", "Mathematics"],
+      ["World History Volume 1: to 1500", "world-history-volume-1", "History"],
+      ["World History Volume 2: from 1400", "world-history-volume-2", "History"],
+      ["U.S. History", "us-history", "History"],
+      ["American Government 3e", "american-government-3e", "Civics"],
+      ["Public Speaking", "public-speaking", "Communication"],
+      ["College Success", "college-success", "Life skills"],
+      ["Nutrition", "nutrition", "Health sciences"],
+      ["Introduction to Computer Science", "introduction-computer-science", "Computer science"]
+    ];
+    const needle = query.trim().toLocaleLowerCase();
+    return { books: titles.filter(([title, , subject]) => !needle || (title + " " + subject).toLocaleLowerCase().includes(needle)).map(([title, slug, subject]) => ({ id: "openstax-" + slug, title, author: "OpenStax \xB7 Rice University", source, genre: "Open textbook \xB7 " + subject, language: "en", accessType: "open", description: "Free online reading and PDF are provided on the official edition page. This Sela entry links to the publisher; it does not copy the textbook.", rights: "Free access at OpenStax. Reuse license varies by edition (including CC BY and CC BY-NC-SA); check that book page before copying, adapting, or redistributing.", external: "https://openstax.org/details/books/" + slug })), next: false, total: titles.length };
   }
   if (source === "standard") {
     const r = await fetch("https://standardebooks.org/feeds/atom/new-releases", { signal });

@@ -46,6 +46,10 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     soundLabel: "Suara halaman",
     playNote: "Ctrl + roda mouse atau pinch trackpad untuk zoom. Gulir biasa tetap nyaman. Tekan ? di reader untuk shortcut. EPUB memakai navigasi bab.",
     formatNote: "PDF, EPUB, komik dan teks punya alat baca opsional: daftar isi, pencarian, narasi dan catatan. FB2 hanya teks; DjVu memakai decoder GPL-2.0 eksternal.",
+    cdnLabel: "Versi CDN",
+    cdnPinned: "Rilis tetap \xB7 disarankan",
+    cdnLatest: "Terbaru \xB7 tanpa versi",
+    cdnNote: 'Untuk produksi, gunakan rilis tetap. URL tanpa versi mengikuti berkas GitHub terbaru dan bisa berubah tanpa pemberitahuan; <a class="tw:underline tw:underline-offset-2" href="https://www.jsdelivr.com/?docs=gh" target="_blank" rel="noopener noreferrer">jsDelivr tidak menyarankannya untuk produksi.</a>',
     installTitle: "Pasang viewer di website.",
     installText: "CI3, Laravel, Vue, React, Svelte, Astro, atau HTML biasa. Bootstrap dan Tailwind boleh dipakai, keduanya tidak wajib.",
     docs: "Panduan pemasangan & integrasi \u2197",
@@ -164,7 +168,11 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     config.url = selectedFile ? "/path/to/your-document." + extension : new URL(samples[sample], document.baseURI).href;
     config.theme = theme.value;
     if (config.presentation === "inline") config.container = "#reader";
-    var snippet = '// Load Sela Viewer once before this snippet.\n// For inline mode, add: <div id="reader" style="height:600px"></div>\nconst reader = new Sela(' + JSON.stringify(config, null, 2) + ");\nreader.open();";
+    var version = document.documentElement.dataset.selaVersion || "current";
+    var channel = document.querySelector("#cdn-version").value;
+    var scriptUrl = channel === "latest" ? "https://cdn.jsdelivr.net/gh/bobbyfch/sela/dist/js/sela.min.js" : "https://cdn.jsdelivr.net/gh/bobbyfch/sela@v" + version + "/dist/js/sela.min.js";
+    var mount = config.presentation === "inline" ? '<div id="reader" style="height:600px"></div>\n' : "";
+    var snippet = "<!-- " + (channel === "latest" ? "Unversioned: follows latest GitHub files; avoid for production." : "Pinned Sela release " + version + ".") + ' -->\n<script src="' + scriptUrl + '"><\/script>\n' + mount + "<script>\nconst reader = new Sela(" + JSON.stringify(config, null, 2) + ");\nreader.open();\n<\/script>";
     document.querySelector("#config-code").textContent = snippet;
   }
   function selectFile(file) {
@@ -207,8 +215,9 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
   });
   function applySettings(event) {
     showCode();
-    if (!viewer || !viewer.overlay) return;
     var id = event.target.id;
+    if (id === "cdn-version") return;
+    if (!viewer || !viewer.overlay) return;
     if (id === "demo-mode") {
       var demoPanel = viewer.overlay.querySelector(".sela-demo-settings");
       if (demoPanel) demoPanel.open = false;

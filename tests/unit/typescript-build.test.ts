@@ -19,7 +19,7 @@ test('authored code uses TypeScript and browser assets resolve without TypeScrip
   const runtime = [...await files('library'), ...await files('mobile'), ...await files('site'), ...await files('dist/source'), 'examples/web-component.js'].filter(file => file.endsWith('.js'));
   for (const file of runtime) {
     const code = await readFile(file, 'utf8');
-    assert.match(code, /^\/\/ Generated from .*\.tsx? by npm run build\. Do not edit\./, file);
+    assert.match(code, /^\/\/ Generated from (?:.*\.tsx?|npm dependency .+@\d+\.\d+\.\d+) by npm run build\. Do not edit\./, file);
     const source = ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
     const imports: string[] = [];
     const visit = (node: ts.Node) => {

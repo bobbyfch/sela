@@ -83,5 +83,10 @@
     "typescript-api": "npm:typescript@6.0.3",
     "vite": "8.3.4",
     "vue": "^3.5.44"
+  },
+  "dependencies": {
+    "@orama/orama": "^3.1.18",
+    "@orama/stemmers": "^3.1.18",
+    "embla-carousel": "^8.6.0"
   }
 }

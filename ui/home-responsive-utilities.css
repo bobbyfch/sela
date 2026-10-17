@@ -1,27 +1,48 @@
 @utility home-room-responsive {
   @media (min-width: 1200px) {
     body[data-product="mobile"] .home-page .room-intro& {
-      grid-template-columns: minmax(220px, .78fr) minmax(330px, 1.2fr) minmax(300px, .98fr) !important;
+      grid-template-columns: minmax(225px, .74fr) minmax(380px, 1.3fr) minmax(300px, .95fr) !important;
       grid-template-rows: minmax(330px, auto) !important;
       align-items: stretch !important;
     }
 
-    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type,
-    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage,
-    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type {
+      grid-column: 1 !important;
       grid-row: 1 !important;
     }
 
     body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
       grid-column: 2 !important;
-      align-self: stretch;
-      height: 100%;
-      min-height: 320px;
+      grid-row: 1 !important;
+      align-self: center !important;
+      height: auto !important;
+      aspect-ratio: 1672 / 941 !important;
+      min-height: 0 !important;
     }
 
     body[data-product="mobile"] .home-page .room-intro& > .ritual {
       grid-column: 3 !important;
+      grid-row: 1 !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      align-content: center !important;
+      align-items: start !important;
       width: 100% !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .ritual .focus-card {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      max-width: 360px !important;
+      justify-self: start !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+  }
+
+  @media (min-width: 701px) {
+    body[data-product="mobile"] #mobile-app .home-page .room-intro h1 {
+      font-size: clamp(40px, 3.6vw, 52px) !important;
+      line-height: 1.04;
     }
   }
 
@@ -40,7 +61,9 @@
     body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
       grid-column: 2 !important;
       grid-row: 1 !important;
-      height: clamp(270px, 31vw, 330px);
+      align-self: center !important;
+      height: auto !important;
+      aspect-ratio: 1672 / 941;
     }
 
     body[data-product="mobile"] .home-page .room-intro& > .ritual {
@@ -53,7 +76,10 @@
 
     body[data-product="mobile"] .home-page .room-intro& .focus-card {
       grid-column: 3 !important;
-      grid-row: 1 / span 2;
+      grid-row: 1 !important;
+      width: 100% !important;
+      max-width: 360px !important;
+      justify-self: start !important;
     }
 
     body[data-product="mobile"] .home-page .room-intro& .clock {
@@ -66,9 +92,62 @@
       padding-inline: 14px 0;
       border-left: 1px solid color-mix(in srgb, var(--fg) 9%, transparent);
     }
+
+    body[data-product="mobile"] .home-page .room-intro& .focus-controls {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
   }
 
-  @media (max-width: 860px) {
+  @media (min-width: 701px) and (max-width: 860px) {
+    body[data-product="mobile"] .home-page .room-intro& {
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+      grid-template-rows: auto auto !important;
+      align-items: stretch !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > div:first-of-type {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      align-self: center !important;
+      height: auto !important;
+      aspect-ratio: 1672 / 941 !important;
+      min-height: 0 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& > .ritual {
+      grid-column: 1 / -1 !important;
+      grid-row: 2 !important;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr) !important;
+      align-items: start !important;
+      width: 100% !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .focus-card {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+      width: 100% !important;
+      max-width: none !important;
+      justify-self: stretch !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .clock {
+      grid-column: 1 !important;
+    }
+
+    body[data-product="mobile"] .home-page .room-intro& .weather-widget {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      padding-inline: 14px 0;
+      border-left: 1px solid color-mix(in srgb, var(--fg) 9%, transparent);
+    }
+  }
+
+  @media (max-width: 700px) {
     body[data-product="mobile"] .home-page .room-intro& {
       grid-template-columns: minmax(0, 1fr) !important;
       grid-template-rows: auto auto auto !important;
@@ -84,7 +163,9 @@
     body[data-product="mobile"] .home-page .room-intro& > .home-world-stage {
       grid-column: 1 !important;
       grid-row: 2 !important;
-      height: clamp(190px, 42vw, 270px);
+      align-self: center !important;
+      height: auto !important;
+      aspect-ratio: 1672 / 941;
       min-height: 0;
     }
 

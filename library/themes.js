@@ -1,5 +1,29 @@
 // Generated from app/library/themes.ts by npm run build. Do not edit.
-export const palettes = ["white", "kids", "cyberpunk", "forest", "sakura", "ocean", "lavender", "citrus"];
+import { controlIcon } from "./controls.js";
+export const paletteCatalog = [
+  { key: "white", en: "Sela", id: "Sela", accent: "#3264c6", soft: "#eef4ff", motif: "sparkles" },
+  { key: "kids", en: "Pelangi", id: "Pelangi", accent: "#c83f59", soft: "#fff0f3", motif: "smile" },
+  { key: "cyberpunk", en: "Neon", id: "Neon", accent: "#7045bf", soft: "#f4efff", motif: "planet" },
+  { key: "forest", en: "Rimba", id: "Rimba", accent: "#147461", soft: "#eaf8f4", motif: "leaf" },
+  { key: "sakura", en: "Sakura", id: "Sakura", accent: "#b83f76", soft: "#fff0f7", motif: "flower" },
+  { key: "ocean", en: "Samudra", id: "Samudra", accent: "#147ba8", soft: "#eaf7fe", motif: "wave" },
+  { key: "lavender", en: "Lembayung", id: "Lembayung", accent: "#5f4ab9", soft: "#f0efff", motif: "moon" },
+  { key: "citrus", en: "Kenanga", id: "Kenanga", accent: "#557a1d", soft: "#f2f8e8", motif: "sun" },
+  { key: "laskar", en: "Senja", id: "Senja", accent: "#155d86", soft: "#fff4c2", motif: "compass" },
+  { key: "bumi", en: "Pesisir", id: "Pesisir", accent: "#12675a", soft: "#d8f1e9", motif: "mountain" },
+  { key: "hujan", en: "Hujan", id: "Hujan", accent: "#3e5f9f", soft: "#e5efff", motif: "rain" },
+  { key: "nurbaya", en: "Seroja", id: "Seroja", accent: "#884b68", soft: "#fce7f0", motif: "lotus" },
+  { key: "wijck", en: "Nila", id: "Nila", accent: "#155b78", soft: "#e4f5fb", motif: "crane" },
+  { key: "menara", en: "Embun", id: "Embun", accent: "#64751d", soft: "#f1f5d6", motif: "tower" },
+  { key: "cantik", en: "Purnama", id: "Purnama", accent: "#8a3f64", soft: "#fae6ef", motif: "shell" },
+  { key: "kopi", en: "Arunika", id: "Arunika", accent: "#80501f", soft: "#f9eee0", motif: "tea" },
+  { key: "laut", en: "Selat", id: "Selat", accent: "#006478", soft: "#ddf4f8", motif: "boat" },
+  { key: "rindu", en: "Jingga", id: "Jingga", accent: "#4d5e9d", soft: "#eceeff", motif: "lantern" }
+];
+export const palettes = paletteCatalog.map((palette) => palette.key);
+export function getPaletteDefinition(value) {
+  return paletteCatalog.find((palette) => palette.key === value) || paletteCatalog[0];
+}
 const legacyPalettes = {
   dark: "white",
   oled: "white",
@@ -17,6 +41,25 @@ const legacyPalettes = {
 const paletteKey = "sela-library:palette";
 const themeKey = "sela-library:theme";
 const paletteVersion = "4";
+const darkPreference = typeof matchMedia === "function" ? matchMedia("(prefers-color-scheme: dark)") : { matches: false, addEventListener: () => {
+} };
+function isDarkAppearance(target) {
+  const appearance = target.dataset.selaTheme || (target === document.documentElement ? target.dataset.theme : "auto") || "auto";
+  return appearance === "dark" || appearance === "auto" && darkPreference.matches;
+}
+function applyPaletteTokens(target, value) {
+  const palette = getPaletteDefinition(value), dark = isDarkAppearance(target);
+  const panel = getComputedStyle(target).getPropertyValue("--panel").trim() || "#fff";
+  target.style.setProperty("--accent", palette.accent);
+  target.style.setProperty("--accent-ink", "#fff");
+  target.style.setProperty("--palette-soft", dark ? `color-mix(in srgb, ${palette.accent} 20%, ${panel})` : palette.soft);
+  target.style.setProperty("--sela-accent", palette.accent);
+  target.style.setProperty("--sela-hover", `color-mix(in srgb, ${palette.accent} 14%, ${panel})`);
+}
+function refreshPaletteTokens() {
+  applyPaletteTokens(document.documentElement, document.documentElement.dataset.palette || "white");
+  document.querySelectorAll(".library-reader-overlay[data-palette]").forEach((target) => applyPaletteTokens(target, target.dataset.palette || "white"));
+}
 function normalizePalette(value) {
   const normalized = value ? legacyPalettes[value] || value : "white";
   return palettes.includes(normalized) ? normalized : "white";
@@ -42,11 +85,14 @@ export function initializePalette() {
     history.replaceState(history.state, "", url);
   }
   applyPalette(initial);
+  document.addEventListener("sela:appearance", refreshPaletteTokens);
+  darkPreference.addEventListener("change", refreshPaletteTokens);
   applyOled(localStorage.getItem("sela-library:oled") === "true");
 }
 export function applyPalette(value, target = document.documentElement) {
   const chosen = normalizePalette(value);
   target.dataset.palette = chosen;
+  applyPaletteTokens(target, chosen);
   if (target === document.documentElement) {
     try {
       localStorage.setItem(paletteKey, chosen);
@@ -98,29 +144,26 @@ export function mountPalettes(parent, t, target = document.documentElement) {
   group.setAttribute("role", "group");
   group.setAttribute("aria-label", t("App palette", "Palet aplikasi"));
   parent.append(group);
-  const options = [
-    ["white", "Snow", "Salju"],
-    ["kids", "Kids colors", "Warna ceria"],
-    ["cyberpunk", "Akihabara", "Akihabara"],
-    ["forest", "Forest", "Hutan"],
-    ["sakura", "Sakura", "Sakura"],
-    ["ocean", "Ocean", "Laut"],
-    ["lavender", "Lavender", "Lavender"],
-    ["citrus", "Citrus", "Jeruk"]
-  ];
-  for (const [key, en, id] of options) {
+  for (const palette of paletteCatalog) {
     const button = document.createElement("button");
     button.type = "button";
-    button.dataset.paletteChoice = key;
-    button.dataset.en = en;
-    button.dataset.id = id;
-    const swatch = document.createElement("i");
+    button.dataset.paletteChoice = palette.key;
+    button.dataset.en = palette.en;
+    button.dataset.id = palette.id;
+    button.style.setProperty("--palette-choice-accent", palette.accent);
+    button.style.setProperty("--palette-choice-soft", palette.soft);
+    const swatch = document.createElement("span");
+    swatch.className = "palette-swatch";
     swatch.setAttribute("aria-hidden", "true");
+    swatch.append(controlIcon(palette.motif));
     const caption = document.createElement("span");
-    caption.textContent = t(en, id);
+    caption.className = "palette-caption";
+    caption.textContent = t(palette.en, palette.id);
+    button.setAttribute("aria-label", t(palette.en, palette.id));
+    button.title = t(palette.en, palette.id);
     button.append(swatch, caption);
     button.onclick = () => {
-      applyPalette(key, target);
+      applyPalette(palette.key, target);
       sync();
     };
     group.append(button);
@@ -128,7 +171,7 @@ export function mountPalettes(parent, t, target = document.documentElement) {
   function sync() {
     for (const button of group.querySelectorAll("[data-palette-choice]")) {
       button.setAttribute("aria-pressed", String(button.dataset.paletteChoice === target.dataset.palette));
-      button.querySelector("span").textContent = t(button.dataset.en || "", button.dataset.id || "");
+      button.querySelector(".palette-caption").textContent = t(button.dataset.en || "", button.dataset.id || "");
     }
   }
   sync();

@@ -17,7 +17,7 @@ test('story card opens reader; upload, live mode/filter/gap and global shortcuts
   await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
   await page.keyboard.press('0');await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1)');
   await page.getByRole('button',{name:'Reader settings',exact:true}).click();
-  await page.getByLabel('Reading mode',{exact:true}).selectOption('webtoon');
+  await page.locator('[aria-label="Reading mode"] [data-choice="webtoon"]').click();
   await expect(page.locator('.sela-webtoon')).toBeVisible();
   await expect(page.locator('.app-page-seek')).toBeEnabled();
   await page.getByLabel('Page filter',{exact:true}).selectOption('grayscale');

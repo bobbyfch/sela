@@ -7,7 +7,7 @@ export interface SelaOptions {
   /** Application shell integration; use false/default for standalone embeds. */
   appContext?: boolean;
   /** Accent palette; historical names remain supported aliases. Dark appearance is controlled by `theme`. */
-  palette?: 'white' | 'kids' | 'cyberpunk' | 'forest' | 'sakura' | 'ocean' | 'lavender' | 'citrus' | 'linen' | 'rimba' | 'nila' | 'seroja' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak';
+  palette?: 'white' | 'kids' | 'cyberpunk' | 'forest' | 'sakura' | 'ocean' | 'lavender' | 'citrus' | 'linen' | 'rimba' | 'nila' | 'seroja' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak' | 'laskar' | 'bumi' | 'hujan' | 'nurbaya' | 'wijck' | 'menara' | 'cantik' | 'kopi' | 'laut' | 'rindu';
   metadata?: BookMetadata;
   /** Inline embeds need a connected host with an explicit height. */
   presentation?: 'overlay' | 'inline';

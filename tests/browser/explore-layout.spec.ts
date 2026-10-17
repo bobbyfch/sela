@@ -59,7 +59,7 @@ test('Explore source sheet keeps OPDS dropdowns, inputs, and long saved-catalog 
   await expect(sheet).toBeVisible();
   const source=sheet.getByLabel('Book source',{exact:true});
   const saved=sheet.getByLabel('My saved catalogs',{exact:true});
-  await source.selectOption('opds');
+  if(await source.inputValue()!=='opds')await source.selectOption('opds');
   await expect(saved.locator('option[value="https://catalog.example/opds"]')).toHaveText('A very long saved catalog name that must wrap or clip safely');
   await sheet.getByLabel('OPDS catalog URL',{exact:true}).fill('https://catalog.example/opds');
   await sheet.getByLabel('Catalog name',{exact:true}).fill('A catalog with a name long enough to wrap without breaking the sheet');
@@ -86,7 +86,7 @@ test('Explore keeps the responsive shelf and full-grid controls available across
  await expect(page.locator('.browse-page')).toContainText('Books from open shelves');
  await expect(results).not.toHaveAttribute('data-view-mode');await expect(results.locator('.open-book')).toHaveCount(24);await expect.poll(()=>results.locator('.open-book-cover img').evaluateAll(images=>images.filter(image=>image instanceof HTMLImageElement&&image.complete&&image.naturalWidth>0).length)).toBe(24);expect(await results.evaluate(element=>getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length)).toBe(5);await expect(results.locator('.open-book-cover')).toHaveCount(24);await expect(results.locator('.open-book-copy').first()).toBeVisible();await expect(page.getByRole('button',{name:'Grid view',exact:true})).toHaveCount(0);
  await page.reload();await page.getByRole('button',{name:'Explore',exact:true}).click();
- await expect(page.locator('.open-results .open-book-cover')).toHaveCount(8);
+ await expect(page.locator('.open-results .open-book-cover')).toHaveCount(32);
  await page.locator('.open-catalog').getByRole('button',{name:'For you',exact:true}).click();
  await expect(results.locator('.open-book-cover')).toHaveCount(24);
 });

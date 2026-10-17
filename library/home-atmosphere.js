@@ -3,7 +3,6 @@ import { responseText } from "./network.js";
 import { readPersonal, editPersonal } from "./personal-store.js";
 import { iconAction, notify } from "./controls.js";
 import { APP_LANGUAGES, localeBase, translate } from "../dist/source/src/i18n.js";
-import { loadFaithReading } from "./scripture-sources.js";
 const reflections = {
   reading: [["A few pages are enough for today.", "Beberapa halaman cukup untuk hari ini."], ["An unfinished book still has a place here.", "Buku yang belum selesai masih punya tempat di sini."], ["Read at your own pace.", "Baca dengan kecepatanmu sendiri."], ["Return to a favorite passage.", "Kembali ke penggalan favoritmu."]],
   calm: [["Leave a little room for quiet.", "Sisakan tempat untuk tenang."], ["Rest is part of reading time.", "Istirahat juga bagian dari membaca."]],
@@ -71,16 +70,18 @@ async function fetchSourcedQuotes(topic, language) {
   }
   return rows;
 }
+function selectedQuoteTopic(topic) {
+  return topic === "faith" ? "reading" : topic;
+}
 export function readingNote(t, index = 0) {
-  const p = readPersonal(), language = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage, personal = p.quoteTopic === "personal" ? Object.values(p.books).map((book) => book.quote).filter((value) => typeof value === "string" && !!value.trim()) : [];
+  const p = readPersonal(), topic = selectedQuoteTopic(p.quoteTopic), language = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage, personal = topic === "personal" ? Object.values(p.books).map((book) => book.quote).filter((value) => typeof value === "string" && !!value.trim()) : [];
   if (personal.length) return { quote: personal[Math.abs(index) % personal.length], source: t("From your notebook", "Dari notebook-mu") };
-  const rows = cachedRows(p.quoteTopic, language);
+  const rows = cachedRows(topic, language);
   if (rows.length) {
     const row2 = rows[Math.abs(index) % rows.length];
     return { quote: row2.content, source: row2.author, sourceUrl: row2.sourceUrl, portrait: row2.portrait, author: row2.author, row: row2 };
   }
-  if (p.quoteTopic === "faith") return p.faith === "none" ? { quote: t("Choose a faith in Settings to see a sourced scripture passage.", "Pilih agama di Pengaturan untuk melihat kutipan kitab suci beserta sumbernya."), source: t("Scripture collection", "Koleksi kitab suci") } : { quote: t("Finding a passage from your selected scripture\u2026", "Mencari kutipan dari kitab pilihanmu\u2026"), source: t("Sourced scripture", "Kitab suci bersumber") };
-  const values = reflections[p.quoteTopic] || reflections.reading, row = values[Math.abs(index) % values.length];
+  const values = reflections[topic] || reflections.reading, row = values[Math.abs(index) % values.length];
   return { quote: translate(row[0], row[1], language), source: "Sela \xB7 " + t("a little reflection", "renungan kecil") };
 }
 export function mountAtmosphere(home, { t }) {
@@ -123,13 +124,13 @@ export function mountAtmosphere(home, { t }) {
   topic.setAttribute("aria-label", t("Quote topic", "Topik kutipan"));
   topicLabel.append(topic);
   quoteSettings.append(topicLabel);
-  for (const [key, en, id] of [["reading", "Reading", "Membaca"], ["calm", "Calm", "Ketenangan"], ["courage", "Courage", "Semangat"], ["life", "Life", "Kehidupan"], ["friendship", "Friendship", "Persahabatan"], ["creativity", "Creativity", "Kreativitas"], ["spiritual", "Reflection", "Renungan"], ["faith", "Faith & scripture", "Agama & kitab suci"], ["personal", "My passages", "Kutipanku"]]) {
+  for (const [key, en, id] of [["reading", "Reading", "Membaca"], ["calm", "Calm", "Ketenangan"], ["courage", "Courage", "Semangat"], ["life", "Life", "Kehidupan"], ["friendship", "Friendship", "Persahabatan"], ["creativity", "Creativity", "Kreativitas"], ["spiritual", "Reflection", "Renungan"], ["personal", "My passages", "Kutipanku"]]) {
     const option = document.createElement("option");
     option.value = key;
     option.textContent = t(en, id);
     topic.append(option);
   }
-  topic.value = readPersonal().quoteTopic;
+  topic.value = selectedQuoteTopic(readPersonal().quoteTopic);
   topic.onchange = () => editPersonal((p) => {
     p.quoteTopic = topic.value;
   });
@@ -196,19 +197,18 @@ export function mountAtmosphere(home, { t }) {
     }
   }
   async function findMoreQuotes() {
-    const p = readPersonal(), language2 = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage;
-    if (p.quoteTopic === "faith" || p.quoteTopic === "personal") {
-      searchStatus.textContent = p.quoteTopic === "faith" ? t("Scripture passages update automatically from your selected faith.", "Bacaan kitab diperbarui otomatis mengikuti agama pilihanmu.") : t("Your saved notebook passages appear here.", "Kutipan notebook-mu tampil di sini.");
+    const p = readPersonal(), topic2 = selectedQuoteTopic(p.quoteTopic), language2 = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage;
+    if (topic2 === "personal") {
+      searchStatus.textContent = t("Your saved notebook passages appear here.", "Kutipan notebook-mu tampil di sini.");
       return;
     }
-    fetchButton.disabled = true;
     searchStatus.textContent = t("Looking for sourced quotes\u2026", "Mencari kutipan bersumber\u2026");
+    fetchButton.disabled = true;
     try {
-      const rows = await fetchSourcedQuotes(p.quoteTopic, language2);
-      if (!rows.length) throw Error("No sourced quote was found");
-      localStorage.setItem("sela-library:quote-cache", JSON.stringify({ topic: p.quoteTopic, language: language2, rows }));
+      const rows = await fetchSourcedQuotes(topic2, language2), latest = readPersonal(), latestTopic = selectedQuoteTopic(latest.quoteTopic), latestLanguage = latest.quoteLanguage === "auto" ? appLanguage() : latest.quoteLanguage;
+      if (!rows.length || latestTopic !== topic2 || latestLanguage !== language2) throw Error("No sourced quote was found");
+      localStorage.setItem("sela-library:quote-cache", JSON.stringify({ topic: topic2, language: language2, rows }));
       searchStatus.textContent = t("Sourced quotes are ready.", "Kutipan bersumber siap.");
-      index = 0;
       localize();
     } catch {
       searchStatus.textContent = t("Wikiquote is unavailable. Offline reflections remain ready.", "Wikiquote belum tersedia. Renungan offline tetap siap.");
@@ -225,9 +225,8 @@ export function mountAtmosphere(home, { t }) {
     home.dataset.weather = document.documentElement.dataset.weatherStale === "true" ? "neutral" : document.documentElement.dataset.weather || "neutral";
     home.dataset.night = document.documentElement.dataset.weatherNight || String(hour < 6 || hour > 18);
     home.classList.toggle("quiet-scene", p.quiet);
-    intro.querySelector("h1").textContent = p.room || t("Your little world of stories.", "Dunia kecil untuk cerita-ceritamu.");
+    intro.querySelector("h1").textContent = p.room || t("Your little world of stories.", "Ruang kecil untuk cerita.");
     const note = readingNote(t, index), revision = ++quoteRevision;
-    section.hidden = p.quoteTopic === "faith" && p.faith !== "none";
     quote.textContent = note.quote;
     label.textContent = note.source;
     portrait.hidden = true;
@@ -244,11 +243,11 @@ export function mountAtmosphere(home, { t }) {
     }
     topicCaption.textContent = t("Quote theme", "Tema kutipan");
     languageCaption.textContent = t("Quote language", "Bahasa kutipan");
-    topic.value = p.quoteTopic;
+    topic.value = selectedQuoteTopic(p.quoteTopic);
     language.value = p.quoteLanguage;
     fetchButton.textContent = t("Find sourced quotes", "Cari kutipan bersumber");
-    fetchButton.hidden = p.quoteTopic === "faith" || p.quoteTopic === "personal";
-    quoteSettings.classList.toggle("is-faith", p.quoteTopic === "faith");
+    fetchButton.hidden = selectedQuoteTopic(p.quoteTopic) === "personal";
+    quoteSettings.classList.remove("is-faith");
   }
   refresh.onclick = () => {
     index++;
@@ -258,21 +257,13 @@ export function mountAtmosphere(home, { t }) {
   };
   const attemptedQuoteFetches = /* @__PURE__ */ new Set();
   async function ensureQuoteCollection() {
-    const p = readPersonal(), language2 = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage, date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10), key = p.quoteTopic === "faith" ? `faith|${p.faith}|${language2}|${date}` : p.quoteTopic + "|" + language2;
-    if (p.quoteTopic === "personal" || p.quoteTopic === "faith" && p.faith === "none" || cachedRows(p.quoteTopic, language2).length || attemptedQuoteFetches.has(key)) return;
+    const p = readPersonal(), topic2 = selectedQuoteTopic(p.quoteTopic), language2 = p.quoteLanguage === "auto" ? appLanguage() : p.quoteLanguage, key = topic2 + "|" + language2;
+    if (topic2 === "personal" || cachedRows(topic2, language2).length || attemptedQuoteFetches.has(key)) return;
     attemptedQuoteFetches.add(key);
     try {
-      if (p.quoteTopic === "faith") {
-        const item = await loadFaithReading(p.faith, language2), latest2 = readPersonal(), latestLanguage2 = latest2.quoteLanguage === "auto" ? appLanguage() : latest2.quoteLanguage;
-        if (!item || latest2.quoteTopic !== "faith" || latest2.faith !== p.faith || latestLanguage2 !== language2) return;
-        const rows2 = [{ content: item.text, author: `${item.reference} \xB7 ${item.attribution}`, language: item.language, source: item.faith, sourceUrl: item.sourceUrl }];
-        localStorage.setItem("sela-library:quote-cache", JSON.stringify({ topic: "faith", faith: p.faith, date, language: language2, rows: rows2 }));
-        localize();
-        return;
-      }
-      const rows = await fetchSourcedQuotes(p.quoteTopic, language2), latest = readPersonal(), latestLanguage = latest.quoteLanguage === "auto" ? appLanguage() : latest.quoteLanguage;
-      if (!rows.length || latest.quoteTopic !== p.quoteTopic || latestLanguage !== language2) return;
-      localStorage.setItem("sela-library:quote-cache", JSON.stringify({ topic: p.quoteTopic, language: language2, rows }));
+      const rows = await fetchSourcedQuotes(topic2, language2), latest = readPersonal(), latestTopic = selectedQuoteTopic(latest.quoteTopic), latestLanguage = latest.quoteLanguage === "auto" ? appLanguage() : latest.quoteLanguage;
+      if (!rows.length || latestTopic !== topic2 || latestLanguage !== language2) return;
+      localStorage.setItem("sela-library:quote-cache", JSON.stringify({ topic: topic2, language: language2, rows }));
       localize();
     } catch {
     }

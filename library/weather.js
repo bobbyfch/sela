@@ -10,6 +10,15 @@ function storedFlag(key) {
     return null;
   }
 }
+export function readSavedWeatherCoordinates() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved || !Number.isFinite(saved.latitude) || !Number.isFinite(saved.longitude) || Math.abs(saved.latitude) > 90 || Math.abs(saved.longitude) > 180) return null;
+    return { latitude: saved.latitude, longitude: saved.longitude, name: typeof saved.name === "string" ? saved.name : "", timezone: typeof saved.timezone === "string" ? saved.timezone : "" };
+  } catch {
+    return null;
+  }
+}
 export function mountWeather(parent, { t }) {
   const widget = node(parent, "section", "", "weather-widget");
   widget.setAttribute("aria-label", t("Weather", "Cuaca"));
@@ -44,6 +53,8 @@ export function mountWeather(parent, { t }) {
     e.preventDefault();
     citySheet.open();
   };
+  const openWeatherSettings = () => citySheet.open();
+  document.addEventListener("sela:weather-settings-request", openWeatherSettings);
   let saved = null, controller, sequence = 0, requestingLocation = false;
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
@@ -94,6 +105,7 @@ export function mountWeather(parent, { t }) {
       if (id !== sequence || saved !== currentCity) return;
       if (!Number.isFinite(data.current?.temperature_2m) || !Number.isInteger(data.current.weather_code) || data.current.weather_code < 0 || data.current.weather_code > 99) throw new Error("No weather");
       saved.current = data.current;
+      if (typeof data.timezone === "string") saved.timezone = data.timezone;
       saved.at = Date.now();
       store();
       feedback.textContent = "";
@@ -226,6 +238,7 @@ export function mountWeather(parent, { t }) {
   window.addEventListener("pagehide", () => {
     clearInterval(interval);
     controller?.abort();
+    document.removeEventListener("sela:weather-settings-request", openWeatherSettings);
     citySheet.destroy();
   }, { once: true });
   return { localize() {

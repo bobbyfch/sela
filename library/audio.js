@@ -1,98 +1,173 @@
 // Generated from app/library/audio.ts by npm run build. Do not edit.
+const ambientChoices = [
+  ["rain", "Rain", "Hujan", "Soft filtered rain", "Hujan halus"],
+  ["wind", "Wind", "Angin", "A slow, low breeze", "Semilir pelan"],
+  ["stream", "Stream", "Aliran air", "A gentle flowing sound", "Aliran air lembut"],
+  ["waves", "Waves", "Ombak", "Slow, distant waves", "Ombak jauh yang pelan"]
+];
+function node(tag, className, parent) {
+  const element = document.createElement(tag);
+  element.className = className;
+  parent.append(element);
+  return element;
+}
+function makeAmbient(context, kind) {
+  const source = context.createBufferSource();
+  const buffer = context.createBuffer(1, context.sampleRate * 4, context.sampleRate);
+  const samples = buffer.getChannelData(0);
+  let brown = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const white = Math.random() * 2 - 1;
+    brown = (brown + 0.025 * white) / 1.025;
+    samples[i] = kind === "stream" ? white * 0.55 + brown * 2.1 : brown * 3.2;
+  }
+  source.buffer = buffer;
+  source.loop = true;
+  const filter = context.createBiquadFilter();
+  filter.type = kind === "stream" ? "bandpass" : "lowpass";
+  filter.frequency.value = kind === "rain" ? 1550 : kind === "wind" ? 360 : kind === "stream" ? 780 : 430;
+  filter.Q.value = kind === "stream" ? 0.7 : 0.45;
+  const gain = context.createGain();
+  gain.gain.value = kind === "rain" ? 0.08 : kind === "stream" ? 0.055 : 0.07;
+  source.connect(filter).connect(gain).connect(context.destination);
+  let oscillator;
+  let modulation;
+  if (kind === "wind" || kind === "waves") {
+    oscillator = context.createOscillator();
+    modulation = context.createGain();
+    oscillator.frequency.value = kind === "waves" ? 0.09 : 0.055;
+    modulation.gain.value = kind === "waves" ? 0.025 : 0.018;
+    oscillator.connect(modulation).connect(gain.gain);
+    oscillator.start();
+  }
+  source.start();
+  return { source, oscillator, filter, gain };
+}
 export function mountAudio(reader, parent, t) {
-  const section = document.createElement("details");
-  section.className = "reader-audio";
-  const summary = document.createElement("summary");
-  summary.textContent = t("Audio & room ambience", "Audio & suasana ruang");
-  section.append(summary);
-  parent.append(section);
-  const status = document.createElement("p");
-  status.setAttribute("role", "status");
-  const audio = document.createElement("audio");
+  const audioSection = node("section", "reader-audio-card tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface/80 tw:p-4 tw:shadow-sm tw:backdrop-blur-xl", parent);
+  audioSection.setAttribute("aria-labelledby", "reader-audio-heading");
+  const audioHeading = node("h3", "tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink", audioSection);
+  audioHeading.id = "reader-audio-heading";
+  audioHeading.textContent = t("Audiobook", "Audio buku");
+  const audioHelp = node("p", "tw:mb-3 tw:mt-1 tw:text-xs tw:leading-5 tw:text-sela-muted", audioSection);
+  audioHelp.textContent = t("Choose an audio file on this device, or use narration included with this EPUB.", "Pilih audio dari perangkat ini atau gunakan narasi yang disertakan di EPUB.");
+  const audio = node("audio", "tw:mb-2 tw:block tw:w-full", audioSection);
   audio.controls = true;
   audio.preload = "metadata";
-  audio.style.width = "100%";
-  audio.addEventListener("error", () => status.textContent = t("This audio cannot play on this device.", "Audio ini tidak bisa diputar di perangkat ini."));
-  audio.setAttribute("aria-label", t("Local audiobook", "Audiobook lokal"));
-  section.append(audio);
-  const input = document.createElement("input");
+  audio.setAttribute("aria-label", t("Audiobook controls", "Kontrol audio buku"));
+  const fileRow = node("div", "tw:flex tw:flex-wrap tw:items-center tw:gap-2", audioSection);
+  const input = node("input", "tw:sr-only", fileRow);
   input.type = "file";
-  input.accept = "audio/mpeg,audio/mp4,audio/ogg,audio/wav,.mp3,.m4a,.ogg,.wav";
-  input.setAttribute("aria-label", t("Choose local audio", "Pilih audio lokal"));
-  section.append(input);
-  let objectURL = "", timer = null, context = null, noise = null, closed = false;
+  input.accept = "audio/*,.mp3,.m4a,.ogg,.opus,.wav,.flac,.aac";
+  input.setAttribute("aria-label", t("Choose an audio file", "Pilih berkas audio"));
+  const choose = node("button", "tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-xs tw:font-semibold tw:text-sela-ink tw:transition hover:tw:border-sela-accent/60 focus-visible:tw:outline-2 focus-visible:tw:outline-sela-accent", fileRow);
+  choose.type = "button";
+  choose.textContent = t("Choose audio", "Pilih audio");
+  choose.onclick = () => input.click();
+  const filename = node("span", "tw:min-w-0 tw:truncate tw:text-xs tw:text-sela-muted", fileRow);
+  filename.textContent = t("No audio selected", "Belum ada audio dipilih");
+  let objectURL = "";
+  let timer;
+  let context;
+  let ambient;
+  let ambientKind = "rain";
+  let closed = false;
   const lifetime = new AbortController();
+  const status = node("p", "tw:mb-0 tw:mt-2 tw:min-h-5 tw:break-words tw:text-xs tw:text-sela-muted", audioSection);
+  status.setAttribute("role", "status");
+  audio.addEventListener("error", () => {
+    status.textContent = t("This audio cannot play on this device.", "Audio ini tidak bisa diputar di perangkat ini.");
+  });
   input.onchange = () => {
     const file = input.files?.[0];
     if (!file) return;
-    if (file.size > 256 * 1048576) {
-      status.textContent = t("Audio limit: 256 MiB", "Batas audio: 256 MiB");
+    if (!file.type.startsWith("audio/") || file.size > 256 * 1048576) {
+      status.textContent = t("Choose an audio file smaller than 256 MiB.", "Pilih audio di bawah 256 MiB.");
+      input.value = "";
       return;
     }
     audio.pause();
     if (objectURL) URL.revokeObjectURL(objectURL);
     objectURL = URL.createObjectURL(file);
     audio.src = objectURL;
-    status.textContent = file.name;
+    filename.textContent = file.name;
+    status.textContent = t("Audio stays on this device.", "Audio tetap di perangkat ini.");
+    input.value = "";
   };
-  const sleep = document.createElement("select");
-  sleep.setAttribute("aria-label", t("Audio sleep timer", "Timer tidur audio"));
-  for (const [value, en, id] of [["0", "No sleep timer", "Tanpa timer tidur"], ["15", "15 minutes", "15 menit"], ["30", "30 minutes", "30 menit"], ["60", "60 minutes", "60 menit"]]) {
-    const o = document.createElement("option");
-    o.value = value;
-    o.textContent = t(en, id);
-    sleep.append(o);
+  const sleep = node("fieldset", "tw:mt-3 tw:border-0 tw:p-0", audioSection);
+  const sleepLegend = node("legend", "tw:mb-2 tw:text-xs tw:font-medium tw:text-sela-muted", sleep);
+  sleepLegend.textContent = t("Stop audio after", "Hentikan audio setelah");
+  const timerGrid = node("div", "tw:grid tw:grid-cols-4 tw:gap-2", sleep);
+  const timerButtons = [];
+  let timerMinutes = 0;
+  for (const [minutes, en, id] of [[0, "Off", "Mati"], [15, "15 min", "15 mnt"], [30, "30 min", "30 mnt"], [60, "60 min", "60 mnt"]]) {
+    const button = node("button", "tw:min-h-9 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-2 tw:text-[11px] tw:font-medium tw:text-sela-ink tw:transition hover:tw:border-sela-accent/60 focus-visible:tw:outline-2 focus-visible:tw:outline-sela-accent aria-pressed:tw:border-sela-accent aria-pressed:tw:bg-sela-accent/10", timerGrid);
+    button.type = "button";
+    button.textContent = t(en, id);
+    button.setAttribute("aria-pressed", String(minutes === timerMinutes));
+    button.onclick = () => {
+      timerMinutes = minutes;
+      timerButtons.forEach((item, index) => item.setAttribute("aria-pressed", String([0, 15, 30, 60][index] === minutes)));
+      clearTimeout(timer);
+      if (minutes) timer = setTimeout(() => {
+        audio.pause();
+        ambient?.source.stop();
+        ambient?.oscillator?.stop();
+        ambient = void 0;
+        void context?.suspend();
+        ambienceButtons.forEach((item) => item.setAttribute("aria-pressed", "false"));
+        timerMinutes = 0;
+        timerButtons.forEach((item, index) => item.setAttribute("aria-pressed", String(index === 0)));
+        status.textContent = t("Sleep timer finished.", "Timer tidur selesai.");
+      }, minutes * 6e4);
+    };
+    timerButtons.push(button);
   }
-  section.append(sleep);
-  sleep.onchange = () => {
-    clearTimeout(timer);
-    if (+sleep.value) timer = setTimeout(() => {
-      audio.pause();
-      void context?.suspend();
-      ambient = false;
-      ambience.setAttribute("aria-pressed", "false");
-      ambience.textContent = t("Soft rain \xB7 off", "Hujan lembut \xB7 mati");
-      sleep.value = "0";
-    }, +sleep.value * 6e4);
-  };
-  const ambience = document.createElement("button");
-  ambience.type = "button";
-  ambience.textContent = t("Soft rain \xB7 off", "Hujan lembut \xB7 mati");
-  ambience.setAttribute("aria-pressed", "false");
-  section.append(ambience);
-  let ambient = false;
-  ambience.onclick = async () => {
-    try {
-      ambient = !ambient;
-      if (ambient) {
-        if (!context) {
-          context = new AudioContext();
-          const buffer = context.createBuffer(1, context.sampleRate * 3, context.sampleRate), samples = buffer.getChannelData(0);
-          let last = 0;
-          for (let i = 0; i < samples.length; i++) {
-            last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
-            samples[i] = last * 3;
-          }
-          noise = context.createBufferSource();
-          noise.buffer = buffer;
-          noise.loop = true;
-          const gain = context.createGain();
-          gain.gain.value = 0.07;
-          const filter = context.createBiquadFilter();
-          filter.type = "lowpass";
-          filter.frequency.value = 1500;
-          noise.connect(filter).connect(gain).connect(context.destination);
-          noise.start();
+  const roomSection = node("section", "reader-room-card tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface/80 tw:p-4 tw:shadow-sm tw:backdrop-blur-xl", parent);
+  roomSection.setAttribute("aria-labelledby", "reader-room-heading");
+  const roomHeading = node("h3", "tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink", roomSection);
+  roomHeading.id = "reader-room-heading";
+  roomHeading.textContent = t("Room atmosphere", "Suasana ruang");
+  const roomHelp = node("p", "tw:mb-3 tw:mt-1 tw:text-xs tw:leading-5 tw:text-sela-muted", roomSection);
+  roomHelp.textContent = t("Soft sounds are made in your browser. No music service, account, or network audio is used.", "Suara lembut dibuat langsung di browser. Tidak memakai layanan musik, akun, atau audio jaringan.");
+  const ambienceGrid = node("div", "tw:grid tw:grid-cols-2 tw:gap-2 tw:sm:grid-cols-4", roomSection);
+  const ambienceButtons = [];
+  function stopAmbient() {
+    ambient?.source.stop();
+    ambient?.oscillator?.stop();
+    ambient = void 0;
+    ambienceButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+  }
+  for (const [kind, en, id, enNote, idNote] of ambientChoices) {
+    const button = node("button", "tw:flex tw:min-h-[76px] tw:min-w-0 tw:flex-col tw:items-start tw:justify-center tw:gap-1 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:py-2 tw:text-left tw:transition hover:tw:border-sela-accent/60 focus-visible:tw:outline-2 focus-visible:tw:outline-sela-accent aria-pressed:tw:border-sela-accent aria-pressed:tw:bg-sela-accent/10", ambienceGrid);
+    button.type = "button";
+    button.dataset.ambience = kind;
+    const label = node("span", "tw:text-xs tw:font-semibold tw:text-sela-ink", button);
+    const note = node("span", "tw:text-[10px] tw:leading-4 tw:text-sela-muted", button);
+    label.textContent = t(en, id);
+    note.textContent = t(enNote, idNote);
+    button.setAttribute("aria-label", t(en, id) + " \xB7 " + t(enNote, idNote));
+    button.setAttribute("aria-pressed", "false");
+    button.onclick = async () => {
+      try {
+        if (ambientKind === kind && ambient) {
+          stopAmbient();
+          await context?.suspend();
+          return;
         }
+        stopAmbient();
+        context ||= new AudioContext();
+        ambientKind = kind;
+        ambient = makeAmbient(context, kind);
         await context.resume();
-      } else await context?.suspend();
-      ambience.setAttribute("aria-pressed", String(ambient));
-      ambience.textContent = ambient ? t("Soft rain \xB7 on", "Hujan lembut \xB7 aktif") : t("Soft rain \xB7 off", "Hujan lembut \xB7 mati");
-    } catch {
-      ambient = false;
-      status.textContent = t("Audio unavailable", "Audio tidak tersedia");
-    }
-  };
+        button.setAttribute("aria-pressed", "true");
+      } catch {
+        stopAmbient();
+        status.textContent = t("Room sound is unavailable in this browser.", "Suasana audio belum tersedia di browser ini.");
+      }
+    };
+    ambienceButtons.push(button);
+  }
   const files = reader.book?.files, chapters = reader.book?.chapters;
   if (files && chapters) {
     const clips = [];
@@ -106,11 +181,11 @@ export function mountAudio(reader, parent, t) {
       return value.split(":").reduce((n, v) => n * 60 + Number(v), 0);
     };
     const path = (value, base) => {
+      if (!value) return null;
       const url = new URL(value, "https://epub.invalid/" + base);
-      if (url.origin !== "https://epub.invalid") return null;
-      return decodeURIComponent(url.pathname.slice(1));
+      return url.origin === "https://epub.invalid" ? decodeURIComponent(url.pathname.slice(1)) : null;
     };
-    for (const [name, bytes] of Object.entries(files).filter(([n]) => n.toLowerCase().endsWith(".smil")).slice(0, 128)) {
+    for (const [name, bytes] of Object.entries(files).filter(([file]) => file.toLowerCase().endsWith(".smil")).slice(0, 128)) {
       if (bytes.length > 1048576) continue;
       const doc = new DOMParser().parseFromString(new TextDecoder().decode(bytes), "application/xml");
       if (doc.querySelector("parsererror")) continue;
@@ -118,17 +193,19 @@ export function mountAudio(reader, parent, t) {
         const a = par.getElementsByTagNameNS("*", "audio")[0], text = par.getElementsByTagNameNS("*", "text")[0];
         if (!a || !text) continue;
         try {
-          const src = path(a.getAttribute("src"), name), chapter = path(text.getAttribute("src"), name), page = chapters.indexOf(chapter) + 1, start = time(a.getAttribute("clipBegin")), end = time(a.getAttribute("clipEnd"));
-          if (src && files[src] && /\.(mp3|m4a|ogg|wav|mp4)$/i.test(src) && files[src].length <= 64 * 1048576 && page > 0 && Number.isFinite(start) && end > start) clips.push({ src, page, anchor: new URL(text.getAttribute("src"), "https://epub.invalid/" + name).hash.slice(1), start, end });
+          const src = path(a.getAttribute("src"), name), chapter = path(text.getAttribute("src"), name), page = chapters.indexOf(chapter) + 1;
+          const start = time(a.getAttribute("clipBegin")), end = time(a.getAttribute("clipEnd"));
+          if (src && files[src] && /\.(mp3|m4a|ogg|wav|mp4)$/i.test(src) && files[src].length <= 64 * 1048576 && page > 0 && Number.isFinite(start) && end > start) {
+            clips.push({ src, page, anchor: new URL(text.getAttribute("src"), "https://epub.invalid/" + name).hash.slice(1), start, end });
+          }
         } catch {
         }
       }
     }
     if (clips.length) {
-      const play = document.createElement("button");
+      const play = node("button", "tw:mt-2 tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-3 tw:text-xs tw:font-semibold tw:text-white tw:transition hover:tw:brightness-105 focus-visible:tw:outline-2 focus-visible:tw:outline-offset-2 focus-visible:tw:outline-sela-accent", audioSection);
       play.type = "button";
-      play.textContent = t("Read along \xB7 embedded narration", "Baca bersama \xB7 narasi bawaan");
-      section.append(play);
+      play.textContent = t("Read along \xB7 EPUB narration", "Baca bersama \xB7 narasi EPUB");
       let index = -1, activeURL = "", advancing = false;
       const next = async () => {
         if (advancing) return;
@@ -155,8 +232,7 @@ export function mountAudio(reader, parent, t) {
             const ready = () => {
               clear();
               resolve();
-            };
-            const fail = () => {
+            }, fail = () => {
               clear();
               reject(Error("Narration unavailable or reader closed"));
             };
@@ -177,17 +253,17 @@ export function mountAudio(reader, parent, t) {
       audio.addEventListener("timeupdate", () => {
         if (index >= 0 && audio.currentTime >= clips[index]?.end) {
           index = Math.min(index, clips.length);
-          void next().catch((e) => {
+          void next().catch((error) => {
             audio.pause();
-            status.textContent = e.message;
+            status.textContent = error.message;
           });
         }
       });
       play.onclick = () => {
-        index = clips.findIndex((c) => c.page >= reader.currentPage()) - 1;
-        void next().catch((e) => {
+        index = clips.findIndex((clip) => clip.page >= reader.currentPage()) - 1;
+        void next().catch((error) => {
           audio.pause();
-          status.textContent = e.message;
+          status.textContent = error.message;
         });
       };
       input.addEventListener("change", () => {
@@ -196,7 +272,6 @@ export function mountAudio(reader, parent, t) {
       });
     }
   }
-  section.append(status);
   const visibility = () => {
     if (document.hidden) void context?.suspend();
     else if (ambient) void context?.resume();
@@ -209,6 +284,7 @@ export function mountAudio(reader, parent, t) {
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
+    stopAmbient();
     if (objectURL) URL.revokeObjectURL(objectURL);
     void context?.close();
     document.removeEventListener("visibilitychange", visibility);

@@ -21,7 +21,7 @@ export function renderBookInfo(parent, metadata, t, format) {
   dd.textContent = [format?.toUpperCase(), metadata.pageCount && metadata.pageCount + " " + t("pages / chapters", "halaman / bab")].filter(Boolean).join(" \xB7 ");
   dl.append(dt, dd);
 }
-export function showBookInfo(metadata, { t = (en) => en, format, onSave } = {}) {
+export function showBookInfo(metadata, { t = (en) => en, format, onSave, onRead } = {}) {
   const dialog = document.createElement("dialog");
   dialog.className = "book-info-dialog";
   dialog.setAttribute("aria-label", t("Book information", "Informasi buku"));
@@ -51,6 +51,22 @@ export function showBookInfo(metadata, { t = (en) => en, format, onSave } = {}) 
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) cleanup();
     }
   });
+  if (onRead) {
+    const read = document.createElement("button");
+    read.type = "button";
+    read.className = "book-info-read";
+    read.textContent = t("Read this book", "Baca buku ini");
+    dialog.append(read);
+    read.onclick = async () => {
+      read.disabled = true;
+      cleanup();
+      try {
+        await onRead();
+      } catch (error) {
+        notify(error instanceof Error ? error.message : String(error), "error");
+      }
+    };
+  }
   if (onSave) {
     const edit = document.createElement("button");
     edit.type = "button";

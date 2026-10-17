@@ -8,7 +8,7 @@ test('dedicated room stores and deduplicates books, searches, opens, exports and
  await page.locator('#books').setInputFiles(file);await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('#books')).toBeEnabled();
  await page.locator('#books').setInputFiles(file);await expect(page.locator('#status')).toContainText('already on shelf');await expect(page.locator('.book')).toHaveCount(1);
  await page.locator('#search').fill('missing');await expect(page.locator('.book')).toHaveCount(0);await page.locator('#search').fill('quiet');await expect(page.locator('.book')).toHaveCount(1);
- await page.getByRole('button',{name:'Read A quiet book',exact:true}).click();await expect(page.locator('.sela-epub article')).toContainText('quiet story');await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'Book information: A quiet book',exact:true}).first().click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(page.locator('.sela-epub article')).toContainText('quiet story');await page.keyboard.press('Escape');await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
  await page.getByRole('button',{name:'Book options: A quiet book',exact:true}).click();
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Export original',exact:true}).click();expect(await readFile(await(await download).path(),'utf8')).toContain('quiet story');
  await page.getByRole('button',{name:'Remove',exact:true}).click();await expect(page.locator('.book')).toHaveCount(0);await page.locator('#undo').click();await expect(page.locator('.book')).toHaveCount(1);
@@ -18,7 +18,7 @@ test('dedicated room stores and deduplicates books, searches, opens, exports and
 test('library mobile light/dark and Indonesian preserve usable two-column shelf without overflow',async({page})=>{
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();await page.locator('#books').setInputFiles([{name:'First.txt',mimeType:'text/plain',buffer:Buffer.from('First book')},{name:'Second.txt',mimeType:'text/plain',buffer:Buffer.from('Second book')}]);await expect(page.locator('.book')).toHaveCount(2);
  for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const b=await page.locator('.cover').first().boundingBox();expect(b.width).toBeGreaterThan(90);}}
- await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('#mobile-app h1')).toHaveText('Dunia kecil untuk cerita-ceritamu.');
+ await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('#mobile-app h1')).toHaveText('Ruang kecil untuk cerita.');
  await page.screenshot({path:'test-results/library-id.png',fullPage:true});
 });
 
@@ -40,15 +40,23 @@ test('Home glass header and reading scene stay balanced across screen sizes',asy
 test('app topbar language flags stay visible offline and language control remains tappable on compact phones',async({page})=>{
  await page.route('https://flagcdn.com/**',route=>route.abort());
  await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ await page.locator('[data-tab=library]').click();
  for(const width of [320,360,390,768,1440]){
   await page.setViewportSize({width,height:844});
-  const geometry=await page.evaluate(()=>{const picker=document.querySelector<HTMLElement>('.language-picker')!.getBoundingClientRect(),select=document.querySelector<HTMLSelectElement>('#language')!.getBoundingClientRect(),theme=document.querySelector<HTMLButtonElement>('#theme')!.getBoundingClientRect(),add=document.querySelector<HTMLButtonElement>('#add-books')!.getBoundingClientRect();return {picker:[picker.x,picker.y,picker.width,picker.height],select:[select.x,select.y,select.width,select.height],theme:[theme.width,theme.height],add:[add.width,add.height],scroll:document.documentElement.scrollWidth,viewport:innerWidth};});
+  const geometry=await page.evaluate(()=>{const picker=document.querySelector<HTMLElement>('.language-picker')!.getBoundingClientRect(),select=document.querySelector<HTMLSelectElement>('#language')!.getBoundingClientRect(),theme=document.querySelector<HTMLButtonElement>('#theme')!.getBoundingClientRect();return {picker:[picker.x,picker.y,picker.width,picker.height],select:[select.x,select.y,select.width,select.height],theme:[theme.width,theme.height],scroll:document.documentElement.scrollWidth,viewport:innerWidth};});
   expect(geometry.scroll).toBeLessThanOrEqual(geometry.viewport);expect(geometry.select[0]).toBeGreaterThanOrEqual(geometry.picker[0]);expect(geometry.select[0]+geometry.select[2]).toBeLessThanOrEqual(geometry.picker[0]+geometry.picker[2]+1);
-  if(width<=380){expect(geometry.theme[0]).toBeGreaterThanOrEqual(40);expect(geometry.theme[1]).toBeGreaterThanOrEqual(40);expect(geometry.add[0]).toBeGreaterThanOrEqual(40);expect(geometry.add[1]).toBeGreaterThanOrEqual(40);expect(geometry.picker[3]).toBeGreaterThanOrEqual(44);}
+  if(width<=380){expect(geometry.theme[0]).toBeGreaterThanOrEqual(40);expect(geometry.theme[1]).toBeGreaterThanOrEqual(40);expect(geometry.picker[3]).toBeGreaterThanOrEqual(44);}
   for(const [locale,flag,name,compact] of [['en-US','flag-en.svg','English','EN'],['id-ID','flag-id.svg','Bahasa Indonesia','ID'],['ja-JP','flag-jp.svg','日本語','JA']] as const){
    await page.locator('#language').selectOption(locale);await expect(page.locator('#language-current')).toHaveText(width<=380?compact:name);await expect(page.locator('#language-current')).toHaveAttribute('title',name);await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('#language-flag')).toHaveAttribute('src',new RegExp(flag));await expect.poll(()=>page.locator('#language-flag').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   }
  }
+});
+
+test('mobile add FAB appears only on the shelf, where adding a book belongs',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');const fab=page.locator('.mobile-add-fab');
+ await expect(fab).toBeHidden();await page.locator('[data-tab=browse]').click();await expect(fab).toBeHidden();await page.locator('[data-tab=settings]').click();await expect(fab).toBeHidden();await page.locator('[data-tab=library]').click();await expect(fab).toBeVisible();
+ const geometry=await page.evaluate(()=>{const fab=document.querySelector('.mobile-add-fab')!,empty=document.querySelector('.library .empty-state')||document.querySelector('.library .empty');const a=fab.getBoundingClientRect(),b=empty?.getBoundingClientRect();return{fab:{left:a.left,right:a.right,top:a.top,bottom:a.bottom},empty:b?{left:b.left,right:b.right,top:b.top,bottom:b.bottom}:null,viewport:innerWidth};});
+ expect(geometry.fab.right).toBeLessThanOrEqual(geometry.viewport);if(geometry.empty){expect(geometry.fab.top).toBeGreaterThanOrEqual(geometry.empty.bottom-1);}
 });
 
 test('desktop shelf keeps a single book compact and the round options button opens a dismissible tray',async({page})=>{
@@ -66,7 +74,7 @@ test('desktop shelf keeps a single book compact and the round options button ope
 
 test('PDF cover is a locally rendered thumbnail and sample has twelve navigable chapters',async({page})=>{
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.getByRole('button',{name:'Save offline',exact:true}).click();await page.locator('[data-tab=library]').click();await expect(page.locator('.cover img')).toBeVisible({timeout:30000});await expect(page.locator('#books')).toBeEnabled();
-  await page.locator('.cover').click();await expect(page.locator('.app-page-seek')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Contents & bookmarks',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.app-reading-position output')).toHaveText('46 / 50');
+  await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(page.locator('.app-page-seek')).toHaveAttribute('max','50');await page.getByRole('button',{name:'Contents & bookmarks',exact:true}).click();await expect(page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true})).toBeVisible();await page.getByRole('button',{name:'12. Sebelum Rekaman Dimulai',exact:true}).click();await expect(page.locator('.app-reading-position output')).toHaveText('46 / 50');
 });
 
 test('concurrent inline readers keep page scrolling and scope keyboard navigation to focus',async({page})=>{

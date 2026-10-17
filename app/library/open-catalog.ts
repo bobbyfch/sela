@@ -1,17 +1,35 @@
-export function coverFor(book){
- const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 240 360');
- const add=(parent,tag,attrs,text?: any)=>{const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text)e.textContent=text;parent.append(e);return e;};
- const seed=[...String(book.id)].reduce((sum,char)=>sum+char.charCodeAt(0),0),styles=getComputedStyle(document.documentElement),color=styles.getPropertyValue('--accent').trim()||'#4b83d8',accent=['#78b9d5','#9a88d8','#e786a7','#61ad95','#edaa62'][seed%5],paper=styles.getPropertyValue('--palette-soft').trim()||'#eef4ff',ink=styles.getPropertyValue('--fg').trim()||'#26334c';
- const defs=add(svg,'defs',{}),gradient=add(defs,'linearGradient',{id:'cover-wash',x1:'0',y1:'0',x2:'1',y2:'1'});add(gradient,'stop',{offset:'0','stop-color':color});add(gradient,'stop',{offset:'1','stop-color':paper});
- add(svg,'rect',{width:240,height:360,fill:'url(#cover-wash)'});add(svg,'rect',{x:12,y:12,width:216,height:336,rx:18,fill:'none',stroke:ink,'stroke-opacity':'.16'});add(svg,'circle',{cx:198,cy:74,r:30,fill:accent,'fill-opacity':'.3'});add(svg,'path',{d:'M35 48h170',stroke:ink,'stroke-opacity':'.22'});add(svg,'text',{x:35,y:37,fill:ink,'fill-opacity':'.72','font-family':'sans-serif','font-size':8,'font-weight':700,'letter-spacing':1.4},'OPEN EDITION');
- const motif=seed%4;
- if(motif===0){add(svg,'path',{d:'M56 210V151a64 64 0 0 1 128 0v59Z',fill:accent,'fill-opacity':'.76'});add(svg,'path',{d:'M75 210v-55a45 45 0 0 1 90 0v55M120 115v95',fill:'none',stroke:paper,'stroke-opacity':'.85','stroke-width':2});}
- else if(motif===1){add(svg,'path',{d:'M119 203c3-39 0-68-11-103m14 91c8-27 24-47 49-62m-52 42c-20-18-39-28-61-31',fill:'none',stroke:paper,'stroke-width':3,'stroke-linecap':'round'});for(const d of ['M105 117c-22-2-34-15-36-32 22 1 35 13 36 32Z','M136 164c3-23 18-38 39-43-2 22-17 38-39 43Z','M102 157c-21-4-32-18-33-37 21 4 32 17 33 37Z'])add(svg,'path',{d,fill:accent,stroke:paper,'stroke-width':1});}
- else if(motif===2){add(svg,'path',{d:'M20 188c33-42 67-42 100 0s67 42 100 0v22H20Zm0-50c33-42 67-42 100 0s67 42 100 0v22c-33 42-67 42-100 0s-67-42-100 0Z',fill:accent,'fill-opacity':'.82'});add(svg,'path',{d:'M20 138c33-42 67-42 100 0s67 42 100 0',fill:'none',stroke:ink,'stroke-opacity':'.65','stroke-width':2});}
- else{add(svg,'path',{d:'M65 205V93h110v112M83 205v-90h74v90M55 205h130',fill:accent,'fill-opacity':'.77',stroke:paper,'stroke-opacity':'.9','stroke-width':2});add(svg,'path',{d:'M94 141h51m-51 16h51m-51 16h51',stroke:paper,'stroke-opacity':'.85','stroke-width':2});}
- add(svg,'path',{d:'M35 218h170',stroke:ink,'stroke-opacity':'.24'});
- const words=String(book.title||'Untitled').split(/\s+/);let lines=[],line='';for(const word of words){if((line+' '+word).trim().length>20&&line){lines.push(line);line=word;}else line=(line+' '+word).trim();}if(line)lines.push(line);if(lines.length>4)lines[3]=lines[3].slice(0,17)+'…';
- lines.slice(0,4).forEach((value,index)=>add(svg,'text',{x:120,y:252+index*21,'text-anchor':'middle',fill:ink,'font-family':'sans-serif','font-size':16,'font-weight':650},value));
- add(svg,'text',{x:120,y:330,'text-anchor':'middle',fill:ink,'fill-opacity':'.72','font-family':'sans-serif','font-size':10},String(book.author||'').slice(0,30));
- return new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'});
+/** Shared, palette-aware flat cover art for books without licensed artwork. */
+export function coverFor(book:{id?:string;title?:string;author?:string}){
+  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 240 360');svg.setAttribute('role','img');svg.setAttribute('aria-label',String(book.title||'Book cover'));
+  const add=(parent:Element,tag:string,attrs:Record<string,string|number>,text?:string)=>{const element=document.createElementNS(ns,tag);for(const[key,value]of Object.entries(attrs))element.setAttribute(key,String(value));if(text)element.textContent=text;parent.append(element);return element;};
+  const seed=[...String(book.id||book.title||'sela')].reduce((sum,char)=>sum+char.charCodeAt(0),0),styles=getComputedStyle(document.documentElement);
+  const paper=styles.getPropertyValue('--panel').trim()||'#fff',accent=styles.getPropertyValue('--accent').trim()||'#376cda',ink=styles.getPropertyValue('--fg').trim()||'#26334c',line=styles.getPropertyValue('--line').trim()||'#dbe2ec';
+  add(svg,'rect',{width:240,height:360,fill:paper});
+  add(svg,'rect',{x:0,y:0,width:13,height:360,fill:accent});
+  add(svg,'rect',{x:25,y:22,width:192,height:316,rx:8,fill:'none',stroke:line,'stroke-width':1.5});
+  add(svg,'text',{x:36,y:51,fill:accent,'font-family':'system-ui,sans-serif','font-size':9,'font-weight':750,'letter-spacing':1.6},'SELA  /  OPEN EDITION');
+  add(svg,'path',{d:'M36 64h168',stroke:line,'stroke-width':1});
+  const motif=seed%4,soft=accent;
+  if(motif===0){
+    add(svg,'path',{d:'M61 204v-50a59 59 0 0 1 118 0v50',fill:'none',stroke:soft,'stroke-width':5,'stroke-linecap':'round'});
+    add(svg,'path',{d:'M79 204v-49a41 41 0 0 1 82 0v49M120 117v87',fill:'none',stroke:ink,'stroke-opacity':'.65','stroke-width':2});
+  }else if(motif===1){
+    add(svg,'path',{d:'M120 205v-89m0 59c-24-22-45-29-61-27m61 8c21-24 41-34 60-32',fill:'none',stroke:soft,'stroke-width':4,'stroke-linecap':'round'});
+    add(svg,'path',{d:'M80 147c-2-23-15-37-34-41 0 22 13 37 34 41Zm39-14c2-23 16-36 36-41-1 23-15 37-36 41Z',fill:'none',stroke:ink,'stroke-opacity':'.72','stroke-width':2});
+  }else if(motif===2){
+    add(svg,'path',{d:'M36 170c28-24 56-24 84 0s56 24 84 0M36 188c28-24 56-24 84 0s56 24 84 0M36 206c28-24 56-24 84 0s56 24 84 0',fill:'none',stroke:soft,'stroke-width':4,'stroke-linecap':'round'});
+    add(svg,'circle',{cx:120,cy:151,r:4,fill:ink,'fill-opacity':'.72'});
+  }else{
+    add(svg,'path',{d:'M70 203V110h100v93M87 203v-75h66v75M57 203h126',fill:'none',stroke:soft,'stroke-width':4,'stroke-linejoin':'round'});
+    add(svg,'path',{d:'M101 148h38m-38 13h38m-38 13h38',stroke:ink,'stroke-opacity':'.65','stroke-width':2,'stroke-linecap':'round'});
+  }
+  const words=String(book.title||'Untitled').trim().split(/\s+/),lines:string[]=[];let current='';
+  for(const word of words){if((current+' '+word).trim().length>19&&current){lines.push(current);current=word;}else current=(current+' '+word).trim();}
+  if(current)lines.push(current);if(lines.length>4)lines.splice(4,lines.length-4);if(lines.length===4&&lines[3].length>18)lines[3]=lines[3].slice(0,17)+'…';
+  const titleY=250+(4-lines.length)*8;
+  lines.forEach((text,index)=>add(svg,'text',{x:38,y:titleY+index*22,fill:ink,'font-family':'Georgia,serif','font-size':16,'font-weight':700},text));
+  add(svg,'path',{d:'M36 318h168',stroke:line,'stroke-width':1});
+  add(svg,'text',{x:36,y:330,fill:ink,'fill-opacity':'.72','font-family':'system-ui,sans-serif','font-size':9,'font-weight':550},String(book.author||'A book to discover').slice(0,32));
+  return new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'});
 }

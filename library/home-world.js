@@ -11270,9 +11270,879 @@ async function qs(e) {
 		}, i.onerror = () => r(i.error);
 	});
 }
+Object.fromEntries([
+	{
+		locale: "en-US",
+		name: "English",
+		base: "en",
+		country: "US"
+	},
+	{
+		locale: "id-ID",
+		name: "Bahasa Indonesia",
+		base: "id",
+		country: "ID"
+	},
+	{
+		locale: "ja-JP",
+		name: "日本語",
+		base: "ja",
+		country: "JP"
+	}
+].map((e) => [e.base, e]));
+//#endregion
+//#region src/i18n.ts
+var Js = { ja: {
+	Home: "ホーム",
+	Shelf: "本棚",
+	Explore: "本を探す",
+	Settings: "設定",
+	"Add books": "本を追加",
+	"Check for updates": "更新を確認",
+	Appearance: "外観",
+	Language: "言語",
+	Updates: "アップデート",
+	"Set the language for Sela.": "Selaの表示言語を選びます。",
+	"Choose light, dark, or automatic.": "ライト、ダーク、自動から選びます。",
+	"Reading calendar": "読書カレンダー",
+	"Small moments count.": "少しの時間も大切に。",
+	"A little water break": "水分補給のひと休み",
+	"A gentle note to pause and sip.": "ひと休みして水を飲みましょう。",
+	"Add a glass": "一杯追加",
+	"glass today": "今日の一杯",
+	"glasses today": "今日の一杯",
+	Weather: "天気",
+	"Your weather": "現在地の天気",
+	Nearby: "近く",
+	"Choose city": "場所を選ぶ",
+	"City name": "都市名",
+	Find: "検索",
+	"Turn off weather": "天気をオフ",
+	"Use my location": "現在地を使う",
+	"Allow location to show nearby weather.": "現在地の天気を表示するには位置情報を許可してください。",
+	"Location unavailable. Choose a city instead.": "位置情報を取得できません。都市を選んでください。",
+	"Public holiday": "祝日",
+	"Previous month": "前の月",
+	"Next month": "次の月",
+	"Show the whole month": "月全体を表示",
+	"Show this week": "今週を表示",
+	"About Sela": "Selaについて",
+	"Your personal bookshelf": "あなたのための読書アプリ",
+	"Personal website": "個人サイト",
+	"MIT license": "MITライセンス",
+	"Third-party licenses": "サードパーティのライセンス",
+	Close: "閉じる",
+	"Single page": "単ページ",
+	"Book spread": "見開き",
+	"Continuous scroll": "連続スクロール",
+	"Low power reader": "省電力リーダー",
+	"Reduce motion and background effects.": "動きと背景効果を抑えます。",
+	"Default reading mode": "標準の読書モード",
+	"Choose how new books open.": "新しい本の開き方を選びます。",
+	"Reading defaults": "読書の初期設定",
+	"Books & storage": "本と保存容量",
+	"Your books.": "あなたの本。",
+	"Pick up where you left off.": "前回の続きから読みましょう。",
+	Read: "読む",
+	"Save offline": "オフラインに保存",
+	"Book information": "本の情報",
+	Save: "保存",
+	Cancel: "キャンセル",
+	Search: "検索",
+	"Search book": "本を検索",
+	"Previous page": "前のページ",
+	"Next page": "次のページ",
+	"Reader settings": "読書設定",
+	"Contents & bookmarks": "目次としおり",
+	"Bookmark page": "しおりを挟む",
+	"Download original": "元のファイルを保存",
+	"Install Sela on this device": "この端末にSelaをインストール",
+	"Choose a little companion": "小さなおともを選ぶ",
+	Cat: "ねこ",
+	Hamster: "ハムスター",
+	Rabbit: "うさぎ",
+	Fox: "きつね",
+	Owl: "ふくろう",
+	Turtle: "かめ",
+	Plant: "植物",
+	"A quiet day. No reading saved here yet.": "静かな一日。まだ読書記録はありません。",
+	"Privacy, updates & compatibility": "プライバシー・更新・対応環境"
+} };
+Object.assign(Js.ja, {
+	"Choose book files": "本のファイルを選択",
+	"Red panda": "レッサーパンダ",
+	Penguin: "ペンギン",
+	Shiba: "柴犬",
+	Fawn: "子鹿"
+}), Object.assign(Js.ja, {
+	"Open Quran settings": "クルアーンの設定を開く",
+	"Buka pengaturan Al-Qur’an": "クルアーンの設定を開く",
+	"Close Quran settings": "クルアーンの設定を閉じる",
+	"Tutup pengaturan Al-Qur’an": "クルアーンの設定を閉じる"
+}), Object.assign(Js.ja, {
+	"A little water break": "水分補給のひと休み",
+	"Track your sips at your own pace.": "自分のペースで水分を記録しましょう。",
+	"logged today": "今日の記録",
+	"Goal guide": "目標の目安",
+	"Water goal": "水分目標",
+	"Daily goal (mL)": "一日の目標 (mL)",
+	"Serving size": "一杯の量",
+	"My own goal": "自分で設定",
+	"Indonesia AKG · male · 19–64": "インドネシア基準 · 男性 · 19–64歳",
+	"Indonesia AKG · female · 19–64": "インドネシア基準 · 女性 · 19–64歳",
+	"No target": "目標なし",
+	"Indonesia’s adult AKG reference (ages 19–64): 2,500 mL for men, 2,350 mL for women. It is a population guide; food and drinks count toward total water, while Sela logs only the glasses you enter. Weight and height alone are not a validated personal formula. Activity, heat and health can change needs; adjust gently and follow clinical advice when relevant.": "インドネシアの成人AKG目安（19〜64歳）：男性2,500 mL、女性2,350 mL。これは集団向けの目安です。食事や他の飲み物も総水分量に含まれますが、Selaには入力した水の量だけが記録されます。体重と身長だけで個人の必要量を正確に出す検証済みの計算式はありません。活動量、暑さ、健康状態によって変わるため、無理なく調整し、必要に応じて医療専門家に相談してください。",
+	"Indonesia AKG source ↗": "インドネシアAKGの出典 ↗",
+	"Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.": "無理のない目標を選ぶか、0にして記録をオフにできます。これは習慣の記録であり、医療上の処方ではありません。",
+	"Set an optional goal if it feels helpful, or leave it off.": "役立ちそうなら目標を設定してください。不要ならオフのままで大丈夫です。",
+	"Choose a little companion": "小さなおともを選ぶ"
+}), Object.assign(Js.ja, {
+	"Quran passages": "クルアーンの章と節",
+	"Bacaan Al-Qur’an": "クルアーンの章と節",
+	"Daily readings": "毎日の祈り",
+	"Bacaan sehari-hari": "毎日の祈り",
+	"Quran passages use your chosen edition. Daily remembrance keeps its Arabic source and published English meaning.": "クルアーンは選択した翻訳版で表示します。日々の祈りはアラビア語の原文と公開元の英語訳を表示します。",
+	"Waking Up": "目覚めの祈り",
+	"Bangun tidur": "起床時の祈り",
+	"Morning Adhkar": "朝のズィクル",
+	"Zikir pagi": "朝のズィクル",
+	"After Salah": "礼拝後の祈り",
+	"Sesudah salat": "礼拝後の祈り",
+	"Evening Adhkar": "夕方のズィクル",
+	"Zikir petang": "夕方のズィクル",
+	"Before Sleep": "就寝前の祈り",
+	"Sebelum tidur": "就寝前の祈り",
+	"Quranic Duas": "クルアーンの祈り",
+	"Doa Qur’ani": "クルアーンの祈り",
+	"Leaving Home": "外出時の祈り",
+	"Keluar rumah": "外出時の祈り",
+	"Food & Drink": "食事の祈り",
+	"Makan & minum": "食事の祈り",
+	"Travel Duas": "旅の祈り",
+	"Doa perjalanan": "旅の祈り",
+	"Buruja · English meaning": "Buruja・英語の意味",
+	"English meaning": "英語の意味"
+}), Object.assign(Js.ja, {
+	"Protestant Christianity": "プロテスタント",
+	"Catholic Christianity": "カトリック",
+	"Protestant reading": "プロテスタントの聖書",
+	"Catholic reading": "カトリックの聖書",
+	Confucianism: "儒教",
+	"Confucian classics": "儒教の古典",
+	"A little shelf of Islamic readings": "イスラムの読書棚",
+	"Open a surah or a daily passage in the Quran reader.": "クルアーンのビューアーでスーラや日々の一節を開きます。",
+	"Open The Quran": "クルアーンを開く",
+	"Open Yasin": "ヤースィーン章を開く",
+	"Open Al-Mulk": "アル・ムルク章を開く",
+	"Open Al-Kahf": "アル・カフ章を開く",
+	"Open Ayat Kursi": "玉座節を開く",
+	"Open A Quranic dua": "クルアーンの祈りを開く",
+	"A Quranic dua": "クルアーンの祈り",
+	"Al-Qur’an": "クルアーン",
+	"Ayat Kursi": "玉座節",
+	"The Chinese Text Project needs a registered API key for in-app reading. You can open the original Analects source here.": "中国哲学書電子化計画の本文をアプリ内で読むには登録済みのAPIキーが必要です。論語の原文はこちらから開けます。",
+	"Chinese Text Project memerlukan kunci API terdaftar untuk membaca di aplikasi. Sumber asli Lunyu dapat dibuka di sini.": "中国哲学書電子化計画の本文をアプリ内で読むには登録済みのAPIキーが必要です。論語の原文はこちらから開けます。",
+	"The Indonesian Bible API requires its own access credentials. Open the official LAI source to review editions and access terms.": "インドネシア聖書協会のAPIには専用の認証情報が必要です。公式サイトで版と利用条件を確認してください。",
+	"API Alkitab Indonesia memerlukan kredensial akses tersendiri. Buka sumber resmi LAI untuk melihat edisi dan ketentuan akses.": "インドネシア聖書協会のAPIには専用の認証情報が必要です。公式サイトで版と利用条件を確認してください。",
+	"The source is linked directly; Sela does not guess or substitute a different edition.": "版を推測したり置き換えたりせず、原典へ直接リンクしています。",
+	"Sumber ditautkan langsung; Sela tidak menebak atau mengganti dengan edisi lain.": "版を推測したり置き換えたりせず、原典へ直接リンクしています。",
+	"Original classical Chinese text · source access required": "古典中国語の原文・APIアクセスが必要",
+	"Teks klasik Mandarin · akses sumber diperlukan": "古典中国語の原文・APIアクセスが必要",
+	"Analects · Xue Er": "論語・学而",
+	"Stories are taking a little break": "ニュースは少し休憩中",
+	"A quiet moment for your news shelf": "ニュース棚に静かなひととき",
+	"Today’s little history note is resting": "今日は歴史の小話もお休みです",
+	"A quiet moment in history": "歴史の静かなひととき",
+	"The news services could not be reached. Your last saved stories will return when available.": "ニュースサービスに接続できません。復旧後、保存済みの記事が表示されます。",
+	"No matching stories right now. Try another topic or refresh later.": "該当する記事がありません。トピックを変えるか、後でもう一度お試しください。",
+	"This source could not be reached. Try again when you are online.": "情報源に接続できません。オンラインで再度お試しください。",
+	"No story is available for this date yet.": "この日の記事はまだありません。"
+}), Object.assign(Js.ja, {
+	"Weather options": "天気の設定",
+	"Location permission was declined. Choose a city or allow it in browser settings.": "位置情報が許可されませんでした。都市を選ぶか、ブラウザーの設定で許可してください。",
+	"Your location is unavailable. Choose a city instead.": "現在地を取得できません。都市を選んでください。",
+	"Location request timed out. You can choose a city instead.": "位置情報の取得がタイムアウトしました。都市を選べます。",
+	"Waiting for location permission…": "位置情報の許可を待っています…",
+	"Searching cities…": "都市を検索しています…",
+	"Choose your city.": "都市を選んでください。",
+	"City not found.": "都市が見つかりません。",
+	"City search unavailable. Try again.": "都市を検索できません。もう一度お試しください。",
+	"Weather unavailable. Saved data stays visible.": "天気情報を取得できません。保存済みの情報を表示します。",
+	"Find a book": "本を検索",
+	"Continue reading": "続きから読む",
+	"A little book to start": "まずは一冊",
+	"All books": "すべての本",
+	Unread: "未読",
+	Started: "読み始めた本",
+	Favorites: "お気に入り",
+	Newest: "新着順",
+	"Last read": "最後に読んだ順",
+	Title: "タイトル",
+	"All formats": "すべての形式",
+	Reading: "読書中",
+	Finished: "読了",
+	"About Sela": "Selaについて",
+	"Notebook & memories": "ノートと記録",
+	"Reading journal": "読書日記",
+	"Personalize my room": "読書スペースをカスタマイズ",
+	"Smart shelves": "スマート本棚",
+	"Care for my library": "本棚を整理",
+	"Share backup": "バックアップを共有",
+	"Restore backup": "バックアップを復元"
+}), Object.assign(Js.ja, {
+	"Appearance & language": "外観と言語",
+	"Weather settings": "天気の設定",
+	"Coordinates are sent to Open-Meteo for forecasts and saved on this device.": "座標は天気予報のためにOpen-Meteoへ送信され、この端末に保存されます。",
+	"Show the whole month": "月全体を表示",
+	"Show this week": "今週を表示",
+	Clear: "晴れ",
+	Cloudy: "曇り",
+	Fog: "霧",
+	Rain: "雨",
+	Snow: "雪",
+	Showers: "にわか雨",
+	Thunderstorm: "雷雨",
+	Find: "検索",
+	"Set the language for Sela.": "Selaの表示言語を選びます。"
+}), Object.assign(Js.ja, {
+	"Your little world of stories.": "物語のための、あなただけの小さな世界。",
+	"A little room of your own": "あなただけの小さな読書空間",
+	"Your books, new discoveries, and a little time for yourself.": "本と新しい発見、そして自分のための小さな時間。",
+	"Your reading space": "読書スペース",
+	"Home background": "ホームの背景",
+	"Your own companion": "お気に入りの仲間",
+	"Upload a mascot image": "マスコット画像をアップロード",
+	"Choose a background image": "背景画像を選ぶ",
+	"Color palettes": "カラーパレット",
+	Snow: "スノー",
+	"Pop pastel": "ポップパステル",
+	"Akihabara neon": "秋葉原ネオン",
+	"Mint grove": "ミントグローブ",
+	"Sky pop": "スカイポップ",
+	"Lime soda": "ライムソーダ",
+	Indigo: "インディゴ",
+	"Cherry pop": "チェリーポップ"
+});
+for (let [e, t] of Object.entries({ ja: {
+	"Good morning": "おはようございます",
+	"Good afternoon": "こんにちは",
+	"Good evening": "こんばんは",
+	"Good night": "おやすみなさい",
+	"A gentle note to pause and sip. Choose a small habit goal if it feels helpful.": "ひと休みして水を飲みましょう。よければ小さな習慣の目標を選べます。",
+	"My gentle daily goal": "今日の小さな目標",
+	"Choose a gentle goal to see your progress, or leave it off.": "目標を選ぶと進み具合が表示されます。設定しなくても大丈夫です。",
+	"A small reminder, never a rule. Drink when you feel thirsty.": "これは小さなお知らせです。のどが渇いたら水を飲みましょう。",
+	"You reached the goal you chose. Take a comfortable pause.": "自分で決めた目標に届きました。ゆっくりひと休みしましょう。",
+	"Goal reached · nice work!": "目標達成・すばらしいです！",
+	"No goal": "目標なし",
+	cups: "杯",
+	"Quote language": "引用の言語",
+	"Quote topic": "引用のテーマ",
+	"App language": "アプリの言語"
+} })) Object.assign(Js[e], t);
+for (let [e, t] of Object.entries({ ja: {
+	"Pick up where you left off.": "前回の続きから読みましょう。",
+	"glass today": "今日の一杯",
+	"glasses today": "今日の一杯",
+	"Find sourced quotes in this language": "この言語で出典付きの引用を探す",
+	"Sourced passages loaded in the selected language.": "選択した言語の出典付き引用を読み込みました。",
+	"Wikiquote is unavailable. Offline reflections remain ready.": "Wikiquoteを利用できません。オフラインのひとことは引き続き表示されます。",
+	"Open Wikiquote": "Wikiquoteを開く",
+	Reading: "読書",
+	Calm: "穏やかさ",
+	Courage: "勇気",
+	Life: "人生",
+	Friendship: "友情",
+	Creativity: "創造性",
+	Reflection: "内省",
+	"My passages": "自分の文章"
+} })) Object.assign(Js[e], t);
+for (let [e, t] of Object.entries({ ja: {
+	"Your personal reading room": "あなたのための読書空間",
+	"Your books. Within reach.": "本を、いつでも手元に。",
+	"Read books, comics and documents on your own terms. Keep your shelf offline, and pick up where you left off.": "本や漫画、書類を自分のペースで読みましょう。本棚をオフラインに保存して、前回の続きから再開できます。",
+	"A private shelf. An uninterrupted read. Books, progress and collections stay on your device.": "自分だけの本棚で、読書に集中。書籍、進捗、コレクションは端末内に保存されます。",
+	"The same reading tools, on your website. One clean interface on every screen. Embed inline or open fullscreen.": "同じ読書機能をウェブサイトでも。どの画面でもすっきり表示し、埋め込みまたは全画面で開けます。",
+	"Open web app": "ウェブアプリを開く",
+	"Use Viewer CDN": "Viewer CDNを使う",
+	"How to install the app →": "アプリのインストール方法 →",
+	"Install guide ↗": "インストールガイド ↗",
+	"Install on your device": "端末にインストール",
+	"Open Sela Books, then tap Install Sela when the app offers it.": "Sela Booksを開き、インストールの案内が表示されたら「Selaをインストール」を選びます。",
+	"Chrome, Edge, Opera and Samsung Internet show their own install prompt when this browser supports it.": "対応ブラウザーでは、Chrome、Edge、Opera、Samsung Internetがインストール案内を表示します。",
+	"On iPhone or iPad, open the Share menu in Safari and choose Add to Home Screen. On macOS Safari, choose File → Add to Dock.": "iPhoneまたはiPadではSafariの共有メニューから「ホーム画面に追加」を選びます。macOSのSafariでは「ファイル」→「Dockに追加」を選びます。",
+	"Firefox offers a home-screen shortcut on Android. On desktop, use its Web Apps option where available or bookmark Sela.": "Android版Firefoxではホーム画面にショートカットを追加できます。デスクトップでは利用可能な場合にWeb Appsを使うか、Selaをブックマークしてください。",
+	"Sela hides the install action after a successful install when the browser reports that state. Browser and operating-system support varies.": "ブラウザーがインストール済みと判定すると、Selaはインストール操作を非表示にします。対応状況はブラウザーとOSによって異なります。",
+	"Works with your stack": "お使いの環境で使えます",
+	"Load the versioned Sela Viewer script from the CDN.": "CDNからバージョンを指定したSela Viewerのスクリプトを読み込みます。",
+	"Add a container with a height that suits your page.": "ページに合う高さの表示領域を追加します。",
+	"Create Sela with the document URL and choose inline or fullscreen presentation.": "文書のURLを指定してSelaを作成し、埋め込み表示または全画面表示を選びます。",
+	"Serve the document from a URL your website can access. Framework adapters are optional.": "ウェブサイトからアクセスできるURLで文書を配信します。フレームワーク用アダプターは任意です。",
+	"Embed the viewer.": "Viewerを埋め込む",
+	"CI3, Laravel, Vue, React, Svelte, Astro or plain HTML. Bring your own design system: Bootstrap and Tailwind are welcome, neither is required.": "CI3、Laravel、Vue、React、Svelte、Astro、または通常のHTMLで使えます。BootstrapとTailwindにも対応し、どちらも必須ではありません。"
+} })) Object.assign(Js[e], t);
+for (let [e, t] of Object.entries({ ja: {
+	"Kids colors": "キッズカラー",
+	Akihabara: "秋葉原",
+	Forest: "森",
+	Sakura: "桜",
+	Ocean: "海",
+	Lavender: "ラベンダー",
+	Citrus: "シトラス"
+} })) Object.assign(Js[e], t);
+var Ys = [
+	["Your little world of stories.", "物語が広がる、小さなあなたの場所。"],
+	["YOUR READING SPACE", "あなたの読書スペース"],
+	["A little space to make reading feel like yours.", "読書を自分らしく楽しむための小さな空間。"],
+	["A thought for today", "今日のひとこと"],
+	["E-book reader: ", "電子書籍リーダー："],
+	["Show bookmarks and page previews", "しおりとページ一覧を表示"],
+	["Enable page sound", "ページめくり音をオン"],
+	["Disable page sound", "ページめくり音をオフ"],
+	["Download ", "ダウンロード "],
+	["Close reader", "リーダーを閉じる"],
+	["Bookmarks", "しおり"],
+	["Page previews", "ページ一覧"],
+	["Reading position", "読書位置"],
+	["Page ", "ページ "],
+	["Next or go to page", "次へ／ページを開く"],
+	["Bookmark this page", "このページにしおり"],
+	["No bookmarks yet.", "しおりはまだありません。"],
+	["Go to page ", "ページへ移動 "],
+	["Remove this bookmark", "このしおりを削除"],
+	["Use page numbers for very long documents.", "長い文書ではページ番号を使ってください。"],
+	["Preview page ", "ページをプレビュー "],
+	["Open PDF", "PDFを開く"],
+	["Keyboard shortcuts", "キーボード操作"],
+	["← → / PgUp PgDn: navigate · Home / End: first / last · + / −: zoom · 0: reset · F: fullscreen · B: bookmark · M: sound · ?: shortcuts · Esc: close · Alt + ←: previous position · Ctrl/Cmd + F: search.", "← → / PgUp PgDn：移動 · Home / End：最初／最後 · + / −：ズーム · 0：リセット · F：全画面 · B：しおり · M：音 · ?：操作一覧 · Esc：閉じる · Alt + ←：前の位置 · Ctrl/Cmd + F：検索。"],
+	["Touch: swipe or use page arrows; pinch to zoom; drag an enlarged page; tap Reading settings for fit and mode.", "タッチ操作：スワイプか矢印でページ移動、ピンチで拡大、拡大後はドラッグ。表示方法やモードは読書設定から変更できます。"],
+	["Rotate your device manually; the layout adapts automatically.", "端末を手動で回転してください。画面は自動で調整されます。"],
+	["Wait for the mode change.", "モードの切り替えが終わるまでお待ちください。"],
+	["Text books support single chapter or continuous scroll.", "テキスト本は章ごと、または連続スクロールで読めます。"],
+	["Page or chapter number", "ページ／章番号"],
+	["This document could not be opened. Check its format or try another file.", "この文書を開けませんでした。形式を確認するか、別のファイルをお試しください。"],
+	["Fullscreen is unavailable in this browser.", "このブラウザーでは全画面表示を利用できません。"],
+	["Download original", "元のファイルをダウンロード"],
+	["Reading tools sections", "読書ツールの項目"],
+	["Back to previous position", "前の位置に戻る"],
+	["Document contents", "文書の目次"],
+	["No embedded contents or bookmarks.", "埋め込みの目次やしおりはありません。"],
+	["Contents unavailable.", "目次を利用できません。"],
+	["Search text", "検索する文字"],
+	["Search cancelled.", "検索をキャンセルしました。"],
+	["matching pages / chapters.", "件のページ／章が一致しました。"],
+	["Page material", "ページの素材"],
+	["Smooth paper", "なめらかな紙"],
+	["Deckled paper", "縁に風合いのある紙"],
+	["Soft vellum", "やわらかな羊皮紙風"],
+	["Ruled paper", "罫線入りの紙"],
+	["Laid paper", "簀目紙"],
+	["Woven paper", "織り目のある紙"],
+	["Text font", "文字フォント"],
+	["Text alignment", "文字揃え"],
+	["Document brightness", "文書の明るさ"],
+	["Low power · fewer effects, lower resolution", "省電力 · 効果と解像度を抑える"],
+	["Read aloud", "読み上げ"],
+	["Narration voice", "読み上げ音声"],
+	["Narration speed", "読み上げ速度"],
+	["Sleep timer", "スリープタイマー"],
+	["Your notes", "メモ"],
+	["Export notes & bookmarks", "メモとしおりをエクスポート"],
+	["Import notes & bookmarks", "メモとしおりをインポート"],
+	["Document text", "文書のテキスト"],
+	["Selectable document text", "選択できる文書テキスト"],
+	["Selected text actions", "選択したテキストの操作"],
+	["Back to library", "本棚に戻る"],
+	["Reading", "読書"],
+	["Pages & bookmarks", "ページとしおり"],
+	["Close previews", "プレビューを閉じる"],
+	["Contents & bookmarks", "目次としおり"],
+	["Search book", "本を検索"],
+	["Reader settings", "読書設定"],
+	["Page fit", "ページの表示方法"],
+	["Fit screen", "画面に合わせる"],
+	["Fit width", "幅に合わせる"],
+	["Original size", "原寸大"],
+	["Zoom out", "縮小"],
+	["Zoom in", "拡大"],
+	["All reading tools", "すべての読書ツール"],
+	["Cycle appearance", "表示テーマを切り替え"],
+	["Page filter", "ページフィルター"],
+	["Original", "オリジナル"],
+	["Black & white", "白黒"],
+	["High contrast", "高コントラスト"],
+	["Warm colors", "暖色"],
+	["Cool colors", "寒色"],
+	["Night page", "夜間ページ"],
+	["Invert colors", "色を反転"],
+	["Soft contrast", "やわらかなコントラスト"],
+	["Vivid", "鮮やか"],
+	["Amber", "琥珀色"],
+	["Crop page margins", "ページの余白を切り取る"],
+	["Fit", "表示サイズ"],
+	["Left / start", "左揃え"],
+	["Justified", "両端揃え"],
+	["Filters change the displayed page only. Brightness is a visual adjustment, not a device setting or medical color correction.", "フィルターは表示だけを変更します。明るさは見た目の調整であり、端末設定や医療的な色補正ではありません。"],
+	["Reset appearance", "外観をリセット"],
+	["Dim reader controls", "読書コントロールを暗くする"],
+	["Close tools", "ツールを閉じる"],
+	["Appearance", "外観"],
+	["Contents", "目次"],
+	["Find in book", "本の中を検索"],
+	["Reading appearance", "読書画面"],
+	["Page brightness", "ページの明るさ"],
+	["Next passage", "次の箇所"],
+	["Previous passage", "前の箇所"],
+	["Pause / resume", "一時停止／再開"],
+	["Narration player", "読み上げプレーヤー"],
+	["Off", "オフ"],
+	["minutes", "分"],
+	["Local voices only", "端末内の音声のみ"],
+	["Note for this page / chapter", "このページ／章のメモ"],
+	["Highlight selected text", "選択範囲をハイライト"],
+	["Clear highlights on this page", "このページのハイライトを消す"],
+	["Save selected quote to notes", "選択した文章をメモに保存"],
+	["Highlight selected text", "選択したテキストをハイライト"],
+	["Listen to selected text", "選択したテキストを読み上げ"],
+	["Share selected quote", "選択した文章を共有"],
+	["Clear selection", "選択を解除"],
+	["Uses browser / OS voices, without a Sela API key or subscription. Online voices may send text to their provider. Voice availability and pause/background behavior vary by device.", "SelaのAPIキーや契約なしでブラウザー／OSの音声を使います。オンライン音声では文章が提供元に送られる場合があります。音声や一時停止、バックグラウンド動作は端末によって異なります。"],
+	["A quiet little home for your books, notes, and reading time.", "本とメモ、読書の時間のための静かな小さな場所。"],
+	["MADE WITH CARE BY", "心を込めて制作"],
+	["Send feedback", "フィードバックを送る"],
+	["Preparing the offline app…", "オフラインアプリを準備しています…"],
+	["Bookshelf ready for local files offline. Keep a backup.", "本棚はオフラインで使えます。元のファイルも保管してください。"],
+	["Offline shell unavailable; keep your originals.", "オフライン機能を利用できません。元のファイルを保管してください。"],
+	["On your shelf", "本棚"],
+	["Make room for your first story.", "最初の一冊を迎えましょう。"],
+	["Drop books here, or use the + button. Files stay on this browser.", "本をここにドロップするか、＋ボタンから追加してください。ファイルはこのブラウザーに保存されます。"],
+	["My smart shelves", "スマート本棚"],
+	["Beyond your shelf", "本棚の外にも"],
+	["Discover open books. Read here or keep an offline copy.", "公開書籍を探しましょう。ここで読むか、オフライン用に保存できます。"],
+	["Open editions vary in completeness and copyright by country. Source credits remain in each book. Public APIs may limit requests.", "公開版の内容や著作権は国によって異なります。出典は各書籍に表示されます。公開APIにはリクエスト制限がある場合があります。"],
+	["More books", "もっと見る"],
+	["50-page novella", "50ページの短編小説"],
+	["Language & display", "言語と表示"],
+	["Check for a newer version.", "新しいバージョンを確認します。"],
+	["Reset defaults", "初期設定に戻す"],
+	["browser managed", "ブラウザー管理"],
+	["persistent", "永続化"],
+	["Protect offline storage", "オフライン保存を保護"],
+	["Backup includes original files, collections, progress, notes and bookmarks. Up to 120 MiB of book files per archive. Restore adds new books and keeps existing books and notes.", "バックアップには元ファイル、コレクション、進捗、メモ、しおりが含まれます。書籍ファイルは1アーカイブ最大120 MiBです。復元では新しい本を追加し、既存の本とメモを保持します。"],
+	["Device picker fallback", "ファイル選択の代替方法"],
+	["Use if your device hides a supported book. Contents are still validated.", "端末が対応形式の本を表示しない場合に使います。ファイル内容は引き続き検証されます。"],
+	["Download full backup", "完全バックアップをダウンロード"],
+	["Choose a Sela backup ZIP.", "SelaのバックアップZIPを選択します。"],
+	["Choose file", "ファイルを選択"],
+	["Keep a backup", "バックアップを保存"],
+	["Download your backup, or share it with an app on your device. No account setup needed.", "バックアップをダウンロードするか、端末のアプリに共有できます。アカウント登録は不要です。"],
+	["Connections & reading tools", "連携と読書ツール"],
+	["Search inside my library", "本棚内を検索"],
+	["Sync with my WebDAV", "WebDAVと同期"],
+	["Reading presets", "読書プリセット"],
+	["Travel shelf · check offline", "旅行用の本棚 · オフライン確認"],
+	["Create a collection card", "コレクションカードを作成"],
+	["Reading time", "読書時間"],
+	["Books", "本"],
+	["My room", "読書スペース"],
+	["Webtoon", "ウェブトゥーン"],
+	["min", "分"],
+	["books shown", "冊を表示"],
+	["found", "件"],
+	["GITenberg · Classics", "GITenberg · 古典"],
+	["Start", "開始"],
+	["Reset", "リセット"],
+	["Finish session", "セッションを終了"],
+	["Pause", "一時停止"],
+	["Session saved. Rest your eyes.", "セッションを保存しました。目を休めましょう。"],
+	["Session finished. Stretch and rest your eyes.", "読書を終えました。体を伸ばして目を休めましょう。"],
+	["Manga RTL", "マンガ・右から左"],
+	["A few pages are enough for today.", "今日は数ページ読めば十分です。"],
+	["An unfinished book still has a place here.", "読みかけの本にも、ここに居場所があります。"],
+	["Read at your own pace.", "自分のペースで読みましょう。"],
+	["Return to a favorite passage.", "お気に入りの一節に戻りましょう。"],
+	["Leave a little room for quiet.", "静かな時間を少し残しておきましょう。"],
+	["Rest is part of reading time.", "休むことも読書の時間の一部です。"],
+	["A small beginning is still a beginning.", "小さな一歩も、始まりです。"],
+	["You can begin again without rushing.", "急がなくても、また始められます。"],
+	["Make room for a different point of view.", "違う視点を受け入れる余白をつくりましょう。"],
+	["Today need not look like yesterday.", "今日は昨日と同じでなくても大丈夫です。"],
+	["A shared story opens a conversation.", "物語を分かち合うと、会話が始まります。"],
+	["Leave a page for someone you care about.", "大切な人のために、一ページ残しておきましょう。"],
+	["Let a question stay open a while.", "問いを少しの間、そのままにしておきましょう。"],
+	["A margin can hold a new idea.", "余白には、新しいアイデアが宿ります。"],
+	["Take a quiet moment for gratitude.", "静かに感謝を思う時間をつくりましょう。"],
+	["Give reflection a little space today.", "今日は少し、思いを巡らせる時間をつくりましょう。"],
+	["Your books, new discoveries, and a little time for yourself.", "本や新しい発見、そして自分のためのひとときを。"],
+	["Your books.", "あなたの本。"],
+	["My reading desk", "読書デスク"],
+	["A little reading time", "読書のひととき"],
+	["Make room for a chapter.", "一章読む時間をつくりましょう。"],
+	["Small reading rituals", "読書の小さな習慣"],
+	["Reading days", "読書した日"],
+	["Public holiday source: Nager.Date", "祝日データ：Nager.Date"],
+	["Holiday information is unavailable offline until it has been loaded once.", "祝日情報は一度読み込むまでオフラインでは利用できません。"],
+	["Reading saved · ", "読書を記録 · "],
+	["reading sessions", "読書セッション"],
+	["Undo one glass", "一杯戻す"],
+	["Water habit progress", "水分補給の進み具合"],
+	[" · last update", " · 最終更新"],
+	["Location is not supported here. Choose a city instead.", "この環境では位置情報を利用できません。都市を選んでください。"],
+	["From your notebook", "ノートから"],
+	["a little reflection", "小さなひとこと"],
+	["Another reading note", "別の読書メモ"],
+	["Quote themes", "引用のテーマ"],
+	["App palette", "アプリの配色"],
+	["Pure black in dark mode", "ダークモードで黒を使用"],
+	["Save power on OLED screens.", "OLED画面で電力を節約します。"],
+	["Make this space yours", "この場所を自分らしく"],
+	["Choose a background, a companion, and the small details of your home.", "背景や仲間を選んで、自分の部屋を整えましょう。"],
+	["Name your space", "部屋に名前をつける"],
+	["Room name", "部屋の名前"],
+	["Add a little room name", "部屋に名前をつけましょう"],
+	["Home background", "ホームの背景"],
+	["Choose a background image", "背景画像を選ぶ"],
+	["Pick a photo or illustration. Sela softens it so the page stays easy to read.", "写真やイラストを選べます。文字が読みやすいよう、背景はやわらかく表示されます。"],
+	["Choose a home background image", "ホームの背景画像を選ぶ"],
+	["Restore original background", "元の背景に戻す"],
+	["Choose a companion", "仲間を選ぶ"],
+	["Use your own picture", "自分の画像を使う"],
+	["Or choose a favorite picture. It stays on this device and replaces the companion above.", "好きな画像も使えます。この端末に保存され、上の仲間に代わって表示されます。"],
+	["Upload your own mascot image", "自分のマスコット画像をアップロード"],
+	["Home comforts", "ホームの設定"],
+	["Quiet room", "静かな部屋"],
+	["Show quotes", "引用を表示"],
+	["Show reading session", "読書タイマーを表示"],
+	["Rediscover books", "本を再発見"],
+	["Reset room", "部屋をリセット"],
+	["Your room is back to its original setup.", "部屋を初期状態に戻しました。"],
+	["Find a book", "本を探す"],
+	["Continue reading", "続きを読む"],
+	["Install Sela", "Selaをインストール"],
+	["Later", "あとで"],
+	["Update now", "今すぐ更新"],
+	["App checked. Updates appear here when ready.", "アプリを確認しました。更新の準備ができるとここに表示されます。"],
+	["YOUR PERSONAL READING ROOM", "あなたの読書スペース"],
+	["Your books.<br>Within reach.", "本を、いつでも手元に。"],
+	["Your library. Your space.", "あなたの本棚、あなたの場所。"],
+	["YOUR LIBRARY", "あなたの本棚"],
+	["FOR YOUR WEBSITE", "ウェブサイト向け"],
+	["PLUG IN. READ ON.", "組み込んで、読み続ける。"],
+	["Viewer playground", "ビューアを試す"],
+	["Modes, appearance & integration", "モード・外観・連携"],
+	["Local-first", "端末内で完結"],
+	["No account", "アカウント不要"],
+	["THE READING DESK", "読書デスク"],
+	["Open a book. Try your own.", "本を開いてみましょう。"],
+	["Everything stays in your browser.", "すべてブラウザー内に保存されます。"],
+	["Original sample · Read", "オリジナルサンプル · 読む"],
+	["A return to an old house, a recording that should not exist, and the people left between memory and distance.", "古い家への帰還、存在するはずのない録音、そして記憶と距離のあいだに残された人々。"],
+	["Try your document", "自分のファイルで試す"],
+	["Choose a file. No upload.", "ファイルを選択。アップロード不要。"],
+	["Original PDF ↗", "オリジナルPDF ↗"],
+	["Use CDN", "CDNを使う"],
+	["Try app controls", "アプリの操作を試す"],
+	["Integration guide ↗", "連携ガイド ↗"],
+	["Use the same Viewer from plain HTML, CI3, Laravel, React, Vue, Svelte, Astro and other hosts. Bootstrap and Tailwind are optional.", "プレーンHTML、CI3、Laravel、React、Vue、Svelte、Astroなどで同じViewerを使えます。BootstrapとTailwindは任意です。"],
+	["Track your sips at your own pace.", "Catat minum air dengan ritmemu sendiri."],
+	["drunk today", "diminum hari ini"],
+	["Set up this tracker", "Atur pencatat minum"],
+	["Daily goal (mL)", "Target harian (mL)"],
+	["Serving size", "Ukuran gelas"],
+	["Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.", "Pilih target yang terasa nyaman, atau isi 0 untuk mematikan progres. Ini pencatat kebiasaan pribadi, bukan resep medis."],
+	["Your chosen goal is reached. Nice work; pause when you need to.", "Target pilihanmu tercapai. Bagus; berhenti sejenak saat perlu."],
+	["A fresh start", "Awal yang segar"],
+	["First sips logged", "Tegukan pertama tercatat"],
+	["Halfway there", "Setengah jalan"],
+	["More than halfway", "Lebih dari setengah"],
+	["A gentle reminder, not a rule. Drink when you feel thirsty.", "Pengingat lembut, bukan aturan. Minumlah saat merasa haus."],
+	["Set an optional goal if it feels helpful, or leave it off.", "Pasang target bila terasa membantu, atau biarkan mati."]
+], Xs = ["ja"];
+for (let [e, ...t] of Ys) Xs.forEach((n, r) => {
+	Js[n][e] = t[r];
+});
+Object.assign(Js.ja, {
+	"Quick settings": "かんたん設定",
+	"Personalize your reading space": "読書スペースを整える",
+	"Reading space": "読書スペース",
+	"Daily reading": "今日の読書",
+	"Water goal": "水分補給の目標",
+	"Not set up yet": "未設定",
+	Ready: "設定済み",
+	"A little for your day": "今日を心地よく過ごすために",
+	"Track your sips at your own pace.": "自分のペースで水分補給を記録しましょう。",
+	"drunk today": "今日飲んだ量",
+	"Set up this tracker": "記録を設定する",
+	"Daily goal (mL)": "1日の目標 (mL)",
+	"Serving size": "一杯の量",
+	"Choose a goal that feels comfortable, or set it to 0 to turn progress off. This is a personal habit tracker, not a medical prescription.": "無理のない目標を選ぶか、0に設定すると進捗をオフにできます。これは個人の習慣記録であり、医学的な指示ではありません。",
+	"Your chosen goal is reached. Nice work; pause when you need to.": "自分で決めた目標に達しました。いい調子です。必要なときは休みましょう。",
+	"A fresh start": "新しい一日",
+	"First sips logged": "最初の一杯を記録",
+	"Halfway there": "半分まで来ました",
+	"More than halfway": "半分を超えました",
+	"A gentle reminder, not a rule. Drink when you feel thirsty.": "優しい目安です。ルールではありません。喉が渇いたら飲みましょう。",
+	"Set an optional goal if it feels helpful, or leave it off.": "役立ちそうなら目標を設定してください。必要なければオフのままで大丈夫です。",
+	"Islamic reading": "イスラムの読書",
+	"A passage with its edition and source attached.": "版と出典を明記した一節です。",
+	"Finding a reading from the selected source…": "選択した出典から一節を取得しています…",
+	"This source is temporarily unavailable. Open its original library or try again later.": "この出典は一時的に利用できません。原典を開くか、後でもう一度お試しください。",
+	"Browse the Quran": "クルアーンを読む",
+	"Read the Quran": "クルアーンを読む",
+	"Home scripture preference updated.": "ホームの聖典の設定を更新しました。",
+	"Choose your scripture": "聖典を選ぶ",
+	"Faith & scripture": "信仰と聖典",
+	"Choose one": "一つ選ぶ",
+	"Each reading names its edition and source. Text is shown only when an identifiable source is available.": "各読書には版と出典を表示します。出典を確認できる本文のみを表示します。",
+	Surah: "スーラ",
+	Open: "開く",
+	"Choose a surah": "スーラを選ぶ",
+	"Search surahs": "スーラを検索",
+	"Translation language": "翻訳の言語",
+	"Translation edition": "翻訳版",
+	"Text size": "文字サイズ",
+	"Arabic text size": "アラビア語の文字サイズ",
+	"Translation text size": "翻訳の文字サイズ",
+	"Choose one of the source-published translations below.": "公開元の翻訳から一つ選んでください。",
+	"Source translation for this language.": "この言語で利用できる公開元の翻訳です。",
+	"Loading translations…": "翻訳を読み込み中…",
+	"No translations are available right now.": "現在利用できる翻訳はありません。",
+	"No surahs match your search.": "検索に一致するスーラはありません。",
+	"Open in Sela": "Selaで開く",
+	"Loading the surah…": "スーラを読み込み中…",
+	Indonesian: "インドネシア語",
+	Japanese: "日本語",
+	English: "英語",
+	"Increase Arabic text size": "アラビア語の文字を大きくする",
+	"Decrease Arabic text size": "アラビア語の文字を小さくする",
+	"Increase translation text size": "翻訳の文字を大きくする",
+	"Decrease translation text size": "翻訳の文字を小さくする",
+	"Try again": "再試行",
+	"Quran navigation": "クルアーンの移動",
+	Verse: "節",
+	"Verse number": "節番号",
+	Go: "移動",
+	"That verse is not available in this edition.": "この翻訳版ではその節を利用できません。",
+	"The Quran location is not valid.": "クルアーンの場所が正しくありません。"
+});
+//#endregion
+//#region app/library/controls.ts
+var Zs = {
+	download: "M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5",
+	read: "M3 4h6a4 4 0 0 1 3 2 4 4 0 0 1 3-2h6v16h-6a4 4 0 0 0-3 2 4 4 0 0 0-3-2H3ZM12 6v16",
+	info: "M12 8h.01M11 12h1v5M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20",
+	person: "M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8",
+	sun: "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5m1 7a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+	palette: "M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.7-3.1 1.8 1.8 0 0 1 1.5-2.8H18a3 3 0 0 0 3-3c0-5-4-9-9-9ZM7.5 12h.01M10 8h.01M15 8h.01",
+	storage: "M4 5c0-1.1 3.6-2 8-2s8 .9 8 2-3.6 2-8 2-8-.9-8-2Zm0 0v7c0 1.1 3.6 2 8 2m8-9v4M4 12v7c0 1.1 3.6 2 8 2m8-9v8m0 0-3-3m3 3 3-3",
+	cloud: "M7 18a5 5 0 1 1 .8-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8Zm5-8v9m-3-3 3 3 3-3",
+	battery: "M5 8h14v12H5zM9 8V5h6v3m6 4h2v4h-2M8 12h8",
+	sliders: "M4 6h9m4 0h3M4 12h3m4 0h9M4 18h9m4 0h3M13 4v4m-6 2v4m10 2v4",
+	clock: "M12 8v4l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+	journal: "M5 3h14v18H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8m-8 4h8m-8 4h5M7 3v18",
+	sparkles: "m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Zm7 12 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z",
+	chevron: "m9 18 6-6-6-6",
+	search: "M21 21l-6-6M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16",
+	plus: "M12 4v16M4 12h16",
+	close: "M6 6l12 12M18 6 6 18",
+	favorite: "m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z",
+	collection: "M3 6h7l2 3h9v12H3ZM3 6V3h7l2 3h9v3",
+	check: "m5 12 4 4L19 6",
+	remove: "M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7",
+	undo: "M3 10h11a7 7 0 0 1 0 14M3 10l6-6M3 10l6 6",
+	share: "M12 16V2m-5 5 5-5 5 5M5 11v10h14V11",
+	shield: "M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6ZM8 12l3 3 5-6",
+	filter: "M4 6h16M7 12h10M10 18h4",
+	more: "M5 12h.01M12 12h.01M19 12h.01",
+	refresh: "M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1",
+	image: "M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 9h.01",
+	shelf: "M3 5h18M3 12h18M3 19h18M5 5v7m7-7v7m7-7v7M7 12v7m10-7v7",
+	grid: "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z",
+	leaf: "M20 4c-9 0-15 4-15 11 0 3 2 5 5 5 7 0 11-6 10-16ZM5 19l8-8",
+	books: "M4 4h4v16H4zM10 3h4v17h-4zM16 5h4v15h-4zM5.5 7h1m5-1h1m5 2h1",
+	compass: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm4-14-2.5 6.5L7 17l2.5-6.5L16 8Z",
+	store: "M3 10h18l-2-6H5l-2 6Zm1 0v10h16V10M8 20v-6h8v6M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0",
+	planet: "M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm-8-6c-2 0-3-.7-3-2s1-2 3-2m16 0c2 0 3 .7 3 2s-1 2-3 2",
+	smile: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm-3-9s1 3 3 3 3-3 3-3M9 9h.01M15 9h.01",
+	lightbulb: "M9 18h6m-5 4h4m-5-7a7 7 0 1 1 6 0c-1 .7-1 1.5-1 3h-4c0-1.5 0-2.3-1-3Z",
+	calendar: "M4 5h16v16H4zM8 3v4m8-4v4M4 9h16m-12 4h.01m4 0h.01m4 0h.01m-8 4h.01m4 0h.01",
+	newspaper: "M4 4h16v16H4zM8 8h8m-8 4h8m-8 4h4M2 7v12a2 2 0 0 0 2 2m14-17v4h4",
+	external: "M14 4h6v6m0-6L10 14m7-1v7H4V7h7",
+	flower: "M12 3c1.8 0 2.8 2.1 2.2 4 1.9-.8 4-.1 4 1.8 0 1.8-2.1 2.8-4 2.2.8 1.9.1 4-1.8 4-1.8 0-2.8-2.1-2.2-4-1.9.8-4 .1-4-1.8 0-1.8 2.1-2.8 4-2.2C9.4 5.1 10.1 3 12 3Zm0 6.8a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4ZM12 15v6m-3 0h6",
+	wave: "M2 9c2.5-2 5.5-2 8 0s5.5 2 8 0 4.5-1.5 4.5-1.5M2 15c2.5-2 5.5-2 8 0s5.5 2 8 0 4.5-1.5 4.5-1.5M2 20c2.5-2 5.5-2 8 0s5.5 2 8 0 4.5-1.5 4.5-1.5",
+	moon: "M20.5 15.2A8.4 8.4 0 0 1 8.8 3.5 8.8 8.8 0 1 0 20.5 15.2ZM17 3v4m-2-2h4",
+	mountain: "m2 20 6.5-12L13 16l3-5 6 9H2Zm4-7 2.5 3m7-1 1.5 2",
+	rain: "M7 16a5 5 0 1 1 .7-9.9A6 6 0 0 1 19 7.5a4.2 4.2 0 0 1-.8 8.4H7Zm1 3-1 2m6-2-1 2m6-2-1 2",
+	lotus: "M12 20c-1.7-2.4-1.7-5.4 0-7.8 1.7 2.4 1.7 5.4 0 7.8Zm0-7.8C9 9 9.5 5.8 12 3c2.5 2.8 3 6 0 9.2Zm0 0C8.8 10.8 5.8 11 3 9c1.5 4.3 4.4 6.2 9 5.8m0-2.6c3.2-3.2 6.2-3.4 9-1.4-1.5 4.3-4.4 6.2-9 5.8M7 20h10",
+	crane: "m2 16 5-3 3-6 3 4 3-1 5-6-2 7 3 3-7-1-5 5-2-4-6 2Z",
+	tower: "M4 21h16M6 21V9l6-5 6 5v12M4 9h16M8 12h2m4 0h2m-8 4h2m4 0h2m-4 5v-4",
+	shell: "M12 21a9 9 0 1 0-9-9c0 5 4 9 9 9Zm0 0 0-9m0 9 5-7m-5 7-7-5m7 5 8-2m-8-7V3",
+	tea: "M5 9h12v8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V9Zm12 2h2a2 2 0 1 1 0 4h-2M8 6c0-1.2 1-1.2 1-2.4M12 6c0-1.2 1-1.2 1-2.4M3 21h16",
+	boat: "M3 16h18l-3 5H7l-4-5Zm4 0V8h7l4 8M10 8V4h5l2 4M4 21l-1 2m9-2v2m9-2 1 2",
+	lantern: "M9 3h6m-7 2h8l2 3v10l-4 3h-4l-4-3V8l2-3Zm-2 6h12m-7-3v8m-3-6 6 4"
+};
+function Qs(e) {
+	let t = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	t.setAttribute("viewBox", "0 0 24 24"), t.setAttribute("aria-hidden", "true"), t.classList.add("control-symbol");
+	let n = document.createElementNS(t.namespaceURI, "path");
+	return n.setAttribute("d", Zs[e]), t.append(n), t;
+}
+//#endregion
+//#region app/library/themes.ts
+var $s = [
+	{
+		key: "white",
+		en: "Sela",
+		id: "Sela",
+		accent: "#3264c6",
+		soft: "#eef4ff",
+		motif: "sparkles"
+	},
+	{
+		key: "kids",
+		en: "Pelangi",
+		id: "Pelangi",
+		accent: "#c83f59",
+		soft: "#fff0f3",
+		motif: "smile"
+	},
+	{
+		key: "cyberpunk",
+		en: "Neon",
+		id: "Neon",
+		accent: "#7045bf",
+		soft: "#f4efff",
+		motif: "planet"
+	},
+	{
+		key: "forest",
+		en: "Rimba",
+		id: "Rimba",
+		accent: "#147461",
+		soft: "#eaf8f4",
+		motif: "leaf"
+	},
+	{
+		key: "sakura",
+		en: "Sakura",
+		id: "Sakura",
+		accent: "#b83f76",
+		soft: "#fff0f7",
+		motif: "flower"
+	},
+	{
+		key: "ocean",
+		en: "Samudra",
+		id: "Samudra",
+		accent: "#147ba8",
+		soft: "#eaf7fe",
+		motif: "wave"
+	},
+	{
+		key: "lavender",
+		en: "Lembayung",
+		id: "Lembayung",
+		accent: "#5f4ab9",
+		soft: "#f0efff",
+		motif: "moon"
+	},
+	{
+		key: "citrus",
+		en: "Kenanga",
+		id: "Kenanga",
+		accent: "#557a1d",
+		soft: "#f2f8e8",
+		motif: "sun"
+	},
+	{
+		key: "laskar",
+		en: "Senja",
+		id: "Senja",
+		accent: "#155d86",
+		soft: "#fff4c2",
+		motif: "compass"
+	},
+	{
+		key: "bumi",
+		en: "Pesisir",
+		id: "Pesisir",
+		accent: "#12675a",
+		soft: "#d8f1e9",
+		motif: "mountain"
+	},
+	{
+		key: "hujan",
+		en: "Hujan",
+		id: "Hujan",
+		accent: "#3e5f9f",
+		soft: "#e5efff",
+		motif: "rain"
+	},
+	{
+		key: "nurbaya",
+		en: "Seroja",
+		id: "Seroja",
+		accent: "#884b68",
+		soft: "#fce7f0",
+		motif: "lotus"
+	},
+	{
+		key: "wijck",
+		en: "Nila",
+		id: "Nila",
+		accent: "#155b78",
+		soft: "#e4f5fb",
+		motif: "crane"
+	},
+	{
+		key: "menara",
+		en: "Embun",
+		id: "Embun",
+		accent: "#64751d",
+		soft: "#f1f5d6",
+		motif: "tower"
+	},
+	{
+		key: "cantik",
+		en: "Purnama",
+		id: "Purnama",
+		accent: "#8a3f64",
+		soft: "#fae6ef",
+		motif: "shell"
+	},
+	{
+		key: "kopi",
+		en: "Arunika",
+		id: "Arunika",
+		accent: "#80501f",
+		soft: "#f9eee0",
+		motif: "tea"
+	},
+	{
+		key: "laut",
+		en: "Selat",
+		id: "Selat",
+		accent: "#006478",
+		soft: "#ddf4f8",
+		motif: "boat"
+	},
+	{
+		key: "rindu",
+		en: "Jingga",
+		id: "Jingga",
+		accent: "#4d5e9d",
+		soft: "#eceeff",
+		motif: "lantern"
+	}
+];
+$s.map((e) => e.key);
+function ec(e) {
+	return $s.find((t) => t.key === e) || $s[0];
+}
+typeof matchMedia == "function" && matchMedia("(prefers-color-scheme: dark)");
 //#endregion
 //#region app/library/home-world.ts
-var Js = new URL("../site/illustrations/home-reading-jakarta.webp", location.href).href, Ys = new URL("../library/assets/jculture-companions-v3.webp", location.href).href, Xs = {
+var tc = new URL("../site/art/sela-mage-sky.webp", location.href).href, nc = new URL("../library/assets/jculture-companions-v3.webp", location.href).href, rc = {
 	fox: {
 		column: 0,
 		row: 0
@@ -11290,21 +12160,28 @@ var Js = new URL("../site/illustrations/home-reading-jakarta.webp", location.hre
 		row: 1
 	}
 };
-async function Zs(e) {
+async function ic(e) {
 	let t = e.querySelector(".room-intro");
 	if (!t) return () => {};
 	let n = document.createElement("div");
 	n.className = "home-world-stage tw:relative tw:isolate tw:min-w-0 tw:overflow-hidden tw:rounded-[24px]", n.setAttribute("aria-hidden", "true");
-	let r = document.createElement("img");
-	r.className = "home-world-art", r.alt = "", r.setAttribute("aria-hidden", "true"), r.decoding = "async", r.loading = "eager", r.src = Js, r.onerror = () => {
-		e.dataset.world = "art-unavailable", r.remove();
+	let r = document.createElement("span");
+	r.className = "home-world-doodle";
+	let o = () => {
+		let e = document.documentElement.dataset.palette || "white", t = ec(e);
+		n.dataset.palette = e, r.replaceChildren(Qs(t.motif));
 	};
-	let o = document.createElement("canvas");
-	o.className = "home-world-canvas tw:absolute tw:inset-0 tw:z-[1] tw:block tw:h-full tw:min-h-0 tw:w-full tw:pointer-events-none tw:opacity-0 tw:transition-opacity tw:duration-500", o.setAttribute("aria-hidden", "true"), n.append(r, o), t.insertBefore(n, t.querySelector(".ritual"));
-	let s = matchMedia("(prefers-reduced-motion: reduce)"), c;
+	o();
+	let s = document.createElement("img");
+	s.className = "home-world-art", s.alt = "", s.setAttribute("aria-hidden", "true"), s.decoding = "async", s.loading = "eager", s.src = tc, s.onerror = () => {
+		e.dataset.world = "art-unavailable", s.remove();
+	};
+	let c = document.createElement("canvas");
+	c.className = "home-world-canvas tw:absolute tw:inset-0 tw:z-[1] tw:block tw:h-full tw:min-h-0 tw:w-full tw:pointer-events-none tw:opacity-0 tw:transition-opacity tw:duration-500", c.setAttribute("aria-hidden", "true"), n.append(s, c, r), t.insertBefore(n, t.querySelector(".ritual"));
+	let l = matchMedia("(prefers-reduced-motion: reduce)"), u;
 	try {
-		c = new Vs({
-			canvas: o,
+		u = new Vs({
+			canvas: c,
 			alpha: !0,
 			antialias: !0,
 			depth: !1,
@@ -11312,41 +12189,41 @@ async function Zs(e) {
 			powerPreference: "low-power"
 		});
 	} catch {
-		return e.dataset.world = "art-only", o.remove(), () => r.remove();
+		return e.dataset.world = "art-only", c.remove(), () => s.remove();
 	}
-	c.setClearColor(0, 0), c.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1)), c.outputColorSpace = O;
-	let l = new mt(), u = new at();
-	l.add(u);
-	let d = new ai(-1, 1, 1, -1, .1, 20);
-	d.position.set(0, 0, 10), d.lookAt(0, 0, 0);
-	let f = new Xr(), p;
+	u.setClearColor(0, 0), u.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1)), u.outputColorSpace = O;
+	let d = new mt(), f = new at();
+	d.add(f);
+	let p = new ai(-1, 1, 1, -1, .1, 20);
+	p.position.set(0, 0, 10), p.lookAt(0, 0, 0);
+	let m = new Xr(), h;
 	try {
-		p = await f.loadAsync(Ys);
+		h = await m.loadAsync(nc);
 	} catch {
-		return c.dispose(), e.dataset.world = "art-only", o.remove(), () => r.remove();
+		return u.dispose(), e.dataset.world = "art-only", c.remove(), () => s.remove();
 	}
-	p.colorSpace = O;
-	let m = !1, h = !1, g = !1, _ = 0, v = 0, y, b, x, S = "", C = .82, w = -.48, T = 0, E = 1, D = () => {
-		b && (l.remove(b), b.material.dispose(), b = void 0, x?.dispose(), x = void 0);
-	}, k = () => {
-		if (m) return;
-		let e = n.getBoundingClientRect(), t = e.width < 420, r = e.width >= 420 && e.width < 600, i = o.getBoundingClientRect(), a = t ? 3.65 : r ? 3.8 : 3.6;
-		if (E = i.width / Math.max(1, i.height), d.left = -E * a / 2, d.right = E * a / 2, d.top = a / 2, d.bottom = -a / 2, d.updateProjectionMatrix(), c.setSize(Math.max(1, i.width), Math.max(1, i.height), !1), T = E * a / 2 - .426 * a, w = -.132 * a, C = t ? .68 : r ? .78 : .82, b && x) {
-			let e = (x.image.width || 1) / (x.image.height || 1);
-			b.position.set(T, w, .2), b.scale.set(C * e, C, 1);
+	h.colorSpace = O;
+	let g = !1, _ = !1, v = !1, y = 0, b = 0, x, S, C, w = "", T = .82, E = -.48, D = 0, k = 1, A = () => {
+		S && (d.remove(S), S.material.dispose(), S = void 0, C?.dispose(), C = void 0);
+	}, j = () => {
+		if (g) return;
+		let e = n.getBoundingClientRect(), t = e.width < 420, r = e.width >= 420 && e.width < 600, i = c.getBoundingClientRect(), a = t ? 3.65 : r ? 3.8 : 3.6;
+		if (k = i.width / Math.max(1, i.height), p.left = -k * a / 2, p.right = k * a / 2, p.top = a / 2, p.bottom = -a / 2, p.updateProjectionMatrix(), u.setSize(Math.max(1, i.width), Math.max(1, i.height), !1), D = -k * a / 2 + .405 * a, E = -.16 * a, T = t ? .68 : r ? .78 : .82, S && C) {
+			let e = (C.image.width || 1) / (C.image.height || 1);
+			S.position.set(D, E, .2), S.scale.set(T * e, T, 1);
 		}
-		c.render(l, d);
-	}, A = (e) => {
-		let t = p.image, n = Xs[e], r = Math.floor(t.width / 2), o = Math.floor(t.height / 2), s = document.createElement("canvas");
+		u.render(d, p);
+	}, M = (e) => {
+		let t = h.image, n = rc[e], r = Math.floor(t.width / 2), o = Math.floor(t.height / 2), s = document.createElement("canvas");
 		s.width = r, s.height = o;
 		let c = s.getContext("2d");
 		if (!c) throw Error("Canvas is unavailable");
 		c.drawImage(t, n.column * r, n.row * o, r, o, 0, 0, r, o);
 		let l = new sr(s);
 		return l.colorSpace = O, l.magFilter = i, l.minFilter = a, l;
-	}, j = async (e) => {
-		S && URL.revokeObjectURL(S), S = URL.createObjectURL(e);
-		let t = await f.loadAsync(S), n = document.createElement("canvas");
+	}, N = async (e) => {
+		w && URL.revokeObjectURL(w), w = URL.createObjectURL(e);
+		let t = await m.loadAsync(w), n = document.createElement("canvas");
 		n.width = n.height = 512;
 		let r = n.getContext("2d");
 		if (!r) throw t.dispose(), Error("Canvas is unavailable");
@@ -11354,59 +12231,62 @@ async function Zs(e) {
 		r.drawImage(a, (512 - s) / 2, (512 - c) / 2, s, c), t.dispose();
 		let l = new sr(n);
 		return l.colorSpace = O, l.magFilter = i, l;
-	}, M = async () => {
+	}, P = async () => {
 		let t = Ws().companion;
-		if (t === y && !e.dataset.customMascotChanged) return;
-		y = t, delete e.dataset.customMascotChanged;
-		let n = ++v;
-		D();
+		if (t === x && !e.dataset.customMascotChanged) return;
+		x = t, delete e.dataset.customMascotChanged;
+		let n = ++b;
+		A();
 		try {
 			let e = await qs("home-mascot").catch(() => void 0);
-			if (!e && (t === "plant" || !(t in Xs))) return;
-			let r = e ? await j(e) : A(t);
-			if (m || n !== v) {
+			if (!e && (t === "plant" || !(t in rc))) return;
+			let r = e ? await N(e) : M(t);
+			if (g || n !== b) {
 				r.dispose();
 				return;
 			}
-			b = new Nn(new yn({
+			S = new Nn(new yn({
 				map: r,
 				transparent: !0,
 				alphaTest: .025,
 				depthTest: !1,
 				depthWrite: !1
-			})), x = r, b.renderOrder = 2, l.add(b), k();
+			})), C = r, S.renderOrder = 2, d.add(S), j();
 		} catch {
 			e.dataset.companion = "unavailable";
 		}
-	}, N = () => {
+	}, ee = () => {
 		try {
 			return !!JSON.parse(localStorage.getItem("sela-library:preferences") || "{}").lowPower;
 		} catch {
 			return !1;
 		}
-	}, P = () => !m && h && !document.hidden && !s.matches && !g && !N(), ee = (e) => {
-		if (!P() || e - _ < 48) return;
-		_ = e;
+	}, F = () => !g && _ && !document.hidden && !l.matches && !v && !ee(), I = (e) => {
+		if (!F() || e - y < 48) return;
+		y = e;
 		let t = e * .001;
-		b && (b.position.y = w + Math.sin(t * .9) * .015, b.position.x = T + Math.sin(t * .25) * .012, b.rotation.z = Math.sin(t * .35) * .018, b.scale.y = C * (1 + Math.sin(t * .9) * .012)), c.render(l, d);
-	}, F = () => {
-		o.classList.toggle("tw:opacity-0", !h), o.classList.toggle("tw:opacity-75", h && e.dataset.customBackground !== "true"), o.classList.toggle("tw:opacity-35", h && e.dataset.customBackground === "true"), r.style.opacity = e.dataset.customBackground === "true" ? ".42" : ".84";
-	}, I = () => {
-		m || (F(), g = Ws().quiet, M(), P() ? c.setAnimationLoop(ee) : (c.setAnimationLoop(null), c.render(l, d)));
+		S && (S.position.y = E + Math.sin(t * .9) * .015, S.position.x = D + Math.sin(t * .25) * .012, S.rotation.z = Math.sin(t * .35) * .018, S.scale.y = T * (1 + Math.sin(t * .9) * .012)), u.render(d, p);
 	}, te = () => {
-		e.dataset.customMascotChanged = "true", I();
-	}, L = new IntersectionObserver((e) => {
-		h = e.some((e) => e.isIntersecting), o.classList.toggle("is-visible", h), I();
+		c.classList.toggle("tw:opacity-0", !_), c.classList.toggle("tw:opacity-75", _ && e.dataset.customBackground !== "true"), c.classList.toggle("tw:opacity-35", _ && e.dataset.customBackground === "true"), s.style.opacity = e.dataset.customBackground === "true" ? ".42" : ".84";
+	}, L = () => {
+		let e = (/* @__PURE__ */ new Date()).getHours();
+		n.dataset.daypart = e >= 5 && e < 10 ? "morning" : e >= 10 && e < 16 ? "day" : e >= 16 && e < 19 ? "sunset" : "night", n.dataset.weather = document.documentElement.dataset.weather || "neutral";
+	}, ne = () => {
+		g || (L(), te(), v = Ws().quiet, P(), F() ? u.setAnimationLoop(I) : (u.setAnimationLoop(null), u.render(d, p)));
+	}, re = () => {
+		e.dataset.customMascotChanged = "true", ne();
+	}, R = new IntersectionObserver((e) => {
+		_ = e.some((e) => e.isIntersecting), c.classList.toggle("is-visible", _), ne();
 	}, { threshold: 0 });
-	L.observe(e);
-	let ne = new ResizeObserver(k);
-	ne.observe(n);
-	let re = () => k(), R = document.querySelector("#default-low-power");
-	window.addEventListener("resize", re, { passive: !0 }), document.addEventListener("visibilitychange", I), document.addEventListener("sela:personal", I), document.addEventListener("sela:mascot", te), document.addEventListener("sela:background", F), R?.addEventListener("change", I), s.addEventListener("change", I);
-	let z = () => {
-		m || (m = !0, v++, L.disconnect(), ne.disconnect(), c.setAnimationLoop(null), window.removeEventListener("resize", re), document.removeEventListener("visibilitychange", I), document.removeEventListener("sela:personal", I), document.removeEventListener("sela:mascot", te), document.removeEventListener("sela:background", F), R?.removeEventListener("change", I), s.removeEventListener("change", I), D(), p.dispose(), S && URL.revokeObjectURL(S), c.dispose(), o.remove(), r.remove());
+	R.observe(e);
+	let z = new ResizeObserver(j);
+	z.observe(n);
+	let B = () => j(), ie = document.querySelector("#default-low-power"), ae = window.setInterval(L, 6e4);
+	window.addEventListener("resize", B, { passive: !0 }), document.addEventListener("visibilitychange", ne), document.addEventListener("sela:personal", ne), document.addEventListener("sela:weather", L), document.addEventListener("sela:palette", o), document.addEventListener("sela:mascot", re), document.addEventListener("sela:background", te), ie?.addEventListener("change", ne), l.addEventListener("change", ne);
+	let oe = () => {
+		g || (g = !0, b++, R.disconnect(), z.disconnect(), u.setAnimationLoop(null), window.removeEventListener("resize", B), document.removeEventListener("visibilitychange", ne), document.removeEventListener("sela:personal", ne), document.removeEventListener("sela:weather", L), document.removeEventListener("sela:palette", o), document.removeEventListener("sela:mascot", re), document.removeEventListener("sela:background", te), ie?.removeEventListener("change", ne), l.removeEventListener("change", ne), clearInterval(ae), A(), h.dispose(), w && URL.revokeObjectURL(w), u.dispose(), c.remove(), s.remove());
 	};
-	return window.addEventListener("pagehide", z, { once: !0 }), e.dataset.world = "ready", k(), I(), z;
+	return window.addEventListener("pagehide", oe, { once: !0 }), e.dataset.world = "ready", j(), ne(), oe;
 }
 //#endregion
-export { Zs as mountHomeWorld };
+export { ic as mountHomeWorld };

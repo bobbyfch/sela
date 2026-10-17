@@ -16,6 +16,7 @@ test('home headlines follow the chosen topic language and only accept supported 
 test('Antara RSS preserves safe article and cover URLs while decoding summary text',()=>{
   const xml=`<?xml version="1.0"?><rss><channel><item><title><![CDATA[Buku &amp; sastra]]></title><link>https://www.antaranews.com/berita/123/contoh</link><description><![CDATA[<p>Ulasan &amp; kabar buku.</p>]]></description><pubDate>Tue, 13 Oct 2026 07:00:00 +0000</pubDate><media:thumbnail url="https://cdn.antaranews.com/cache/800x533/story.jpg"/></item><item><title>Unsafe</title><link>https://attacker.example/story</link><enclosure url="https://tracker.example/pixel.jpg"/></item></channel></rss>`;
   const items=parseAntaraRss(xml);assert.equal(items.length,1);assert.equal(items[0].title,'Buku & sastra');assert.equal(items[0].description,'Ulasan & kabar buku.');assert.equal(items[0].source,'ANTARA');assert.equal(items[0].image,'https://cdn.antaranews.com/cache/800x533/story.jpg');
+  const currentFeed=parseAntaraRss('<rss><channel><item><title>Foto ANTARA</title><link>https://www.antaranews.com/berita/123/foto</link><enclosure url="https://img.antaranews.com/cache/800x533/foto.jpg"/></item></channel></rss>');assert.equal(currentFeed[0]?.image,'https://img.antaranews.com/cache/800x533/foto.jpg');
   assert.deepEqual(parseAntaraRss('<!DOCTYPE rss [<!ENTITY x SYSTEM "https://attacker.example/secret">]><rss/>'),[]);
 });
 
@@ -87,6 +88,14 @@ test('on-this-day uses the selected Wikipedia language and only keeps HTTPS Wiki
     assert.equal(items[0].year,1990);
     assert.equal(items[0].image,'https://upload.wikimedia.org/wikipedia/commons/example.jpg');
   }finally{globalThis.fetch=originalFetch;}
+});
+
+test('Indonesian on-this-day feed never silently falls back to English',async()=>{
+ const originalFetch=globalThis.fetch;
+ try{
+  globalThis.fetch=async input=>{assert.equal(new URL(String(input)).hostname,'id.wikipedia.org');return new Response(JSON.stringify({selected:[]}),{status:200,headers:{'content-type':'application/json'}});};
+  assert.deepEqual(await loadOnThisDay('id-ID',new Date('2026-10-17T12:00:00Z'),new AbortController().signal),[]);
+ }finally{globalThis.fetch=originalFetch;}
 });
 
 test('news sources keep the last successful stories when a fresh request is rate-limited',async()=>{

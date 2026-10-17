@@ -270,9 +270,9 @@
 }
 @utility sela-shortcuts {padding:14px 22px;background:var(--sela-panel);font-size:12px;color:var(--sela-fg);line-height:1.8;border-bottom:1px solid var(--sela-border)
 }
-@utility sela-epub {overflow:auto;padding:28px;overscroll-behavior:contain;background:var(--sela-bg);touch-action:pan-y
+@utility sela-epub {overflow:auto;padding:28px;overscroll-behavior:contain;background:var(--sela-panel,var(--sela-bg));touch-action:pan-y
 }
-@utility sela-epub-chapter {max-width:740px;margin:0 auto 36px;filter:var(--sela-page-filter,brightness(1)) brightness(var(--sela-brightness,1));&[hidden] {display:none
+@utility sela-epub-chapter {max-width:740px;margin:0 auto 36px;background-color:var(--sela-panel,#fff);color:var(--sela-fg);filter:var(--sela-page-filter,brightness(1)) brightness(var(--sela-brightness,1));&[hidden] {display:none
   }touch-action:pan-y
 }
 @utility sela-notice {

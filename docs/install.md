@@ -28,6 +28,14 @@ CSS loads automatically on first open. For explicit loading/CSP:
 
 Pin a release tag in production.
 
+For automatic updates, omit the GitHub version from the URL:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela/dist/js/sela.min.js"></script>
+```
+
+This follows the repository's latest files and can change without notice. jsDelivr advises against unversioned URLs in production; use the pinned release above for production sites.
+
 ### ESM / TypeScript
 
 ```sh

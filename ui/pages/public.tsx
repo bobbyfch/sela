@@ -102,7 +102,7 @@ export function PublicHead() {
         content={"https://bobbyfch.github.io/sela/site/social-sela.png"}
       />
       {"\n"}
-      <link rel={"apple-touch-icon"} href={"site/icon-192.png"} />
+      <link rel={"apple-touch-icon"} href={"site/apple-touch-icon.png"} />
       <link rel={"icon"} href={"favicon.svg"} type={"image/svg+xml"} />
       <link rel={"alternate icon"} href={"favicon.png"} />
       {"\n"}
@@ -174,7 +174,7 @@ function PublicNavigation() {
           <option value={"dark"}>{"Dark"}</option>
         </NativeSelect>
         <div className={"tw:flex tw:min-w-0 tw:items-center tw:gap-1.5 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-2 tw:shadow-sm"}>
-        <img id={"language-flag"} className={"language-flag tw:h-[15px] tw:w-5 tw:shrink-0 tw:rounded-[3px] tw:object-cover"} src={"site/flag-en.svg"} alt={""} aria-hidden={true} />
+        <img id={"language-flag"} className={"language-flag tw:h-[15px] tw:w-5 tw:shrink-0 tw:rounded-[3px] tw:object-cover tw:ring-1 tw:ring-sela-line"} src={"site/flag-en.svg"} alt={""} aria-hidden={true} />
         <NativeSelect id={"language"} className={"public-language-select tw:h-11 tw:min-w-0 tw:max-w-[min(38vw,190px)] tw:cursor-pointer tw:border-0 tw:bg-transparent tw:py-1 tw:pr-1 tw:text-xs tw:font-medium tw:text-sela-ink tw:outline-none"} aria-label={"Language"}>
           <option value={"en-US"}>{"English"}</option>
           <option value={"id-ID"}>{"Bahasa Indonesia"}</option>
@@ -338,8 +338,9 @@ function PublicContent() {
               "Ctrl + wheel or trackpad pinch zooms; normal scrolling stays natural. Press ? inside the reader for shortcuts. EPUB uses chapter-based text reading."
             }
           </p>
-          <div className="tw:mb-2 tw:mt-6 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3"><h4 className="tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink" data-en="Your website setup" data-id="Konfigurasi untuk situsmu">Your website setup</h4><Button type="button" variant="outline" id="copy-config" className="tw:min-h-10 tw:rounded-xl tw:px-3 tw:text-xs tw:font-semibold" data-en="Copy setup" data-id="Salin konfigurasi">Copy setup</Button></div>
+          <div className="tw:mb-2 tw:mt-6 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3"><h4 className="tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink" data-en="Your website setup" data-id="Konfigurasi untuk situsmu">Your website setup</h4><div className="tw:flex tw:flex-wrap tw:items-center tw:gap-2"><label className="tw:flex tw:min-h-10 tw:items-center tw:gap-2 tw:text-xs tw:font-medium tw:text-sela-muted"><span className="tw:sr-only" data-i18n="cdnLabel">CDN version</span><select id="cdn-version" className="tw:h-10 tw:max-w-full tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:px-3 tw:text-xs tw:font-medium tw:text-sela-ink"><option value="pinned" data-i18n="cdnPinned">{"Pinned release · {{SELA_VERSION}}"}</option><option value="latest" data-i18n="cdnLatest">Latest · no version</option></select></label><Button type="button" variant="outline" id="copy-config" className="tw:min-h-10 tw:rounded-xl tw:px-3 tw:text-xs tw:font-semibold" data-en="Copy setup" data-id="Salin konfigurasi">Copy setup</Button></div></div>
           <code className="tw:block tw:overflow-x-auto tw:rounded-xl tw:bg-[#20212b] tw:px-4 tw:py-3 tw:font-mono tw:text-xs tw:leading-6 tw:text-[#edeaff]" id={"config-code"} aria-label="Sela configuration code"></code>
+          <p className="tw:mt-2 tw:text-xs tw:leading-5 tw:text-sela-muted" data-i18n="cdnNote">Pinned is recommended for production. The unversioned URL follows the latest GitHub files and may change without notice; <a className="tw:underline tw:underline-offset-2" href="https://www.jsdelivr.com/?docs=gh" target="_blank" rel="noopener noreferrer">jsDelivr advises against it in production.</a></p>
           <p className="tw:mt-2 tw:text-xs tw:leading-5 tw:text-sela-muted" data-en="For your own file, upload it to a URL your website can access and replace the sample URL in this snippet." data-id="Untuk file sendiri, unggah ke alamat yang bisa diakses situsmu lalu ganti URL contoh di potongan kode ini.">For your own file, upload it to a URL your website can access and replace the sample URL in this snippet.</p>
           <p className={"format-note tw:mt-4 tw:text-xs tw:leading-6 tw:text-sela-muted"} data-i18n={"formatNote"}>
             {

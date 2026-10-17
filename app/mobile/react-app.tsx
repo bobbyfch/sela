@@ -35,6 +35,7 @@ const tabs = [
   ['home', 'Home', 'Beranda', 'm3 11 9-8 9 8v10H3Zm6 10v-8h6v8'],
   ['library', 'Shelf', 'Rak', 'M4 3v18m5-18v18m5-18v18m4-17 3 16M2 21h20'],
   ['browse', 'Explore', 'Jelajah', 'M3 4h7a3 3 0 0 1 3 3v14a5 5 0 0 0-5-2H3Zm18 0h-5a3 3 0 0 0-3 3v14a5 5 0 0 1 5-2h3Z'],
+  ['progress', 'Progress', 'Progres', 'M4 19V5m0 14h17M8 16v-4m5 4V8m5 8v-7'],
   ['settings', 'Settings', 'Pengaturan', 'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6'],
 ] as const;
 

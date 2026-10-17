@@ -10,7 +10,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --color-sela-canvas: var(--bg);
   --color-sela-surface: var(--card);
   --color-sela-ink: var(--fg);
@@ -44,43 +44,43 @@
 @layer base {
   :root {
     color-scheme: light;
-    --bg: #f6f7fb;
-    --fg: #292a37;
-    --muted: #747586;
-    --line: #e4e5ed;
+    --bg: #f7f9fc;
+    --fg: #202634;
+    --muted: #6c7687;
+    --line: #e7ebf2;
     --card: #ffffff;
-    --accent: #5b50d6;
+    --accent: #3264c6;
   }
 
   :root[data-theme="light"] {
     color-scheme: light;
-    --bg: #f6f7fb;
-    --fg: #292a37;
-    --muted: #747586;
-    --line: #e4e5ed;
+    --bg: #f7f9fc;
+    --fg: #202634;
+    --muted: #6c7687;
+    --line: #e7ebf2;
     --card: #ffffff;
-    --accent: #5b50d6;
+    --accent: #3264c6;
   }
 
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #171923;
-    --fg: #f3f3fa;
-    --muted: #b3b3c3;
-    --line: #343746;
-    --card: #202330;
-    --accent: #a49aff;
+    --bg: #141923;
+    --fg: #f1f5fc;
+    --muted: #a9b4c5;
+    --line: #303a4b;
+    --card: #1d2430;
+    --accent: #3264c6;
   }
 
   @media (prefers-color-scheme: dark) {
     :root[data-theme="auto"] {
       color-scheme: dark;
-      --bg: #171923;
-      --fg: #f3f3fa;
-      --muted: #b3b3c3;
-      --line: #343746;
-      --card: #202330;
-      --accent: #a49aff;
+      --bg: #141923;
+      --fg: #f1f5fc;
+      --muted: #a9b4c5;
+      --line: #303a4b;
+      --card: #1d2430;
+      --accent: #3264c6;
     }
   }
 

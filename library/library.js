@@ -2,6 +2,7 @@
 import { BOOK_ACCEPT } from "./file-format.js";
 import { beginCoverTransition } from "./cover-transition.js";
 import { bindReaderHistory } from "./reader-history.js";
+import { startAutomaticReadingTracker } from "./reading-tracker.js";
 import { VERSION } from "./version.js";
 import { showCollections } from "./collections.js";
 import { showBookInfo } from "./book-info.js";
@@ -14,6 +15,7 @@ import { notify, controlIcon } from "./controls.js";
 import { coverFor } from "./open-catalog.js";
 const mobile = document.body.dataset.product === "mobile";
 const $ = (selector) => document.querySelector(selector);
+let smartSearchTimer = 0, smartSearchRun = 0, smartSearchResults = null;
 document.addEventListener("pointerdown", (event) => {
   if (event.target instanceof Element && event.target.closest(".book-menu,.book-actions")) return;
   for (const panel of document.querySelectorAll(".book-actions:not([hidden])")) {
@@ -31,7 +33,7 @@ document.addEventListener("keydown", (event) => {
   menu?.focus();
 });
 let viewer, items = [], urls = [], backup, experience, lang = normalizeLocale(localStorage.getItem("sela:language") || localStorage.getItem("sela-library:language") || navigator.language);
-const strings = { autoUpdate: "Periksa rilis GitHub sekali sehari (pemberitahuan saja)", eyebrow: "RUANG KECIL MILIKMU", title: "Dunia kecil untuk cerita-ceritamu.", intro: "Buku-bukumu, temuan baru, dan waktu kecil untuk dirimu sendiri.", add: "Tambah buku", shelf: "Di rakmu", empty: "Sisakan tempat untuk cerita pertama.", drop: "Tarik buku ke sini, atau gunakan tombol +. Berkas tetap di browser ini.", sample: "Temui Bobby dalam Yang Tidak Ikut Pulang", undo: "Urungkan penghapusan", about: "Privasi, pembaruan & kompatibilitas", privacy: "Buku disimpan lokal dalam IndexedDB. Tanpa akun, unggahan, atau pelacakan. Menghapus data browser menghapus rak: simpan berkas asli dan ekspor catatan bacaan.", newtab: "Reader dapat dipasang dari browser pada desktop, tablet atau ponsel. Bookmark atau jadikan URL ini halaman awal browser.", formats: "PDF, EPUB, CBZ dan teks. Narasi memakai suara browser/OS yang tersedia. Dokumen bertulisan dapat dicari; PDF hasil pindai perlu OCR. Reader menyesuaikan desktop, tablet dan ponsel." };
+const strings = { autoUpdate: "Periksa rilis GitHub sekali sehari (pemberitahuan saja)", eyebrow: "RUANG KECIL MILIKMU", title: "Ruang kecil untuk cerita.", intro: "Buku-bukumu, temuan baru, dan waktu kecil untuk dirimu sendiri.", add: "Tambah buku", shelf: "Di rakmu", empty: "Sisakan tempat untuk cerita pertama.", drop: "Tarik buku ke sini, atau gunakan tombol +. Berkas tetap di browser ini.", fileDropTitle: "Tambahkan buku ke rak", fileDropHint: "Tarik PDF, EPUB, komik, atau teks. Berkas tetap di perangkat ini.", fileDropButton: "Pilih berkas", sample: "Temui Bobby dalam Yang Tidak Ikut Pulang", undo: "Urungkan penghapusan", about: "Privasi, pembaruan & kompatibilitas", privacy: "Buku disimpan lokal dalam IndexedDB. Tanpa akun, unggahan, atau pelacakan. Menghapus data browser menghapus rak: simpan berkas asli dan ekspor catatan bacaan.", newtab: "Reader dapat dipasang dari browser pada desktop, tablet atau ponsel. Bookmark atau jadikan URL ini halaman awal browser.", formats: "PDF, EPUB, CBZ dan teks. Narasi memakai suara browser/OS yang tersedia. Dokumen bertulisan dapat dicari; PDF hasil pindai perlu OCR. Reader menyesuaikan desktop, tablet dan ponsel." };
 const originals = new Map([...document.querySelectorAll("[data-i18n]")].map((el) => [el, el.textContent]));
 const t = (en, id) => translate(en, id, lang);
 function updateLanguageFlag(value) {
@@ -248,6 +250,8 @@ async function openBook(book) {
       void updateBook(current.id, { progress: current.progress, total: current.total }).catch((e) => status(e.message));
     } });
     await viewer.open();
+    const stopTracking = startAutomaticReadingTracker(book.id);
+    viewer.addEventListener("close", stopTracking, { once: true });
     if (!hadBookMode && readingPreset(book.format).mode) {
       const requested = readingPreset(book.format).mode;
       if (!["epub", "txt", "md", "html", "fb2", "docx", "odt"].includes(book.format) || ["single", "scroll"].includes(requested)) await viewer.setMode(requested);
@@ -266,10 +270,11 @@ function render() {
   urls.forEach((url) => URL.revokeObjectURL(url));
   urls = [];
   $("#shelf").replaceChildren();
-  const needle = $("#search").value.toLocaleLowerCase();
+  const needle = $("#search").value.trim().toLocaleLowerCase(), smartIds = smartSearchResults?.query === needle ? smartSearchResults.ids : null;
+  const matchesSearch = (b) => !needle || (smartIds ? smartIds.has(b.id) : (b.name + " " + (b.metadata?.author || "") + " " + (b.tags || []).join(" ")).toLocaleLowerCase().includes(needle));
   const readFilter = $("#read-filter").value;
   const selectedTag = $("#tag-filter")?.value || "";
-  const sorted = items.filter((b) => (b.name + " " + (b.metadata?.author || "") + " " + (b.tags || []).join(" ")).toLocaleLowerCase().includes(needle) && (!selectedTag || b.tags?.includes(selectedTag)) && ($("#format-filter").value === "all" || b.format === $("#format-filter").value) && (readFilter === "all" || (readFilter === "favorite" ? b.favorite : readFilter === "completed" ? b.completed : readFilter === "opened" ? b.opened && !b.completed : !b.opened && !b.completed))).sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned) || ($("#sort").value === "name" ? a.name.localeCompare(b.name) : (Number(b[$("#sort").value]) || 0) - (Number(a[$("#sort").value]) || 0)));
+  const sorted = items.filter((b) => matchesSearch(b) && (!selectedTag || b.tags?.includes(selectedTag)) && ($("#format-filter").value === "all" || b.format === $("#format-filter").value) && (readFilter === "all" || (readFilter === "favorite" ? b.favorite : readFilter === "completed" ? b.completed : readFilter === "opened" ? b.opened && !b.completed : !b.opened && !b.completed))).sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned) || ($("#sort").value === "name" ? a.name.localeCompare(b.name) : (Number(b[$("#sort").value]) || 0) - (Number(a[$("#sort").value]) || 0)));
   $("#empty").hidden = items.length > 0;
   $("#shelf").hidden = !sorted.length;
   const key = JSON.stringify([needle, readFilter, selectedTag, $("#format-filter").value, $("#sort").value]);
@@ -283,7 +288,12 @@ function render() {
   for (const book of sorted.slice(0, visibleLimit)) {
     const card = document.createElement("article");
     card.className = "book tw:relative tw:w-full tw:max-w-[15rem]";
-    const cover = button(t("Read ", "Baca ") + book.name, () => openBook(book));
+    const cover = button(t("Book information: ", "Informasi buku: ") + book.name, () => showBookInfo({ title: book.name, ...book.metadata }, { t, format: book.format, onRead: () => openBook(book), onSave: async (value) => {
+      book.metadata = { ...book.metadata, ...value };
+      if (value.title) book.name = value.title;
+      await writeBook(book);
+      await refresh();
+    } }));
     cover.className = "cover";
     cover.style.setProperty("--cover", getComputedStyle(document.documentElement).getPropertyValue("--palette-soft").trim() || "#eef4ff");
     const imageSource = URL.createObjectURL(book.cover || coverFor({ id: book.id, title: book.name, author: book.metadata?.author }));
@@ -316,7 +326,7 @@ function render() {
     actions.id = "book-actions-" + encodeURIComponent(book.id);
     menu.setAttribute("aria-controls", actions.id);
     menu.setAttribute("aria-expanded", "false");
-    const info = button(t("Book information: ", "Informasi buku: ") + book.name, () => showBookInfo({ title: book.name, ...book.metadata }, { t, format: book.format, onSave: async (value) => {
+    const info = button(t("Book information: ", "Informasi buku: ") + book.name, () => showBookInfo({ title: book.name, ...book.metadata }, { t, format: book.format, onRead: () => openBook(book), onSave: async (value) => {
       book.metadata = { ...book.metadata, ...value };
       if (value.title) book.name = value.title;
       await writeBook(book);
@@ -426,7 +436,22 @@ $("#undo").onclick = async () => {
     status(error.message);
   }
 };
-$("#search").oninput = render;
+$("#search").oninput = () => {
+  clearTimeout(smartSearchTimer);
+  const query = $("#search").value.trim().toLocaleLowerCase();
+  smartSearchResults = null;
+  render();
+  const run = ++smartSearchRun;
+  if (query.length < 3) return;
+  smartSearchTimer = window.setTimeout(() => {
+    void import("./smart-search.js").then(({ searchLibraryBooks }) => searchLibraryBooks(items, query, lang)).then((ids) => {
+      if (run !== smartSearchRun || $("#search").value.trim().toLocaleLowerCase() !== query) return;
+      smartSearchResults = { query, ids: new Set(ids) };
+      render();
+    }).catch(() => {
+    });
+  }, 180);
+};
 $("#sort").onchange = render;
 $("#format-filter").onchange = render;
 $("#read-filter").onchange = render;
@@ -562,6 +587,7 @@ $("#add-books").onclick = () => {
   $("#books").accept = BOOK_ACCEPT;
   $("#books").click();
 };
+$("#shelf-add-books").onclick = () => $("#add-books").click();
 $("#books").accept = BOOK_ACCEPT;
 $("#books").onchange = () => {
   $("#books").accept = BOOK_ACCEPT;

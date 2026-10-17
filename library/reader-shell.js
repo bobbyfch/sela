@@ -1,8 +1,8 @@
 // Generated from app/library/reader-shell.ts by npm run build. Do not edit.
-import { animatePanel, notify } from "./controls.js";
+import { animatePanel, controlIcon, notify } from "./controls.js";
 import { openDictionary } from "./dictionary.js";
 import { mountAudio } from "./audio.js";
-import { mountPalettes, applyPalette } from "./themes.js";
+import { mountPalettes, applyPalette, getPaletteDefinition } from "./themes.js";
 import { renderBookInfo } from "./book-info.js";
 import { mountReaderProfiles } from "./reader-profiles.js";
 import { mountSharePanel } from "./share-card.js";
@@ -40,12 +40,16 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
     return b;
   };
   const controls = state.controls;
-  const top = el("header", "app-reading-top");
+  const top = el("header", "app-reading-top reader-narrow-toolbar");
   shell.prepend(top);
   const close = button("back", "Back to library", "Kembali ke rak", top, () => reader.close());
   close.classList.add("library-reader-close");
   const title = el("div", "app-reading-title", top);
+  const paletteMark = el("span", "app-reading-theme-mark", title);
+  paletteMark.setAttribute("aria-hidden", "true");
   el("strong", "", title).textContent = state.options.title || t("Your book", "Buku kamu");
+  const fullscreenButton = button("full", "Fullscreen", "Layar penuh", top, fullscreen);
+  fullscreenButton.classList.add("app-reading-fullscreen");
   const quranCandidate = reader.options?.metadata?.quran || reader.book?.quranMetadata, quran = quranCandidate && Number.isInteger(quranCandidate.surah) && quranCandidate.surah >= 1 && quranCandidate.surah <= 114 && Number.isInteger(quranCandidate.verseCount) && quranCandidate.verseCount >= 1 && quranCandidate.verseCount <= 286 && /^[a-z0-9_]{1,80}$/.test(String(quranCandidate.translationKey || "")) && ["id", "en", "ja"].includes(quranCandidate.language) ? quranCandidate : null;
   if (quran) mountQuranReader(overlay, top, reader, quran, t);
   const dock = el("footer", "app-reading-dock", shell);
@@ -123,7 +127,7 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
       el("h3", "", saved).textContent = t("Your bookmarks", "Penandamu");
       const list = el("div", "", saved);
       for (const page of [...state.marks].sort((a, b) => a - b)) {
-        const jump = el("button", "", list);
+        const jump = el("button", "app-bookmark-jump tw:min-w-0 tw:max-w-full tw:overflow-hidden tw:text-ellipsis tw:whitespace-nowrap", list);
         jump.type = "button";
         let ribbon = "";
         if (!viewer) try {
@@ -225,6 +229,60 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
     };
     return input;
   }
+  function choiceGrid(en, id, choices, value, fn, descriptions = []) {
+    const field = el("fieldset", "tw:border-0 tw:p-0", drawer);
+    const legend = el("legend", "tw:mb-2 tw:text-xs tw:font-semibold tw:text-sela-muted", field);
+    legend.textContent = t(en, id);
+    const grid = el("div", "tw:grid tw:grid-cols-3 tw:gap-2", field);
+    grid.setAttribute("role", "group");
+    grid.setAttribute("aria-label", legend.textContent);
+    const pathsByChoice = { single: "M5 3h14v18H5zM8 7h8M8 11h8", book: "M3 5q5-3 9 1v15q-4-4-9-1zM21 5q-5-3-9 1v15q4-4 9-1z", manga: "M5 4h14v16H5zM9 12h6m-3-3v6", scroll: "M6 4h12M6 10h12M6 16h12M6 21h12", webtoon: "M7 3h10v18H7zM10 7h4m-4 4h4m-4 4h4", page: "M6 3h12v18H6zM9 7h6", width: "M3 6h18v12H3zM6 10h12", original: "M5 3h14v18H5zM3 3v4m18-4v4M3 17v4m18-4v4" };
+    const items = [];
+    for (let i = 0; i < choices.length; i++) {
+      const [v, english, indonesian] = choices[i], button2 = el("button", "tw:flex tw:min-h-12 tw:min-w-0 tw:flex-row tw:items-center tw:justify-start tw:gap-2 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface/80 tw:px-3 tw:py-2 tw:text-left tw:text-xs tw:transition hover:tw:border-sela-accent/60 focus-visible:tw:outline-2 focus-visible:tw:outline-sela-accent aria-pressed:tw:border-sela-accent aria-pressed:tw:bg-sela-accent/10", grid);
+      button2.type = "button";
+      button2.dataset.choice = v;
+      button2.setAttribute("aria-pressed", String(v === value));
+      const mark = el("span", "tw:grid tw:size-6 tw:place-items-center tw:rounded-lg tw:bg-sela-accent/10 tw:text-sela-accent", button2), svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "1.7");
+      svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(svg.namespaceURI, "path");
+      path.setAttribute("d", pathsByChoice[v] || paths.previews);
+      svg.append(path);
+      mark.append(svg);
+      const title2 = el("span", "tw:max-w-full tw:truncate tw:font-semibold tw:text-sela-ink", button2);
+      title2.textContent = t(english, indonesian);
+      if (descriptions[i]) {
+        const detail = el("span", "tw:text-[10px] tw:leading-4 tw:text-sela-muted", button2);
+        detail.textContent = t(descriptions[i][0], descriptions[i][1]);
+      }
+      button2.onclick = async () => {
+        button2.disabled = true;
+        notice.textContent = "";
+        try {
+          await fn(v);
+          input.value = v;
+          sync();
+        } catch (error) {
+          notice.textContent = error.message;
+        } finally {
+          button2.disabled = false;
+        }
+      };
+      items.push(button2);
+    }
+    const input = { get value() {
+      return grid.querySelector("[aria-pressed=true]")?.dataset.choice || value;
+    }, set value(next) {
+      for (const button2 of items) button2.setAttribute("aria-pressed", String(button2.dataset.choice === next));
+    } };
+    return input;
+  }
   const infoPanel = el("section", "app-reading-settings app-info-panel", shell);
   infoPanel.hidden = true;
   infoPanel.setAttribute("aria-label", t("Book information", "Informasi buku"));
@@ -241,7 +299,6 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   download.setAttribute("aria-label", t("Download original", "Unduh berkas asli"));
   download.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>';
   utilities.append(download);
-  button("full", "Fullscreen", "Layar penuh", utilities, fullscreen);
   button("info", "Book information", "Informasi buku", utilities, async (e) => {
     dismiss();
     returnFocus = e.currentTarget;
@@ -278,29 +335,72 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
     previewTop.querySelector("button").focus();
   });
   const modes = textBook ? [["single", "Chapter", "Bab"], ["scroll", "Continuous", "Berkelanjutan"]] : [["single", "Single page", "Satu halaman"], ["book", "Spread", "Dua halaman"], ["manga", "Manga \xB7 RTL", "Manga \xB7 kanan ke kiri"], ["scroll", "Vertical \xB7 gaps", "Vertikal \xB7 bercelah"], ["webtoon", "Webtoon \xB7 seamless", "Webtoon \xB7 tanpa celah"]];
+  const followAppearanceKey = viewer ? "sela-viewer:follow-app-appearance" : "sela-library:reader-follow-appearance";
+  let followAppearance = !viewer;
+  try {
+    const saved = localStorage.getItem(followAppearanceKey);
+    if (saved !== null) followAppearance = saved === "true";
+  } catch {
+  }
+  let followAppearanceInput;
+  function persistFollowAppearance() {
+    try {
+      localStorage.setItem(followAppearanceKey, String(followAppearance));
+    } catch {
+    }
+  }
+  function syncAppAppearance() {
+    if (!followAppearance) return;
+    const requested = document.documentElement.dataset.theme || "auto", theme = ["auto", "light", "dark"].includes(requested) ? requested : "auto";
+    state.options.theme = theme;
+    reader.options.theme = theme;
+    overlay.dataset.selaTheme = theme;
+    applyPalette(overlay.dataset.palette || "white", overlay);
+    themeButton?.querySelector("path")?.setAttribute("d", appearanceIcon());
+    themeButton?.setAttribute("aria-label", t("Appearance: ", "Tampilan: ") + theme);
+  }
   const appearanceIcon = () => overlay.dataset.selaTheme === "dark" ? "M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z" : overlay.dataset.selaTheme === "auto" ? "M3 4h18v13H3ZM8 21h8m-4-4v4" : paths.sun;
   const themeButton = button("sun", "Cycle appearance", "Ganti tampilan", top, () => {
     const values = ["auto", "light", "dark"];
     state.options.theme = values[(values.indexOf(overlay.dataset.selaTheme) + 1) % 3];
     reader.options.theme = state.options.theme;
     overlay.dataset.selaTheme = state.options.theme;
-    if (!viewer) {
+    applyPalette(overlay.dataset.palette || "white", overlay);
+    if (!viewer && followAppearance) {
       document.documentElement.dataset.theme = state.options.theme;
       try {
         localStorage.setItem("sela-library:theme", state.options.theme);
       } catch {
       }
       document.dispatchEvent(new Event("sela:appearance"));
+    } else if (viewer && followAppearance) {
+      followAppearance = false;
+      followAppearanceInput.checked = false;
+      persistFollowAppearance();
     }
     themeButton.querySelector("path").setAttribute("d", appearanceIcon());
     themeButton.setAttribute("aria-label", t("Appearance: ", "Tampilan: ") + state.options.theme);
   });
   themeButton.setAttribute("aria-label", t("Appearance: ", "Tampilan: ") + overlay.dataset.selaTheme);
   themeButton.querySelector("path").setAttribute("d", appearanceIcon());
+  const followRow = el("label", "tw:my-1 tw:flex tw:min-h-12 tw:items-center tw:justify-between tw:gap-3 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface/75 tw:px-3 tw:py-2", drawer), followCopy = el("span", "tw:grid tw:gap-0.5", followRow);
+  el("strong", "tw:text-xs tw:font-semibold tw:text-sela-ink", followCopy).textContent = t("Follow app appearance", "Ikuti tampilan aplikasi");
+  el("small", "tw:text-[10px] tw:leading-4 tw:text-sela-muted", followCopy).textContent = t("Keep this reader in sync with the app theme.", "Selaraskan tampilan reader dengan tema aplikasi.");
+  followAppearanceInput = el("input", "tw:size-5 tw:shrink-0 tw:accent-sela-accent", followRow);
+  followAppearanceInput.type = "checkbox";
+  followAppearanceInput.checked = followAppearance;
+  followAppearanceInput.setAttribute("aria-label", t("Follow app appearance", "Ikuti tampilan aplikasi"));
+  followAppearanceInput.onchange = () => {
+    followAppearance = followAppearanceInput.checked;
+    persistFollowAppearance();
+    if (followAppearance) syncAppAppearance();
+  };
+  document.addEventListener("sela:appearance", syncAppAppearance);
+  syncAppAppearance();
   themeButton.querySelector("path").setAttribute("d", appearanceIcon());
   const disposeProfiles = mountReaderProfiles(drawer, state, { t, onApplied: sync });
-  const mode = select("Reading mode", "Mode baca", modes, state.options.mode, (v) => reader.setMode(v));
-  const fitSelect = !textBook ? select("Page fit", "Ukuran halaman", [["page", "Fit screen", "Pas layar"], ["width", "Fit width", "Pas lebar"], ["original", "Original size", "Ukuran asli"]], state.options.fit || "page", (v) => reader.setFit(v)) : null;
+  const mode = choiceGrid("Reading mode", "Mode baca", modes, state.options.mode, (v) => reader.setMode(v), textBook ? [["For book chapters", "Untuk bab buku"], ["One long page", "Satu halaman panjang"]] : [["A page at a time", "Satu halaman setiap kali"], ["Two pages together", "Dua halaman berdampingan"], ["Right-to-left reading", "Membaca kanan ke kiri"], ["Vertical with page gaps", "Vertikal dengan jarak"], ["Long, seamless comic", "Komik panjang tanpa celah"]]);
+  const fitSelect = !textBook ? choiceGrid("Page fit", "Ukuran halaman", [["page", "Fit screen", "Pas layar"], ["width", "Fit width", "Pas lebar"], ["original", "Original size", "Ukuran asli"]], state.options.fit || "page", (v) => reader.setFit(v), [["Use the available height", "Gunakan tinggi layar"], ["Use the available width", "Gunakan lebar layar"], ["Keep the source size", "Pertahankan ukuran asli"]]) : null;
   const zoom = el("div", "app-reading-zoom", drawer);
   button("minus", "Zoom out", "Perkecil", zoom, () => reader.zoomOut());
   el("span", "", zoom).textContent = t("Zoom", "Zoom");
@@ -372,9 +472,16 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   el("h3", "", palettes).textContent = t("App palette", "Palet aplikasi");
   const updatePalette = mountPalettes(palettes, t, paletteTarget);
   const syncPalette = () => {
-    if (!viewer) overlay.dataset.palette = paletteTarget.dataset.palette;
+    const key2 = paletteTarget.dataset.palette || "white";
+    if (!viewer) applyPalette(key2, overlay);
+    const definition = getPaletteDefinition(key2);
+    paletteMark.replaceChildren(controlIcon(definition.motif));
+    paletteMark.title = t(definition.en, definition.id);
     updatePalette();
   };
+  palettes.addEventListener("click", (event) => {
+    if (event.target.closest("[data-palette-choice]")) syncPalette();
+  });
   syncPalette();
   document.addEventListener("sela:palette", syncPalette);
   function sync() {
@@ -401,12 +508,17 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   sync();
   if (state.options.presentation !== "inline") host.focus();
   const key = (e) => {
-    if (document.querySelector("dialog[open]")) return;
-    if (e.key === "Escape" && overlay.isConnected && (!drawer.hidden || !tools.hidden || !infoPanel.hidden || !sharePanel.panel.hidden || !previews.hidden)) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
+    const nativeDialog = document.querySelector("dialog[open]");
+    if (nativeDialog && !(nativeDialog.classList.contains("book-info-dialog") && nativeDialog.dataset.closing === "true")) return;
+    if (e.key !== "Escape" || !overlay.isConnected) return;
+    if (overlay.querySelector(".sela-shortcuts:not([hidden]),.sela-tools:not([hidden]),.sela-footnote[open]")) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (!drawer.hidden || !tools.hidden || !infoPanel.hidden || !sharePanel.panel.hidden || !previews.hidden) {
       dismiss();
+      return;
     }
+    reader.close();
   };
   document.addEventListener("keydown", key, true);
   const measure = () => overlay.dataset.compact = String(shell.clientWidth < 600);
@@ -415,7 +527,7 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   window.addEventListener("resize", measure);
   measure();
   const credit = el("a", "sela-credit", drawer);
-  credit.textContent = "Bobby Fajar Christian \xB7 Sela";
+  credit.textContent = "Sela Books \xB7 \xA9 " + (/* @__PURE__ */ new Date()).getFullYear();
   credit.href = "https://github.com/bobbyfch/sela";
   credit.target = "_blank";
   credit.rel = "noopener noreferrer";
@@ -432,6 +544,7 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
     overlay.removeEventListener("sela:dictionary", dictionaryEvent);
     void release();
     document.removeEventListener("sela:palette", syncPalette);
+    document.removeEventListener("sela:appearance", syncAppAppearance);
     document.removeEventListener("keydown", key, true);
     document.removeEventListener("visibilitychange", visibility);
     cleanup.disconnect();

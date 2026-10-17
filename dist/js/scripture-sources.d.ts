@@ -12,6 +12,34 @@ export interface FaithReading {
     language: string;
     license?: string;
     direction?: 'ltr' | 'rtl';
+    note?: string;
+}
+export interface FaithTextVerse {
+    number: number;
+    text: string;
+}
+export interface FaithTextChapter {
+    number: number;
+    title?: string;
+    verses?: FaithTextVerse[];
+    text?: string;
+}
+export interface FaithTextBook {
+    id?: string;
+    name?: string;
+    number?: number;
+    title?: string;
+    chapters?: FaithTextChapter[];
+    text?: string;
+}
+export interface FaithTextLibrary {
+    edition?: string;
+    title?: string;
+    translator?: string;
+    source?: string;
+    license?: string;
+    books?: FaithTextBook[];
+    chapters?: FaithTextChapter[];
 }
 export interface QuranVerse {
     sura: number;
@@ -80,6 +108,8 @@ export declare function listQuranTranslations(language: string, signal?: AbortSi
 export declare function loadQuranSurah(number: number, language: string, signal?: AbortSignal, translationKey?: string): Promise<QuranSurah>;
 /** Chinese Text Project requires a registered IP or API key; keep this as a safe source link until a key is configured. */
 export declare function faithSource(faith: FaithId): string;
+/** Load a source-attributed text pack only when the reader asks to browse it. */
+export declare function loadFaithLibrary(faith: FaithId, signal?: AbortSignal): Promise<FaithTextLibrary>;
 export declare function loadFaithReading(faith: FaithId, language: string, date?: Date, signal?: AbortSignal): Promise<FaithReading | null>;
 /** The Buruja content API publishes Arabic and English adhkar with citations; keep its edition and refs attached. */
 export declare function loadIslamicReadingCollection(slug: string, signal?: AbortSignal): Promise<IslamicReadingCollection>;
@@ -88,7 +118,8 @@ export declare function faithReadingHtml(title: string, rows: {
     reference: string;
     text: string;
     direction?: 'ltr' | 'rtl';
-}[], attribution: string, language?: string): string;
+    note?: string;
+}[], attribution: string, language?: string, sourceUrl?: string): string;
 export interface QuranDisplayOptions {
     translationKey?: string;
     arabicSize?: number;

@@ -3,15 +3,20 @@
 @import "tailwindcss" source(none) prefix(tw);
 @import "tw-animate-css";
 @import "./app-reader-utilities.css";
+@import "./palette-tokens.css";
+@import "./palette-mobile.css";
 
 @source "./pages/reader.tsx";
 @source "./icons.tsx";
+@source "../app/library/audio.ts";
+@source "../app/library/reader-shell.ts";
+@source "../app/library/reader-profiles.ts";
 @source "./components/**/*.tsx";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --color-sela-canvas: var(--bg);
   --color-sela-surface: var(--panel);
   --color-sela-ink: var(--fg);
@@ -42,3 +47,4 @@
 }
 
 @source inline("tw:library-reader-overlay tw:app-palette-picker tw:library-reader-shell tw:library-reader-content tw:library-reader-book tw:sela-webtoon-tools tw:fb-nav tw:fb-tool tw:fb-counter tw:app-reading-top tw:app-quran-navigation tw:app-quran-surah-field tw:app-quran-verse-field tw:app-reader-icon tw:app-reading-title tw:app-reading-dock tw:app-reading-position tw:app-page-seek tw:app-reading-actions tw:app-reading-settings tw:app-drawer-heading tw:app-reading-field tw:app-reading-zoom tw:app-reader-status tw:app-advanced tw:app-reader-palettes tw:app-saved-marks tw:sela-tools tw:sela-tool-tabs tw:app-panel-open tw:app-reading-utilities tw:app-share-panel tw:share-card-actions tw:book-info-fields tw:app-page-previews tw:library-reader-page-form tw:sela-credit tw:sela-selection-actions tw:app-profile-manager tw:app-profile-actions tw:control-symbol tw:icon-action tw:control-toolbar tw:control-segmented tw:catalog-actions tw:catalog-info tw:catalog-book tw:catalog-meta tw:shelf-controls tw:settings-card tw:open-book tw:bulk-actions tw:bottom-bar tw:experience-button tw:topbar tw:sela-debug-panel tw:developer-playground tw:dimensional-icon tw:shelf-more tw:brand-logo tw:brand tw:read-action tw:personal-book-button tw:book-info-dialog tw:book-actions tw:personal-settings tw:personal-desk tw:desk-book tw:personal-shelf-tools tw:last-trace tw:ritual tw:weather-widget tw:quiet-scene tw:reading-summary tw:reflection-actions tw:focus-card tw:focus-actions tw:open-results tw:reader-audio tw:catalog-source-chip tw:catalog-source-options tw:open-catalog tw:explore-info tw:desk-open tw:recent-book tw:browse-page tw:focus-controls tw:settings-page tw:settings-welcome tw:settings-welcome-identity tw:settings-avatar tw:settings-welcome-copy tw:settings-eyebrow tw:settings-welcome-reflection tw:settings-quote-source tw:settings-quote-refresh tw:settings-section-icon tw:settings-heading-label tw:settings-row tw:settings-leading-icon tw:settings-row-copy tw:settings-row-control tw:settings-action-row tw:settings-action-label tw:settings-trailing-icon tw:restore-label tw:restore-file-picker tw:restore-file-picker-action tw:restore-file-input tw:home-page tw:control-sheet tw:control-sheet-header tw:personal-sheet tw:app-about-trigger tw:about-sheet tw:about-dialog-content tw:about-identity tw:about-app-mark tw:about-identity-copy tw:about-version tw:about-description tw:about-detail tw:about-author tw:about-links tw:about-link tw:sr-only tw:home-calendar-source tw:weather-location-actions tw:weather-location-privacy tw:home-world-canvas tw:room-intro tw:home-reflection tw:companion-options tw:app-page tw:top-actions tw:oled-setting-row tw:language-flag tw:home-water-goal-label tw:home-water-goal tw:home-water-progress tw:home-water-progress-track tw:home-water-progress-fill tw:home-water-progress-text tw:home-water-widget tw:home-water-personalize tw:home-water-settings tw:home-water-setting tw:home-water-settings-help tw:book-detail-overview tw:book-detail-cover-frame tw:book-detail-copy tw:book-detail-description tw:book-detail-author tw:book-detail-category tw:book-detail-credits tw:book-detail-actions tw:discovery-category tw:catalog-buy-link tw:book-detail-shop-note tw:book-detail-rank tw:settings-group-heading tw:home-routine-settings tw:home-water-settings-heading tw:home-water-note tw:home-quote-settings tw:home-quote-setting tw:home-quote-status tw:home-quote-fetch tw:home-quote-portrait tw:home-quote-copy tw:app-quran-navigation-row tw:app-quran-field tw:app-quran-display-settings tw:app-quran-size-control tw:app-quran-status tw:app-quran-language-field tw:app-quran-edition-field tw:glass-navigation tw:glass-navigation-indicator tw:app-quran-heading tw:app-quran-mark tw:app-quran-heading-copy tw:home-scripture-shelf tw:home-scripture-shelf-heading tw:home-scripture-shelf-group tw:home-scripture-group-title tw:home-scripture-shelf-track tw:home-scripture-daily-track tw:home-scripture-book tw:home-scripture-cover tw:home-scripture-ornament tw:home-scripture-book-title tw:home-scripture-reference tw:book tw:cover tw:open-book-cover tw:app-quran-menu tw:app-quran-trigger tw:app-quran-close tw:home-world-art");
+@source inline("tw:reader-narrow-toolbar");

@@ -1,0 +1,87 @@
+import {test,expect} from '@playwright/test';
+
+const paletteKeys=['white','kids','cyberpunk','forest','sakura','ocean','lavender','citrus','laskar','bumi','hujan','nurbaya','wijck','menara','cantik','kopi','laut','rindu'];
+
+test('every palette changes viewer controls and motif without losing responsive fit',async({page})=>{
+ test.setTimeout(180_000);
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/?geo=off');
+ await page.locator('.trial-book').click();
+ const reader=page.locator('[data-product-reader="app"]');
+ await expect(reader).toBeVisible();
+ await reader.getByRole('button',{name:'Reader settings',exact:true}).click();
+ await expect(reader.locator('.app-reader-palettes [data-palette-choice]')).toHaveCount(18);
+
+ for(const width of [390,768,1440]){
+  await page.setViewportSize({width,height:900});
+  for(const colorScheme of ['light','dark'] as const){
+   await page.emulateMedia({colorScheme});
+   const accents=new Set<string>(),motifs=new Set<string>();
+   for(const key of paletteKeys){
+    const choice=reader.locator(`.app-reader-palettes [data-palette-choice="${key}"]`);
+    const expected=await choice.evaluate(button=>getComputedStyle(button).getPropertyValue('--palette-choice-accent').trim());
+    const expectedColor=await choice.evaluate(button=>{const probe=document.createElement('i');probe.style.color=getComputedStyle(button).getPropertyValue('--palette-choice-accent').trim();document.body.append(probe);const color=getComputedStyle(probe).color;probe.remove();return color;});
+    await expect(choice.locator('.palette-swatch svg')).toHaveCount(1);
+    await choice.click();
+    await expect(choice.locator('.palette-swatch svg')).toHaveCount(1);
+    await expect(reader).toHaveAttribute('data-palette',key);
+    await expect(choice).toHaveAttribute('aria-pressed','true');
+    const current=await reader.evaluate(element=>({
+     accent:getComputedStyle(element).getPropertyValue('--accent').trim(),
+     viewerAccent:getComputedStyle(element).getPropertyValue('--sela-accent').trim(),
+     soft:getComputedStyle(element).getPropertyValue('--palette-soft').trim(),
+     markerColor:getComputedStyle(element.querySelector('.app-reading-theme-mark')!).color,
+     motif:element.querySelector('.app-reading-theme-mark path')?.getAttribute('d')||''
+    }));
+    expect(current.accent).toBe(expected);
+    expect(current.viewerAccent).toBe(expected);
+    expect(current.markerColor).toBe(expectedColor);
+    expect(current.soft).not.toBe('');
+    expect(current.motif).not.toBe('');
+    accents.add(current.accent);motifs.add(current.motif);
+   }
+   expect(accents.size).toBe(18);
+   expect(motifs.size).toBe(18);
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  }
+ }
+ expect(errors).toEqual([]);
+});
+
+test('home illustration keeps its wide composition and reflects palette, daypart, and weather',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/app/');
+ await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ const stage=page.locator('.home-world-stage'),art=stage.locator('.home-world-art');
+ await expect(stage.locator('.home-world-doodle svg')).toHaveCount(1);
+ await page.locator('html').evaluate(element=>element.setAttribute('data-theme','light'));
+ const lightFilter=await art.evaluate(element=>getComputedStyle(element).filter);
+ await page.locator('html').evaluate(element=>element.setAttribute('data-theme','dark'));
+ const darkFilter=await art.evaluate(element=>getComputedStyle(element).filter);
+ expect(lightFilter).not.toBe(darkFilter);
+ expect(darkFilter).toContain('brightness(0.88)');
+ await page.locator('html').evaluate(element=>element.setAttribute('data-theme','light'));
+ for(const width of [390,768,1440]){
+  await page.setViewportSize({width,height:900});
+  const layout=await stage.evaluate(element=>({
+   width:element.getBoundingClientRect().width,
+   height:element.getBoundingClientRect().height,
+   ratio:getComputedStyle(element).aspectRatio,
+   fit:getComputedStyle(element.querySelector('img')!).objectFit
+  }));
+  expect(layout.fit).toBe('cover');
+  expect(layout.width/layout.height).toBeGreaterThan(1.72);
+  expect(layout.width/layout.height).toBeLessThan(1.83);
+  expect(layout.ratio).not.toBe('auto');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+ await page.locator('[data-tab="settings"]').click();
+ await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
+ await expect(stage).toHaveAttribute('data-palette','sakura');
+ const daypartFilter=await art.evaluate(element=>getComputedStyle(element).getPropertyValue('--world-filter-time'));
+ await stage.evaluate(element=>{element.dataset.daypart='sunset';element.dataset.weather='rain';});
+ const atmosphere=await art.evaluate(element=>({filter:getComputedStyle(element).filter,weather:(element.parentElement as HTMLElement).dataset.weather}));
+ expect(daypartFilter).toContain('saturate');
+ expect(atmosphere.weather).toBe('rain');
+ expect(atmosphere.filter).toContain('sepia');
+});

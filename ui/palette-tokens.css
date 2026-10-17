@@ -1,0 +1,28 @@
+/* Reader title ornament follows the same accent and neutral surface as the
+   palette picker, while the page itself stays calm for long-form reading. */
+.app-reading-title {
+  position: relative;
+  min-width: 0;
+  padding-inline-start: 30px;
+}
+
+.app-reading-theme-mark {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-radius: 9px 9px 9px 4px;
+  background: var(--palette-soft);
+  color: var(--accent);
+}
+
+.app-reading-theme-mark .control-symbol {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.8;
+}

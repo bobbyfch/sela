@@ -177,7 +177,7 @@ export function createReader(global, engine) {
         }catch{notice.textContent=copy('Rotate your device manually; the layout adapts automatically.','Putar perangkat secara manual; tata letak menyesuaikan otomatis.');}});
         var filter=document.createElement('select');Object.keys(FILTERS).forEach(function(key){var option=document.createElement('option');option.value=key;filter.appendChild(option);});filter.value=options.filter||'none';
         var marksButton=button('Page previews'),soundButton=button('Page sound');
-        var download=document.createElement('a'),documentFormat=options.format||'pdf';download.href=options.url||'#';download.hidden=!options.url;
+        var download=document.createElement('a'),documentFormat=options.format||'pdf';if(options.url)download.href=options.url;else download.removeAttribute('href');download.hidden=!options.url;
         download.setAttribute('download',((options.title||'ebook').replace(/\.(pdf|epub|cbz|djvu|djv|txt|md|html|fb2)$/i,'').replace(/[\\/:*?"<>|]/g,'').trim().slice(0,80)||'ebook')+'.'+documentFormat);
         var closeButton=button(t("Tutup pembaca"));closeButton.className='library-reader-close';
 

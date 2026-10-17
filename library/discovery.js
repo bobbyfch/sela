@@ -109,7 +109,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     const header = node(section, "div", "", "tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3");
     const heading = node(header, "h3", t(...group.title), "tw:m-0 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink");
     const actions = node(header, "div", "", "tw:flex tw:items-center tw:gap-2");
-    const row = node(section, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-2 tw:gap-3 tw:sm:grid-cols-3 tw:lg:grid-cols-4 tw:xl:grid-cols-5");
+    const row = node(section, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-2 tw:gap-3 tw:sm:grid-cols-3 tw:lg:grid-cols-4");
     row.setAttribute("role", "group");
     row.setAttribute("aria-labelledby", heading.id || (heading.id = "discovery-" + group.title[0].toLowerCase().replace(/[^a-z]+/g, "-")));
     if (group.keys.includes("trending")) {
@@ -149,7 +149,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   sourceLink.rel = "noopener noreferrer";
   sourceLink.hidden = true;
   const terms = node(parent, "small", t("Open editions vary in completeness and copyright by country. Source credits remain in each book. Public APIs may limit requests.", "Kelengkapan edisi dan hak cipta berbeda menurut sumber dan negara. Kredit tetap disertakan. API publik dapat membatasi permintaan."));
-  let controller, timer, page = 1, continuation, books = [], urls = [], imageObservers = [], destroyed = false, sequence = 0;
+  let controller, timer, page = 1, continuation, books = [], urls = [], imageObservers = [], destroyed = false, sequence = 0, fallbackNotice = "";
   function shuffleBooks() {
     if (["openlibrary-trending", "openlibrary-hidden", "google-books", "google-books-free", "google-books-paid"].includes(source.value) || books.length < 2) return;
     for (let i = books.length - 1; i > 0; i--) {
@@ -384,7 +384,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     clearTimeout(timer);
     controller?.abort();
     controller = new AbortController();
-    const request = controller, current = ++sequence, timeout = setTimeout(() => request.abort(), 2e4);
+    const request = controller, requestSource = source.value, current = ++sequence, timeout = setTimeout(() => request.abort(), 2e4);
     submit.disabled = more.disabled = true;
     feedback.textContent = t("Finding books\u2026", "Mencari buku\u2026");
     if (!append) {
@@ -392,20 +392,25 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       continuation = void 0;
     }
     try {
+      let searchQuery = query.value.trim();
+      if (searchQuery) {
+        const { expandBookQuery } = await import("./smart-search.js");
+        searchQuery = expandBookQuery(searchQuery);
+      }
       let data;
-      if (source.value === "local") {
-        const response = await fetch(new URL("../../library/public-books.json", import.meta.url), { signal: controller.signal });
+      if (source.value === "local" || source.value === "id-tech") {
+        const filename = source.value === "local" ? "public-books.json" : "indonesia-tech-books.json", response = await fetch(new URL("../../library/" + filename, import.meta.url), { signal: controller.signal });
         if (!response.ok) throw Error("Collection unavailable");
-        const all = await response.json(), needle = query.value.toLocaleLowerCase();
-        data = { books: all.filter((b) => (b.title + " " + b.author + " " + b.genre).toLocaleLowerCase().includes(needle)), next: false };
+        const all = await response.json(), terms2 = searchQuery.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+        data = { books: all.filter((b) => !terms2.length || terms2.some((term) => (b.title + " " + b.author + " " + b.genre + " " + (b.description || "")).toLocaleLowerCase().includes(term))), next: false, total: all.length };
       } else if (source.value === "opds") {
         const { opdsBooks } = await import("./opds.js");
-        data = await opdsBooks(append ? continuation : address.value, { query: query.value.trim(), signal: controller.signal, headers: authHeaders(append ? continuation : address.value) });
+        data = await opdsBooks(append ? continuation : address.value, { query: searchQuery, signal: controller.signal, headers: authHeaders(append ? continuation : address.value) });
         try {
           localStorage.setItem("sela-opds-url", address.value);
         } catch {
         }
-      } else data = await searchBooks({ source: source.value, query: query.value.trim(), page, continuation, category: activeCategory, signal: controller.signal });
+      } else data = await searchBooks({ source: source.value, query: searchQuery, page, continuation, category: activeCategory, signal: controller.signal });
       if (current !== sequence || destroyed) return;
       books = append ? [...books, ...data.books.filter((b) => !books.some((old) => old.id === b.id))] : data.books;
       if (!append && !["openlibrary-trending", "openlibrary-hidden", "google-books", "google-books-free", "google-books-paid"].includes(source.value) && books.length > 1) {
@@ -418,20 +423,24 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       }
       continuation = data.continuation;
       more.hidden = !data.next;
-      feedback.textContent = books.length + " " + t("books shown", "buku ditampilkan") + (data.total != null ? " \xB7 " + data.total + " " + t("found", "ditemukan") : "");
+      feedback.textContent = (fallbackNotice ? fallbackNotice + " \xB7 " : "") + books.length + " " + t("books shown", "buku ditampilkan") + (data.total != null ? " \xB7 " + data.total + " " + t("found", "ditemukan") : "");
+      fallbackNotice = "";
       render();
     } catch (e) {
       if (current !== sequence || destroyed) return;
-      feedback.textContent = t("Source unavailable. Retry or choose Selected classics.", "Sumber belum tersedia. Coba lagi atau pilih Selected classics.") + (source.value === "opds" ? " " + t("Catalog must allow browser access (CORS), with HTTPS. Optional credentials stay in this session.", "Katalog harus mengizinkan akses browser (CORS), menggunakan HTTPS. Kredensial opsional hanya untuk sesi ini.") : "");
-      notify(feedback.textContent, "error");
-      sourceLink.href = { wikisource: "https://id.wikisource.org/", gitenberg: "https://github.com/GITenberg", gutendex: "https://www.gutenberg.org/", openlibrary: "https://openlibrary.org/", "openlibrary-trending": "https://openlibrary.org/trending/daily", "openlibrary-hidden": "https://openlibrary.org/trending/daily", "google-books": "https://books.google.com/", "google-books-free": "https://books.google.com/", "google-books-paid": "https://books.google.com/", doab: "https://directory.doabooks.org/", standard: "https://standardebooks.org/" }[source.value] || (source.value.startsWith("wiki-") ? "https://" + source.value.slice(5) + ".wikisource.org/" : source.value === "opds" ? address.value : "");
-      try {
-        const u = new URL(sourceLink.href);
-        if (u.protocol !== "https:" || u.username || u.password) sourceLink.removeAttribute("href");
-      } catch {
-        sourceLink.removeAttribute("href");
+      if (requestSource !== "local") {
+        const failed = source.selectedOptions[0]?.textContent || requestSource;
+        source.value = "local";
+        address.hidden = address.disabled = true;
+        if (sourceChip) sourceChip.textContent = source.selectedOptions[0]?.textContent || "";
+        fallbackNotice = t("This source did not respond; switched to local classics.", "Sumber tidak merespons; beralih ke koleksi klasik lokal.") + " \xB7 " + failed;
+        void load(false);
+        return;
       }
-      sourceLink.hidden = !sourceLink.getAttribute("href");
+      feedback.textContent = t("Local classics are temporarily unavailable. Check your connection and retry.", "Koleksi klasik lokal sedang tidak tersedia. Periksa koneksi lalu coba lagi.");
+      notify(feedback.textContent, "error");
+      sourceLink.removeAttribute("href");
+      sourceLink.hidden = true;
       more.hidden = true;
       if (!append) {
         books = [];
@@ -451,7 +460,15 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     void load();
   };
   source.onchange = () => {
-    sourceAttribution.hidden = !source.value.startsWith("google-books");
+    const google = source.value.startsWith("google-books"), indonesian = source.value === "id-tech";
+    sourceAttribution.hidden = !google && !indonesian;
+    if (indonesian) {
+      sourceAttribution.textContent = "Index \xB7 EbookFoundation Free Programming Books";
+      sourceAttribution.href = "https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-id.md";
+    } else if (google) {
+      sourceAttribution.textContent = "Powered by Google";
+      sourceAttribution.href = "https://books.google.com/";
+    }
     if (!changingCategory) {
       activeCategory = "";
       activeCategoryKey = "all";

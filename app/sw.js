@@ -1,6 +1,6 @@
 // Generated from app/mobile/sw.ts by npm run build. Do not edit.
 const worker = self;
-const CACHE="sela-bookshelf-0.9.0-beta.4-64c049d58c0d95e8", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
+const CACHE="sela-bookshelf-0.9.0-beta.4-0a438712ac1cbd16", APP_VERSION = "0.9.0-beta.4", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
 const url = (p) => new URL(p, ROOT).href;
 let allowed;
 const incomingDB = () => new Promise((resolve, reject) => {
@@ -10,6 +10,10 @@ const incomingDB = () => new Promise((resolve, reject) => {
   r.onerror = () => reject(r.error);
 });
 worker.addEventListener("message", (event) => {
+  if (event.data?.type === "GET_VERSION") {
+    event.ports[0]?.postMessage({ type: "SELA_VERSION", version: APP_VERSION });
+    return;
+  }
   if (event.data?.type === "ACTIVATE_UPDATE") event.waitUntil((async () => {
     const scope = new URL("./", worker.location.href).pathname, pages = await worker.clients.matchAll({ type: "window", includeUncontrolled: true });
     if (pages.filter((p) => new URL(p.url).pathname.startsWith(scope)).length > 1) {

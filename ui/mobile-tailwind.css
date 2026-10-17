@@ -5,8 +5,9 @@
 @import "./app-tailwind-utilities.css";
 @import "./home-responsive-utilities.css";
 @import "./app-redesign-utilities.css";
+@import "./palette-mobile.css";
 
-@source inline("tw:max-[1199px]:!grid-cols-[minmax(0,1fr)_auto] tw:max-[599px]:!gap-1 tw:max-[599px]:!px-1.5 tw:max-[599px]:!text-[11px]");
+@source inline("tw:max-[1199px]:!grid-cols-[minmax(0,1fr)_auto] tw:max-[900px]:!grid-cols-1 tw:max-[599px]:!gap-1 tw:max-[599px]:!px-1.5 tw:max-[599px]:!text-[11px]");
 
 @source inline("tw:app-redesign");
 
@@ -22,7 +23,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --color-sela-canvas: var(--bg);
   --color-sela-surface: var(--panel);
   --color-sela-ink: var(--fg);

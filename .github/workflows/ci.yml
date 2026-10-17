@@ -24,8 +24,6 @@ jobs:
       - run: npm test
       - run: npm run test:types
       - run: npm run typecheck
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:browser
       - name: Package Pages site
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -43,3 +41,21 @@ jobs:
           path: pages-site
           if-no-files-found: error
           retention-days: 1
+
+  browser-tests:
+    needs: checks
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps ${{ matrix.project }}
+      - run: npx playwright test --project=${{ matrix.project }}

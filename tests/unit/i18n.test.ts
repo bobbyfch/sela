@@ -40,7 +40,7 @@ test('Home greeting, welcome copy and quote controls are localized across suppor
     assert.notEqual(translate('Install on your device','Pasang di perangkatmu',language.locale),'Install on your device',language.locale);
     assert.notEqual(translate('Open Sela Books, then tap Install Sela when the app offers it.','Buka Sela Books, lalu ketuk Pasang Sela saat tombolnya tersedia.',language.locale),'Open Sela Books, then tap Install Sela when the app offers it.',language.locale);
     for(const [english,indonesian] of [
-      ['Your little world of stories.','Dunia kecil untuk cerita-ceritamu.'],
+      ['Your little world of stories.','Ruang kecil untuk cerita.'],
       ['YOUR READING SPACE','RUANG BACA PRIBADIMU'],
       ['A little space to make reading feel like yours.','Ruang kecil untuk mengatur bacaan dengan caramu.'],
       ['A thought for today','Renungan hari ini'],

@@ -70,7 +70,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   expect(schema.softwareVersion).toBe(JSON.parse(await readFile('package.json','utf8')).version);
   await page.locator('[data-theme-choice=auto]').click();
   await page.emulateMedia({ colorScheme: 'dark' });
-  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(23, 25, 35)');
+  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(20, 25, 35)');
 });
 
 test('compatibility entry avoids modern bundle on missing browser capabilities', async ({ page, browserName }) => {

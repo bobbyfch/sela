@@ -1,4 +1,4 @@
-export type AppTab = 'home' | 'library' | 'browse' | 'settings';
+export type AppTab = 'home' | 'library' | 'browse' | 'progress' | 'settings';
 export interface NavigationMount {
   nav: HTMLElement;
   navigate: (tab: AppTab) => void;

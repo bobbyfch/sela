@@ -1,12 +1,34 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {faithReadingHtml,faithSource,listQuranTranslations,loadFaithReading,loadIslamicReadingCollection,loadQuranSurah,openIslamicReadingInSela,openQuranInSela,quranSurahCatalog,quranSurahName} from '../../app/library/scripture-sources.ts';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {faithReadingHtml,faithSource,listQuranTranslations,loadFaithLibrary,loadFaithReading,loadIslamicReadingCollection,loadQuranSurah,openIslamicReadingInSela,openQuranInSela,quranSurahCatalog,quranSurahName} from '../../app/library/scripture-sources.ts';
 import {SCRIPTURE_PROVIDERS} from '../../src/scriptures.ts';
 
-test('scripture providers cover the six Indonesian-recognized choices and report source language or credential limits',async()=>{
+test('scripture providers cover the six choices and use public editions without account-gated keys',async()=>{
  assert.deepEqual(SCRIPTURE_PROVIDERS.map(provider=>provider.faith),['islam','protestantism','catholicism','buddhism','hinduism','confucianism']);
- assert.deepEqual(SCRIPTURE_PROVIDERS[0].textLanguages,['id','en','ja']);assert.deepEqual(SCRIPTURE_PROVIDERS[1].textLanguages,['en']);assert.equal(SCRIPTURE_PROVIDERS[2].requiresKey,true);assert.equal(SCRIPTURE_PROVIDERS[5].requiresKey,true);
- assert.equal(faithSource('catholicism'),'https://bible-api.alkitab.or.id/');assert.equal(faithSource('confucianism'),'https://ctext.org/analects/xue-er?if=en');assert.equal(await loadFaithReading('confucianism','ja-JP'),null);assert.equal(await loadFaithReading('catholicism','id-ID'),null);
+ assert.deepEqual(SCRIPTURE_PROVIDERS[0].textLanguages,['id','en','ja']);assert.deepEqual(SCRIPTURE_PROVIDERS[1].textLanguages,['en']);assert.equal(SCRIPTURE_PROVIDERS[2].requiresKey,false);assert.equal(SCRIPTURE_PROVIDERS[5].requiresKey,false);
+ assert.equal(faithSource('catholicism'),'https://ebible.org/engDRA/');assert.equal(faithSource('confucianism'),'https://www.gutenberg.org/ebooks/3330');
+ const confucian=await loadFaithReading('confucianism','id-ID',new Date('2026-10-13T12:00:00Z'));assert.match(confucian?.reference||'',/^Analects/);assert.match(confucian?.attribution||'',/James Legge/);assert.match(confucian?.text||'',/learn/);
+ const hindu=await loadFaithReading('hinduism','id-ID',new Date('2026-10-13T12:00:00Z'));assert.match(hindu?.reference||'',/Bhagavad Gita/);assert.match(hindu?.attribution||'',/Edwin Arnold/);assert.match(hindu?.text||'',/work/);
+});
+
+test('full local editions provide readable chapters for every supported non-Islamic faith',async()=>{
+ const originalFetch=globalThis.fetch;
+ const cases=[
+  ['protestantism',66,1000,'Genesis'],['catholicism',73,1200,'Genesis'],['buddhism',26,26,'Pairs'],['hinduism',18,18,'Chapter I'],['confucianism',20,20,'Analects']
+ ] as const;
+ try{
+  globalThis.fetch=async(input)=>new Response(await readFile(fileURLToPath(String(input))),{status:200,headers:{'content-type':'application/json'}});
+  for(const [faith,minBooks,minChapters,title] of cases){
+   const library=await loadFaithLibrary(faith);
+   const books=library.books||[];const chapters=library.chapters||books.flatMap(book=>book.chapters||[]);
+   assert.ok(books.length>=minBooks||(library.chapters?.length||0)>=minBooks,`${faith} book or chapter count`);assert.ok(chapters.length>=minChapters||(faith==='confucianism'&&books.length>=minChapters&&books.every(book=>Boolean(book.text?.trim()))),`${faith} chapter or book-text count`);
+   assert.ok(`${library.title||''} ${library.edition||''}`.includes(title)||books.some(book=>`${book.name||''} ${book.title||''}`.includes(title))||chapters.some(chapter=>(chapter.title||'').includes(title)),`${faith} named text`);
+   assert.ok(chapters.every(chapter=>Boolean(chapter.text?.trim()||chapter.verses?.some(verse=>verse.text.trim())))&&books.every(book=>!book.text||Boolean(book.text.trim())),`${faith} contains no empty sections`);
+   assert.ok(library.source&&library.license,`${faith} edition includes source and rights information`);
+  }
+ }finally{globalThis.fetch=originalFetch;}
 });
 
 test('Quran source selects the official Indonesian Affairs translation and returns the whole surah',async()=>{
@@ -35,6 +57,13 @@ test('scripture source rejects invalid Quran chapter numbers and keeps generated
 test('faith home passage uses a sourced, public-domain Bible edition',async()=>{
  const originalFetch=globalThis.fetch;
  try{globalThis.fetch=async input=>{assert.match(String(input),/bible-api\.com/);return new Response(JSON.stringify({reference:'John 3:16',text:'For God so loved the world.',translation_name:'World English Bible',translation_note:'Public Domain'}),{status:200});};const reading=await loadFaithReading('christianity','id-ID',new Date('2026-10-13T12:00:00Z'));assert.equal(reading?.reference,'John 3:16');assert.equal(reading?.language,'en');assert.match(reading?.attribution||'',/Public Domain/);}finally{globalThis.fetch=originalFetch;}
+});
+
+test('Catholic scripture uses the public-domain Douay-Rheims API edition without a credential and falls back locally',async()=>{
+ const originalFetch=globalThis.fetch;
+ try{globalThis.fetch=async input=>{assert.match(String(input),/bible-api\.com/);assert.match(String(input),/translation=dra/);return new Response(JSON.stringify({reference:'John 3:16',text:'For God so loved the world.',translation_name:'Douay-Rheims 1899 American Edition',translation_note:'Public Domain'}),{status:200});};const reading=await loadFaithReading('catholicism','id-ID',new Date('2026-10-13T12:00:00Z'));assert.equal(reading?.reference,'John 3:16');assert.match(reading?.attribution||'',/Douay-Rheims 1899/);assert.equal(reading?.license,'Public Domain');
+  globalThis.fetch=async()=>{throw Error('offline');};const offline=await loadFaithReading('catholicism','id-ID',new Date('2026-10-13T12:00:00Z'));assert.match(offline?.attribution||'',/Public Domain/);assert.ok(offline?.text);
+ }finally{globalThis.fetch=originalFetch;}
 });
 
 test('daily Islamic reading collections preserve Arabic, English meaning, references, and source attribution in Sela',async()=>{

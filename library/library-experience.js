@@ -8,10 +8,11 @@ import { writeBook, getFile, listCollections } from "./storage.js";
 import { showCollections, mountShelfControls } from "./collections.js";
 import { mountPalettes, mountOledToggle, initializePalette } from "./themes.js";
 import { mountReadingDesk } from "./reading-desk.js";
+import { mountReadingProgress } from "./reading-progress.js";
 import { mountWeather } from "./weather.js";
 import { mountAtmosphere, readingNote } from "./home-atmosphere.js";
 import { mountHomeWidgets } from "./home-widgets.js";
-import { animateDialog, controlIcon, iconAction } from "./controls.js";
+import { animateDialog, bottomSheet, controlIcon, iconAction } from "./controls.js";
 const $ = (s) => document.querySelector(s);
 const paths = { home: "m3 11 9-8 9 8v10H3Zm6 10v-8h6v8", shelf: "M4 3v18m5-18v18m5-18v18m4-17 3 16M2 21h20", browse: "M3 4h7a3 3 0 0 1 3 3v14a5 5 0 0 0-5-2H3Zm18 0h-5a3 3 0 0 0-3 3v14a5 5 0 0 1 5-2h3Z", settings: "M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6", plus: "M12 4v16M4 12h16" };
 function svg(name) {
@@ -26,7 +27,7 @@ function svg(name) {
 export function mountLibraryExperience({ mobile, t, status, refresh, openBook, readSample, addSample, addFiles }) {
   if (mobile) initializePalette();
   const selected = /* @__PURE__ */ new Set();
-  let items = [], busy = false, page = "home", onlineCatalog, glassNavigation;
+  let items = [], busy = false, page = "home", selectionMode = false, onlineCatalog, glassNavigation;
   const labels = [], recentUrls = [];
   const el = (tag2, className, parent) => {
     const node = document.createElement(tag2);
@@ -94,21 +95,30 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   }
   const main = $("main");
   const intro = $(".room-intro"), library = $(".library"), info = $(".library-info");
+  if (mobile) {
+    const fab = el("button", "mobile-add-fab", $("#mobile-app"));
+    fab.type = "button";
+    fab.setAttribute("aria-label", t("Add books", "Tambah buku"));
+    fab.title = t("Add books", "Tambah buku");
+    fab.append(svg("plus"));
+    fab.onclick = () => $("#add-books").click();
+  }
   const home = el("section", "app-page home-page tw:relative tw:isolate tw:min-w-0 tw:px-4 tw:py-5 tw:sm:px-6 tw:sm:py-7 tw:lg:px-9 tw:lg:py-9");
   home.dataset.page = "home";
   main.insertBefore(home, library);
   if (mobile) {
     home.append(intro);
     const welcome = intro.querySelector(":scope > div:first-of-type");
-    const install = intro.querySelector("#install-mobile-app");
     const offline = intro.querySelector("#mobile-offline-status");
-    if (welcome) {
-      if (install) welcome.append(install);
-      if (offline) welcome.append(offline);
-    }
+    if (welcome && offline) welcome.append(offline);
   } else home.hidden = true;
-  const continueSection = el("section", "continue-section", home);
-  text(el("h2", "", continueSection), "Continue reading", "Lanjut membaca");
+  const continueSection = el("section", "continue-section", home), continueHeading = el("div", "home-section-heading", continueSection);
+  text(el("h2", "", continueHeading), "Continue reading", "Lanjut membaca");
+  const progressLink = el("button", "home-section-link tw:inline-flex tw:min-h-10 tw:shrink-0 tw:items-center tw:gap-1.5 tw:rounded-full tw:px-3 tw:text-xs tw:font-semibold tw:text-sela-accent tw:transition hover:tw:bg-sela-accent/8", continueHeading);
+  progressLink.type = "button";
+  progressLink.append(controlIcon("clock"));
+  text(el("span", "", progressLink), "View all", "Lihat semua");
+  progressLink.onclick = () => navigate("progress");
   const continueList = el("div", "continue-list", continueSection);
   const homeCatalog = el("section", "catalog-section home-sample-section", home);
   text(el("h2", "", homeCatalog), "A little book to start", "Bacaan kecil untuk memulai");
@@ -157,6 +167,8 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   const empty = $("#empty");
   empty.querySelector("img").replaceWith(svg("browse"));
   $("#sample").hidden = true;
+  const progress = el("section", "app-page", main);
+  progress.dataset.page = "progress";
   const settings = el("section", "app-page settings-page", main);
   settings.dataset.page = "settings";
   text(el("h2", "", settings), "Settings", "Pengaturan");
@@ -216,13 +228,6 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       settingsRow(appearance, icon, en, ind, subEn, subId, control);
     }
     mountOledToggle(appearance, t);
-    const install = document.getElementById("install-mobile-app");
-    if (install) {
-      install.classList.add("home-install-action");
-      install.replaceChildren(controlIcon("download"));
-      const label = el("span", "", install);
-      text(label, "Install Sela on this device", "Pasang Sela di perangkat ini");
-    }
     info.open = false;
   }
   if (mobile) {
@@ -251,7 +256,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   aboutClose.onclick = () => aboutDialog.close();
   const aboutContent = el("div", "about-dialog-content", aboutDialog), aboutIdentity = el("div", "about-identity", aboutContent), aboutMark = el("span", "about-app-mark", aboutIdentity), aboutLogo = el("img", "", aboutMark);
   aboutLogo.alt = "";
-  aboutLogo.src = new URL(document.querySelector(".brand-logo")?.getAttribute("src") || "../logo.svg", document.baseURI).href;
+  aboutLogo.src = new URL(document.querySelector(".brand-logo")?.getAttribute("src") || "../logo.svg?v=0.9.0-beta.4", document.baseURI).href;
   const aboutName = el("div", "about-identity-copy", aboutIdentity);
   text(el("strong", "", aboutName), "Sela Books", "Sela Books");
   text(el("small", "", aboutName), "Your personal bookshelf", "Perpustakaan pribadimu");
@@ -474,6 +479,74 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   tag.id = "tag-filter";
   tag.setAttribute("aria-label", t("Filter collections", "Filter koleksi"));
   tag.onchange = refresh;
+  const selectionToggle = el("button", "experience-button book-selection-toggle", controls);
+  selectionToggle.type = "button";
+  selectionToggle.setAttribute("aria-pressed", "false");
+  selectionToggle.onclick = () => {
+    selectionMode = !selectionMode;
+    if (!selectionMode) {
+      selected.clear();
+      document.querySelectorAll(".select-book").forEach((box) => box.checked = false);
+    }
+    updateSelection();
+  };
+  text(selectionToggle, "Select books", "Pilih buku");
+  controls.prepend(selectionToggle);
+  const shelfMaterialKey = "sela-library:shelf-material", shelfMaterials = [["maple", "Maple", "Maple"], ["walnut", "Walnut", "Walnut"], ["marble", "Marble", "Marmer"], ["linen", "Linen", "Linen"]];
+  const shelfRoomKey = "sela-library:shelf-room", shelfRooms = [["studio", "Bright studio", "Studio terang"], ["reading", "Reading nook", "Sudut baca"], ["night", "Night library", "Perpustakaan malam"], ["gallery", "Quiet gallery", "Galeri tenang"]];
+  try {
+    const saved = localStorage.getItem(shelfMaterialKey);
+    document.body.dataset.shelfMaterial = shelfMaterials.some(([key]) => key === saved) ? saved : "maple";
+    const room = localStorage.getItem(shelfRoomKey);
+    document.body.dataset.shelfRoom = shelfRooms.some(([key]) => key === room) ? room : "reading";
+  } catch {
+    document.body.dataset.shelfMaterial = "maple";
+    document.body.dataset.shelfRoom = "reading";
+  }
+  const surfaceBody = el("div", "tw:grid tw:gap-5"), surfaceSheet = bottomSheet(t("Shelf & room", "Rak & ruang"), surfaceBody), materialGroup = el("fieldset", "tw:grid tw:grid-cols-2 tw:gap-2", surfaceBody);
+  materialGroup.classList.add("tw:border-0", "tw:p-0");
+  text(el("legend", "tw:mb-2 tw:text-sm tw:font-semibold", materialGroup), "Shelf material", "Bahan rak");
+  for (const [key, en, id] of shelfMaterials) {
+    const choice = el("button", "tw:flex tw:min-h-12 tw:min-w-0 tw:items-center tw:gap-2 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-left tw:text-sm tw:font-semibold tw:text-sela-ink aria-pressed:tw:border-sela-accent aria-pressed:tw:bg-sela-accent/10", materialGroup);
+    choice.type = "button";
+    choice.dataset.material = key;
+    choice.append(controlIcon("image"));
+    const label = el("span", "", choice);
+    text(label, en, id);
+    choice.setAttribute("aria-pressed", String(document.body.dataset.shelfMaterial === key));
+    choice.onclick = () => {
+      document.body.dataset.shelfMaterial = key;
+      try {
+        localStorage.setItem(shelfMaterialKey, key);
+      } catch {
+      }
+      for (const other of materialGroup.querySelectorAll("button")) other.setAttribute("aria-pressed", String(other === choice));
+    };
+  }
+  const roomGroup = el("fieldset", "tw:grid tw:grid-cols-2 tw:gap-2", surfaceBody);
+  roomGroup.classList.add("tw:border-0", "tw:p-0");
+  text(el("legend", "tw:mb-2 tw:text-sm tw:font-semibold", roomGroup), "Room backdrop", "Latar ruang");
+  for (const [key, en, id] of shelfRooms) {
+    const choice = el("button", "tw:flex tw:min-h-12 tw:min-w-0 tw:items-center tw:gap-2 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-left tw:text-sm tw:font-semibold tw:text-sela-ink aria-pressed:tw:border-sela-accent aria-pressed:tw:bg-sela-accent/10", roomGroup);
+    choice.type = "button";
+    choice.dataset.room = key;
+    choice.append(controlIcon("sparkles"));
+    text(el("span", "", choice), en, id);
+    choice.setAttribute("aria-pressed", String(document.body.dataset.shelfRoom === key));
+    choice.onclick = () => {
+      document.body.dataset.shelfRoom = key;
+      try {
+        localStorage.setItem(shelfRoomKey, key);
+      } catch {
+      }
+      for (const other of roomGroup.querySelectorAll("button")) other.setAttribute("aria-pressed", String(other === choice));
+    };
+  }
+  const surfaceButton = el("button", "experience-button", controls);
+  surfaceButton.type = "button";
+  surfaceButton.append(controlIcon("image"));
+  text(el("span", "", surfaceButton), "Shelf look", "Gaya rak");
+  surfaceButton.onclick = () => surfaceSheet.open();
   if (mobile) iconAction($("#shelf-view"), "collection", t("Switch shelf view", "Ganti tampilan rak"));
   const shelfControls = mountShelfControls({ t, controls, onCollections: () => showCollections({ t, onChange: refresh }).catch((e) => status(e.message)) });
   const completed = el("option", "", $("#read-filter"));
@@ -485,9 +558,11 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     option.textContent = format.toUpperCase();
   }
   const bulk = el("div", "bulk-actions", library);
+  bulk.hidden = true;
   library.insertBefore(bulk, $("#shelf"));
   const count = el("output", "", bulk);
   action("Select all shown", "Pilih yang ditampilkan", () => {
+    selectionMode = true;
     for (const box of document.querySelectorAll(".select-book")) {
       box.checked = true;
       selected.add(box.dataset.id);
@@ -531,7 +606,11 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   }, main);
   undoBulk.hidden = true;
   function updateSelection() {
-    document.body.dataset.selecting = String(selected.size > 0);
+    document.body.dataset.selectionMode = String(selectionMode);
+    document.body.dataset.selecting = String(selectionMode);
+    selectionToggle.setAttribute("aria-pressed", String(selectionMode));
+    selectionToggle.textContent = t(selectionMode ? "Done selecting" : "Select books", selectionMode ? "Selesai memilih" : "Pilih buku");
+    bulk.hidden = !items.length || !selectionMode;
     count.textContent = selected.size + " " + t("selected", "dipilih");
     deleteButton.disabled = !selected.size;
   }
@@ -542,7 +621,8 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     else selected.delete(id);
     updateSelection();
   });
-  const sections = { home, library, browse, settings };
+  const progressView = mountReadingProgress(progress, { t, navigate, home });
+  const sections = { home, library, browse, progress, settings };
   library.dataset.page = "library";
   library.classList.add("app-page");
   function navigate(value) {
@@ -587,9 +667,25 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   const weather = mobile ? mountWeather(intro.querySelector(".ritual"), { t }) : null;
   const atmosphere = mobile ? mountAtmosphere(home, { t }) : null;
   const homeWidgets = mobile ? mountHomeWidgets({ t, openBook }) : null;
+  if (homeWidgets) library.append(homeWidgets.islamicShelf.section, homeWidgets.faithShelf.section);
+  const homeSectionPrefsKey = "sela-library:home-sections";
+  const homeSectionNodes = { continue: continueSection, books: homeCatalog, reflection: home.querySelector(".home-reflection"), queue: home.querySelector(".personal-desk"), widgets: homeWidgets?.section || null };
+  let hasRecentReading = false, hasShelfBooks = false, hasExplicitBooksPreference = false;
+  let homeSectionPrefs = { continue: true, books: true, reflection: true, queue: true, widgets: true };
+  try {
+    const saved = JSON.parse(localStorage.getItem(homeSectionPrefsKey) || "{}");
+    hasExplicitBooksPreference = typeof saved?.books === "boolean";
+    for (const key of Object.keys(homeSectionPrefs)) if (typeof saved?.[key] === "boolean") homeSectionPrefs[key] = saved[key];
+  } catch {
+  }
+  function applyHomeSectionPrefs() {
+    for (const [key, section] of Object.entries(homeSectionNodes)) {
+      if (section) section.hidden = !homeSectionPrefs[key] || key === "continue" && !hasRecentReading || key === "books" && hasShelfBooks && !hasExplicitBooksPreference;
+    }
+  }
   const advanced = mountAdvanced(settings, { t, openBook, status });
   const personal = mountPersonal({ home, settings, library, t, refresh, openBook, navigate });
-  const homeShortcuts = mobile ? el("section", "home-shortcuts tw:my-1 tw:min-w-0") : null;
+  const homeShortcuts = mobile ? el("section", "home-shortcuts tw:mt-2 tw:min-w-0", intro.querySelector(".home-welcome") || intro) : null;
   if (homeShortcuts) {
     const personalize = el("button", "home-personalize-link tw:inline-flex tw:min-h-11 tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line/80 tw:bg-sela-surface/65 tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition hover:tw:border-sela-accent/50 hover:tw:bg-sela-surface", homeShortcuts);
     personalize.type = "button";
@@ -608,6 +704,26 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     text(el("h3", "", routine), "Home & daily rhythm", "Beranda & rutinitas harian");
     const routineIntro = el("p", "settings-card-intro", routine);
     text(routineIntro, "Choose what appears on Home and set gentle daily habits.", "Atur isi Beranda dan kebiasaan harian dengan santai.");
+    const sectionSettings = el("fieldset", "home-section-preferences tw:grid tw:gap-2 tw:border-0 tw:p-0", routine);
+    text(el("legend", "tw:mb-1 tw:text-sm tw:font-semibold tw:text-sela-ink", sectionSettings), "Show on Home", "Tampilkan di Beranda");
+    const sectionNames = { continue: ["Continue reading", "Lanjut membaca", "Only appears when a book is in progress.", "Muncul jika ada buku yang sedang dibaca."], books: ["Starter books", "Bacaan pilihan", "A small set of books to explore.", "Pilihan buku untuk mulai menjelajah."], reflection: ["Daily reflection", "Renungan harian", "A short thought for the day.", "Renungan singkat hari ini."], queue: ["Reading queue", "Antrean bacaan", "Your saved and pinned books.", "Buku yang disimpan dan disematkan."], widgets: ["Daily widgets", "Widget harian", "Calendar, water, and reading prompts.", "Kalender, air, dan pengingat membaca."] };
+    for (const [key, [en, id, helpEn, helpId]] of Object.entries(sectionNames)) {
+      const row = el("label", "home-section-preference tw:flex tw:min-h-14 tw:items-center tw:justify-between tw:gap-3 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-surface/70 tw:px-3 tw:py-2", sectionSettings), copy = el("span", "home-section-preference-copy tw:grid tw:min-w-0 tw:gap-0.5", row);
+      text(el("strong", "tw:text-xs tw:font-semibold tw:text-sela-ink", copy), en, id);
+      text(el("small", "tw:text-[10px] tw:leading-4 tw:text-sela-muted", copy), helpEn, helpId);
+      const toggle = el("input", "tw:size-5 tw:shrink-0 tw:accent-sela-accent", row);
+      toggle.type = "checkbox";
+      toggle.checked = homeSectionPrefs[key];
+      toggle.onchange = () => {
+        homeSectionPrefs[key] = toggle.checked;
+        if (key === "books") hasExplicitBooksPreference = true;
+        try {
+          localStorage.setItem(homeSectionPrefsKey, JSON.stringify(homeSectionPrefs));
+        } catch {
+        }
+        applyHomeSectionPrefs();
+      };
+    }
     if (homeWidgets?.waterSettings) routine.append(homeWidgets.waterSettings);
     if (atmosphere?.quoteSettings) routine.append(atmosphere.quoteSettings);
     settings.append(about);
@@ -619,9 +735,10 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   }
   if (mobile) {
     const queue = home.querySelector(".personal-desk"), focus = home.querySelector(".focus-card"), quote = home.querySelector(".home-reflection");
-    home.replaceChildren(intro, ...homeShortcuts ? [homeShortcuts] : [], continueSection, homeCatalog, ...quote ? [quote] : [], ...queue ? [queue] : [], ...homeWidgets ? [homeWidgets.section] : []);
+    home.replaceChildren(intro, continueSection, homeCatalog, ...quote ? [quote] : [], ...queue ? [queue] : [], progressView.homeWidget, ...homeWidgets ? [homeWidgets.section] : []);
     const ritual = intro.querySelector(".ritual");
     if (focus && ritual) ritual.append(focus);
+    applyHomeSectionPrefs();
   }
   if (mobile) {
     const directCards = () => Array.from(settings.querySelectorAll(":scope > .settings-card"));
@@ -644,7 +761,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       const copy = el("div", "settings-group-copy", heading);
       text(el("h3", "", copy), ...group.title);
       text(el("p", "", copy), ...group.description);
-      const grid = el("div", "settings-group-grid", section);
+      const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
       for (const card of cards) {
         moved.add(card);
         grid.append(card);
@@ -658,7 +775,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       const copy = el("div", "settings-group-copy", heading);
       text(el("h3", "", copy), "More settings", "Pengaturan lainnya");
       text(el("p", "", copy), "Other tools for your reading space.", "Alat lain untuk ruang bacamu.");
-      const grid = el("div", "settings-group-grid", section);
+      const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
       for (const card of ungrouped) grid.append(card);
     }
   }
@@ -675,7 +792,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   function render(books) {
     for (let i = labels.length - 1; i >= 0; i--) if (!labels[i].node.isConnected) labels.splice(i, 1);
     items = books;
-    bulk.hidden = !items.length;
+    bulk.hidden = !items.length || !selectionMode;
     for (const id of selected) if (!items.some((b) => b.id === id)) selected.delete(id);
     updateSelection();
     const choice = tag.value;
@@ -722,9 +839,11 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       const p = el("small", "", copy);
       p.textContent = book.progress && book.total && ["pdf", "epub", "cbz", "djvu"].includes(book.format) ? Math.round(book.progress / book.total * 100) + "%" : t("Continue", "Lanjutkan");
     }
-    continueSection.hidden = !recent.length;
+    hasRecentReading = recent.length > 0;
+    hasShelfBooks = items.length > 0;
     personal?.render(items);
     desk?.render(items);
+    applyHomeSectionPrefs();
     void estimate();
   }
   function localize() {
@@ -733,6 +852,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     advanced?.localize();
     personal?.localize();
     desk?.localize();
+    progressView.localize();
     weather?.localize();
     atmosphere?.localize();
     homeWidgets?.localize();

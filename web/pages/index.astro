@@ -3,7 +3,7 @@ import { PublicHead, PublicBody } from '../../ui/pages/public.tsx';
 // No client directive: Astro renders this component entirely at build time.
 ---
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-theme="auto" data-sela-version="{{SELA_VERSION}}">
   <head>
     <PublicHead />
     <link is:inline rel="stylesheet" href="site/public.css?v={{SELA_VERSION}}" />

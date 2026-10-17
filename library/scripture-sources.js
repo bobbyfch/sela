@@ -1,5 +1,6 @@
 // Generated from app/library/scripture-sources.ts by npm run build. Do not edit.
 import { responseText } from "./network.js";
+import { localFaithReading } from "./local-faith-readings.js";
 const quranApi = "https://quranenc.com/api/v1";
 export const QURAN_STUDY_SOURCES = {
   kemenagSurah: "https://quran.kemenag.go.id/quran/per-ayat/surah/",
@@ -106,9 +107,10 @@ async function quranOfTheDay(language, date, signal) {
 }
 const bibleReferences = ["John 3:16", "Psalm 23:1", "Matthew 5:9", "Romans 12:12", "Philippians 4:6"];
 async function christianReading(date, signal, faith = "christianity") {
-  const ref = bibleReferences[dailyIndex(date, bibleReferences.length)], data = await getJson(`https://bible-api.com/${encodeURIComponent(ref)}?translation=web`, signal, 256 * 1024), text = asText(data.text).trim();
+  const ref = bibleReferences[dailyIndex(date, bibleReferences.length)], edition = faith === "catholicism" ? "dra" : "web", data = await getJson(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${edition}`, signal, 256 * 1024), text = asText(data.text).trim();
   if (!text) throw Error("The Bible source returned an empty passage.");
-  return { faith, title: "Bible reading", text, reference: asText(data.reference) || ref, attribution: "World English Bible \xB7 Public Domain \xB7 eBible.org \xB7 English text", sourceUrl: "https://ebible.org/engwebp/", language: "en" };
+  const title = faith === "catholicism" ? "Catholic Bible reading" : "Bible reading", sourceUrl = edition === "dra" ? "https://ebible.org/engDRA/" : "https://ebible.org/engwebp/";
+  return { faith, title, text, reference: asText(data.reference) || ref, attribution: `${asText(data.translation_name) || "Bible translation"} \xB7 ${asText(data.translation_note) || "edition details"} \xB7 eBible.org`, sourceUrl, language: "en", license: asText(data.translation_note) };
 }
 const torahReferences = ["Genesis 1:1", "Psalms 23:1", "Deuteronomy 6:4", "Proverbs 3:5"];
 async function jewishReading(date, signal) {
@@ -126,12 +128,10 @@ async function buddhistReading(date, signal) {
   const row = candidates[dailyIndex(date, candidates.length)], uid = asText(row.uid), reference = uid.split("/")[0];
   return { faith: "buddhism", title: "Dhamma reading", text: asText(row.epigraph), reference, attribution: "SuttaCentral \xB7 Bhikkhu Sujato \xB7 CC0", sourceUrl: `https://suttacentral.net/${uid.split("#")[0]}`, language: uid.split("/")[1] || "en" };
 }
-const gitaReferences = [[2, 47], [2, 48], [4, 7], [4, 8], [6, 5]];
-async function hinduReading(language, date, signal) {
-  const [chapter, verse] = gitaReferences[dailyIndex(date, gitaReferences.length)], url = `https://vedicscriptures.github.io/slok/${chapter}/${verse}`, data = await getJson(url, signal, 256 * 1024), text = asText(data.slok);
-  if (!text) throw Error("The Bhagavad Gita source returned no Sanskrit verse.");
-  const english = localeBase(language) === "en" ? asText(data.siva?.et) : "";
-  return { faith: "hinduism", title: "Bhagavad Gita", text: english || text, reference: `${chapter}.${verse}`, attribution: english ? "Bhagavad Gita API \xB7 Swami Sivananda English rendering" : "Bhagavad Gita API \xB7 Sanskrit source text", sourceUrl: url, language: english ? "en" : "sa" };
+function hinduReading(date) {
+  const reading = localFaithReading("hinduism", date);
+  if (!reading) throw Error("The public-domain Bhagavad Gita excerpt is unavailable.");
+  return reading;
 }
 async function sikhReading(signal) {
   const data = await getJson("https://api.banidb.com/v2/random/1", signal, 512 * 1024), rows = responseRows(data?.verses), text = rows.map((row) => asText(row?.verse?.unicode || row?.verse?.gurmukhi)).filter(Boolean).join("\n");
@@ -142,18 +142,18 @@ async function sikhReading(signal) {
 export function faithSource(faith) {
   switch (faith) {
     case "confucianism":
-      return "https://ctext.org/analects/xue-er?if=en";
+      return "https://www.gutenberg.org/ebooks/3330";
     case "islam":
       return "https://quranenc.com/en/home/api/";
     case "catholicism":
-      return "https://bible-api.alkitab.or.id/";
+      return "https://ebible.org/engDRA/";
     case "protestantism":
     case "christianity":
       return "https://ebible.org/engwebp/";
     case "hinduism":
-      return "https://vedicscriptures.github.io/";
+      return "https://www.gutenberg.org/ebooks/2388";
     case "buddhism":
-      return "https://suttacentral.net/api/docs/index.html";
+      return "https://suttacentral.net/licensing";
     case "judaism":
       return "https://developers.sefaria.org/reference/get-v3-texts";
     case "sikhism":
@@ -162,26 +162,61 @@ export function faithSource(faith) {
       return "https://quranenc.com/en/home/api/";
   }
 }
+const faithLibraryFiles = {
+  protestantism: "faith-bible-web.json",
+  christianity: "faith-bible-web.json",
+  catholicism: "faith-bible-dra.json",
+  buddhism: "faith-dhammapada.json",
+  hinduism: "faith-bhagavad-gita.json",
+  confucianism: "faith-analects.json"
+};
+const faithLibraryCache = /* @__PURE__ */ new Map();
+export async function loadFaithLibrary(faith, signal) {
+  const file = faithLibraryFiles[faith];
+  if (!file) throw new RangeError("A browsable local edition is not available for this tradition.");
+  let pending = faithLibraryCache.get(file);
+  if (!pending) {
+    pending = getJson(new URL("./assets/" + file, import.meta.url).href, signal, 16 * 1024 * 1024).then((value) => {
+      if (!value || typeof value !== "object") throw Error("The local scripture edition could not be read.");
+      return value;
+    });
+    faithLibraryCache.set(file, pending);
+    pending.catch(() => {
+      if (faithLibraryCache.get(file) === pending) faithLibraryCache.delete(file);
+    });
+  }
+  return pending;
+}
 export async function loadFaithReading(faith, language, date = /* @__PURE__ */ new Date(), signal) {
   switch (faith) {
     case "islam":
       return quranOfTheDay(language, date, signal);
     case "christianity":
-      return christianReading(date, signal);
     case "protestantism":
-      return christianReading(date, signal, "protestantism");
-    case "catholicism":
-      return null;
+    case "catholicism": {
+      try {
+        return await christianReading(date, signal, faith);
+      } catch (error) {
+        if (signal?.aborted) throw error;
+        return localFaithReading(faith, date);
+      }
+    }
     case "judaism":
       return jewishReading(date, signal);
-    case "buddhism":
-      return buddhistReading(date, signal);
+    case "buddhism": {
+      try {
+        return await buddhistReading(date, signal);
+      } catch (error) {
+        if (signal?.aborted) throw error;
+        return localFaithReading(faith, date);
+      }
+    }
     case "hinduism":
-      return hinduReading(language, date, signal);
+      return hinduReading(date);
     case "sikhism":
       return sikhReading(signal);
     case "confucianism":
-      return null;
+      return localFaithReading(faith, date);
     default:
       return null;
   }
@@ -205,9 +240,15 @@ export async function openIslamicReadingInSela(slug, title, openBook, uiLanguage
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 }
-export function faithReadingHtml(title, rows, attribution, language = "en") {
-  const body = rows.map((row) => `<section><h2>${escapeHtml(row.reference)}</h2><p dir="${row.direction === "rtl" ? "rtl" : "auto"}">${escapeHtml(row.text)}</p></section>`).join("\n");
-  return `<!doctype html><html lang="${escapeHtml(language)}"><head><meta charset="utf-8"><meta name="author" content="Sela Books"><title>${escapeHtml(title)}</title></head><body><h1>${escapeHtml(title)}</h1><p>${escapeHtml(attribution)}</p>${body}</body></html>`;
+export function faithReadingHtml(title, rows, attribution, language = "en", sourceUrl = "") {
+  const body = rows.map((row) => `<article class="reading-entry"><h2>${escapeHtml(row.reference)}</h2><p dir="${row.direction === "rtl" ? "rtl" : "auto"}">${escapeHtml(row.text)}</p>${row.note ? `<p class="reading-note">${escapeHtml(row.note)}</p>` : ""}</article>`).join("\n");
+  let source = "";
+  try {
+    const safe = new URL(sourceUrl);
+    if (safe.protocol === "https:") source = `<a href="${escapeHtml(safe.href)}" target="_blank" rel="noopener noreferrer">${language.startsWith("id") ? "Buka sumber" : "Open source"} \u2197</a>`;
+  } catch {
+  }
+  return `<!doctype html><html lang="${escapeHtml(language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Sela Books"><title>${escapeHtml(title)}</title><style>*{box-sizing:border-box}body{max-width:52rem;margin:0 auto;padding:clamp(1rem,4vw,2.5rem);font:400 1rem/1.8 system-ui,sans-serif;color:inherit;background:transparent}header{display:grid;gap:.45rem;margin-bottom:1.2rem;padding:clamp(1rem,4vw,1.6rem);border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:1.5rem;background:color-mix(in srgb,currentColor 4%,transparent)}.eyebrow{font-size:.7rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase;opacity:.65}h1{margin:0;font-size:clamp(1.45rem,4vw,2.1rem);line-height:1.2;overflow-wrap:anywhere}.attribution{margin:0;font-size:.82rem;line-height:1.55;opacity:.72}.reading-entry{margin:1rem 0;padding:clamp(1rem,3vw,1.5rem);border:1px solid color-mix(in srgb,currentColor 12%,transparent);border-radius:1.35rem;background:color-mix(in srgb,currentColor 3%,transparent)}.reading-entry h2{margin:0 0 .7rem;font-size:.95rem;line-height:1.4}.reading-entry p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.reading-note{margin-top:1rem!important;padding-top:.8rem;border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);font-size:.85rem;opacity:.72}.source{margin-top:1.2rem;font-size:.85rem}.source a{display:inline-flex;min-height:2.6rem;align-items:center;padding:.45rem .85rem;border:1px solid color-mix(in srgb,currentColor 15%,transparent);border-radius:999px;color:inherit;text-decoration:none}.source a:hover,.source a:focus-visible{border-color:currentColor;text-decoration:underline;text-underline-offset:3px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}</style></head><body><main><header><span class="eyebrow">Sela Books \xB7 ${language.startsWith("id") ? "Bacaan bersumber" : "Sourced reading"}</span><h1>${escapeHtml(title)}</h1><p class="attribution">${escapeHtml(attribution)}</p></header>${body}${source ? `<footer class="source">${source}</footer>` : ""}</main></body></html>`;
 }
 function quranReadingHtml(title, surah, arabicSize, translationSize, startVerse) {
   const verses = surah.verses.map((verse) => `<article id="quran-verse-${verse.aya}" class="quran-verse"><h2>${verse.sura}:${verse.aya}</h2><p class="quran-arabic" lang="ar" dir="rtl">${escapeHtml(verse.arabic)}</p><p class="quran-translation" lang="${escapeHtml(surah.language)}" dir="auto">${escapeHtml(verse.translation)}</p>${verse.footnotes ? `<small class="quran-footnotes">${escapeHtml(verse.footnotes)}</small>` : ""}</article>`).join("\n");
@@ -233,6 +274,6 @@ export async function openQuranInSela(number, language, openBook, signal, option
   return surah;
 }
 export async function openFaithReadingInSela(reading, openBook) {
-  const title = `${reading.title} \xB7 ${reading.reference}`, file = new File([faithReadingHtml(title, [{ reference: reading.reference, text: reading.text, direction: reading.direction }], reading.attribution, reading.language)], `scripture-${reading.faith}.html`, { type: "text/html" });
+  const title = `${reading.title} \xB7 ${reading.reference}`, file = new File([faithReadingHtml(title, [{ reference: reading.reference, text: reading.text, direction: reading.direction, note: reading.note }], reading.attribution, reading.language, reading.sourceUrl)], `scripture-${reading.faith}.html`, { type: "text/html" });
   await openBook({ previewFile: file, format: "html", name: title, metadata: { title, author: reading.attribution, language: reading.language, rights: reading.license || reading.attribution, description: reading.sourceUrl } });
 }

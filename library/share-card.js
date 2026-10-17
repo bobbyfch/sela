@@ -1,5 +1,6 @@
 // Generated from app/library/share-card.ts by npm run build. Do not edit.
 import { notify } from "./controls.js";
+import { getPaletteDefinition } from "./themes.js";
 export async function capturePage(reader) {
   const doc = reader.book?.pdf;
   if (!doc?.getPage) throw new Error("Page images are available for PDF and image-based books. Use a quote for text books.");
@@ -18,8 +19,7 @@ export async function capturePage(reader) {
   }
 }
 export async function createQuoteCard({ quote = "", metadata = {}, page = 1, palette = "white", pageImage = null }) {
-  const colorsByPalette = { white: ["#fff", "#f3f6fc", "#376cda"], kids: ["#fff", "#fff0f3", "#ed5f72"], cyberpunk: ["#fff", "#f4efff", "#8354e8"], forest: ["#fff", "#eaf8f4", "#148c76"], sakura: ["#fff", "#fff0f7", "#dc5794"], ocean: ["#fff", "#eaf7fe", "#1598d2"], lavender: ["#fff", "#f0efff", "#6958cb"], citrus: ["#fff", "#f2f8e8", "#6d9f2b"], linen: ["#fff", "#eaf7fe", "#1598d2"], rimba: ["#fff", "#eaf8f4", "#148c76"], nila: ["#fff", "#f0efff", "#6958cb"], seroja: ["#fff", "#fff0f7", "#dc5794"], oak: ["#fff", "#eaf8f4", "#148c76"], walnut: ["#fff", "#f0efff", "#6958cb"], paper: ["#fff", "#f3f6fc", "#376cda"], ink: ["#fff", "#f0efff", "#6958cb"], rose: ["#fff", "#fff0f7", "#dc5794"], charcoal: ["#fff", "#f3f6fc", "#376cda"] };
-  const colors = colorsByPalette[palette] || colorsByPalette.white;
+  const paletteDefinition = getPaletteDefinition(palette), colors = ["#fff", paletteDefinition.soft, paletteDefinition.accent];
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;

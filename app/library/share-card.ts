@@ -1,4 +1,5 @@
 import {notify} from './controls.ts';
+import {getPaletteDefinition} from './themes.ts';
 
 export async function capturePage(reader){
  const doc=reader.book?.pdf;if(!doc?.getPage)throw new Error('Page images are available for PDF and image-based books. Use a quote for text books.');
@@ -6,8 +7,7 @@ export async function capturePage(reader){
  const canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);const task=page.render({canvasContext:canvas.getContext('2d'),viewport});const cancel=()=>task.cancel();reader.addEventListener('close',cancel,{once:true});try{await task.promise;return canvas;}finally{reader.removeEventListener('close',cancel);}
 }
 export async function createQuoteCard({quote='',metadata={ } as import('../../src/public-api.ts').BookMetadata,page=1,palette='white',pageImage=null}){
- const colorsByPalette={white:['#fff','#f3f6fc','#376cda'],kids:['#fff','#fff0f3','#ed5f72'],cyberpunk:['#fff','#f4efff','#8354e8'],forest:['#fff','#eaf8f4','#148c76'],sakura:['#fff','#fff0f7','#dc5794'],ocean:['#fff','#eaf7fe','#1598d2'],lavender:['#fff','#f0efff','#6958cb'],citrus:['#fff','#f2f8e8','#6d9f2b'],linen:['#fff','#eaf7fe','#1598d2'],rimba:['#fff','#eaf8f4','#148c76'],nila:['#fff','#f0efff','#6958cb'],seroja:['#fff','#fff0f7','#dc5794'],oak:['#fff','#eaf8f4','#148c76'],walnut:['#fff','#f0efff','#6958cb'],paper:['#fff','#f3f6fc','#376cda'],ink:['#fff','#f0efff','#6958cb'],rose:['#fff','#fff0f7','#dc5794'],charcoal:['#fff','#f3f6fc','#376cda']};
- const colors=colorsByPalette[palette]||colorsByPalette.white;
+ const paletteDefinition=getPaletteDefinition(palette),colors=['#fff',paletteDefinition.soft,paletteDefinition.accent];
  const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const c=canvas.getContext('2d');const gradient=c.createLinearGradient(0,0,1080,1350);gradient.addColorStop(0,colors[0]);gradient.addColorStop(1,colors[1]);c.fillStyle=gradient;c.fillRect(0,0,1080,1350);c.fillStyle=colors[2];c.font='18px system-ui';c.fillText('A MOMENT OF READING',84,94);c.fillRect(84,122,50,3);
  function wrap(value,font,width,maxLines){c.font=font;const lines=[];let line='';const words=[];for(const word of String(value).trim().split(/\s+/)){let part='';for(const ch of word){if(c.measureText(part+ch).width>width&&part){words.push(part);part='';}part+=ch;}if(part)words.push(part);}for(const word of words){if(c.measureText(line+' '+word).width>width&&line){lines.push(line);line=word;}else line+=(line?' ':'')+word;}if(line)lines.push(line);if(lines.length>maxLines){lines.length=maxLines;let last=lines[maxLines-1];while(c.measureText(last+'…').width>width)last=last.slice(0,-1);lines[maxLines-1]=last+'…';}return lines;}
  if(pageImage){const scale=Math.min(912/pageImage.width,880/pageImage.height),w=pageImage.width*scale,h=pageImage.height*scale;c.save();c.shadowColor='#20342e28';c.shadowBlur=35;c.drawImage(pageImage,(1080-w)/2,165,w,h);c.restore();}

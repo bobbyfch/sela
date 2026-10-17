@@ -43,10 +43,10 @@ test('binary sources emit compatible lifecycle events and cancel delayed Blob in
 test('cover snapshots finish or cancel without duplicating the viewer and respect reduced motion',async({page})=>{
   await page.setViewportSize({width:393,height:852});await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
   await page.getByRole('button',{name:'Save offline',exact:true}).click();
-  await page.locator('.bottom-bar').getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('.cover').first().click();
+  await page.locator('.bottom-bar').getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('.cover').first().click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();
   await expect(page.locator('.library-reader-overlay')).toHaveCount(1);await expect(page.locator('.cover-transition')).toHaveCount(0);
   await page.getByRole('button',{name:'Back to library',exact:true}).click();await expect(page.locator('.cover-transition')).toHaveCount(0);await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
-  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('.cover').first().click();await expect(page.locator('.cover-transition')).toHaveCount(0);await expect(page.locator('.library-reader-overlay')).toHaveCount(1);
+  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('.cover').first().click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(page.locator('.cover-transition')).toHaveCount(0);await expect(page.locator('.library-reader-overlay')).toHaveCount(1);
 });
 
 test('app browser back closes the reader and rapid reopen keeps one history owner',async({page})=>{

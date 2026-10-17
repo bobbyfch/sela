@@ -76,11 +76,11 @@ export declare const SCRIPTURE_PROVIDERS: readonly [{
     readonly source: "https://ebible.org/engwebp/";
 }, {
     readonly faith: "catholicism";
-    readonly name: "Bible API · Lembaga Alkitab Indonesia";
-    readonly textLanguages: readonly ["id"];
+    readonly name: "Douay-Rheims 1899 · Public Domain · eBible.org";
+    readonly textLanguages: readonly ["en"];
     readonly appLanguages: readonly ["id", "en", "ja"];
-    readonly requiresKey: true;
-    readonly source: "https://bible-api.alkitab.or.id/";
+    readonly requiresKey: false;
+    readonly source: "https://ebible.org/engDRA/";
 }, {
     readonly faith: "buddhism";
     readonly name: "SuttaCentral · Bhikkhu Sujato";
@@ -90,18 +90,18 @@ export declare const SCRIPTURE_PROVIDERS: readonly [{
     readonly source: "https://suttacentral.net/api/docs/index.html";
 }, {
     readonly faith: "hinduism";
-    readonly name: "Bhagavad Gita API · Sanskrit source and English rendering";
-    readonly textLanguages: readonly ["sa", "en"];
+    readonly name: "The Song Celestial · Sir Edwin Arnold · Public Domain";
+    readonly textLanguages: readonly ["en"];
     readonly appLanguages: readonly ["id", "en", "ja"];
     readonly requiresKey: false;
-    readonly source: "https://vedicscriptures.github.io/";
+    readonly source: "https://www.gutenberg.org/ebooks/2388";
 }, {
     readonly faith: "confucianism";
-    readonly name: "Chinese Text Project · Analects";
-    readonly textLanguages: readonly ["zh", "en"];
+    readonly name: "Confucian Analects · James Legge · Public Domain";
+    readonly textLanguages: readonly ["en"];
     readonly appLanguages: readonly ["id", "en", "ja"];
-    readonly requiresKey: true;
-    readonly source: "https://ctext.org/tools/api/ens";
+    readonly requiresKey: false;
+    readonly source: "https://www.gutenberg.org/ebooks/3330";
 }];
 /** Fetch today's cited passage. The app locale chooses a source edition where one is available. */
 export declare function getDailyScripture(faith: ScriptureFaith, language?: string, date?: Date, signal?: AbortSignal): Promise<ScripturePassage>;

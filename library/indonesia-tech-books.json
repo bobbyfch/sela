@@ -1,0 +1,189 @@
+[
+  {
+    "id": "fpb-id-index",
+    "title": "Free Programming Books Indonesia",
+    "author": "EbookFoundation contributors",
+    "language": "id",
+    "genre": "Indonesian learning index",
+    "description": "A maintained directory of Indonesian-language programming books and learning materials across many topics. Follow its links to check each edition's format, current availability, and rights.",
+    "external": "https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-id.md",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Directory metadata is CC BY 4.0. Every linked book, tutorial, image, and edition keeps its own rights and access terms; this Sela entry is link-only."
+  },
+  {
+    "id": "pro-git-id",
+    "title": "Pro Git · edisi Bahasa Indonesia",
+    "author": "Scott Chacon dan Ben Straub",
+    "language": "id",
+    "genre": "Git · version control",
+    "description": "A structured handbook for Git concepts, everyday commands, branching, and collaboration.",
+    "external": "https://git-scm.com/book/id/v2",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the book's own license and terms before reuse; not bundled in Sela."
+  },
+  {
+    "id": "belajar-git-petanikode",
+    "title": "Belajar Git untuk Pemula",
+    "author": "Petani Kode",
+    "language": "id",
+    "genre": "Git · version control",
+    "description": "A beginner path through repositories, commits, branches, and remote collaboration.",
+    "external": "https://petanikode.com/tutorial/git/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "tutorial-git-readthedocs",
+    "title": "Tutorial Belajar Git dan GitHub untuk Pemula",
+    "author": "Hendy Irawan",
+    "language": "id",
+    "genre": "Git · version control",
+    "description": "A short course document introducing Git, GitHub, and project collaboration.",
+    "external": "https://tutorial-git.readthedocs.io/id/latest/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading and a PDF are linked by the source. Check its license before redistribution; not bundled in Sela."
+  },
+  {
+    "id": "javascript-info-id",
+    "title": "JavaScript Modern",
+    "author": "Ilya Kantor dan kontributor",
+    "language": "id",
+    "genre": "JavaScript · web development",
+    "description": "A broad, chapter-based guide from JavaScript fundamentals to browser APIs and advanced topics.",
+    "external": "https://id.javascript.info/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the edition's current license before copying or adapting it; not bundled in Sela."
+  },
+  {
+    "id": "learn-javascript-id",
+    "title": "Learn JavaScript · Beginners Edition",
+    "author": "Suman Kumar dan kontributor",
+    "language": "id",
+    "genre": "JavaScript · web development",
+    "description": "A beginner-oriented sequence of JavaScript lessons with an Indonesian edition.",
+    "external": "https://javascript.sumankunwar.com.np/id/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the edition's current license before reuse; not bundled in Sela."
+  },
+  {
+    "id": "html-petanikode",
+    "title": "Tutorial HTML untuk Pemula",
+    "author": "Petani Kode",
+    "language": "id",
+    "genre": "HTML · web development",
+    "description": "An introductory route through page structure, common HTML elements, and building a simple site.",
+    "external": "https://www.petanikode.com/tutorial/html/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "bootstrap5-duniailkom",
+    "title": "Tutorial Belajar Framework Bootstrap 5",
+    "author": "Duniailkom",
+    "language": "id",
+    "genre": "Bootstrap · web development",
+    "description": "A practical Indonesian introduction to Bootstrap 5 layout and interface components.",
+    "external": "https://www.duniailkom.com/tutorial-belajar-framework-bootstrap/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "algoritma-polinema",
+    "title": "Algoritma dan Struktur Data dengan Java",
+    "author": "Politeknik Negeri Malang",
+    "language": "id",
+    "genre": "Algorithms · Java",
+    "description": "Course material connecting programming practice with core algorithms and data structures.",
+    "external": "https://polinema.gitbook.io/jti-modul-praktikum-algoritma-dan-struktur-data",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Openly viewable course material. Check the institution's page for reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "pemrograman-kompetitif-toki",
+    "title": "Pemrograman Kompetitif Dasar",
+    "author": "William Gozali · Alham Fikri Aji",
+    "language": "id",
+    "genre": "Algorithms · problem solving",
+    "description": "A substantial Indonesian PDF covering foundational competitive-programming ideas and exercises.",
+    "external": "https://osn.toki.id/data/pemrograman-kompetitif-dasar.pdf",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "The source provides a free PDF. Check its rights statement before redistributing; not bundled in Sela."
+  },
+  {
+    "id": "php-malasngoding",
+    "title": "Belajar PHP Dasar",
+    "author": "Malas Ngoding",
+    "language": "id",
+    "genre": "PHP · web development",
+    "description": "A straightforward introduction to what PHP is and how it is used in web development.",
+    "external": "https://www.malasngoding.com/belajar-php-dasar-pengenalan-dan-kegunaan-php/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "python-belajarpython",
+    "title": "Belajar Python",
+    "author": "BelajarPython.com",
+    "language": "id",
+    "genre": "Python · programming",
+    "description": "A current Indonesian tutorial collection for learning Python from the basics.",
+    "external": "https://www.belajarpython.com/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "python-novalagung",
+    "title": "Dasar Pemrograman Python",
+    "author": "Noval Agung Prayogo",
+    "language": "id",
+    "genre": "Python · programming",
+    "description": "A structured Indonesian guide to Python syntax and programming fundamentals.",
+    "external": "https://dasarpemrogramanpython.novalagung.com/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "python-petanikode",
+    "title": "Tutorial Dasar Pemrograman Python",
+    "author": "Petani Kode",
+    "language": "id",
+    "genre": "Python · programming",
+    "description": "An Indonesian beginner series with a lesson-by-lesson path through Python basics.",
+    "external": "https://www.petanikode.com/tutorial/python/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "go-novalagung",
+    "title": "Dasar Pemrograman Golang",
+    "author": "Noval Agung Prayogo",
+    "language": "id",
+    "genre": "Go · programming",
+    "description": "An Indonesian-language guide to Go fundamentals, organized as a practical course.",
+    "external": "https://dasarpemrogramangolang.novalagung.com/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "rust-belajar-rust",
+    "title": "Belajar Rust · Mini Ebook",
+    "author": "evilfactorylabs",
+    "language": "id",
+    "genre": "Rust · programming",
+    "description": "A compact Indonesian-language starting point for Rust syntax and concepts.",
+    "external": "https://belajar-rust.vercel.app/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  },
+  {
+    "id": "rust-novalagung",
+    "title": "Dasar Pemrograman Rust",
+    "author": "Noval Agung Prayogo",
+    "language": "id",
+    "genre": "Rust · programming",
+    "description": "An Indonesian-language tutorial for learning Rust from its fundamentals.",
+    "external": "https://dasarpemrogramanrust.novalagung.com/",
+    "source": "EbookFoundation · Indonesian directory",
+    "rights": "Free online reading at the source. Check the author's current access and reuse terms; not bundled in Sela."
+  }
+]

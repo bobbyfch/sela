@@ -1,10 +1,13 @@
 // Generated from app/library/home-widgets.ts by npm run build. Do not edit.
+import EmblaCarousel from "./vendor/embla-carousel.js";
 import { editPersonal, readPersonal } from "./personal-store.js";
 import { bottomSheet, controlIcon, iconAction, notify } from "./controls.js";
 import { loadPublicHolidays } from "./holiday-calendar.js";
 import { holidayCountry, localeBase } from "../dist/source/src/i18n.js";
 import { HOME_NEWS_TOPICS, loadOnThisDay, loadTopicNews, readNewsSource, readNewsTopics, saveNewsSource, saveNewsTopics } from "./home-feeds.js";
-import { QURAN_PATTERN_BACKGROUND, QURAN_SCENE_BACKGROUND, faithSource, loadFaithReading, openFaithReadingInSela, openIslamicReadingInSela, openQuranInSela } from "./scripture-sources.js";
+import { QURAN_PATTERN_BACKGROUND, QURAN_SCENE_BACKGROUND, faithSource, loadFaithLibrary, loadFaithReading, openFaithReadingInSela, openIslamicReadingInSela, openQuranInSela } from "./scripture-sources.js";
+import { mountPrayerTimes } from "./prayer-times.js";
+import { PROPHET_PASSAGES } from "./prophet-passages.js";
 const WATER_KEY = "sela-library:water-glasses";
 function localDateKey(date) {
   return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
@@ -554,6 +557,139 @@ function makeFeedWidget(kind, t) {
   } };
 }
 const faithNames = { islam: ["Islamic reading", "Bacaan Islami"], christianity: ["Christian reading", "Bacaan Nasrani"], protestantism: ["Protestant reading", "Bacaan Kristen Protestan"], catholicism: ["Catholic reading", "Bacaan Katolik"], judaism: ["Jewish reading", "Bacaan Yahudi"], buddhism: ["Buddhist reading", "Bacaan Buddha"], hinduism: ["Hindu reading", "Bacaan Hindu"], sikhism: ["Sikh reading", "Bacaan Sikh"], confucianism: ["Confucian classics", "Klasik Konghucu"] };
+function makeFaithLibraryDialog(t, openBook, getFaith) {
+  const dialog = node("dialog", "tw:w-[min(44rem,calc(100%-2rem))] tw:max-w-none tw:rounded-3xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-0 tw:text-sela-ink tw:shadow-2xl tw:backdrop:bg-slate-950/45 tw:backdrop:backdrop-blur-sm");
+  dialog.setAttribute("aria-labelledby", "faith-library-title");
+  const form = node("form", "tw:grid tw:gap-5 tw:p-5 tw:sm:p-7", dialog);
+  form.method = "dialog";
+  const header = node("div", "tw:flex tw:items-start tw:justify-between tw:gap-4", form), headingCopy = node("div", "tw:min-w-0", header), kicker = node("p", "tw:mb-1 tw:text-[10px] tw:font-bold tw:tracking-[.16em] tw:text-sela-accent", headingCopy), heading = node("h2", "tw:m-0 tw:text-xl tw:font-bold tw:tracking-tight tw:text-sela-ink", headingCopy), closeButton = node("button", "tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-canvas/60 tw:text-sela-muted hover:tw:text-sela-ink", header);
+  closeButton.type = "button";
+  closeButton.setAttribute("aria-label", t("Close", "Tutup"));
+  closeButton.append(controlIcon("close"));
+  kicker.textContent = t("SOURCE TEXTS", "TEKS BERSUMBER");
+  heading.id = "faith-library-title";
+  heading.textContent = t("Browse a text", "Jelajahi bacaan");
+  const description = node("p", "tw:m-0 tw:text-sm tw:leading-6 tw:text-sela-muted", form);
+  description.textContent = t("Choose a book and chapter. The edition and source will stay attached in the reader.", "Pilih kitab dan bab. Edisi dan sumber akan tetap dicantumkan di reader.");
+  const fields = node("div", "tw:grid tw:grid-cols-1 tw:gap-3 tw:sm:grid-cols-2", form);
+  const bookLabel = node("label", "tw:grid tw:min-w-0 tw:gap-2 tw:text-xs tw:font-semibold tw:text-sela-muted", fields);
+  bookLabel.append(document.createTextNode(t("Book", "Kitab")));
+  const bookSelect = node("select", "tw:min-h-12 tw:w-full tw:min-w-0 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:px-3 tw:text-sm tw:text-sela-ink focus:tw:outline-none focus:tw:ring-2 focus:tw:ring-sela-accent/30", bookLabel);
+  bookSelect.setAttribute("aria-label", t("Book", "Kitab"));
+  const chapterLabel = node("label", "tw:grid tw:min-w-0 tw:gap-2 tw:text-xs tw:font-semibold tw:text-sela-muted", fields);
+  chapterLabel.append(document.createTextNode(t("Chapter", "Bab")));
+  const chapterSelect = node("select", "tw:min-h-12 tw:w-full tw:min-w-0 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-canvas tw:px-3 tw:text-sm tw:text-sela-ink focus:tw:outline-none focus:tw:ring-2 focus:tw:ring-sela-accent/30", chapterLabel);
+  chapterSelect.setAttribute("aria-label", t("Chapter", "Bab"));
+  const attribution = node("p", "tw:m-0 tw:rounded-2xl tw:bg-sela-canvas/70 tw:p-3 tw:text-xs tw:leading-5 tw:text-sela-muted", form), status = node("p", "tw:m-0 tw:min-h-5 tw:text-xs tw:text-sela-muted", form);
+  status.setAttribute("role", "status");
+  const actions = node("div", "tw:flex tw:flex-wrap tw:justify-end tw:gap-2", form), cancel = node("button", "tw:min-h-11 tw:rounded-full tw:border tw:border-sela-line tw:bg-transparent tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink hover:tw:bg-sela-canvas", actions), open = node("button", "tw:inline-flex tw:min-h-11 tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-5 tw:text-sm tw:font-semibold tw:text-white hover:tw:brightness-105 disabled:tw:opacity-50", actions);
+  cancel.type = "button";
+  open.type = "submit";
+  cancel.textContent = t("Cancel", "Batal");
+  open.append(controlIcon("read"));
+  node("span", "", open).textContent = t("Open in Sela", "Buka di Sela");
+  document.body.append(dialog);
+  let library = null, selectedFaith = "none", books = [], chapters = [];
+  function addOption(select, value, label) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.append(option);
+  }
+  function chapterForSelection() {
+    return chapters[Number(chapterSelect.value)] ?? chapters[0];
+  }
+  function refreshChapters() {
+    chapterSelect.replaceChildren();
+    const book = books[Number(bookSelect.value)];
+    chapters = book?.chapters || [];
+    chapters.forEach((chapter, index) => addOption(chapterSelect, String(index), chapter.title || `${t("Chapter", "Bab")} ${chapter.number}`));
+    chapterLabel.hidden = !chapters.length;
+    chapterSelect.disabled = !chapters.length;
+    open.disabled = !chapters.length;
+  }
+  bookSelect.onchange = () => {
+    if (library?.books?.length && selectedFaith === "confucianism") {
+      open.disabled = !books[Number(bookSelect.value)];
+    } else if (library?.books?.length) refreshChapters();
+    else {
+      chapters = library?.chapters || [];
+      open.disabled = !chapters[Number(bookSelect.value)];
+    }
+  };
+  async function show() {
+    selectedFaith = getFaith();
+    if (selectedFaith === "islam" || selectedFaith === "none") return;
+    if (!dialog.open) dialog.showModal();
+    status.textContent = t("Loading local edition\u2026", "Memuat edisi lokal\u2026");
+    open.disabled = true;
+    bookSelect.disabled = true;
+    chapterSelect.disabled = true;
+    try {
+      library = await loadFaithLibrary(selectedFaith);
+      if (!dialog.open || getFaith() !== selectedFaith) return;
+      books = library.books || [];
+      bookSelect.replaceChildren();
+      if (library.books?.length) {
+        books = library.books;
+        books.forEach((book, index) => addOption(bookSelect, String(index), book.name || book.title || `${t("Book", "Kitab")} ${index + 1}`));
+        bookLabel.firstChild.textContent = selectedFaith === "confucianism" ? t("Book", "Kitab") : t("Book", "Kitab");
+        bookLabel.hidden = false;
+      } else if (library.chapters?.length) {
+        books = [];
+        chapters = library.chapters;
+        library.chapters.forEach((chapter, index) => addOption(bookSelect, String(index), chapter.title || `${t("Chapter", "Bab")} ${chapter.number}`));
+        bookLabel.firstChild.textContent = t("Chapter", "Bab");
+        bookLabel.hidden = false;
+        chapterLabel.hidden = true;
+      } else throw Error("This edition has no readable chapters.");
+      if (library.books?.length && selectedFaith === "confucianism") {
+        chapterLabel.hidden = true;
+        chapters = [];
+      } else if (library.books?.length) refreshChapters();
+      bookSelect.disabled = false;
+      chapterSelect.disabled = !chapters.length;
+      const canOpen = selectedFaith === "confucianism" ? books.length > 0 : chapters.length > 0;
+      open.disabled = !canOpen;
+      const translator = library.translator ? ` \xB7 ${library.translator}` : "";
+      const faithLabel = faithNames[selectedFaith];
+      attribution.textContent = `${library.edition || library.title || t(faithLabel[0], faithLabel[1])}${translator} \xB7 ${library.license || t("Edition details", "Detail edisi")}`;
+      status.textContent = t("Available offline after this edition has loaded once.", "Tersedia offline setelah edisi ini selesai dimuat sekali.");
+    } catch (error) {
+      if (!dialog.open) return;
+      status.textContent = t("This local edition could not be loaded. Check the connection once, then retry.", "Edisi lokal belum dapat dimuat. Periksa koneksi sekali, lalu coba lagi.");
+      notify(error instanceof Error ? error.message : String(error), "error");
+    }
+  }
+  function closeDialog() {
+    dialog.close();
+  }
+  closeButton.onclick = closeDialog;
+  cancel.onclick = closeDialog;
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) closeDialog();
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!library) return;
+    const faith = selectedFaith;
+    if (faith === "none") return;
+    const book = library.books?.length ? books[Number(bookSelect.value)] : void 0, chapter = library.chapters?.length ? library.chapters[Number(bookSelect.value)] : faith === "confucianism" ? void 0 : chapterForSelection();
+    const title = faith === "confucianism" ? book?.title || library.title : chapter?.title || `${t("Chapter", "Bab")} ${chapter?.number}`;
+    const verses = chapter?.verses?.map((verse) => `${verse.number}. ${verse.text}`).join("\n") || chapter?.text || book?.text || "";
+    const text = verses.trim();
+    if (!text) {
+      status.textContent = t("This section has no readable text. Choose another chapter.", "Bagian ini tidak memiliki teks yang dapat dibaca. Pilih bab lain.");
+      return;
+    }
+    const bookName = faith === "confucianism" || !book ? "" : `${book.name || book.title} \xB7 `, reference = faith === "confucianism" ? String(book?.title || "") : bookName + title;
+    const faithLabel = faithNames[faith];
+    const reading = { faith, title: library.edition || library.title || t(faithLabel[0], faithLabel[1]), text, reference, attribution: [library.edition || library.title || t(faithLabel[0], faithLabel[1]), library.translator, library.license].filter(Boolean).join(" \xB7 "), sourceUrl: library.source || faithSource(faith), language: "en", license: library.license };
+    closeDialog();
+    void openFaithReadingInSela(reading, openBook).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
+  });
+  return { show, dialog };
+}
 function makeFaithWidget(t, openBook) {
   const card = node("article", "home-widget-card home-faith-widget tw:relative tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-canvas/25 tw:p-4 tw:shadow-sm tw:backdrop-blur-sm tw:sm:p-5");
   card.hidden = true;
@@ -569,17 +705,24 @@ function makeFaithWidget(t, openBook) {
   badge.setAttribute("aria-hidden", "true");
   read.append(controlIcon("read"));
   const readLabel = node("span", "", read);
+  const browse = node("button", "tw:inline-flex tw:min-h-10 tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface/75 tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition hover:tw:border-sela-accent hover:tw:text-sela-accent", actions);
+  browse.type = "button";
+  browse.append(controlIcon("books"));
+  const browseLabel = node("span", "", browse);
   const source = node("a", "tw:inline-flex tw:min-h-10 tw:items-center tw:gap-1.5 tw:rounded-full tw:px-3 tw:text-sm tw:font-semibold tw:text-sela-muted tw:underline-offset-4 tw:hover:bg-sela-canvas tw:hover:text-sela-accent tw:hover:underline", actions);
   source.target = "_blank";
   source.rel = "noopener noreferrer";
   source.append(controlIcon("info"));
   const sourceLabel = node("span", "", source);
   let current = null, faith = "none", sequence = 0, controller;
+  const faithLibrary = makeFaithLibraryDialog(t, openBook, () => faith);
   function localize() {
     if (faith === "none") return;
-    title.textContent = t(...faithNames[faith]);
+    title.textContent = faith === "islam" ? t("Verse of the day", "Ayat hari ini") : t("Reading of the day", "Bacaan hari ini");
     subtitle.textContent = t("A passage with its edition and source attached.", "Bacaan dengan edisi dan sumber yang dicantumkan.");
-    readLabel.textContent = faith === "islam" ? t("Browse the Quran", "Jelajahi Al-Qur\u2019an") : t("Read in Sela", "Baca di Sela");
+    readLabel.textContent = faith === "islam" ? t("Open verse in the Quran", "Buka ayat di Al-Qur\u2019an") : t("Read in Sela", "Baca di Sela");
+    browseLabel.textContent = t("Browse library", "Jelajahi pustaka");
+    browse.hidden = true;
     sourceLabel.textContent = t("Source", "Sumber");
   }
   async function load() {
@@ -602,13 +745,6 @@ function makeFaithWidget(t, openBook) {
     source.href = faithSource(faith);
     source.hidden = false;
     read.disabled = true;
-    if (faith === "confucianism" || faith === "catholicism") {
-      quote.textContent = faith === "confucianism" ? t("The Chinese Text Project needs a registered API key for in-app reading. You can open the original Analects source here.", "Chinese Text Project memerlukan kunci API terdaftar untuk membaca di aplikasi. Sumber asli Lunyu dapat dibuka di sini.") : t("The Indonesian Bible API requires its own access credentials. Open the official LAI source to review editions and access terms.", "API Alkitab Indonesia memerlukan kredensial akses tersendiri. Buka sumber resmi LAI untuk melihat edisi dan ketentuan akses.");
-      reference.textContent = faith === "confucianism" ? "Analects \xB7 Xue Er" : "Lembaga Alkitab Indonesia \xB7 Bible API";
-      attribution.textContent = t("The source is linked directly; Sela does not guess or substitute a different edition.", "Sumber ditautkan langsung; Sela tidak menebak atau mengganti dengan edisi lain.");
-      source.href = faithSource(faith);
-      return;
-    }
     controller = new AbortController();
     try {
       const item = await loadFaithReading(faith, locale(), /* @__PURE__ */ new Date(), controller.signal);
@@ -680,13 +816,14 @@ function makeFaithWidget(t, openBook) {
     }
     if (current) void openFaithReadingInSela(current, openBook).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
   };
+  browse.onclick = () => void faithLibrary.show();
   document.addEventListener("sela:personal", () => void load());
   document.addEventListener("sela:language", () => {
     current = null;
     void load();
   });
   void load();
-  return { card, localize() {
+  return { card, openLibrary: () => faithLibrary.show(), localize() {
     localize();
     if (faith !== readPersonal().faith) {
       faith = "none";
@@ -695,95 +832,246 @@ function makeFaithWidget(t, openBook) {
     void load();
   } };
 }
-function makeIslamicShelf(t, openBook) {
-  const section = node("section", "home-scripture-shelf");
+function makeFaithShelf(t, openLibrary) {
+  const section = node("section", "faith-reading-shelf tw:min-w-0 tw:space-y-3");
   section.hidden = true;
-  section.setAttribute("aria-labelledby", "home-scripture-shelf-title");
-  const heading = node("div", "home-scripture-shelf-heading tw:relative tw:flex tw:items-center tw:justify-between tw:gap-4", section), copy = node("div", "tw:min-w-0", heading), title = node("h2", "", copy), subtitle = node("p", "", copy);
-  title.id = "home-scripture-shelf-title";
-  const sticker = node("span", "home-scripture-companion-sticker tw:relative tw:grid tw:size-12 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface/90 tw:shadow-sm", heading);
+  section.setAttribute("aria-labelledby", "faith-reading-shelf-title");
+  const card = node("article", "tw:flex tw:min-w-0 tw:flex-col tw:gap-4 tw:rounded-3xl tw:border tw:border-sela-line/80 tw:bg-sela-surface/85 tw:p-4 tw:shadow-sm tw:backdrop-blur-xl tw:sm:flex-row tw:sm:items-center tw:sm:justify-between tw:sm:p-5", section), identity = node("div", "tw:flex tw:min-w-0 tw:items-center tw:gap-3", card), mark = node("span", "tw:grid tw:size-11 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-accent/10 tw:text-sela-accent", identity), copy = node("div", "tw:min-w-0", identity), title = node("h2", "tw:m-0 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink", copy), description = node("p", "tw:mb-0 tw:mt-1 tw:text-xs tw:leading-5 tw:text-sela-muted", copy), button = node("button", "tw:inline-flex tw:min-h-11 tw:shrink-0 tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-white tw:transition hover:tw:brightness-105 focus-visible:tw:outline-2 focus-visible:tw:outline-offset-2 focus-visible:tw:outline-sela-accent", card), buttonLabel = node("span", "", button);
+  mark.setAttribute("aria-hidden", "true");
+  mark.append(controlIcon("books"));
+  button.type = "button";
+  button.append(controlIcon("read"));
+  button.append(buttonLabel);
+  button.onclick = () => {
+    void openLibrary();
+  };
+  function localize() {
+    const faith = readPersonal().faith;
+    if (faith === "none" || faith === "islam") {
+      section.hidden = true;
+      return;
+    }
+    section.hidden = false;
+    title.textContent = t(...faithNames[faith]);
+    description.textContent = t("Choose a book and chapter from your selected tradition, then read it in Sela.", "Pilih kitab dan bab dari tradisi pilihanmu, lalu baca langsung di Sela.");
+    buttonLabel.textContent = t("Choose a reading", "Pilih bacaan");
+    button.removeAttribute("aria-label");
+  }
+  document.addEventListener("sela:personal", localize);
+  document.addEventListener("sela:language", localize);
+  localize();
+  return { section, localize };
+}
+function makeIslamicShelf(t, openBook) {
+  const section = node("section", "faith-scripture-shelf tw:space-y-6");
+  section.hidden = true;
+  section.setAttribute("aria-labelledby", "faith-scripture-shelf-title");
+  const heading = node("div", "home-scripture-shelf-heading tw:flex tw:items-center tw:justify-between tw:gap-4", section), copy = node("div", "tw:min-w-0", heading), title = node("h2", "tw:m-0 tw:text-xl tw:font-bold tw:tracking-tight tw:text-sela-ink", copy), subtitle = node("p", "tw:mb-0 tw:mt-1 tw:max-w-2xl tw:text-sm tw:leading-6 tw:text-sela-muted", copy), sticker = node("span", "tw:hidden tw:size-12 tw:shrink-0 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:shadow-sm tw:md:block", heading);
+  title.id = "faith-scripture-shelf-title";
   sticker.setAttribute("aria-hidden", "true");
-  sticker.style.backgroundImage = `url("${new URL("../library/assets/jculture-companions-v3.webp", import.meta.url).href}")`;
+  sticker.style.backgroundImage = 'url("' + new URL("../library/assets/jculture-companions-v3.webp", import.meta.url).href + '")';
   sticker.style.backgroundSize = "200% 200%";
   sticker.style.backgroundPosition = "0 0";
-  sticker.style.backgroundRepeat = "no-repeat";
-  const quranBooks = [{ english: "The Quran", indonesian: "Al-Qur\u2019an", arabic: "\u0627\u0644\u0642\u0631\u0622\u0646 \u0627\u0644\u0643\u0631\u064A\u0645", surah: 1, verse: 1, color: "#4d8fc4", reference: "Surah 1" }, { english: "Yasin", indonesian: "Yasin", arabic: "\u064A\u0633", surah: 36, verse: 1, color: "#6a83c5", reference: "Surah 36" }, { english: "Al-Mulk", indonesian: "Al-Mulk", arabic: "\u0627\u0644\u0645\u0644\u0643", surah: 67, verse: 1, color: "#55a89a", reference: "Surah 67" }, { english: "Al-Kahf", indonesian: "Al-Kahf", arabic: "\u0627\u0644\u0643\u0647\u0641", surah: 18, verse: 1, color: "#769b72", reference: "Surah 18" }, { english: "Ayat Kursi", indonesian: "Ayat Kursi", arabic: "\u0622\u064A\u0629 \u0627\u0644\u0643\u0631\u0633\u064A", surah: 2, verse: 255, color: "#8a77bc", reference: "Al-Baqarah \xB7 255" }, { english: "Quranic Duas", indonesian: "Doa Qur\u2019ani", arabic: "\u0631\u064E\u0628\u064E\u0651\u0646\u064E\u0627", surah: 2, verse: 201, color: "#548eaa", reference: "Al-Baqarah \xB7 201" }];
-  const prophetStories = [{ english: "Adam", indonesian: "Nabi Adam", arabic: "\u0622\u062F\u064E\u0645", surah: 7, verse: 11, color: "#6c91bd", story: true, reference: "Al-A\u2018raf 7:11\u201327", referenceId: "Al-A\u2018raf 7:11\u201327" }, { english: "Nuh", indonesian: "Nabi Nuh", arabic: "\u0646\u064F\u0648\u062D", surah: 11, verse: 25, color: "#528b9d", story: true, reference: "Hud 11:25\u201349", referenceId: "Hud 11:25\u201349" }, { english: "Ibrahim", indonesian: "Nabi Ibrahim", arabic: "\u0625\u0650\u0628\u0652\u0631\u064E\u0627\u0647\u0650\u064A\u0645", surah: 21, verse: 51, color: "#bd8b58", story: true, reference: "Al-Anbiya 21:51\u201373", referenceId: "Al-Anbiya 21:51\u201373" }, { english: "Yusuf", indonesian: "Nabi Yusuf", arabic: "\u064A\u064F\u0648\u0633\u064F\u0641", surah: 12, verse: 4, color: "#b88349", story: true, reference: "Yusuf 12:4\u2013101", referenceId: "Yusuf 12:4\u2013101" }, { english: "Musa", indonesian: "Nabi Musa", arabic: "\u0645\u064F\u0648\u0633\u064E\u0649\u0670", surah: 20, verse: 9, color: "#5a9b7f", story: true, reference: "Taha 20:9\u201398", referenceId: "Taha 20:9\u201398" }, { english: "Ayyub", indonesian: "Nabi Ayyub", arabic: "\u0623\u064E\u064A\u064F\u0651\u0648\u0628", surah: 38, verse: 41, color: "#8c79b9", story: true, reference: "Sad 38:41\u201344", referenceId: "Sad 38:41\u201344" }, { english: "Yunus", indonesian: "Nabi Yunus", arabic: "\u064A\u064F\u0648\u0646\u064F\u0633", surah: 37, verse: 139, color: "#4b92a3", story: true, reference: "As-Saffat 37:139\u2013148", referenceId: "As-Saffat 37:139\u2013148" }, { english: "Daud", indonesian: "Nabi Daud", arabic: "\u062F\u064E\u0627\u0648\u064F\u06E5\u062F", surah: 38, verse: 17, color: "#73976c", story: true, reference: "Sad 38:17\u201326", referenceId: "Sad 38:17\u201326" }, { english: "Sulaiman", indonesian: "Nabi Sulaiman", arabic: "\u0633\u064F\u0644\u064E\u064A\u0652\u0645\u064E\u0627\u0646", surah: 27, verse: 15, color: "#4c988e", story: true, reference: "An-Naml 27:15\u201344", referenceId: "An-Naml 27:15\u201344" }, { english: "Zakariya & Yahya", indonesian: "Nabi Zakariya & Yahya", arabic: "\u0632\u064E\u0643\u064E\u0631\u0650\u064A\u064E\u0651\u0627 \u0648\u064E\u064A\u064E\u062D\u0652\u064A\u064E\u0649\u0670", surah: 19, verse: 2, color: "#687fb3", story: true, reference: "Maryam 19:2\u201315", referenceId: "Maryam 19:2\u201315" }, { english: "Maryam & Isa", indonesian: "Maryam & Nabi Isa", arabic: "\u0645\u064E\u0631\u0652\u064A\u064E\u0645 \u0648\u064E\u0639\u0650\u064A\u0633\u064E\u0649\u0670", surah: 19, verse: 16, color: "#b16f88", story: true, reference: "Maryam 19:16\u201336", referenceId: "Maryam 19:16\u201336" }];
-  const dailyBooks = [{ english: "Waking Up", indonesian: "Bangun tidur", arabic: "\u0627\u0644\u062D\u0645\u062F \u0644\u0644\u0647", slug: "waking-up", color: "#6f98c5", reference: "Buruja \xB7 English meaning" }, { english: "Morning Adhkar", indonesian: "Zikir pagi", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0635\u0628\u0627\u062D", slug: "morning-adhkar", color: "#4d9d9b", reference: "Buruja \xB7 English meaning" }, { english: "After Salah", indonesian: "Sesudah salat", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0635\u0644\u0627\u0629", slug: "after-salah", color: "#8c79b9", reference: "Buruja \xB7 English meaning" }, { english: "Evening Adhkar", indonesian: "Zikir petang", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0645\u0633\u0627\u0621", slug: "evening-adhkar", color: "#607bb0", reference: "Buruja \xB7 English meaning" }, { english: "Before Sleep", indonesian: "Sebelum tidur", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0646\u0648\u0645", slug: "before-sleep", color: "#697aaf", reference: "Buruja \xB7 English meaning" }, { english: "Quranic Duas", indonesian: "Doa Qur\u2019ani", arabic: "\u0623\u062F\u0639\u064A\u0629 \u0642\u0631\u0622\u0646\u064A\u0629", slug: "quranic-duas", color: "#5a9e86", reference: "Buruja \xB7 English meaning" }, { english: "Leaving Home", indonesian: "Keluar rumah", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0645\u0646\u0632\u0644", slug: "home", color: "#4d94aa", reference: "Buruja \xB7 English meaning" }, { english: "Food & Drink", indonesian: "Makan & minum", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0637\u0639\u0627\u0645", slug: "food-drink", color: "#a078ad", reference: "Buruja \xB7 English meaning" }, { english: "Travel Duas", indonesian: "Doa perjalanan", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0633\u0641\u0631", slug: "travel", color: "#648f79", reference: "Buruja \xB7 English meaning" }];
-  const groups = [{ en: "Quran passages", id: "Bacaan Al-Qur\u2019an", items: quranBooks, trackClass: "home-scripture-quran-track" }, { en: "Stories in Quran passages", id: "Kisah melalui ayat Al-Qur\u2019an", items: prophetStories, trackClass: "home-scripture-story-track" }, { en: "Daily readings", id: "Bacaan sehari-hari", items: dailyBooks, trackClass: "home-scripture-daily-track" }];
-  const buttons = [];
+  const quranBooks = [
+    { english: "The Quran", indonesian: "Al-Qur\u2019an", arabic: "\u0627\u0644\u0642\u0631\u0622\u0646 \u0627\u0644\u0643\u0631\u064A\u0645", surah: 1, verse: 1, color: "#4d8fc4", reference: "Surah 1" },
+    { english: "Yasin", indonesian: "Yasin", arabic: "\u064A\u0633", surah: 36, verse: 1, color: "#6a83c5", reference: "Surah 36" },
+    { english: "Al-Mulk", indonesian: "Al-Mulk", arabic: "\u0627\u0644\u0645\u0644\u0643", surah: 67, verse: 1, color: "#55a89a", reference: "Surah 67" },
+    { english: "Al-Kahf", indonesian: "Al-Kahf", arabic: "\u0627\u0644\u0643\u0647\u0641", surah: 18, verse: 1, color: "#769b72", reference: "Surah 18" },
+    { english: "Ayat Kursi", indonesian: "Ayat Kursi", arabic: "\u0622\u064A\u0629 \u0627\u0644\u0643\u0631\u0633\u064A", surah: 2, verse: 255, color: "#8a77bc", reference: "Al-Baqarah \xB7 255" },
+    { english: "Quranic Duas", indonesian: "Doa Qur\u2019ani", arabic: "\u0631\u064E\u0628\u064E\u0651\u0646\u064E\u0627", surah: 2, verse: 201, color: "#548eaa", reference: "Al-Baqarah \xB7 201" }
+  ];
+  const lifeTopics = [
+    { english: "Family & respect", indonesian: "Keluarga & hormat", arabic: "\u0623\u064F\u0633\u0652\u0631\u064E\u0629", color: "#648fbb", surah: 17, verse: 23, topic: true, reference: "Al-Isra 17:23\u201324", referenceId: "Al-Isra 17:23\u201324", detailEn: "Parents, kindness, and care across generations.", detailId: "Berbakti, berbuat baik, dan saling menjaga." },
+    { english: "Justice & fairness", indonesian: "Keadilan", arabic: "\u0639\u064E\u062F\u0652\u0644", color: "#4b928a", surah: 4, verse: 135, topic: true, reference: "An-Nisa 4:135", referenceId: "An-Nisa 4:135", detailEn: "Stand for justice, even when it is difficult.", detailId: "Menegakkan keadilan, termasuk saat terasa berat." },
+    { english: "Words & community", indonesian: "Ucapan & hidup bersama", arabic: "\u0643\u064E\u0644\u0650\u0645\u064E\u0629", color: "#7183bd", surah: 49, verse: 11, topic: true, reference: "Al-Hujurat 49:11\u201313", referenceId: "Al-Hujurat 49:11\u201313", detailEn: "Respect, avoid mockery, and know one another.", detailId: "Menghormati, menghindari ejekan, dan saling mengenal." },
+    { english: "Hope through hardship", indonesian: "Harapan saat sulit", arabic: "\u0623\u064E\u0645\u064E\u0644", color: "#7a78b5", surah: 94, verse: 5, topic: true, reference: "Ash-Sharh 94:5\u20136", referenceId: "Ash-Sharh 94:5\u20136", detailEn: "Read both verses in their surrounding context.", detailId: "Baca kedua ayat bersama konteksnya." },
+    { english: "Learning & humility", indonesian: "Belajar & rendah hati", arabic: "\u0639\u0650\u0644\u0652\u0645", color: "#448b9c", surah: 20, verse: 114, topic: true, reference: "Ta-Ha 20:114", referenceId: "Ta-Ha 20:114", detailEn: "A prayer to grow in knowledge.", detailId: "Doa untuk bertambah ilmu." },
+    { english: "Work & provision", indonesian: "Ikhtiar & rezeki", arabic: "\u0639\u064E\u0645\u064E\u0644", color: "#568a72", surah: 62, verse: 10, topic: true, reference: "Al-Jumu\u2018ah 62:10", referenceId: "Al-Jumu\u2018ah 62:10", detailEn: "Work, remember God, and seek provision.", detailId: "Berusaha, mengingat Allah, dan mencari karunia-Nya." },
+    { english: "Generosity & giving", indonesian: "Berbagi & sedekah", arabic: "\u0639\u064E\u0637\u064E\u0627\u0621", color: "#ba8850", surah: 2, verse: 261, topic: true, reference: "Al-Baqarah 2:261", referenceId: "Al-Baqarah 2:261", detailEn: "An image of generosity and its reward.", detailId: "Perumpamaan tentang memberi dan balasannya." },
+    { english: "Care for the vulnerable", indonesian: "Peduli sesama", arabic: "\u0631\u064E\u062D\u0652\u0645\u064E\u0629", color: "#ad6b87", surah: 107, verse: 1, topic: true, reference: "Al-Ma\u2018un 107:1\u20137", referenceId: "Al-Ma\u2018un 107:1\u20137", detailEn: "Faith connected with care for people in need.", detailId: "Keimanan yang terhubung dengan kepedulian kepada yang membutuhkan." }
+  ];
+  const prophetStories = PROPHET_PASSAGES.map((passage, index) => ({ ...passage, color: ["#6c91bd", "#528b9d", "#578e7d", "#bd8b58"][index % 4], story: true }));
+  const dailyBooks = [
+    { english: "Waking Up", indonesian: "Bangun tidur", arabic: "\u0627\u0644\u062D\u0645\u062F \u0644\u0644\u0647", slug: "waking-up", color: "#6f98c5", reference: "Buruja \xB7 English meaning" },
+    { english: "Morning Adhkar", indonesian: "Zikir pagi", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0635\u0628\u0627\u062D", slug: "morning-adhkar", color: "#4d9d9b", reference: "Buruja \xB7 English meaning" },
+    { english: "After Salah", indonesian: "Sesudah salat", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0635\u0644\u0627\u0629", slug: "after-salah", color: "#8c79b9", reference: "Buruja \xB7 English meaning" },
+    { english: "Evening Adhkar", indonesian: "Zikir petang", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0645\u0633\u0627\u0621", slug: "evening-adhkar", color: "#607bb0", reference: "Buruja \xB7 English meaning" },
+    { english: "Before Sleep", indonesian: "Sebelum tidur", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0646\u0648\u0645", slug: "before-sleep", color: "#697aaf", reference: "Buruja \xB7 English meaning" },
+    { english: "Quranic Duas", indonesian: "Doa Qur\u2019ani", arabic: "\u0623\u062F\u0639\u064A\u0629 \u0642\u0631\u0622\u0646\u064A\u0629", slug: "quranic-duas", color: "#5a9e86", reference: "Buruja \xB7 English meaning" },
+    { english: "Leaving Home", indonesian: "Keluar rumah", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0645\u0646\u0632\u0644", slug: "home", color: "#4d94aa", reference: "Buruja \xB7 English meaning" },
+    { english: "Food & Drink", indonesian: "Makan & minum", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0637\u0639\u0627\u0645", slug: "food-drink", color: "#a078ad", reference: "Buruja \xB7 English meaning" },
+    { english: "Travel Duas", indonesian: "Doa perjalanan", arabic: "\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0633\u0641\u0631", slug: "travel", color: "#648f79", reference: "Buruja \xB7 English meaning" }
+  ];
+  const groups = [
+    { en: "Start with a surah", id: "Mulai dari surat", items: quranBooks, kind: "quran" },
+    { en: "Explore life through Quran themes", id: "Jelajahi tema kehidupan dalam Al-Qur\u2019an", items: lifeTopics, kind: "topic" },
+    { en: "Stories of the 25 prophets", id: "Kisah 25 nabi", items: prophetStories, kind: "story" },
+    { en: "Daily prayers & remembrance", id: "Doa & zikir sehari-hari", items: dailyBooks, kind: "daily" }
+  ];
+  const carousels = [];
+  const slideLocalizers = [];
+  function openQuran(book) {
+    const saved = readPersonal(), language = saved.quranLanguage || localeBase(locale()), surah = book.surah || 1, verse = book.verse || 1;
+    return openQuranInSela(surah, language, openBook, void 0, { translationKey: saved.quranTranslationKey || void 0, arabicSize: saved.quranArabicSize, translationSize: saved.quranTranslationSize, verse }).then(() => editPersonal((data) => {
+      data.quranLanguage = language;
+      data.quranSurah = surah;
+      data.quranVerse = verse;
+    }));
+  }
+  function openStory(book) {
+    const language = localeBase(locale()) === "id" ? "id" : "en", name = t(book.english, book.indonesian), summary = language === "id" ? book.storyId || book.storyEn || "" : book.storyEn || book.storyId || "", note = language === "id" ? book.noteId || book.noteEn : book.noteEn || book.noteId;
+    const reading = { faith: "islam", title: t("Quranic story \xB7 " + book.english, "Kisah Qur\u2019ani \xB7 " + book.indonesian), text: summary, reference: book.reference, attribution: t("Sela editorial summary based on the Quran reference. Not a tafsir.", "Ringkasan editorial Sela berdasarkan rujukan Al-Qur\u2019an. Bukan kitab tafsir."), sourceUrl: "https://quran.kemenag.go.id/quran/per-ayat/surah/" + (book.surah || 1), language, license: "Original Sela summary; Quran reference: " + book.reference };
+    if (note) reading.note = note;
+    void openFaithReadingInSela(reading, openBook).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
+  }
+  function openDaily(book, button) {
+    if (!book.slug) return;
+    button.disabled = true;
+    void openIslamicReadingInSela(book.slug, t(book.english, book.indonesian), openBook, locale()).catch((error) => notify(error instanceof Error ? error.message : String(error), "error")).finally(() => {
+      button.disabled = false;
+    });
+  }
   for (const group of groups) {
-    const wrapper = node("div", "home-scripture-shelf-group", section), groupTitle = node("h3", "home-scripture-group-title", wrapper), track = node("div", `home-scripture-shelf-track ${group.trackClass}`, wrapper);
-    track.setAttribute("role", "group");
-    for (let index = 0; index < group.items.length; index++) {
-      const book = group.items[index], item = node("button", "home-scripture-book", track);
-      item.type = "button";
-      item.style.setProperty("--scripture-cover", `color-mix(in srgb,var(--accent) ${[62, 54, 68, 58][index % 4]}%,var(--palette-soft,var(--panel)))`);
-      const cover = node("span", "home-scripture-cover", item);
-      cover.style.backgroundImage = `linear-gradient(160deg,color-mix(in srgb,var(--scripture-cover) 88%,white),color-mix(in srgb,var(--scripture-cover) 77%,#22335a)),${QURAN_PATTERN_BACKGROUND}`;
-      cover.style.backgroundSize = "cover,132px 132px";
-      const ornament = node("span", "home-scripture-ornament", cover);
-      ornament.setAttribute("aria-hidden", "true");
-      ornament.textContent = book.arabic;
-      const label = node("span", "home-scripture-book-title", cover), ref = node("small", "home-scripture-reference", cover);
-      buttons.push({ button: item, label, reference: ref, book });
-      item.onclick = () => {
-        if (book.slug) {
-          item.disabled = true;
-          void openIslamicReadingInSela(book.slug, t(book.english, book.indonesian), openBook, locale()).catch((error) => notify(error instanceof Error ? error.message : String(error), "error")).finally(() => {
-            item.disabled = false;
-          });
-          return;
-        }
-        const saved = readPersonal(), language = saved.quranLanguage || localeBase(locale()), surah = book.surah || 1, verse = book.verse || 1;
-        void openQuranInSela(surah, language, openBook, void 0, { translationKey: saved.quranTranslationKey || void 0, arabicSize: saved.quranArabicSize, translationSize: saved.quranTranslationSize, verse }).then(() => editPersonal((data) => {
-          data.quranLanguage = language;
-          data.quranSurah = surah;
-          data.quranVerse = verse;
-        })).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
-      };
+    const wrapper = node("section", "home-scripture-shelf-group tw:min-w-0", section), groupHeading = node("div", "tw:mb-3 tw:flex tw:items-center tw:justify-between tw:gap-3", wrapper), groupTitle = node("h3", "tw:m-0 tw:text-sm tw:font-semibold tw:text-sela-ink", groupHeading), controls = node("div", "tw:flex tw:shrink-0 tw:gap-2", groupHeading), previous = node("button", "tw:grid tw:size-9 tw:place-items-center tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:text-sela-muted tw:transition hover:tw:text-sela-ink disabled:tw:opacity-40", controls), next = node("button", "tw:grid tw:size-9 tw:place-items-center tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:text-sela-muted tw:transition hover:tw:text-sela-ink disabled:tw:opacity-40", controls);
+    previous.type = next.type = "button";
+    previous.setAttribute("aria-label", t("Scroll backward", "Gulir ke kiri"));
+    next.setAttribute("aria-label", t("Scroll forward", "Gulir ke kanan"));
+    previous.append(controlIcon("chevron"));
+    previous.firstElementChild?.classList.add("tw:rotate-180");
+    next.append(controlIcon("chevron"));
+    const viewport = node("div", "tw:overflow-hidden", wrapper), track = node("div", "tw:flex tw:touch-pan-y tw:-ml-3", viewport);
+    viewport.setAttribute("role", "region");
+    viewport.setAttribute("aria-roledescription", "carousel");
+    const slides = [];
+    for (const book of group.items) {
+      const slide = node("div", "tw:min-w-0 tw:flex-[0_0_84%] tw:pl-3 tw:sm:flex-[0_0_48%] tw:lg:flex-[0_0_32%] tw:2xl:flex-[0_0_25%]", track);
+      slide.setAttribute("role", "group");
+      slide.setAttribute("aria-roledescription", "slide");
+      slides.push(slide);
+      if (group.kind === "story") {
+        const card = node("article", "tw:flex tw:h-full tw:min-h-56 tw:min-w-0 tw:flex-col tw:gap-3 tw:rounded-3xl tw:border tw:border-sela-line/80 tw:bg-sela-surface/90 tw:p-4 tw:shadow-sm tw:backdrop-blur-xl", slide), top = node("div", "tw:flex tw:items-start tw:gap-3", card), symbol = node("span", "tw:grid tw:size-11 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-accent/10 tw:text-lg tw:text-sela-accent", top), copy2 = node("div", "tw:min-w-0 tw:flex-1", top), name = node("h4", "tw:mb-1 tw:break-words tw:text-base tw:font-bold tw:leading-tight tw:text-sela-ink", copy2), ref = node("p", "tw:m-0 tw:text-xs tw:leading-5 tw:text-sela-muted", copy2), summary = node("p", "tw:line-clamp-3 tw:m-0 tw:flex-1 tw:text-sm tw:leading-6 tw:text-sela-muted", card), actions = node("div", "tw:flex tw:flex-wrap tw:gap-2", card);
+        symbol.textContent = book.arabic || "\u06DE";
+        symbol.setAttribute("aria-hidden", "true");
+        const storyButton = node("button", "tw:inline-flex tw:min-h-10 tw:flex-1 tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-3 tw:text-sm tw:font-semibold tw:text-white tw:transition hover:tw:brightness-105", actions);
+        storyButton.type = "button";
+        storyButton.append(controlIcon("read"));
+        const storyLabel = node("span", "", storyButton);
+        storyButton.onclick = () => openStory(book);
+        const verseButton = node("button", "tw:inline-flex tw:min-h-10 tw:flex-1 tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-canvas/70 tw:px-3 tw:text-sm tw:font-semibold tw:text-sela-ink tw:transition hover:tw:border-sela-accent/60", actions);
+        verseButton.type = "button";
+        verseButton.append(controlIcon("journal"));
+        const verseLabel = node("span", "", verseButton);
+        verseButton.onclick = () => void openQuran(book).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
+        const localizeSlide = () => {
+          const language = localeBase(locale()), storyText = language === "id" ? book.storyId || book.storyEn || "" : book.storyEn || book.storyId || "";
+          name.textContent = t(book.english, book.indonesian);
+          ref.textContent = t(book.reference, book.referenceId || book.reference);
+          summary.textContent = storyText;
+          storyLabel.textContent = t("Read story", "Baca kisah");
+          verseLabel.textContent = t("Read Quran verse", "Baca ayat Al-Qur\u2019an");
+        };
+        slideLocalizers.push(localizeSlide);
+        localizeSlide();
+      } else {
+        const card = node("article", "tw:flex tw:h-full tw:min-h-48 tw:min-w-0 tw:flex-col tw:gap-3 tw:rounded-3xl tw:border tw:border-sela-line/80 tw:bg-sela-surface/90 tw:p-4 tw:shadow-sm tw:backdrop-blur-xl", slide), eyebrow = node("div", "tw:flex tw:items-center tw:justify-between tw:gap-3", card), symbol = node("span", "tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-2xl tw:bg-sela-accent/10 tw:text-lg tw:text-sela-accent", eyebrow), arabic = node("span", "tw:truncate tw:text-lg tw:text-sela-muted", eyebrow), name = node("h4", "tw:m-0 tw:break-words tw:text-base tw:font-bold tw:leading-tight tw:text-sela-ink", card), reference = node("p", "tw:m-0 tw:text-xs tw:leading-5 tw:text-sela-muted", card), detail = node("p", "tw:mb-0 tw:mt-auto tw:text-sm tw:leading-6 tw:text-sela-muted", card), action = node("button", "tw:inline-flex tw:min-h-10 tw:w-full tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-3 tw:text-sm tw:font-semibold tw:text-white tw:transition hover:tw:brightness-105", card);
+        symbol.append(controlIcon(group.kind === "daily" ? "sparkles" : "journal"));
+        arabic.textContent = book.arabic;
+        action.append(controlIcon("read"));
+        const actionLabel = node("span", "", action);
+        if (group.kind === "quran") action.onclick = () => void openQuran(book).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
+        else if (group.kind === "topic") action.onclick = () => void openQuran(book).catch((error) => notify(error instanceof Error ? error.message : String(error), "error"));
+        else action.onclick = () => openDaily(book, action);
+        const localizeSlide = () => {
+          name.textContent = t(book.english, book.indonesian);
+          if (group.kind === "quran") {
+            reference.textContent = t(book.reference, book.referenceId || book.reference);
+            detail.textContent = t("Open this surah in the Sela reader.", "Buka surat ini di reader Sela.");
+            actionLabel.textContent = t("Read surah", "Baca surat");
+          } else if (group.kind === "topic") {
+            reference.textContent = t(book.reference, book.referenceId || book.reference);
+            detail.textContent = t(book.detailEn || "A Quran reference for this theme.", book.detailId || "Rujukan Al-Qur\u2019an untuk tema ini.");
+            actionLabel.textContent = t("Read cited verses", "Baca ayat rujukan");
+          } else {
+            reference.textContent = t("Daily remembrance \xB7 sourced text", "Zikir harian \xB7 teks bersumber");
+            detail.textContent = t("Arabic, transliteration, meaning, and reference.", "Arab, transliterasi, makna, dan rujukan.");
+            actionLabel.textContent = t("Open reading", "Buka bacaan");
+          }
+        };
+        slideLocalizers.push(localizeSlide);
+        localizeSlide();
+      }
+    }
+    const api = EmblaCarousel(viewport, { align: "start", containScroll: "trimSnaps", dragFree: true, loop: false });
+    carousels.push(api);
+    const syncControls = () => {
+      previous.disabled = !api.canScrollPrev();
+      next.disabled = !api.canScrollNext();
+    };
+    api.on("select", syncControls);
+    api.on("reInit", syncControls);
+    previous.onclick = () => api.scrollPrev();
+    next.onclick = () => api.scrollNext();
+    syncControls();
+    if (group.kind === "story") {
+      const note = node("p", "tw:mb-0 tw:mt-2 tw:max-w-3xl tw:text-xs tw:leading-5 tw:text-sela-muted", wrapper);
+      note.dataset.scriptureNote = "true";
+      note.textContent = t("These are Quran-based summaries, not a complete biography, tafsir, or dated historical timeline. Some prophets are mentioned only briefly.", "Ini ringkasan berdasarkan Al-Qur\u2019an, bukan biografi lengkap, tafsir, atau kronologi bertanggal. Sebagian nabi hanya disebut singkat.");
     }
   }
   function localize() {
-    title.textContent = t("A little shelf of Islamic readings", "Rak kecil bacaan Islami");
-    subtitle.textContent = t("Read Quran passages and prophet stories from cited verses. Open the official sources for Latin text, tafsir, revelation history and tajwid.", "Baca ayat Al-Qur\u2019an dan kisah nabi dari rujukan ayat. Buka sumber resmi untuk tulisan Latin, tafsir, sejarah pewahyuan, dan tajwid.");
-    for (let index = 0; index < groups.length; index++) {
-      const group = groups[index], wrapper = section.querySelectorAll(".home-scripture-shelf-group")[index], groupTitle = wrapper.querySelector(".home-scripture-group-title"), track = wrapper.querySelector(".home-scripture-shelf-track");
-      groupTitle.textContent = t(group.en, group.id);
-      track.setAttribute("aria-label", t(group.en, group.id));
+    title.textContent = t("Islamic reading room", "Ruang baca Islami");
+    subtitle.textContent = t("Read the Quran by surah or life theme, browse daily prayers, or open a standalone story with its Quran references.", "Baca Al-Qur\u2019an berdasarkan surat atau tema hidup, jelajahi doa harian, atau buka kisah mandiri beserta rujukan ayatnya.");
+    for (const [index, group] of groups.entries()) {
+      const groupHeading = section.querySelectorAll(".home-scripture-shelf-group h3")[index];
+      if (groupHeading) groupHeading.textContent = t(group.en, group.id);
+      const api = carousels[index];
+      if (api) api.reInit();
     }
-    for (const { button, label, reference, book } of buttons) {
-      button.setAttribute("aria-label", t("Open " + book.english, "Buka " + book.indonesian));
-      label.textContent = t(book.english, book.indonesian);
-      reference.textContent = book.slug ? t("Buruja \xB7 English meaning", "Buruja \xB7 makna bahasa Inggris") : book.story ? t(book.reference, book.referenceId || book.reference) : book.reference.startsWith("Al-Baqarah") ? book.reference : t("Surah", "Surah") + " " + book.surah;
-    }
+    for (const update of slideLocalizers) update();
+    const note = section.querySelector("[data-scripture-note]");
+    if (note) note.textContent = t("These are Quran-based summaries, not a complete biography, tafsir, or dated historical timeline. Some prophets are mentioned only briefly.", "Ini ringkasan berdasarkan Al-Qur\u2019an, bukan biografi lengkap, tafsir, atau kronologi bertanggal. Sebagian nabi hanya disebut singkat.");
   }
-  document.addEventListener("sela:personal", () => {
+  const updateVisibility = () => {
     section.hidden = readPersonal().faith !== "islam";
+    if (!section.hidden) for (const api of carousels) api.reInit();
+  };
+  document.addEventListener("sela:personal", updateVisibility);
+  document.addEventListener("sela:navigation-change", () => {
+    if (document.body.dataset.page === "library" && !section.hidden) for (const api of carousels) api.reInit();
   });
   localize();
   return { section, localize() {
     localize();
-    section.hidden = readPersonal().faith !== "islam";
+    updateVisibility();
   } };
 }
 export function mountHomeWidgets({ t, openBook }) {
   const section = node("section", "home-widgets tw:mt-2 tw:space-y-6");
   section.setAttribute("aria-label", t("Reading room and daily discoveries", "Ruang baca dan temuan harian"));
-  const calendar = makeCalendar(t), water = makeWaterWidget(t), history = makeFeedWidget("on-this-day", t), news = makeFeedWidget("news", t), faith = makeFaithWidget(t, openBook), islamicShelf = makeIslamicShelf(t, openBook), utility = node("section", "home-utility-section");
+  const calendar = makeCalendar(t), water = makeWaterWidget(t), history = makeFeedWidget("on-this-day", t), news = makeFeedWidget("news", t), faith = makeFaithWidget(t, openBook), islamicShelf = makeIslamicShelf(t, openBook), faithShelf = makeFaithShelf(t, faith.openLibrary), prayerTimes = mountPrayerTimes(t), daily = node("div", "home-daily-overview", section), utility = node("section", "home-utility-section");
+  daily.append(faith.card, prayerTimes.card);
   const utilityHeading = node("h2", "tw:mb-3 tw:text-lg tw:font-semibold tw:tracking-tight tw:text-sela-ink", utility);
   utilityHeading.textContent = t("A little for your day", "Sedikit teman untuk harimu");
   const grid = node("div", "home-utility-grid tw:grid tw:!grid-cols-1 tw:gap-5 tw:lg:!grid-cols-2", utility), primary = node("div", "home-utility-column home-utility-primary tw:min-w-0", grid), secondary = node("div", "home-utility-column home-utility-secondary tw:min-w-0", grid);
   primary.append(calendar.card, history.card);
   secondary.append(water.card, news.card);
-  section.append(faith.card, islamicShelf.section, utility);
-  return { section, waterSettings: water.settings, localize() {
+  section.append(utility);
+  const syncDaily = () => {
+    daily.hidden = Boolean(faith.card.hidden && prayerTimes.card.hidden);
+    daily.dataset.prayerVisible = String(!prayerTimes.card.hidden);
+  };
+  document.addEventListener("sela:personal", syncDaily);
+  syncDaily();
+  return { section, islamicShelf, faithShelf, waterSettings: water.settings, localize() {
     calendar.localize();
     water.localize();
     history.localize();
     news.localize();
     faith.localize();
     islamicShelf.localize();
+    faithShelf.localize();
+    prayerTimes.localize();
+    syncDaily();
     utilityHeading.textContent = t("A little for your day", "Sedikit teman untuk harimu");
     section.setAttribute("aria-label", t("Reading room and daily discoveries", "Ruang baca dan temuan harian"));
   } };

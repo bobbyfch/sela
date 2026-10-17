@@ -6,7 +6,7 @@ export function ReaderHead({ legacy = false }: { legacy?: boolean }) {
     <>
       <meta name={"apple-mobile-web-app-capable"} content={"yes"} />
       <meta name={"apple-mobile-web-app-title"} content={"Sela Books"} />
-      <link rel={"apple-touch-icon"} href={"../site/icon-192.png"} />
+      <link rel={"apple-touch-icon"} href={"../site/apple-touch-icon.png"} />
       <link
         id={"mobile-manifest"}
         rel={"manifest"}
@@ -122,7 +122,7 @@ function Topbar() {
           title={"Appearance: system"}
         ></Button>
         <label className={"language-picker tw:relative tw:inline-flex tw:h-11 tw:w-44 tw:min-w-0 tw:shrink-0 tw:cursor-pointer tw:items-center tw:gap-2 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-xs tw:font-medium tw:text-sela-ink tw:shadow-sm tw:transition tw:focus-within:ring-2 tw:focus-within:ring-sela-accent/50 tw:md:w-48"}>
-          <img id={"language-flag"} className={"language-flag tw:pointer-events-none tw:h-[15px] tw:w-5 tw:shrink-0 tw:rounded-[3px] tw:object-cover"} src={"../site/flag-en.svg"} alt={""} aria-hidden={true} />
+          <img id={"language-flag"} className={"language-flag tw:pointer-events-none tw:h-[15px] tw:w-5 tw:shrink-0 tw:rounded-[3px] tw:object-cover tw:ring-1 tw:ring-sela-line"} src={"../site/flag-en.svg"} alt={""} aria-hidden={true} />
           <span id={"language-current"} className={"tw:min-w-0 tw:flex-1 tw:truncate"}>English</span>
           <svg className={"tw:size-4 tw:shrink-0"} viewBox={"0 0 24 24"} aria-hidden={true}><path d={"m6 9 6 6 6-6"} fill={"none"} stroke={"currentColor"} strokeWidth={"2"} strokeLinecap={"round"} strokeLinejoin={"round"}></path></svg>
         <NativeSelect id={"language"} className={"language-select tw:absolute tw:inset-0 tw:h-full tw:w-full tw:cursor-pointer tw:opacity-0"} aria-label={"Language"} title={"Language"}>
@@ -171,9 +171,6 @@ function RoomIntro() {
           {"Your books, new discoveries, and a little time for yourself."}
         </p>
         <div className={"tw:mt-4 tw:flex tw:min-w-0 tw:flex-col tw:items-start tw:gap-1.5 tw:sm:mt-5"}>
-          <Button type={"button"} variant={"outline"} id={"install-mobile-app"} className={"tw:h-auto tw:min-h-11 tw:w-fit tw:max-w-full tw:items-center tw:gap-2 tw:rounded-full tw:border-sela-line tw:bg-sela-surface/90 tw:px-4 tw:text-sm tw:font-semibold tw:text-sela-accent tw:shadow-sm tw:transition-colors tw:hover:bg-sela-surface"}>
-            {"＋ Install / Tambah ke layar utama"}
-          </Button>
           <p id={"mobile-offline-status"} className={"tw:m-0 tw:min-h-5 tw:max-w-[56ch] tw:text-xs tw:leading-5 tw:text-sela-muted"} role={"status"}></p>
         </div>
       </div>
@@ -250,8 +247,23 @@ function Library() {
           </Button>
         </div>
       </div>
+      <section className={"shelf-file-drop tw:flex tw:min-w-0 tw:flex-col tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-dashed tw:border-sela-line tw:bg-sela-surface/60 tw:px-4 tw:py-3 tw:sm:flex-row tw:sm:items-center tw:sm:justify-between tw:sm:px-5"} aria-label={"Add books to your shelf"}>
+        <div className={"tw:flex tw:min-w-0 tw:items-center tw:gap-3"}>
+          <span className={"tw:grid tw:size-10 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-accent/10 tw:text-sela-accent"} aria-hidden={true}>
+            <svg className={"tw:size-5"} viewBox={"0 0 24 24"} fill={"none"} stroke={"currentColor"} strokeWidth={"1.7"} strokeLinecap={"round"} strokeLinejoin={"round"}><path d={"M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"}/><path d={"M4 5.5v13M8 7h8M8 11h6"}/></svg>
+          </span>
+          <span className={"tw:min-w-0"}>
+            <strong className={"tw:block tw:text-xs tw:font-semibold tw:text-sela-ink"} data-i18n={"fileDropTitle"}>Drop a book here</strong>
+            <small className={"tw:block tw:break-words tw:text-[11px] tw:leading-4 tw:text-sela-muted"} data-i18n={"fileDropHint"}>PDF, EPUB, comics, and text files stay on this device.</small>
+          </span>
+        </div>
+        <Button type={"button"} variant={"outline"} size={"sm"} id={"shelf-add-books"} className={"tw:min-h-10 tw:shrink-0 tw:rounded-full tw:px-4 tw:text-xs tw:font-semibold"} aria-label={"Choose book files"}>
+          <svg className={"tw:size-4"} viewBox={"0 0 24 24"} fill={"none"} stroke={"currentColor"} strokeWidth={"1.8"} strokeLinecap={"round"} strokeLinejoin={"round"} aria-hidden={true}><path d={"M12 5v14M5 12h14"}/></svg>
+          <span data-i18n={"fileDropButton"}>Choose files</span>
+        </Button>
+      </section>
       <div id={"shelf"} className={"shelf tw:grid tw:grid-cols-2 tw:gap-x-5 tw:gap-y-8 tw:sm:grid-cols-3 tw:lg:grid-cols-4 tw:2xl:grid-cols-5"} aria-live={"polite"}></div>
-      <div id={"empty"} className={"empty tw:mx-auto tw:max-w-xl tw:p-8 tw:text-center"} hidden={true}>
+      <div id={"empty"} className={"empty tw:mx-auto tw:max-w-xl tw:p-5 tw:text-center tw:sm:p-8"} hidden={true}>
         <img src={"../logo.svg"} alt={""} width={"68"} height={"68"} />
         <h3 data-i18n={"empty"}>{"Make room for your first story."}</h3>
         <p data-i18n={"drop"}>
@@ -314,7 +326,7 @@ function Main() {
 }
 function Footer() {
   return (
-    <footer className={"app-footer"}>
+    <footer className={"app-footer tw:max-[700px]:mt-16 tw:max-[370px]:!mt-28"}>
       <a
         href={"https://github.com/bobbyfch/sela"}
         target={"_blank"}

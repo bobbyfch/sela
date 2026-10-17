@@ -1,6 +1,6 @@
 import { posix } from 'node:path';
 import ts from 'typescript-api';
-import { transform } from 'esbuild';
+import { build as esbuildBuild, transform } from 'esbuild';
 import { build as viteBuild } from 'vite';
 import { build as astroBuild } from 'astro';
 import tailwindcss from '@tailwindcss/vite';
@@ -13,12 +13,15 @@ import postcss from 'postcss';
 const {version: VERSION} = JSON.parse(await readFile('package.json','utf8'));
 async function writeAtomic(path:string,data:string|Uint8Array){const temp=path+'.'+process.pid+'.tmp';await writeFileRaw(temp,data);try{await rename(temp,path);}catch(error){await unlink(temp).catch(()=>{});throw error;}}
 const writeFile=writeAtomic;
+const versionedUrl=(path:string)=>`${path.split('?')[0]}?v=${encodeURIComponent(VERSION)}`;
+const isBrandAsset=(path:string)=>/(?:^|\/)(?:logo\.svg|favicon\.svg|favicon\.png|manifest\.webmanifest|apple-touch-icon\.png|icon-(?:192|512|maskable-512)\.png)$/.test(path.split('?')[0]);
+const versionBrandUrl=(path:string)=>isBrandAsset(path)?versionedUrl(path):path;
 const lock=JSON.parse(await readFile('package-lock.json','utf8'));
 lock.version=VERSION;lock.packages[''].version=VERSION;
 await writeFile('package-lock.json',JSON.stringify(lock,null,2)+'\n');
 const LABEL = VERSION.replace(/^(\d+)\.(\d+)\.0-beta(?:\.(\d+))?$/, (_match, major, minor, beta) => `${major}.${minor} beta${beta && beta !== '0' ? `.${beta}` : ''}`);
 await writeFile('app/library/version.ts',`// Generated from package.json by npm run build.\nexport const VERSION = ${JSON.stringify(VERSION)};\n`);
-const render = text => text.replaceAll('{{SELA_VERSION}}',VERSION).replaceAll('{{SELA_LABEL}}',LABEL);
+const render = text => text.replaceAll('{{SELA_VERSION}}',VERSION).replaceAll('{{SELA_LABEL}}',LABEL).replace(/((?:\.\.\/)*(?:site\/)?(?:logo\.svg|favicon\.svg|favicon\.png|manifest\.webmanifest|apple-touch-icon\.png|icon-(?:192|512|maskable-512)\.png))(?=["'])/g,(_match,path)=>versionedUrl(path));
 const banner = `/*! Sela v${VERSION} | MIT Bobby Fajar Christian | PDFlipbook MIT Symple NZ | see THIRD_PARTY_NOTICES.md */`;
 const generatedBanner = (source: string) => '// Generated from '+source+' by npm run build. Do not edit.\n';
 const copyText = async (source, target) => writeFile(target, (await readFile(source, 'utf8')).replace(/\r\n/g, '\n'));
@@ -125,6 +128,8 @@ await bundle('src/module.ts','sela.esm.js');
 for (const [name,entry] of [['archive-worker','src/archive-worker.ts'],['archive','src/archive.ts'],['djvu','src/djvu.ts'],['host','src/host-integration.ts'],['scriptures','src/scriptures.ts'],['profiles','app/library/reader-profiles.ts'],['office','src/office.ts'],['metadata','src/book-metadata.ts'],['app','app/library/reader-shell.ts'],['tools','src/reading-tools.ts'],['text','src/text.ts'],['locales','src/locale-translations.ts']]) await bundle(entry,'sela.'+name+'.js');
 await copyFile('node_modules/fflate/LICENSE','dist/fflate-LICENSE.txt');
 await copyFile('node_modules/three/LICENSE','dist/three-LICENSE.txt');
+await copyFile('node_modules/@orama/orama/LICENSE.md','dist/orama-LICENSE.md');
+await copyFile('node_modules/@orama/stemmers/LICENSE.md','dist/orama-stemmers-LICENSE.md');
 await rm('dist/materials',{recursive:true,force:true});
 // Emit the public declaration from the checked TypeScript SDK contract.
 const declarationOptions: ts.CompilerOptions = {declaration:true,emitDeclarationOnly:true,allowImportingTsExtensions:true,strict:true,skipLibCheck:true,target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.NodeNext,moduleResolution:ts.ModuleResolutionKind.NodeNext};
@@ -162,10 +167,16 @@ await copyFile('node_modules/react/LICENSE','mobile/react-LICENSE.txt');
 await copyFile('node_modules/react-dom/LICENSE','mobile/react-dom-LICENSE.txt');
 await copyFile('node_modules/react/LICENSE','app/react-LICENSE.txt');
 await copyFile('node_modules/react-dom/LICENSE','app/react-dom-LICENSE.txt');
-const appManifest=JSON.parse(await readFile('mobile/manifest.webmanifest','utf8'));
+const mobileManifest=JSON.parse(await readFile('mobile/manifest.webmanifest','utf8'));
+for(const icon of mobileManifest.icons||[])icon.src=versionBrandUrl(icon.src);
+await writeFile('mobile/manifest.webmanifest',JSON.stringify(mobileManifest,null,2)+'\n');
+const appManifest=structuredClone(mobileManifest);
 appManifest.id='./';appManifest.start_url='./?installed=1';appManifest.scope='./';appManifest.share_target.action='./share';
 for(const handler of appManifest.file_handlers||[])handler.action='./';
 await writeFile('app/manifest.webmanifest',JSON.stringify(appManifest,null,2)+'\n');
+const publicManifest=JSON.parse(await readFile('manifest.webmanifest','utf8'));
+for(const icon of publicManifest.icons||[])icon.src=versionBrandUrl(icon.src);
+await writeFile('manifest.webmanifest',JSON.stringify(publicManifest,null,2)+'\n');
 
 const compat = await transform(await readFile('src/compat.ts', 'utf8'), {loader:'ts',target:'es5'});
 await writeFile('dist/js/sela.compat.js', generatedBanner('src/compat.ts') + compat.code);
@@ -208,8 +219,17 @@ for(const source of sources) {
  code=render(code);
  const output=await transform(code,{loader:'ts',target:source==='app/site/platform.ts'?'es5':source.startsWith('app/')?'es2022':'es2020',legalComments:'inline',tsconfigRaw:{compilerOptions:{useDefineForClassFields:false}}});
  await mkdir(posix.dirname(target),{recursive:true});
- await writeFile(target,generatedBanner(source)+output.code);
+ const browserCode=source==='app/library/home-widgets.ts'?output.code.replace(/from\s+(["'])embla-carousel\1/g,'from "./vendor/embla-carousel.js"'):output.code;
+ await writeFile(target,generatedBanner(source)+browserCode);
 }
+// Orama and its stemmers are lazy-loaded by the standalone browser app too.
+// Bundle their npm imports so the framework-free shell needs no import map.
+await mkdir('.build/smart-search',{recursive:true});
+await esbuildBuild({entryPoints:['app/library/smart-search.ts'],bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,legalComments:'inline',outfile:'.build/smart-search/smart-search.js'});
+await writeFile('library/smart-search.js',generatedBanner('app/library/smart-search.ts')+'/*! Orama and @orama/stemmers | Apache-2.0 | see dist/orama-LICENSE.md and dist/orama-stemmers-LICENSE.md */\n'+await readFile('.build/smart-search/smart-search.js','utf8'));
+await mkdir('library/vendor',{recursive:true});
+await esbuildBuild({entryPoints:['node_modules/embla-carousel/esm/embla-carousel.esm.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,legalComments:'inline',outfile:'.build/embla-carousel.js'});
+await writeFile('library/vendor/embla-carousel.js',generatedBanner('npm dependency embla-carousel@'+lock.packages['node_modules/embla-carousel'].version)+'/*! Embla Carousel | MIT | https://www.embla-carousel.com */\n'+await readFile('.build/embla-carousel.js','utf8'));
 for(const file of await readdir('mobile'))if(file.endsWith('.js'))await copyFile('mobile/'+file,'app/'+file);
 // Bundle the optional Three.js room as one local, lazy-loaded module.
 await viteBuild({configFile:false,logLevel:'warn',build:{target:'es2022',outDir:'.build/home-world',emptyOutDir:true,minify:true,lib:{entry:'app/library/home-world.ts',formats:['es'],fileName:()=> 'home-world.js'}}});
@@ -230,14 +250,16 @@ for (const path of ['dist/js/sela.min.js', 'dist/js/sela.esm.js', 'dist/js/sela.
 }
 await writeAtomic('dist/manifest.json',JSON.stringify(manifest,null,2)+'\n');
 console.log(JSON.stringify(manifest, null, 2));
-const shell=['index.html','site/screenshots/app-desktop.webp','site/screenshots/app-mobile.webp','site/illustrations/reading-corner-jakarta.webp','site/illustrations/home-reading-jakarta.webp','site/illustrations/book-cart.webp','site/Phosphor-Fill.woff2','site/public.css','site/demo.js','site/motion.js','site/pwa.js','site/platform.js','site/products.js','site/product-language.js','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/assets/jculture-isometric.webp','logo.svg','favicon.svg','manifest.webmanifest','site/icon-192.png','site/icon-512.png','dist/js/sela.compat.js','dist/js/sela.min.js','dist/css/sela.min.css','dist/js/sela.tools.js','dist/js/sela.text.js'];
+const shell=['index.html','site/screenshots/app-desktop.webp','site/screenshots/app-mobile.webp','site/illustrations/reading-corner-jakarta.webp','site/illustrations/home-reading-jakarta.webp','site/illustrations/book-cart.webp','site/Phosphor-Fill.woff2','site/public.css','site/demo.js','site/motion.js','site/pwa.js','site/platform.js','site/products.js','site/product-language.js','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/assets/jculture-isometric.webp','logo.svg','favicon.svg','favicon.png','manifest.webmanifest','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','dist/js/sela.compat.js','dist/js/sela.min.js','dist/css/sela.min.css','dist/js/sela.tools.js','dist/js/sela.text.js'];
 const allowed=[...shell,'example/story/cover.jpg'];
-for (let i=0;i<shell.length;i++) if (/^(site\/.*\.(js|css)|dist\/js\/sela\.compat\.js)$/.test(shell[i])) shell[i]+='?v='+manifest.version;
+for (let i=0;i<shell.length;i++) {const path=shell[i].split('?')[0];if (/^(site\/.*\.(js|css)|dist\/js\/sela\.compat\.js)$/.test(path)||isBrandAsset(path)) shell[i]=versionedUrl(path);}
 async function offlinePaths(folder){for(const file of await readdir(folder,{withFileTypes:true})){const path=folder+'/'+file.name;if(file.isDirectory())await offlinePaths(path);else if(!/\.tsx?$/.test(path)&&path!=='site/illustrations/book-garden.webp')allowed.push(path);}}
 await offlinePaths('dist');await offlinePaths('site');await offlinePaths('mobile');await offlinePaths('app');await offlinePaths('library');
-await writeAtomic('offline-assets.json',JSON.stringify({version:manifest.version,shell,mobileShell:['library/advanced.js','library/dictionary.js','library/search-worker.js','library/audio.js','library/external-catalogs.js','library/personal.js','library/personal-store.js','library/home-world.js','library/home-widgets.js','library/holiday-calendar.js','dist/source/src/i18n.js','dist/js/sela.locales.js','library/assets/jculture-isometric.webp','library/controls.js','library/reader-history.js','library/glass-navigation.js','library/cover-transition.js','example/story/cover.jpg','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/manifest.webmanifest','site/platform.js','site/icon-192.png','site/icon-512.png','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/library.js','library/version.js','library/library-experience.js','library/book-info.js','library/share-card.js','dist/js/sela.metadata.js','library/themes.js','library/catalog.js','library/backup.js','dist/js/sela.archive.js','dist/js/sela.archive-worker.js','dist/js/sela.profiles.js','library/weather.js','library/reading-desk.js','library/public-books.json','library/network.js','library/open-catalog.js','library/storage.js','library/collections.js','library/file-format.js','library/shelf-interactions.js','library/home-atmosphere.js','dist/js/sela.office.js','library/discovery.js','library/book-sources.js','library/opds.js','library/updates.js','logo.svg','favicon.svg','dist/js/sela.esm.js','dist/js/sela.app.js','dist/css/sela.app.css','dist/js/sela.tools.js','dist/js/sela.text.js','dist/css/sela.min.css'],allowed:[...new Set(allowed)].sort()},null,2)+'\n');
+await writeAtomic('offline-assets.json',JSON.stringify({version:manifest.version,shell,mobileShell:['library/advanced.js','library/dictionary.js','library/search-worker.js','library/audio.js','library/external-catalogs.js','library/personal.js','library/personal-store.js','library/home-world.js','library/home-widgets.js','library/holiday-calendar.js','dist/source/src/i18n.js','dist/js/sela.locales.js','library/assets/jculture-isometric.webp','library/controls.js','library/reader-history.js','library/glass-navigation.js','library/cover-transition.js','example/story/cover.jpg','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/manifest.webmanifest','site/platform.js','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/library.js','library/version.js','library/library-experience.js','library/book-info.js','library/share-card.js','dist/js/sela.metadata.js','library/themes.js','library/catalog.js','library/backup.js','dist/js/sela.archive.js','dist/js/sela.archive-worker.js','dist/js/sela.profiles.js','library/weather.js','library/reading-desk.js','library/public-books.json','library/indonesia-tech-books.json','library/network.js','library/open-catalog.js','library/storage.js','library/collections.js','library/file-format.js','library/shelf-interactions.js','library/home-atmosphere.js','dist/js/sela.office.js','library/discovery.js','library/book-sources.js','library/opds.js','library/updates.js','logo.svg','favicon.svg','dist/js/sela.esm.js','dist/js/sela.app.js','dist/css/sela.app.css','dist/js/sela.tools.js','dist/js/sela.text.js','dist/css/sela.min.css'],allowed:[...new Set(allowed)].sort()},null,2)+'\n');
 const offlineManifest=JSON.parse(await readFile('offline-assets.json','utf8'));
-offlineManifest.mobileShell.push('app/index.html','app/gate.js','app/app.js','app/pwa.js','app/sw.js','app/manifest.webmanifest','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/sw.js','mobile/manifest.webmanifest','library/scripture-sources.js','library/assets/jculture-companions-v3.webp','site/illustrations/home-reading-jakarta.webp');
+offlineManifest.mobileShell=offlineManifest.mobileShell.map(versionBrandUrl);
+offlineManifest.mobileShell.push('app/index.html','app/gate.js','app/app.js','app/pwa.js','app/sw.js','app/manifest.webmanifest','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/sw.js','mobile/manifest.webmanifest','library/scripture-sources.js','library/smart-search.js','library/assets/jculture-companions-v3.webp','site/illustrations/home-reading-jakarta.webp');
+offlineManifest.mobileShell.push('library/vendor/embla-carousel.js');
 offlineManifest.mobileShell=[...new Set(offlineManifest.mobileShell)];
 
 offlineManifest.mobileShell.push('site/mobile-app.css');
@@ -248,7 +270,8 @@ const viewerIdentity=appCacheIdentity(manifest.version,[...await Promise.all(she
 await writeAtomic('sela-sw.js',generatedBanner('app/site/viewer-sw.ts')+viewerWorker.code.replaceAll('{{SELA_PUBLIC_CACHE}}',viewerIdentity));
 const cachedShell=JSON.parse(await readFile('offline-assets.json','utf8')).mobileShell;
 const worker=await readFile('mobile/sw.js','utf8');
-const identity=appCacheIdentity(manifest.version,[...await Promise.all(cachedShell.map(async path=>[path,await readFile(path)])),['dist-integrity',Buffer.from(JSON.stringify(manifest.assets))],['worker-source.js',Buffer.from(worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'))]]);
+const normalizeWorkerCache=(content:Uint8Array)=>Buffer.from(Buffer.from(content).toString('utf8').replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'));
+const identity=appCacheIdentity(manifest.version,[...await Promise.all(cachedShell.map(async path=>{const content=await readFile(path.split('?')[0]);return [path,path==='app/sw.js'||path==='mobile/sw.js'?normalizeWorkerCache(content):content] as const;})),['dist-integrity',Buffer.from(JSON.stringify(manifest.assets))],['worker-source.js',Buffer.from(worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'))]]);
 const builtWorker=worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE='+JSON.stringify(identity));
 await writeAtomic('mobile/sw.js',builtWorker);
 await writeAtomic('app/sw.js',builtWorker);
