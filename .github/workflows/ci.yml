@@ -69,6 +69,8 @@ jobs:
             shard: '7/8'
           - project: webkit
             shard: '8/8'
+          - project: webkit-quran
+            shard: ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -78,11 +80,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx playwright install --with-deps ${{ matrix.project }}
+      - name: Install browser
+        run: |
+          if [ "${{ matrix.project }}" = "webkit-quran" ]; then
+            npx playwright install --with-deps webkit
+          else
+            npx playwright install --with-deps ${{ matrix.project }}
+          fi
       - name: Run browser tests
         run: |
-          if [ "${{ matrix.project }}" = "webkit" ]; then
-            npx playwright test --project=webkit --fully-parallel --workers=1 --shard="${{ matrix.shard }}"
+          if [ "${{ matrix.project }}" = "webkit-quran" ]; then
+            npx playwright test tests/browser/home-widgets.spec.ts --project=webkit --workers=1 --grep="@quran-home"
+          elif [ "${{ matrix.project }}" = "webkit" ]; then
+            npx playwright test --project=webkit --fully-parallel --workers=1 --shard="${{ matrix.shard }}" --grep-invert="@quran-home"
           else
             npx playwright test --project=${{ matrix.project }}
           fi

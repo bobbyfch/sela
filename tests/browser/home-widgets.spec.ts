@@ -49,7 +49,7 @@ test('Home shows one sourced quote with an author portrait and sends its single 
  await page.locator('#language').selectOption('ja-JP',{timeout:5000});await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');await expect.poll(()=>japaneseFeeds.length).toBeGreaterThan(0);await expect.poll(()=>newsQueries.some(query=>/sourcelang:japanese/.test(query))).toBe(true);
 });
 
-test('Home presents one Quran passage and Quran-only controls work directly in the reader',async({page})=>{
+test('Home presents one Quran passage and Quran-only controls work directly in the reader @quran-home',async({page})=>{
  await page.route('https://quranenc.com/api/v1/translations/list/id?**',route=>route.fulfill({json:{translations:[{key:'indonesian_affairs',language_iso_code:'id',title:'Terjemahan Berbahasa Indonesia - Kementerian Agama',version:'1.0.1'}]}}));
  await page.route('https://quranenc.com/api/v1/translations/list/en?**',route=>route.fulfill({json:{translations:[{key:'english_saheeh',language_iso_code:'en',title:'Saheeh International',version:'1.0.1'}]}}));
  await page.route('https://quranenc.com/api/v1/translations/list/ja?**',route=>route.fulfill({json:{translations:[{key:'japanese_saeedsato',language_iso_code:'ja',title:'日亜対訳（日本語） - サイード佐藤',version:'1.0.13'}]}}));

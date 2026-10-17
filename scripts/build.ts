@@ -13,7 +13,13 @@ import postcss from 'postcss';
 const {version: VERSION} = JSON.parse(await readFile('package.json','utf8'));
 async function writeAtomic(path:string,data:string|Uint8Array){const temp=path+'.'+process.pid+'.tmp';await writeFileRaw(temp,data);try{await rename(temp,path);}catch(error){await unlink(temp).catch(()=>{});throw error;}}
 const writeFile=writeAtomic;
-const versionedUrl=(path:string)=>`${path.split('?')[0]}?v=${encodeURIComponent(VERSION)}`;
+const iconFiles=['site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png'];
+const iconRevisions=new Map<string,string>();
+for(const path of iconFiles)iconRevisions.set(posix.basename(path),createHash('sha256').update(await readFile(path)).digest('hex').slice(0,12));
+const iconSetRevision=createHash('sha256').update([...iconRevisions.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([name,revision])=>`${name}:${revision}`).join('|')).digest('hex').slice(0,12);
+// Browser-installed launcher icons and their manifests can be cached independently of the app service worker.
+// Keep those URLs tied to the actual artwork bytes so a refreshed icon does not require a beta-version bump.
+const versionedUrl=(path:string)=>{const clean=path.split('?')[0],name=posix.basename(clean),revision=iconRevisions.get(name)||(name==='manifest.webmanifest'?iconSetRevision:undefined);return `${clean}?v=${encodeURIComponent(revision?`${VERSION}-${revision}`:VERSION)}`;};
 const isBrandAsset=(path:string)=>/(?:^|\/)(?:logo\.svg|favicon\.svg|favicon\.png|manifest\.webmanifest|apple-touch-icon\.png|icon-(?:192|512|maskable-512)\.png)$/.test(path.split('?')[0]);
 const versionBrandUrl=(path:string)=>isBrandAsset(path)?versionedUrl(path):path;
 const lock=JSON.parse(await readFile('package-lock.json','utf8'));
