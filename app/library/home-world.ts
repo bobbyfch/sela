@@ -48,6 +48,17 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   canvas.setAttribute('aria-hidden', 'true');
   worldPanel.append(art, canvas, paletteDoodle);
   intro.insertBefore(worldPanel, intro.querySelector('.ritual'));
+  const cleanupArtOnly = () => {
+    document.removeEventListener('sela:palette', syncPaletteDoodle);
+    window.removeEventListener('pagehide', cleanupArtOnly);
+    worldPanel.remove();
+  };
+  const useArtOnly = () => {
+    home.dataset.world = 'art-only';
+    canvas.remove();
+    window.addEventListener('pagehide', cleanupArtOnly, { once: true });
+    return cleanupArtOnly;
+  };
 
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   let renderer: THREE.WebGLRenderer;
@@ -57,10 +68,7 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
       powerPreference: 'low-power'
     });
   } catch {
-    document.removeEventListener('sela:palette', syncPaletteDoodle);
-    home.dataset.world = 'art-only';
-    canvas.remove();
-    return () => art.remove();
+    return useArtOnly();
   }
 
   renderer.setClearColor(0x000000, 0);
@@ -77,11 +85,8 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   try {
     atlas = await loader.loadAsync(atlasUrl);
   } catch {
-    document.removeEventListener('sela:palette', syncPaletteDoodle);
     renderer.dispose();
-    home.dataset.world = 'art-only';
-    canvas.remove();
-    return () => art.remove();
+    return useArtOnly();
   }
   // The palette can change while the companion atlas is loading. Refresh the
   // stage from the current document state before subscribing to later changes.

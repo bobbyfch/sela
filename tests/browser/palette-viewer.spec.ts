@@ -97,13 +97,33 @@ test('home illustration adopts a palette chosen while its companion atlas loads'
  try{
   await page.goto('/app/',{waitUntil:'commit'});
   const stage=page.locator('.home-world-stage');
+  const home=page.locator('.home-page');
   await expect(stage).toBeAttached();
-  await atlasRequested;
+  const initialization=await Promise.race([
+   atlasRequested.then(()=> 'atlas'),
+   expect.poll(()=>home.getAttribute('data-world')).toBe('art-only').then(()=> 'art-only')
+  ]);
   await page.locator('[data-tab="settings"]').click();
   await expect(page.locator('.app-palette-picker [data-palette-choice="sakura"]')).toBeVisible();
   await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
   await expect(stage).toHaveAttribute('data-palette','sakura');
+  expect(['atlas','art-only']).toContain(initialization);
   releaseAtlas();
  }finally{releaseAtlas();}
+});
+
+test('art-only Home fallback keeps its palette when WebGL is unavailable',async({page})=>{
+ await page.addInitScript(()=>{
+  const canvas=HTMLCanvasElement.prototype as any;
+  const getContext=canvas.getContext;
+  canvas.getContext=function(type:string,...args:any[]){return type==='webgl2'||type==='webgl'||type==='experimental-webgl'?null:getContext.call(this,type,...args);};
+ });
+ await page.goto('/app/');
+ await expect(page.locator('.home-page')).toHaveAttribute('data-world','art-only');
+ const stage=page.locator('.home-world-stage');
+ await page.locator('[data-tab="settings"]').click();
+ await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
+ await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
+ await expect(stage).toHaveAttribute('data-palette','sakura');
 });

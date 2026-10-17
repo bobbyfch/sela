@@ -12178,9 +12178,11 @@ async function ic(e) {
 	};
 	let c = document.createElement("canvas");
 	c.className = "home-world-canvas tw:absolute tw:inset-0 tw:z-[1] tw:block tw:h-full tw:min-h-0 tw:w-full tw:pointer-events-none tw:opacity-0 tw:transition-opacity tw:duration-500", c.setAttribute("aria-hidden", "true"), n.append(s, c, r), t.insertBefore(n, t.querySelector(".ritual"));
-	let l = matchMedia("(prefers-reduced-motion: reduce)"), u;
+	let l = () => {
+		document.removeEventListener("sela:palette", o), window.removeEventListener("pagehide", l), n.remove();
+	}, u = () => (e.dataset.world = "art-only", c.remove(), window.addEventListener("pagehide", l, { once: !0 }), l), d = matchMedia("(prefers-reduced-motion: reduce)"), f;
 	try {
-		u = new Vs({
+		f = new Vs({
 			canvas: c,
 			alpha: !0,
 			antialias: !0,
@@ -12189,41 +12191,41 @@ async function ic(e) {
 			powerPreference: "low-power"
 		});
 	} catch {
-		return document.removeEventListener("sela:palette", o), e.dataset.world = "art-only", c.remove(), () => s.remove();
+		return u();
 	}
-	u.setClearColor(0, 0), u.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1)), u.outputColorSpace = O;
-	let d = new mt(), f = new at();
-	d.add(f);
-	let p = new ai(-1, 1, 1, -1, .1, 20);
-	p.position.set(0, 0, 10), p.lookAt(0, 0, 0);
-	let m = new Xr(), h;
+	f.setClearColor(0, 0), f.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1)), f.outputColorSpace = O;
+	let p = new mt(), m = new at();
+	p.add(m);
+	let h = new ai(-1, 1, 1, -1, .1, 20);
+	h.position.set(0, 0, 10), h.lookAt(0, 0, 0);
+	let g = new Xr(), _;
 	try {
-		h = await m.loadAsync(nc);
+		_ = await g.loadAsync(nc);
 	} catch {
-		return document.removeEventListener("sela:palette", o), u.dispose(), e.dataset.world = "art-only", c.remove(), () => s.remove();
+		return f.dispose(), u();
 	}
-	o(), h.colorSpace = O;
-	let g = !1, _ = !1, v = !1, y = 0, b = 0, x, S, C, w = "", T = .82, E = -.48, D = 0, k = 1, A = () => {
-		S && (d.remove(S), S.material.dispose(), S = void 0, C?.dispose(), C = void 0);
-	}, j = () => {
-		if (g) return;
+	o(), _.colorSpace = O;
+	let v = !1, y = !1, b = !1, x = 0, S = 0, C, w, T, E = "", D = .82, k = -.48, A = 0, j = 1, M = () => {
+		w && (p.remove(w), w.material.dispose(), w = void 0, T?.dispose(), T = void 0);
+	}, N = () => {
+		if (v) return;
 		let e = n.getBoundingClientRect(), t = e.width < 420, r = e.width >= 420 && e.width < 600, i = c.getBoundingClientRect(), a = t ? 3.65 : r ? 3.8 : 3.6;
-		if (k = i.width / Math.max(1, i.height), p.left = -k * a / 2, p.right = k * a / 2, p.top = a / 2, p.bottom = -a / 2, p.updateProjectionMatrix(), u.setSize(Math.max(1, i.width), Math.max(1, i.height), !1), D = -k * a / 2 + .405 * a, E = -.16 * a, T = t ? .68 : r ? .78 : .82, S && C) {
-			let e = (C.image.width || 1) / (C.image.height || 1);
-			S.position.set(D, E, .2), S.scale.set(T * e, T, 1);
+		if (j = i.width / Math.max(1, i.height), h.left = -j * a / 2, h.right = j * a / 2, h.top = a / 2, h.bottom = -a / 2, h.updateProjectionMatrix(), f.setSize(Math.max(1, i.width), Math.max(1, i.height), !1), A = -j * a / 2 + .405 * a, k = -.16 * a, D = t ? .68 : r ? .78 : .82, w && T) {
+			let e = (T.image.width || 1) / (T.image.height || 1);
+			w.position.set(A, k, .2), w.scale.set(D * e, D, 1);
 		}
-		u.render(d, p);
-	}, M = (e) => {
-		let t = h.image, n = rc[e], r = Math.floor(t.width / 2), o = Math.floor(t.height / 2), s = document.createElement("canvas");
+		f.render(p, h);
+	}, P = (e) => {
+		let t = _.image, n = rc[e], r = Math.floor(t.width / 2), o = Math.floor(t.height / 2), s = document.createElement("canvas");
 		s.width = r, s.height = o;
 		let c = s.getContext("2d");
 		if (!c) throw Error("Canvas is unavailable");
 		c.drawImage(t, n.column * r, n.row * o, r, o, 0, 0, r, o);
 		let l = new sr(s);
 		return l.colorSpace = O, l.magFilter = i, l.minFilter = a, l;
-	}, N = async (e) => {
-		w && URL.revokeObjectURL(w), w = URL.createObjectURL(e);
-		let t = await m.loadAsync(w), n = document.createElement("canvas");
+	}, ee = async (e) => {
+		E && URL.revokeObjectURL(E), E = URL.createObjectURL(e);
+		let t = await g.loadAsync(E), n = document.createElement("canvas");
 		n.width = n.height = 512;
 		let r = n.getContext("2d");
 		if (!r) throw t.dispose(), Error("Canvas is unavailable");
@@ -12231,62 +12233,62 @@ async function ic(e) {
 		r.drawImage(a, (512 - s) / 2, (512 - c) / 2, s, c), t.dispose();
 		let l = new sr(n);
 		return l.colorSpace = O, l.magFilter = i, l;
-	}, P = async () => {
+	}, F = async () => {
 		let t = Ws().companion;
-		if (t === x && !e.dataset.customMascotChanged) return;
-		x = t, delete e.dataset.customMascotChanged;
-		let n = ++b;
-		A();
+		if (t === C && !e.dataset.customMascotChanged) return;
+		C = t, delete e.dataset.customMascotChanged;
+		let n = ++S;
+		M();
 		try {
 			let e = await qs("home-mascot").catch(() => void 0);
 			if (!e && (t === "plant" || !(t in rc))) return;
-			let r = e ? await N(e) : M(t);
-			if (g || n !== b) {
+			let r = e ? await ee(e) : P(t);
+			if (v || n !== S) {
 				r.dispose();
 				return;
 			}
-			S = new Nn(new yn({
+			w = new Nn(new yn({
 				map: r,
 				transparent: !0,
 				alphaTest: .025,
 				depthTest: !1,
 				depthWrite: !1
-			})), C = r, S.renderOrder = 2, d.add(S), j();
+			})), T = r, w.renderOrder = 2, p.add(w), N();
 		} catch {
 			e.dataset.companion = "unavailable";
 		}
-	}, ee = () => {
+	}, I = () => {
 		try {
 			return !!JSON.parse(localStorage.getItem("sela-library:preferences") || "{}").lowPower;
 		} catch {
 			return !1;
 		}
-	}, F = () => !g && _ && !document.hidden && !l.matches && !v && !ee(), I = (e) => {
-		if (!F() || e - y < 48) return;
-		y = e;
+	}, te = () => !v && y && !document.hidden && !d.matches && !b && !I(), L = (e) => {
+		if (!te() || e - x < 48) return;
+		x = e;
 		let t = e * .001;
-		S && (S.position.y = E + Math.sin(t * .9) * .015, S.position.x = D + Math.sin(t * .25) * .012, S.rotation.z = Math.sin(t * .35) * .018, S.scale.y = T * (1 + Math.sin(t * .9) * .012)), u.render(d, p);
-	}, te = () => {
-		c.classList.toggle("tw:opacity-0", !_), c.classList.toggle("tw:opacity-75", _ && e.dataset.customBackground !== "true"), c.classList.toggle("tw:opacity-35", _ && e.dataset.customBackground === "true"), s.style.opacity = e.dataset.customBackground === "true" ? ".42" : ".84";
-	}, L = () => {
+		w && (w.position.y = k + Math.sin(t * .9) * .015, w.position.x = A + Math.sin(t * .25) * .012, w.rotation.z = Math.sin(t * .35) * .018, w.scale.y = D * (1 + Math.sin(t * .9) * .012)), f.render(p, h);
+	}, ne = () => {
+		c.classList.toggle("tw:opacity-0", !y), c.classList.toggle("tw:opacity-75", y && e.dataset.customBackground !== "true"), c.classList.toggle("tw:opacity-35", y && e.dataset.customBackground === "true"), s.style.opacity = e.dataset.customBackground === "true" ? ".42" : ".84";
+	}, re = () => {
 		let e = (/* @__PURE__ */ new Date()).getHours();
 		n.dataset.daypart = e >= 5 && e < 10 ? "morning" : e >= 10 && e < 16 ? "day" : e >= 16 && e < 19 ? "sunset" : "night", n.dataset.weather = document.documentElement.dataset.weather || "neutral";
-	}, ne = () => {
-		g || (L(), te(), v = Ws().quiet, P(), F() ? u.setAnimationLoop(I) : (u.setAnimationLoop(null), u.render(d, p)));
-	}, re = () => {
-		e.dataset.customMascotChanged = "true", ne();
-	}, R = new IntersectionObserver((e) => {
-		_ = e.some((e) => e.isIntersecting), c.classList.toggle("is-visible", _), ne();
+	}, R = () => {
+		v || (re(), ne(), b = Ws().quiet, F(), te() ? f.setAnimationLoop(L) : (f.setAnimationLoop(null), f.render(p, h)));
+	}, z = () => {
+		e.dataset.customMascotChanged = "true", R();
+	}, B = new IntersectionObserver((e) => {
+		y = e.some((e) => e.isIntersecting), c.classList.toggle("is-visible", y), R();
 	}, { threshold: 0 });
-	R.observe(e);
-	let z = new ResizeObserver(j);
-	z.observe(n);
-	let B = () => j(), ie = document.querySelector("#default-low-power"), ae = window.setInterval(L, 6e4);
-	window.addEventListener("resize", B, { passive: !0 }), document.addEventListener("visibilitychange", ne), document.addEventListener("sela:personal", ne), document.addEventListener("sela:weather", L), document.addEventListener("sela:mascot", re), document.addEventListener("sela:background", te), ie?.addEventListener("change", ne), l.addEventListener("change", ne);
-	let oe = () => {
-		g || (g = !0, b++, R.disconnect(), z.disconnect(), u.setAnimationLoop(null), window.removeEventListener("resize", B), document.removeEventListener("visibilitychange", ne), document.removeEventListener("sela:personal", ne), document.removeEventListener("sela:weather", L), document.removeEventListener("sela:palette", o), document.removeEventListener("sela:mascot", re), document.removeEventListener("sela:background", te), ie?.removeEventListener("change", ne), l.removeEventListener("change", ne), clearInterval(ae), A(), h.dispose(), w && URL.revokeObjectURL(w), u.dispose(), c.remove(), s.remove());
+	B.observe(e);
+	let ie = new ResizeObserver(N);
+	ie.observe(n);
+	let ae = () => N(), oe = document.querySelector("#default-low-power"), se = window.setInterval(re, 6e4);
+	window.addEventListener("resize", ae, { passive: !0 }), document.addEventListener("visibilitychange", R), document.addEventListener("sela:personal", R), document.addEventListener("sela:weather", re), document.addEventListener("sela:mascot", z), document.addEventListener("sela:background", ne), oe?.addEventListener("change", R), d.addEventListener("change", R);
+	let ce = () => {
+		v || (v = !0, S++, B.disconnect(), ie.disconnect(), f.setAnimationLoop(null), window.removeEventListener("resize", ae), document.removeEventListener("visibilitychange", R), document.removeEventListener("sela:personal", R), document.removeEventListener("sela:weather", re), document.removeEventListener("sela:palette", o), document.removeEventListener("sela:mascot", z), document.removeEventListener("sela:background", ne), oe?.removeEventListener("change", R), d.removeEventListener("change", R), clearInterval(se), M(), _.dispose(), E && URL.revokeObjectURL(E), f.dispose(), c.remove(), s.remove());
 	};
-	return window.addEventListener("pagehide", oe, { once: !0 }), e.dataset.world = "ready", j(), ne(), oe;
+	return window.addEventListener("pagehide", ce, { once: !0 }), e.dataset.world = "ready", N(), R(), ce;
 }
 //#endregion
 export { ic as mountHomeWorld };
