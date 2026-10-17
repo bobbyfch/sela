@@ -78,10 +78,31 @@ test('home illustration keeps its wide composition and reflects palette, daypart
  await page.locator('[data-tab="settings"]').click();
  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
  await expect(stage).toHaveAttribute('data-palette','sakura');
+ await page.locator('[data-tab="home"]').click();
  const daypartFilter=await art.evaluate(element=>getComputedStyle(element).getPropertyValue('--world-filter-time'));
  await stage.evaluate(element=>{element.dataset.daypart='sunset';element.dataset.weather='rain';});
+ await expect.poll(()=>art.evaluate(element=>getComputedStyle(element).filter)).toContain('sepia');
  const atmosphere=await art.evaluate(element=>({filter:getComputedStyle(element).filter,weather:(element.parentElement as HTMLElement).dataset.weather}));
  expect(daypartFilter).toContain('saturate');
  expect(atmosphere.weather).toBe('rain');
  expect(atmosphere.filter).toContain('sepia');
+});
+
+test('home illustration adopts a palette chosen while its companion atlas loads',async({page})=>{
+ let releaseAtlas=()=>{};
+ let notifyAtlasRequest=()=>{};
+ const atlasRequested=new Promise<void>(resolve=>{notifyAtlasRequest=resolve;});
+ const atlasGate=new Promise<void>(resolve=>{releaseAtlas=resolve;});
+ await page.route('**/jculture-companions-v3.webp',async route=>{notifyAtlasRequest();await atlasGate;await route.continue();});
+ try{
+  await page.goto('/app/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+  await atlasRequested;
+  const stage=page.locator('.home-world-stage');
+  await page.locator('[data-tab="settings"]').click();
+  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
+  releaseAtlas();
+  await expect(stage).toHaveAttribute('data-palette','sakura');
+ }finally{releaseAtlas();}
 });

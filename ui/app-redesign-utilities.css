@@ -531,12 +531,12 @@
 
     body[data-product=mobile] & .home-prayer-times {
       max-width: none;
-      padding: 12px;
+      padding: 8px 12px;
     }
 
     body[data-product=mobile] & .home-prayer-times dl {
       gap: 3px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     body[data-product=mobile] & .home-prayer-times dl > div {
@@ -544,14 +544,14 @@
     }
 
     body[data-product=mobile] & .home-prayer-times > p {
-      margin-top: 8px !important;
+      margin-top: 6px !important;
       font-size: 10px;
       line-height: 1.4;
     }
 
     body[data-product=mobile] & .home-prayer-times > div:last-child {
       gap: 6px;
-      margin-top: 8px !important;
+      margin-top: 6px !important;
     }
 
     body[data-product=mobile] & .home-prayer-times > div:last-child :where(button, a) {

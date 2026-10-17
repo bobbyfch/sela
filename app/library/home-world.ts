@@ -79,6 +79,9 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     canvas.remove();
     return () => art.remove();
   }
+  // The palette can change while the companion atlas is loading. Refresh the
+  // stage from the current document state before subscribing to later changes.
+  syncPaletteDoodle();
   atlas.colorSpace = THREE.SRGBColorSpace;
 
   let disposed = false;

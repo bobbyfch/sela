@@ -12202,7 +12202,7 @@ async function ic(e) {
 	} catch {
 		return u.dispose(), e.dataset.world = "art-only", c.remove(), () => s.remove();
 	}
-	h.colorSpace = O;
+	o(), h.colorSpace = O;
 	let g = !1, _ = !1, v = !1, y = 0, b = 0, x, S, C, w = "", T = .82, E = -.48, D = 0, k = 1, A = () => {
 		S && (d.remove(S), S.material.dispose(), S = void 0, C?.dispose(), C = void 0);
 	}, j = () => {
