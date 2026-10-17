@@ -12171,7 +12171,7 @@ async function ic(e) {
 		let e = document.documentElement.dataset.palette || "white", t = ec(e);
 		n.dataset.palette = e, r.replaceChildren(Qs(t.motif));
 	};
-	o();
+	o(), document.addEventListener("sela:palette", o);
 	let s = document.createElement("img");
 	s.className = "home-world-art", s.alt = "", s.setAttribute("aria-hidden", "true"), s.decoding = "async", s.loading = "eager", s.src = tc, s.onerror = () => {
 		e.dataset.world = "art-unavailable", s.remove();
@@ -12189,7 +12189,7 @@ async function ic(e) {
 			powerPreference: "low-power"
 		});
 	} catch {
-		return e.dataset.world = "art-only", c.remove(), () => s.remove();
+		return document.removeEventListener("sela:palette", o), e.dataset.world = "art-only", c.remove(), () => s.remove();
 	}
 	u.setClearColor(0, 0), u.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1)), u.outputColorSpace = O;
 	let d = new mt(), f = new at();
@@ -12200,7 +12200,7 @@ async function ic(e) {
 	try {
 		h = await m.loadAsync(nc);
 	} catch {
-		return u.dispose(), e.dataset.world = "art-only", c.remove(), () => s.remove();
+		return document.removeEventListener("sela:palette", o), u.dispose(), e.dataset.world = "art-only", c.remove(), () => s.remove();
 	}
 	o(), h.colorSpace = O;
 	let g = !1, _ = !1, v = !1, y = 0, b = 0, x, S, C, w = "", T = .82, E = -.48, D = 0, k = 1, A = () => {
@@ -12282,7 +12282,7 @@ async function ic(e) {
 	let z = new ResizeObserver(j);
 	z.observe(n);
 	let B = () => j(), ie = document.querySelector("#default-low-power"), ae = window.setInterval(L, 6e4);
-	window.addEventListener("resize", B, { passive: !0 }), document.addEventListener("visibilitychange", ne), document.addEventListener("sela:personal", ne), document.addEventListener("sela:weather", L), document.addEventListener("sela:palette", o), document.addEventListener("sela:mascot", re), document.addEventListener("sela:background", te), ie?.addEventListener("change", ne), l.addEventListener("change", ne);
+	window.addEventListener("resize", B, { passive: !0 }), document.addEventListener("visibilitychange", ne), document.addEventListener("sela:personal", ne), document.addEventListener("sela:weather", L), document.addEventListener("sela:mascot", re), document.addEventListener("sela:background", te), ie?.addEventListener("change", ne), l.addEventListener("change", ne);
 	let oe = () => {
 		g || (g = !0, b++, R.disconnect(), z.disconnect(), u.setAnimationLoop(null), window.removeEventListener("resize", B), document.removeEventListener("visibilitychange", ne), document.removeEventListener("sela:personal", ne), document.removeEventListener("sela:weather", L), document.removeEventListener("sela:palette", o), document.removeEventListener("sela:mascot", re), document.removeEventListener("sela:background", te), ie?.removeEventListener("change", ne), l.removeEventListener("change", ne), clearInterval(ae), A(), h.dispose(), w && URL.revokeObjectURL(w), u.dispose(), c.remove(), s.remove());
 	};

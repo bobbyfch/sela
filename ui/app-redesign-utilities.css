@@ -531,7 +531,7 @@
 
     body[data-product=mobile] & .home-prayer-times {
       max-width: none;
-      padding: 6px 12px;
+      padding: 5px 12px;
     }
 
     body[data-product=mobile] & .home-prayer-times dl {

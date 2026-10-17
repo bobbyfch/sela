@@ -31,6 +31,8 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     paletteDoodle.replaceChildren(controlIcon(palette.motif));
   };
   syncPaletteDoodle();
+  // Keep the stage palette current even while the companion texture is loading.
+  document.addEventListener('sela:palette', syncPaletteDoodle);
 
   const art = document.createElement('img');
   art.className = 'home-world-art';
@@ -55,6 +57,7 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
       powerPreference: 'low-power'
     });
   } catch {
+    document.removeEventListener('sela:palette', syncPaletteDoodle);
     home.dataset.world = 'art-only';
     canvas.remove();
     return () => art.remove();
@@ -74,6 +77,7 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   try {
     atlas = await loader.loadAsync(atlasUrl);
   } catch {
+    document.removeEventListener('sela:palette', syncPaletteDoodle);
     renderer.dispose();
     home.dataset.world = 'art-only';
     canvas.remove();
@@ -255,7 +259,6 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   document.addEventListener('visibilitychange', sync);
   document.addEventListener('sela:personal', sync);
   document.addEventListener('sela:weather', applyScene);
-  document.addEventListener('sela:palette', syncPaletteDoodle);
   document.addEventListener('sela:mascot', mascotSync);
   document.addEventListener('sela:background', updateCanvasOpacity);
   powerControl?.addEventListener('change', sync);

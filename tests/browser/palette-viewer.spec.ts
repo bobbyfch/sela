@@ -95,14 +95,15 @@ test('home illustration adopts a palette chosen while its companion atlas loads'
  const atlasGate=new Promise<void>(resolve=>{releaseAtlas=resolve;});
  await page.route('**/jculture-companions-v3.webp',async route=>{notifyAtlasRequest();await atlasGate;await route.continue();});
  try{
-  await page.goto('/app/',{waitUntil:'domcontentloaded'});
-  await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
-  await atlasRequested;
+  await page.goto('/app/',{waitUntil:'commit'});
   const stage=page.locator('.home-world-stage');
+  await expect(stage).toBeAttached();
+  await atlasRequested;
   await page.locator('[data-tab="settings"]').click();
+  await expect(page.locator('.app-palette-picker [data-palette-choice="sakura"]')).toBeVisible();
   await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
-  releaseAtlas();
   await expect(stage).toHaveAttribute('data-palette','sakura');
+  releaseAtlas();
  }finally{releaseAtlas();}
 });
