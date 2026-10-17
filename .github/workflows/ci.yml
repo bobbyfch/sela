@@ -44,10 +44,31 @@ jobs:
 
   browser-tests:
     needs: checks
+    name: browser-tests (${{ matrix.project }}${{ matrix.shard && format(' shard {0}', matrix.shard) || '' }})
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        include:
+          - project: chromium
+            shard: ''
+          - project: firefox
+            shard: ''
+          - project: webkit
+            shard: '1/8'
+          - project: webkit
+            shard: '2/8'
+          - project: webkit
+            shard: '3/8'
+          - project: webkit
+            shard: '4/8'
+          - project: webkit
+            shard: '5/8'
+          - project: webkit
+            shard: '6/8'
+          - project: webkit
+            shard: '7/8'
+          - project: webkit
+            shard: '8/8'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -58,4 +79,10 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps ${{ matrix.project }}
-      - run: npx playwright test --project=${{ matrix.project }}
+      - name: Run browser tests
+        run: |
+          if [ "${{ matrix.project }}" = "webkit" ]; then
+            npx playwright test --project=webkit --fully-parallel --workers=1 --shard="${{ matrix.shard }}"
+          else
+            npx playwright test --project=${{ matrix.project }}
+          fi
