@@ -29,7 +29,7 @@ async function mockQuranSources(page){
 }
 
 test('Home scene keeps the title and weather readable from phone through desktop',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-world-stage')).toBeVisible();await expect(page.locator('.home-world-art')).toBeVisible();
+ await page.setViewportSize({width:1440,height:900});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('link[rel="preload"][as="image"][href="../site/art/sela-mage-sky.webp"]')).toHaveCount(1);await expect(page.locator('.home-world-stage')).toBeVisible();const heroArt=page.locator('.home-world-art');await expect(heroArt).toBeVisible();await expect.poll(()=>heroArt.evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBe(1672);
  for(const width of [320,390,640,768,860,1024,1440]){
   await page.setViewportSize({width,height:900});
   const intro=page.locator('.home-page .room-intro'),title=intro.locator('h1'),stage=intro.locator('.home-world-stage'),art=stage.locator('.home-world-art'),weather=intro.locator('.weather-widget');
