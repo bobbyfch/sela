@@ -1531,7 +1531,7 @@ body[data-product=mobile] #mobile-app .home-page .home-world-stage[data-weather=
   body[data-product=mobile] #mobile-app .home-page .room-intro .clock time {
     font-size: clamp(28px, 7vw, 32px) !important;
   }
-  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-card { padding: 8px !important; }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-card { padding: 12px !important; }
   body[data-product=mobile] #mobile-app .home-page .room-intro .focus-card h2 {
     margin: 0 0 4px;
     font-size: 16px;
@@ -1552,7 +1552,7 @@ body[data-product=mobile] #mobile-app .home-page .home-world-stage[data-weather=
     gap: 5px !important;
     padding: 6px !important;
   }
-  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-card { padding: 6px !important; }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .focus-card { padding: 10px !important; }
   body[data-product=mobile] #mobile-app .home-page .room-intro .clock time { font-size: 24px !important; }
   body[data-product=mobile] #mobile-app .home-page .room-intro .weather-widget {
     grid-column: 2;
@@ -1571,6 +1571,216 @@ body[data-product=mobile] #mobile-app .home-page .home-world-stage[data-weather=
       radial-gradient(ellipse at 91% 52%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 52%),
       linear-gradient(160deg, color-mix(in srgb, var(--bg) 97%, var(--accent)), var(--bg) 44%, color-mix(in srgb, var(--bg) 98%, var(--accent))) !important;
   }
+}
+
+@utility focus-session {
+  gap: 12px;
+  padding: 16px;
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--line));
+  background: color-mix(in srgb, var(--accent) 4%, var(--panel));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 7%, transparent);
+  @media (max-width: 700px) { padding: 12px; }
+  @media (max-width: 370px) { padding: 10px; }
+}
+
+@utility reading-timer-layout {
+  @media (max-width: 700px) {
+    body[data-product="mobile"] & {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      align-items: start;
+    }
+    body[data-product="mobile"] & .focus-card { grid-column: 1 / -1 !important; grid-row: 1 !important; }
+    body[data-product="mobile"] & .clock { grid-column: 1 !important; grid-row: 2 !important; }
+    body[data-product="mobile"] & .weather-widget {
+      grid-column: 2 !important;
+      grid-row: 2 !important;
+      padding-inline-start: 10px;
+      border-left: 1px solid color-mix(in srgb, var(--fg) 9%, var(--line));
+    }
+  }
+}
+
+@utility focus-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+@utility focus-copy { min-width: 0; }
+
+@utility focus-title {
+  margin: 0;
+  color: var(--fg);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+@utility focus-description {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@utility focus-heading-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  color: var(--accent);
+  & svg { width: 19px; height: 19px; }
+}
+
+@utility focus-session-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 44px !important;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  & > .focus-presets { grid-column: 1 / -1; }
+  & > .focus-clock { grid-column: 1; grid-row: 2; }
+  & > .focus-start { grid-column: 2; grid-row: 2; }
+  & > .focus-reset { grid-column: 3; grid-row: 2; }
+  @media (max-width: 370px) { gap: 6px; }
+}
+
+@utility focus-presets {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 78%, var(--bg));
+  & button {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    flex: 1 1 0;
+    padding: 6px 8px !important;
+    border: 1px solid transparent !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: var(--muted) !important;
+    font-size: 12px !important;
+    font-weight: 650;
+    white-space: nowrap;
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+    &:hover { color: var(--accent) !important; }
+    &[aria-pressed="true"] {
+      border-color: var(--accent) !important;
+      background: color-mix(in srgb, var(--accent) 11%, var(--panel)) !important;
+      color: var(--fg) !important;
+      font-weight: 750;
+      box-shadow: inset 0 -2px var(--accent);
+    }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  }
+}
+
+@utility focus-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+  & output {
+    margin: 0 !important;
+    color: var(--fg);
+    font-size: clamp(30px, 7vw, 36px) !important;
+    font-weight: 720;
+    line-height: 1;
+    letter-spacing: -.055em;
+    font-variant-numeric: tabular-nums;
+  }
+  & span { color: var(--muted); font-size: 11px; white-space: nowrap; }
+}
+
+@utility focus-start {
+  display: grid !important;
+  place-items: center;
+  width: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line)) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--accent) 13%, var(--panel)) !important;
+  color: var(--fg) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 45%, transparent);
+  transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+  &:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--accent) 19%, var(--panel)) !important; }
+  &:active { transform: scale(.96); }
+  & svg { width: 19px; height: 19px; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+
+@utility focus-reset {
+  display: grid !important;
+  place-items: center;
+  width: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  background: var(--panel) !important;
+  color: var(--muted) !important;
+  transition: transform .18s ease, color .18s ease, background-color .18s ease;
+  &:hover { color: var(--accent) !important; background: color-mix(in srgb, var(--accent) 7%, var(--panel)) !important; }
+  &:active { transform: scale(.96); }
+  & svg { width: 18px; height: 18px; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+
+@utility focus-progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--line));
+  & span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width .35s ease;
+  }
+}
+
+@utility focus-book-field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+  & select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 11px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-product="mobile"] :where(.focus-presets button, .focus-start, .focus-reset, .focus-progress span) { transition: none; }
 }
 
 @layer utilities {
@@ -1753,3 +1963,100 @@ body[data-product=mobile] #mobile-app .home-page .home-world-stage {
     display: none !important;
   }
 }
+
+@layer utilities {
+  @media (max-width: 700px) {
+    body[data-product=mobile] #mobile-app .home-page .room-intro .ritual.reading-timer-layout {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      align-items: start;
+    }
+    body[data-product=mobile] #mobile-app .home-page .room-intro .ritual.reading-timer-layout > .focus-card {
+      grid-area: 1 / 1 / auto / -1 !important;
+    }
+    body[data-product=mobile] #mobile-app .home-page .room-intro .ritual.reading-timer-layout > .clock {
+      grid-area: 2 / 1 !important;
+    }
+    body[data-product=mobile] #mobile-app .home-page .room-intro .ritual.reading-timer-layout > .weather-widget {
+      grid-area: 2 / 2 !important;
+    }
+  }
+  @media (min-width: 481px) and (max-width: 700px) {
+    body[data-product=mobile] #mobile-app .home-page .room-intro > .ritual { grid-row: 2 !important; }
+    body[data-product=mobile] #mobile-app .home-page .room-intro > .home-world-stage { grid-row: 3 !important; }
+  }
+}
+
+
+@layer utilities {
+  /* Home clock and weather use the same UI typeface; hierarchy comes from size and weight. */
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual :is(.clock, .weather-widget) {
+    font-family: inherit !important;
+  }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual .clock {
+    letter-spacing: normal !important;
+  }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual .clock time {
+    display: block;
+    font-family: inherit !important;
+    font-size: clamp(26px, 2.2vw, 34px) !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+    letter-spacing: -.045em !important;
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual .clock span,
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual .weather-summary span {
+    color: var(--muted);
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 400;
+    line-height: 1.4 !important;
+    letter-spacing: normal !important;
+  }
+  body[data-product=mobile] #mobile-app .home-page .room-intro .ritual .weather-summary strong {
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Settings use an in-app page stack on every screen size. */
+.settings-page .settings-groups { display: grid; gap: 18px; min-width: 0; }
+.settings-category-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; }
+.settings-category-card { display: grid; grid-template-columns: 42px minmax(0, 1fr) 18px; align-items: center; gap: 12px; min-width: 0; min-height: 84px; padding: 14px; border: 1px solid color-mix(in srgb, var(--line) 82%, transparent); border-radius: 20px; background: color-mix(in srgb, var(--panel) 86%, transparent); color: var(--fg); text-align: left; box-shadow: 0 4px 14px color-mix(in srgb, var(--fg) 4%, transparent), inset 0 1px 0 color-mix(in srgb, white 68%, transparent); transition: transform .18s ease, border-color .18s ease, background-color .18s ease; }
+.settings-category-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--panel)); }
+.settings-category-card:focus-visible, .settings-detail-back:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 3px; }
+.settings-category-card > .settings-group-icon { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-radius: 15px; background: color-mix(in srgb, var(--accent) 10%, var(--panel)); color: var(--accent); }
+.settings-category-card > .settings-group-icon svg { width: 21px; height: 21px; }
+.settings-category-copy { display: grid; gap: 4px; min-width: 0; }
+.settings-category-copy strong { color: var(--fg); font-size: 14px; font-weight: 700; line-height: 1.3; }
+.settings-category-copy small { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.settings-category-card > .control-symbol { width: 17px; height: 17px; color: var(--muted); }
+.settings-detail-toolbar { display: flex; align-items: center; gap: 14px; min-width: 0; margin: 0 0 18px; }
+.settings-detail-toolbar[hidden], .settings-category-nav[hidden], .settings-group[hidden] { display: none !important; }
+.settings-detail-toolbar h2 { margin: 0; color: var(--fg); font-size: clamp(22px, 3vw, 30px); font-weight: 720; letter-spacing: -.035em; line-height: 1.12; overflow-wrap: anywhere; }
+.settings-detail-back { display: inline-flex; flex: none; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--panel) 88%, transparent); color: var(--fg); font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.2; cursor: pointer; }
+.settings-detail-back svg { width: 18px; height: 18px; }
+.settings-page[data-settings-view=detail] > .settings-welcome,
+.settings-page[data-settings-view=detail] > h2 { display: none !important; }
+.settings-page[data-settings-view=detail] .settings-group { display: grid; gap: 16px; min-width: 0; }
+.settings-page[data-settings-view=detail] .settings-group-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.settings-page[data-settings-view=detail] .settings-card { min-width: 0; }
+.settings-page[data-settings-view=detail] .settings-group-heading[hidden] { display: none !important; }
+body[data-product=mobile] .home-page .home-world-stage .home-world-art { object-fit: contain; object-position: right bottom; transform: none; mix-blend-mode: normal; filter: drop-shadow(0 12px 18px color-mix(in srgb, #132844 18%, transparent)); }
+html[data-theme=dark] body[data-product=mobile] .home-page .home-world-stage .home-world-art { filter: brightness(.94) drop-shadow(0 12px 20px #050b18a8); }
+html[data-theme=auto] body[data-product=mobile] .home-page .home-world-stage .home-world-art { filter: drop-shadow(0 12px 18px color-mix(in srgb, #132844 18%, transparent)); }
+.public-reading-mascot { filter: drop-shadow(0 20px 24px #18345b20); }
+.control-sheet[data-settings-page=true][open] { position: fixed !important; inset: 0 !important; box-sizing: border-box !important; width: 100vw !important; width: 100dvw !important; max-width: none !important; height: 100vh !important; height: 100dvh !important; max-height: none !important; margin: 0 !important; padding: max(18px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important; overflow: auto !important; border: 0 !important; border-radius: 0 !important; background: var(--sela-canvas, var(--bg)) !important; color: var(--sela-ink, var(--fg)) !important; box-shadow: none !important; }
+.control-sheet[data-settings-page=true]::backdrop { background: transparent !important; backdrop-filter: none !important; }
+.control-sheet[data-settings-page=true] > .control-sheet-header { position: sticky; top: calc(-1 * max(18px, env(safe-area-inset-top))); z-index: 2; width: min(100%, 980px); margin: 0 auto 18px; padding: 12px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent); background: var(--sela-canvas, var(--bg)); }
+.control-sheet[data-settings-page=true] > :not(.control-sheet-header) { width: min(100%, 980px); margin-right: auto; margin-left: auto; }
+.control-sheet[data-settings-page=true] .about-dialog-content { max-width: 980px; margin: 0 auto; }
+@media (max-width: 680px) {
+  .settings-category-nav { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .settings-category-card { min-height: 72px; padding: 11px 12px; border-radius: 17px; }
+  .settings-page[data-settings-view=detail] .settings-group-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .settings-category-card { transition: none; } .settings-category-card:hover { transform: none; } }

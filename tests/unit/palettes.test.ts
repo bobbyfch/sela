@@ -12,10 +12,10 @@ function contrast(first:string,second:string) {
 }
 
 test('all viewer palette accents are unique, white-text readable, and have a distinct motif',()=>{
-  assert.equal(paletteCatalog.length,18);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.key)).size,18);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.accent)).size,18);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.motif)).size,18);
+  assert.equal(paletteCatalog.length,8);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.key)).size,8);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.accent)).size,8);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.motif)).size,8);
   for(const palette of paletteCatalog){
     assert.ok(contrast(palette.accent,'#ffffff')>=4.5,`${palette.key} accent contrast is ${contrast(palette.accent,'#ffffff').toFixed(2)}:1`);
     assert.notEqual(getPaletteDefinition(palette.key).soft,palette.accent);

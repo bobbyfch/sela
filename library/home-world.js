@@ -11951,10 +11951,13 @@ var Zs = {
 	remove: "M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7",
 	undo: "M3 10h11a7 7 0 0 1 0 14M3 10l6-6M3 10l6 6",
 	share: "M12 16V2m-5 5 5-5 5 5M5 11v10h14V11",
+	back: "M20 12H4m7-7-7 7 7 7",
 	shield: "M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6ZM8 12l3 3 5-6",
 	filter: "M4 6h16M7 12h10M10 18h4",
 	more: "M5 12h.01M12 12h.01M19 12h.01",
 	refresh: "M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1",
+	play: "M8 5v14l11-7Z",
+	pause: "M7 5h4v14H7Zm7 0h4v14h-4Z",
 	image: "M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 9h.01",
 	shelf: "M3 5h18M3 12h18M3 19h18M5 5v7m7-7v7m7-7v7M7 12v7m10-7v7",
 	grid: "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z",
@@ -11999,50 +12002,34 @@ var $s = [
 		motif: "sparkles"
 	},
 	{
-		key: "kids",
-		en: "Pelangi",
-		id: "Pelangi",
-		accent: "#c83f59",
-		soft: "#fff0f3",
-		motif: "smile"
-	},
-	{
-		key: "cyberpunk",
-		en: "Neon",
-		id: "Neon",
-		accent: "#7045bf",
-		soft: "#f4efff",
-		motif: "planet"
-	},
-	{
 		key: "forest",
 		en: "Rimba",
 		id: "Rimba",
-		accent: "#147461",
-		soft: "#eaf8f4",
+		accent: "#16756a",
+		soft: "#e8f7f3",
 		motif: "leaf"
 	},
 	{
 		key: "sakura",
 		en: "Sakura",
 		id: "Sakura",
-		accent: "#b83f76",
-		soft: "#fff0f7",
+		accent: "#c14672",
+		soft: "#fff0f6",
 		motif: "flower"
 	},
 	{
 		key: "ocean",
 		en: "Samudra",
 		id: "Samudra",
-		accent: "#147ba8",
-		soft: "#eaf7fe",
+		accent: "#087fa2",
+		soft: "#e9f7fb",
 		motif: "wave"
 	},
 	{
 		key: "lavender",
 		en: "Lembayung",
 		id: "Lembayung",
-		accent: "#5f4ab9",
+		accent: "#6555b8",
 		soft: "#f0efff",
 		motif: "moon"
 	},
@@ -12050,89 +12037,25 @@ var $s = [
 		key: "citrus",
 		en: "Kenanga",
 		id: "Kenanga",
-		accent: "#557a1d",
-		soft: "#f2f8e8",
+		accent: "#687b17",
+		soft: "#f4f7e7",
 		motif: "sun"
 	},
 	{
-		key: "laskar",
+		key: "senja",
 		en: "Senja",
 		id: "Senja",
-		accent: "#155d86",
-		soft: "#fff4c2",
-		motif: "compass"
-	},
-	{
-		key: "bumi",
-		en: "Pesisir",
-		id: "Pesisir",
-		accent: "#12675a",
-		soft: "#d8f1e9",
+		accent: "#b84c2c",
+		soft: "#fff1e9",
 		motif: "mountain"
 	},
 	{
-		key: "hujan",
-		en: "Hujan",
-		id: "Hujan",
-		accent: "#3e5f9f",
-		soft: "#e5efff",
-		motif: "rain"
-	},
-	{
-		key: "nurbaya",
-		en: "Seroja",
-		id: "Seroja",
-		accent: "#884b68",
-		soft: "#fce7f0",
-		motif: "lotus"
-	},
-	{
-		key: "wijck",
-		en: "Nila",
-		id: "Nila",
-		accent: "#155b78",
-		soft: "#e4f5fb",
-		motif: "crane"
-	},
-	{
-		key: "menara",
-		en: "Embun",
-		id: "Embun",
-		accent: "#64751d",
-		soft: "#f1f5d6",
-		motif: "tower"
-	},
-	{
-		key: "cantik",
-		en: "Purnama",
-		id: "Purnama",
-		accent: "#8a3f64",
-		soft: "#fae6ef",
-		motif: "shell"
-	},
-	{
-		key: "kopi",
+		key: "arunika",
 		en: "Arunika",
 		id: "Arunika",
-		accent: "#80501f",
-		soft: "#f9eee0",
+		accent: "#947000",
+		soft: "#fbf5dc",
 		motif: "tea"
-	},
-	{
-		key: "laut",
-		en: "Selat",
-		id: "Selat",
-		accent: "#006478",
-		soft: "#ddf4f8",
-		motif: "boat"
-	},
-	{
-		key: "rindu",
-		en: "Jingga",
-		id: "Jingga",
-		accent: "#4d5e9d",
-		soft: "#eceeff",
-		motif: "lantern"
 	}
 ];
 $s.map((e) => e.key);
@@ -12142,7 +12065,7 @@ function ec(e) {
 typeof matchMedia == "function" && matchMedia("(prefers-color-scheme: dark)");
 //#endregion
 //#region app/library/home-world.ts
-var tc = new URL("../site/art/sela-mage-sky.webp", location.href).href, nc = new URL("../library/assets/jculture-companions-v3.webp", location.href).href, rc = {
+var tc = new URL("../site/art/sela-reader-mascot-3d.webp", location.href).href, nc = new URL("../library/assets/sela-companions-3d.webp", location.href).href, rc = {
 	fox: {
 		column: 0,
 		row: 0

@@ -1,14 +1,15 @@
 import {test,expect} from '@playwright/test';
+import {openSettingsCategory} from './settings-helpers.ts';
 const android='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
 test('mobile appearance lives in settings and backup sharing has a truthful fallback',async({browser})=>{
  const c=await browser.newContext({userAgent:android,viewport:{width:320,height:740},serviceWorkers:'block'});const page=await c.newPage();
  await page.addInitScript(()=>{Object.defineProperty(navigator,'canShare',{value:()=>false,configurable:true});});await page.emulateMedia({colorScheme:'light'});await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  await expect(page.locator('.topbar #theme')).toHaveCount(1);await expect(page.locator('#theme')).toBeVisible();
- await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.locator('#theme')).toBeVisible();await expect(page.locator('#language')).toBeVisible();
+ await page.getByRole('button',{name:'Settings',exact:true}).click();await openSettingsCategory(page,'Reading & appearance');await expect(page.locator('#theme')).toBeVisible();await expect(page.locator('#language')).toBeVisible();
  await page.locator('#theme').click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');await page.locator('#theme').click();await expect(page.locator('html')).toHaveAttribute('data-theme','light');
- await page.getByRole('button',{name:'Share backup',exact:true}).click();await expect(page.locator('#status')).toContainText('Download the backup');
+ await openSettingsCategory(page,'Your library & data');await page.getByRole('button',{name:'Share backup',exact:true}).click();await expect(page.locator('#status')).toContainText('Download the backup');
  await expect(page.locator('#connect-cloud')).toHaveCount(0);await expect(page.locator('.backup-sharing a')).toHaveCount(0);
- await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.locator('.settings-page h2')).toHaveText('Pengaturan');
+ await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(page.getByRole('heading',{name:'Rak dan data pribadimu',exact:true})).toBeVisible();
  await page.locator('[data-tab=home]').click();await expect(page.locator('#theme')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:'test-results/reader-mobile-home.png',fullPage:true});await c.close();
 });

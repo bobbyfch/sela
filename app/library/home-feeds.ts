@@ -4,8 +4,9 @@ import {localeBase} from '../../src/i18n.ts';
 export type HomeFeedItem={title:string;description?:string;url:string;source?:string;date?:string;image?:string;year?:number};
 export const HOME_NEWS_TOPICS=['books','science','nature','art','technology','culture'] as const;
 export type HomeNewsTopic=typeof HOME_NEWS_TOPICS[number];
-export const HOME_NEWS_SOURCES=['auto','google','gdelt','antara'] as const;
+export const HOME_NEWS_SOURCES=['auto','antara','guardian'] as const;
 export type HomeNewsSource=typeof HOME_NEWS_SOURCES[number];
+const guardianTopicFeeds:Record<HomeNewsTopic,string>={books:'books',science:'science',nature:'environment',art:'artanddesign',technology:'technology',culture:'culture'};
 const antaraTopicFeeds:Record<HomeNewsTopic,{path:string;label:string}>={
  books:{path:'humaniora',label:'Humaniora'},science:{path:'tekno',label:'Tekno'},nature:{path:'warta-bumi',label:'Warta Bumi'},art:{path:'lifestyle',label:'Lifestyle'},technology:{path:'tekno',label:'Tekno'},culture:{path:'hiburan',label:'Hiburan'}
 };
@@ -18,20 +19,7 @@ const topicTerms:Record<HomeNewsTopic,string[]>={
  culture:['budaya','film','musik','konser','teater','hiburan','seni','festival','artis','sinem','tradisi']
 };
 
-const topicWords:Record<string,Record<HomeNewsTopic,string[]>>={
- en:{books:['books','literature','publishing'],science:['science','research'],nature:['nature','wildlife','climate'],art:['art','design','museum'],technology:['technology','innovation'],culture:['culture','cinema','music']},
- id:{books:['buku','sastra','penerbitan'],science:['sains','penelitian'],nature:['alam','satwa','iklim'],art:['seni','desain','museum'],technology:['teknologi','inovasi'],culture:['budaya','film','musik']},
- ja:{books:['本','文学','出版'],science:['科学','研究'],nature:['自然','野生動物','気候'],art:['芸術','デザイン','美術館'],technology:['技術','イノベーション'],culture:['文化','映画','音楽']},
- es:{books:['libros','literatura','edición'],science:['ciencia','investigación'],nature:['naturaleza','fauna','clima'],art:['arte','diseño','museo'],technology:['tecnología','innovación'],culture:['cultura','cine','música']},
- fr:{books:['livres','littérature','édition'],science:['science','recherche'],nature:['nature','faune','climat'],art:['art','design','musée'],technology:['technologie','innovation'],culture:['culture','cinéma','musique']},
- de:{books:['Bücher','Literatur','Verlag'],science:['Wissenschaft','Forschung'],nature:['Natur','Wildtiere','Klima'],art:['Kunst','Design','Museum'],technology:['Technologie','Innovation'],culture:['Kultur','Film','Musik']},
- pt:{books:['livros','literatura','publicação'],science:['ciência','pesquisa'],nature:['natureza','vida selvagem','clima'],art:['arte','design','museu'],technology:['tecnologia','inovação'],culture:['cultura','cinema','música']},
- zh:{books:['图书','文学','出版'],science:['科学','研究'],nature:['自然','野生动物','气候'],art:['艺术','设计','博物馆'],technology:['科技','创新'],culture:['文化','电影','音乐']},
- ko:{books:['책','문학','출판'],science:['과학','연구'],nature:['자연','야생동물','기후'],art:['예술','디자인','박물관'],technology:['기술','혁신'],culture:['문화','영화','음악']}
-};
 const wikiLanguages=new Set(['en','id','ja','es','fr','de','pt','zh','ko']);
-const gdeltLanguage:Record<string,string>={en:'english',id:'indonesian',ja:'japanese',es:'spanish',fr:'french',de:'german',pt:'portuguese',zh:'chinese',ko:'korean'};
-const googleNewsLocale:Record<'en'|'id'|'ja',{hl:string;gl:string;ceid:string}>={en:{hl:'en-US',gl:'US',ceid:'US:en'},id:{hl:'id',gl:'ID',ceid:'ID:id'},ja:{hl:'ja',gl:'JP',ceid:'JP:ja'}};
 
 function cacheRead<T>(key:string,ttl:number,allowStale=false):T[]|undefined{try{const value=JSON.parse(localStorage.getItem(key)||'null');if(value&&Array.isArray(value.items)&&(allowStale||Date.now()-value.at<ttl))return value.items as T[];}catch{}return;}
 function cacheWrite<T>(key:string,items:T[]){try{localStorage.setItem(key,JSON.stringify({at:Date.now(),items}));}catch{/* Feed remains available for this visit. */}}
@@ -62,23 +50,10 @@ export async function loadOnThisDay(language:string,date=new Date(),signal?:Abor
  return cacheRead<HomeFeedItem>(key,0,true)||[];
 }
 
-export function buildNewsUrl(topics:HomeNewsTopic[],language:string):string{
- const lang=localeBase(language),dictionary=topicWords[lang]||topicWords.en,selected=topics.filter(topic=>HOME_NEWS_TOPICS.includes(topic));
- const words=[...new Set((selected.length?selected:['books','science','nature']).flatMap(topic=>dictionary[topic]))].slice(0,18);
- // GDELT rejects short exact phrases (for example "alam", "seni", and 本).
- // Keep every term unquoted so localized short words remain searchable.
- const query=`(${words.map(word=>word.replace(/["\\()]/g,' ').trim()).filter(Boolean).join(' OR ')}) sourcelang:${gdeltLanguage[lang]||'english'}`;
- return 'https://api.gdeltproject.org/api/v2/doc/doc?'+new URLSearchParams({query,mode:'artlist',format:'json',maxrecords:'8',timespan:'7d',sort:'HybridRel'});
-}
-
-/** Google News RSS is one multilingual source; RSS2JSON is only used as a CORS bridge. */
-export function buildGoogleNewsUrl(topics:HomeNewsTopic[],language:string):string{
- const lang=localeBase(language),config=googleNewsLocale[(lang in googleNewsLocale?lang:'en') as 'en'|'id'|'ja'],selected=topics.filter(topic=>HOME_NEWS_TOPICS.includes(topic));
- const words=[...new Set((selected.length?selected:['books','science','nature']).flatMap(topic=>(topicWords[lang]||topicWords.en)[topic]))].slice(0,8);
- const feed=new URL(lang==='id'?'https://news.google.com/rss':'https://news.google.com/rss/search');
- if(lang!=='id')feed.searchParams.set('q',words.join(' OR '));
- feed.searchParams.set('hl',config.hl);feed.searchParams.set('gl',config.gl);feed.searchParams.set('ceid',config.ceid);
- return 'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed.href);
+/** The RSS proxy is used only for these fixed, public Guardian category feeds. */
+export function buildGuardianNewsUrl(topic:HomeNewsTopic):string{
+ if(!HOME_NEWS_TOPICS.includes(topic))throw new TypeError('Unsupported news topic.');
+ return `https://proxy.cors.dev/https://www.theguardian.com/${guardianTopicFeeds[topic]}/rss`;
 }
 
 function decodeXml(value:string):string{return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/&#x([\da-f]+);/gi,(_m,hex:string)=>String.fromCodePoint(parseInt(hex,16))).replace(/&#(\d+);/g,(_m,num:string)=>String.fromCodePoint(Number(num))).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'");}
@@ -101,28 +76,26 @@ export function parseAntaraRss(xml:string):HomeFeedItem[]{
  return items;
 }
 
-/** Convert the documented RSS2JSON response shape without treating feed HTML as trusted markup. */
-export function parseGoogleNews(value:unknown,topics:readonly HomeNewsTopic[]=HOME_NEWS_TOPICS,language='en'):HomeFeedItem[]{
- const root=value as {status?:unknown;items?:unknown},rows=Array.isArray(root?.items)?root.items:[],lang=localeBase(language),terms=(topics.length?topics:['books','science','nature']).flatMap(topic=>(topicWords[lang]||topicWords.en)[topic]).map(term=>term.toLocaleLowerCase(lang));
+/** Parse the publisher RSS as text; article URLs and thumbnails stay host-allowlisted. */
+export function parseGuardianRss(xml:string):HomeFeedItem[]{
+ if(typeof xml!=='string'||xml.length>1024*1024||/<!DOCTYPE|<!ENTITY/i.test(xml))return [];
  const items:HomeFeedItem[]=[];
- for(const row of rows.slice(0,10)){
-  if(!row||typeof row!=='object')continue;const entry=row as Record<string,unknown>,rawTitle=typeof entry.title==='string'?stripMarkup(decodeXml(entry.title)).trim():'';
-  const match=rawTitle.match(/\s[-–—]\s([^\s].*)$/),publisher=match?.[1]?.trim()||'',title=(match?rawTitle.slice(0,match.index):rawTitle).trim(),url=safeLink(entry.link,/^(?:news\.)?google\.com$/);
+ for(const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item\s*>/gi)){
+  const row=match[1],title=stripMarkup(rssTag(row,'title')),url=safeLink(rssTag(row,'link'),/^(?:www\.)?theguardian\.com$/);
   if(!title||!url)continue;
-  const rawDescription=typeof entry.description==='string'?stripMarkup(decodeXml(entry.description)).trim():'';
-  if(lang==='id'&&terms.length&&!terms.some(term=>`${title} ${rawDescription}`.toLocaleLowerCase(lang).includes(term)))continue;
-  const enclosure=entry.enclosure&&typeof entry.enclosure==='object'?(entry.enclosure as Record<string,unknown>).link:undefined;
-  const image=safeLink(entry.thumbnail)||safeLink(enclosure)||undefined;
-  items.push({title:title.slice(0,300),description:rawDescription.slice(0,500)||undefined,url,source:typeof entry.author==='string'&&entry.author.trim()?entry.author.trim().slice(0,100):publisher.slice(0,100)||'Google News',date:typeof entry.pubDate==='string'?entry.pubDate:undefined,image});
+  const description=stripMarkup(rssTag(row,'description')).slice(0,500),date=rssTag(row,'pubDate');
+  const enclosure=/<enclosure\b[^>]*\burl\s*=\s*(["'])(.*?)\1[^>]*>/i.exec(row)?.[2]||/<(?:[\w.-]+:)?(?:content|thumbnail)\b[^>]*\burl\s*=\s*(["'])(.*?)\1[^>]*>/i.exec(row)?.[2];
+  const image=safeLink(enclosure?decodeXml(enclosure):'',/^(?:i\.guim\.co\.uk|media\.theguardian\.com)$/);
+  items.push({title:title.slice(0,300),description:description||undefined,url,source:'The Guardian',date:date||undefined,image});
+  if(items.length===12)break;
  }
  return items;
 }
 
-async function loadGoogleNews(topics:HomeNewsTopic[],language:string,signal?:AbortSignal):Promise<HomeFeedItem[]>{
- const response=await fetch(buildGoogleNewsUrl(topics,language),{signal:requestSignal(signal),headers:{Accept:'application/json'},credentials:'omit',referrerPolicy:'no-referrer'});
- if(!response.ok)throw Error(`Google News RSS bridge returned ${response.status}`);
- const data=JSON.parse(await responseText(response,1024*1024));if(data?.status!=='ok')throw Error('Google News RSS bridge returned an unavailable feed.');
- return parseGoogleNews(data,topics,language);
+async function loadGuardianNews(topic:HomeNewsTopic,signal?:AbortSignal):Promise<HomeFeedItem[]>{
+ const response=await fetch(buildGuardianNewsUrl(topic),{signal:requestSignal(signal),headers:{Accept:'application/rss+xml, application/xml, text/xml'},credentials:'omit',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error(`The Guardian feed returned ${response.status}`);
+ return parseGuardianRss(await responseText(response,1024*1024));
 }
 
 async function loadAntaraNews(feed='terkini',signal?:AbortSignal):Promise<HomeFeedItem[]>{
@@ -148,37 +121,6 @@ async function loadAntaraTopics(topics:HomeNewsTopic[],signal?:AbortSignal):Prom
  return items.sort((a,b)=>(Date.parse(b.date||'')||0)-(Date.parse(a.date||'')||0)).slice(0,8);
 }
 
-async function loadGdeltNews(topics:HomeNewsTopic[],language:string,signal?:AbortSignal):Promise<HomeFeedItem[]>{
- const response=await fetch(buildNewsUrl(topics,language),{signal:requestSignal(signal),headers:{Accept:'application/json'},credentials:'omit',referrerPolicy:'no-referrer'});
- if(!response.ok)throw Error(`News source returned ${response.status}`);
- const data=JSON.parse(await responseText(response,1024*1024));
- return (Array.isArray(data.articles)?data.articles:[]).slice(0,8).map((row:any)=>{
-  const url=safeLink(row.url);if(!url||typeof row.title!=='string'||!row.title.trim())return;
-  return {title:row.title.trim().slice(0,300),url,source:typeof row.domain==='string'?row.domain.slice(0,100):'News',date:typeof row.seendate==='string'?row.seendate:undefined,image:safeLink(row.socialimage)};
- }).filter((item:HomeFeedItem|undefined):item is HomeFeedItem=>!!item);
-}
-
-function newsTimestamp(value?:string):number{
- if(!value)return 0;
- const gdelt=/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/.exec(value);
- if(gdelt)return Date.UTC(Number(gdelt[1]),Number(gdelt[2])-1,Number(gdelt[3]),Number(gdelt[4]),Number(gdelt[5]),Number(gdelt[6]));
- const parsed=Date.parse(value);return Number.isFinite(parsed)?parsed:0;
-}
-
-function mergeNewsSources(results:PromiseSettledResult<HomeFeedItem[]>[]):HomeFeedItem[]{
- const merged=new Map<string,{item:HomeFeedItem;order:number;priority:number}>();let order=0;
- for(const result of results){if(result.status!=='fulfilled')continue;
-  for(const item of result.value){
-   const titleKey=item.title.toLocaleLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
-   const key=titleKey||item.url.toLocaleLowerCase(),existing=merged.get(key);
-   if(existing){if(!existing.item.image&&item.image)existing.item.image=item.image;if(!existing.item.description&&item.description)existing.item.description=item.description;if(!existing.item.date&&item.date)existing.item.date=item.date;continue;}
-   const priority=item.source?.startsWith('ANTARA')?0:item.url.startsWith('https://news.google.com/')?1:2;
-   merged.set(key,{item:{...item},order:order++,priority});
-  }
- }
- return [...merged.values()].sort((a,b)=>newsTimestamp(b.item.date)-newsTimestamp(a.item.date)||a.priority-b.priority||a.order-b.order).slice(0,12).map(entry=>entry.item);
-}
-
 function filterAntaraTopics(items:HomeFeedItem[],topics:HomeNewsTopic[]):HomeFeedItem[]{
  const selected=topics.filter(topic=>HOME_NEWS_TOPICS.includes(topic));
  if(!selected.length)return [];
@@ -188,36 +130,26 @@ function filterAntaraTopics(items:HomeFeedItem[],topics:HomeNewsTopic[]):HomeFee
  });
 }
 
-/** Topic-filtered GDELT headlines. Only the selected topic terms and app language are sent. */
-export async function loadTopicNews(topics:HomeNewsTopic[],language:string,signal?:AbortSignal,source:HomeNewsSource='auto',onProgress?:(items:HomeFeedItem[])=>void):Promise<HomeFeedItem[]>{
+/** Load one category at a time so callers cannot combine separate topic shelves. */
+export async function loadTopicNews(selectedTopic:HomeNewsTopic,language:string,signal?:AbortSignal,source:HomeNewsSource='auto',onProgress?:(items:HomeFeedItem[])=>void):Promise<HomeFeedItem[]>{
  if(!HOME_NEWS_SOURCES.includes(source))source='auto';
- const key=`sela-home:news:${localeBase(language)}:${[...topics].sort().join(',')}${source==='auto'?'':`:${source}`}`;
+ const topic=HOME_NEWS_TOPICS.includes(selectedTopic)?selectedTopic:'books';
+ const key=`sela-home:news:${localeBase(language)}:${topic}${source==='auto'?'':`:${source}`}`;
  const cached=cacheRead<HomeFeedItem>(key,15*60*1000);if(cached)return cached;
- const lang=localeBase(language);let items:HomeFeedItem[]=[];let failures:unknown[]=[];
- if(source==='google'||source==='gdelt'){
-  try{items=source==='google'?await loadGoogleNews(topics,language,signal):await loadGdeltNews(topics,language,signal);}
-  catch(error){if(signal?.aborted)throw error;failures=[error];}
- }else if(source==='antara'){
-  if(lang!=='id')throw new Error('ANTARA is available when the app language is Indonesian.');
-  try{items=await loadAntaraTopics(topics,signal);if(!items.length)items=filterAntaraTopics(await loadAntaraNews('terkini',signal),topics).slice(0,8);}
-  catch(error){if(signal?.aborted)throw error;failures=[error];}
- }else{
-  const tasks:Promise<HomeFeedItem[]>[]=[];
-  if(lang==='id')tasks.push(loadAntaraTopics(topics,signal));
-  tasks.push(loadGoogleNews(topics,language,signal),loadGdeltNews(topics,language,signal));
-  const progress=new Map<number,PromiseSettledResult<HomeFeedItem[]>>();
-  function publishProgress(){if(!onProgress)return;const settled:PromiseSettledResult<HomeFeedItem[]>[]=[];for(let index=0;index<tasks.length;index++){const result=progress.get(index);if(result)settled.push(result);}const partial=mergeNewsSources(settled);if(partial.length)onProgress(partial);}
-  const results=await Promise.all(tasks.map((task,index)=>task.then(
-   value=>{const result:PromiseFulfilledResult<HomeFeedItem[]>={status:'fulfilled',value};progress.set(index,result);publishProgress();return result;},
-   reason=>{const result:PromiseRejectedResult={status:'rejected',reason};progress.set(index,result);publishProgress();return result;}
-  )));failures=results.filter((result):result is PromiseRejectedResult=>result.status==='rejected').map(result=>result.reason);items=mergeNewsSources(results);
-  if(!items.length&&lang==='id'){
-   try{items=filterAntaraTopics(await loadAntaraNews('terkini',signal),topics).slice(0,8);}
-   catch(error){if(signal?.aborted)throw error;}
-  }
+ const lang=localeBase(language),failures:unknown[]=[];
+ if(source==='antara'&&lang!=='id')throw new Error('ANTARA is available when the app language is Indonesian.');
+ const providers:('antara'|'guardian')[]=source==='auto'?(lang==='id'?['antara','guardian']:['guardian']):source==='antara'?['antara','guardian']:lang==='id'?['guardian','antara']:['guardian'];
+ for(const provider of providers){
+  let items:HomeFeedItem[]=[];
+  try{
+   if(provider==='antara'){
+    items=await loadAntaraTopics([topic],signal);
+    if(!items.length)items=filterAntaraTopics(await loadAntaraNews('terkini',signal),[topic]).slice(0,8);
+   }else items=await loadGuardianNews(topic,signal);
+  }catch(error){if(signal?.aborted)throw error;failures.push(error);continue;}
+  if(items.length){cacheWrite(key,items);onProgress?.(items);return items;}
  }
  if(signal?.aborted)throw signal.reason||new DOMException('The operation was aborted.','AbortError');
- if(items.length){cacheWrite(key,items);return items;}
  const stale=cacheRead<HomeFeedItem>(key,0,true);if(stale?.length)return stale;
  if(failures.length)throw failures[0];
  return [];
@@ -227,4 +159,4 @@ export function readNewsTopics():HomeNewsTopic[]{try{const value=JSON.parse(loca
 export function saveNewsTopics(value:unknown):HomeNewsTopic[]{const valid:HomeNewsTopic[]=Array.isArray(value)?[...new Set(value.filter((item):item is HomeNewsTopic=>typeof item==='string'&&HOME_NEWS_TOPICS.includes(item as HomeNewsTopic)))].slice(0,4):[];const result:HomeNewsTopic[]=valid.length?valid:['books','science','nature'];try{localStorage.setItem('sela-home:news-topics',JSON.stringify(result));}catch{}return result;}
 const HOME_NEWS_SOURCE_KEY='sela-home:news-source';
 export function readNewsSource():HomeNewsSource{try{const value=localStorage.getItem(HOME_NEWS_SOURCE_KEY);if(HOME_NEWS_SOURCES.includes(value as HomeNewsSource))return value as HomeNewsSource;}catch{}return 'auto';}
-export function saveNewsSource(value:unknown):HomeNewsSource{const source=HOME_NEWS_SOURCES.includes(value as HomeNewsSource)?value as HomeNewsSource:'auto';try{localStorage.setItem(HOME_NEWS_SOURCE_KEY,source);}catch{}return source;}
+export function saveNewsSource(value:unknown):HomeNewsSource{const source=value==='google'||value==='gdelt'?'auto':HOME_NEWS_SOURCES.includes(value as HomeNewsSource)?value as HomeNewsSource:'auto';try{localStorage.setItem(HOME_NEWS_SOURCE_KEY,source);}catch{}return source;}

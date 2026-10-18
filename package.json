@@ -1,7 +1,7 @@
 {
   "name": "@bobbyfch/sela",
-  "version": "0.9.0-beta.4",
-  "description": "Sela personal reader with a clean, colorful local-first bookshelf and lightweight framework-independent document viewer",
+  "version": "0.9.0-beta.7",
+  "description": "Local-first personal reader with source-aware open-book discovery, a private bookshelf, and a framework-independent document viewer",
   "type": "module",
   "imports": {
     "#components/*": "./ui/components/*.tsx",
@@ -14,6 +14,18 @@
     "type": "git",
     "url": "https://github.com/bobbyfch/sela.git"
   },
+  "homepage": "https://bobbyfch.github.io/sela/",
+  "bugs": {
+    "url": "https://github.com/bobbyfch/sela/issues"
+  },
+  "keywords": [
+    "ebook-reader",
+    "personal-library",
+    "epub",
+    "pdf-reader",
+    "local-first",
+    "web-reader"
+  ],
   "main": "./dist/js/sela.esm.js",
   "module": "./dist/js/sela.esm.js",
   "types": "./dist/types/index.d.ts",
@@ -38,6 +50,7 @@
   "files": [
     "dist",
     "adapters",
+    "licenses",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],

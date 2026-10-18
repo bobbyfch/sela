@@ -15,12 +15,14 @@ async function json(url, signal) {
   return data;
 }
 const wiki = (params, signal) => json("https://id.wikisource.org/w/api.php?" + new URLSearchParams({ format: "json", origin: "*", ...params }), signal);
-export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, category = "", signal } = {}) {
-  if (!["wikisource", "gitenberg"].includes(source)) return externalBooks({ source, query, page, category, signal });
+export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, category = "", collection = "", signal } = {}) {
+  if (!["wikisource", "gitenberg"].includes(source)) return externalBooks({ source, query, page, category, collection, signal });
   if (source === "wikisource") {
-    const data2 = await wiki(query ? { action: "query", list: "search", srnamespace: "0", srsearch: query, srlimit: "24", sroffset: String((page - 1) * 24) } : { action: "query", list: "categorymembers", cmtitle: "Kategori:Novel", cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} }, signal);
-    const rows = data2.query?.search || data2.query?.categorymembers || [];
-    return { books: rows.map((b) => ({ id: "ws-" + b.pageid, title: b.title, source, author: "", language: "id", genre: "Wikisumber", rights: "Original work: see source. Wikisource contributions: CC BY-SA.", pageid: b.pageid })), next: query ? data2.continue?.sroffset != null : data2.continue?.cmcontinue != null, continuation: data2.continue?.cmcontinue, total: data2.query?.searchinfo?.totalhits };
+    const categories = { fiction: "Kategori:Novel", poetry: "Kategori:Puisi", "short-stories": "Kategori:Cerita pendek" };
+    const browseCategory = categories[category];
+    const data2 = await wiki(browseCategory ? { action: "query", list: "categorymembers", cmtitle: browseCategory, cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} } : query ? { action: "query", list: "search", srnamespace: "0", srsearch: query, srlimit: "24", sroffset: String((page - 1) * 24) } : { action: "query", list: "categorymembers", cmtitle: "Kategori:Novel", cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} }, signal);
+    const rows = (data2.query?.search || data2.query?.categorymembers || []).filter((b) => !query || String(b.title || "").toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+    return { books: rows.map((b) => ({ id: "ws-" + b.pageid, title: b.title, source, author: "", language: "id", genre: browseCategory?.replace("Kategori:", "") || "Wikisumber", rights: "Original work: see source. Wikisource contributions: CC BY-SA.", pageid: b.pageid })), next: browseCategory ? !!data2.continue?.cmcontinue : query ? data2.continue?.sroffset != null : data2.continue?.cmcontinue != null, continuation: data2.continue?.cmcontinue, total: data2.query?.searchinfo?.totalhits };
   }
   const q = (query.replace(/[:<>]/g, " ").slice(0, 100) + " user:GITenberg").trim();
   const data = await json("https://api.github.com/search/repositories?" + new URLSearchParams({ q, per_page: "24", page: String(page) }), signal);

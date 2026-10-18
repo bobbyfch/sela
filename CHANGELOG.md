@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.9.0-beta.7 — Settings and visual polish (2026-10-18)
+
+- Keep full-page Settings category names, descriptions, and accessible labels in sync when the app language changes.
+- Refine the minimalist book identity, rounded outline navigation, transparent chibi companions, distinct Indonesian palettes, and optional OLED black mode.
+- Recheck the public page, web app, and reader at phone, tablet, and desktop breakpoints; refresh release documentation for this beta.
+
+## 0.9.0-beta.6 — Sela design refresh (2026-10-18)
+
+- Redraw the Sela Books mark, favicon, installed-app icons and navigation set with a restrained book symbol and rounded outline icons.
+- Replace legacy character art with a transparent 3D chibi reading companion and a coordinated four-animal companion atlas across the app and public site.
+- Reduce the palette picker to eight distinct Indonesian-named palettes and keep their palette motifs visible across Home and reader materials.
+- Turn Settings into a categorized, navigable set of full-page sections with an in-page back action; keep appearance and OLED controls easy to find.
+- Align the public page, web app, and embedded reader around the same visual system, and document the design tokens and component rules.
+- Refresh the bilingual README, source documentation, icon metadata, and third-party artwork notices.
+
+## 0.9.0-beta.5 — Source-first discovery (2026-10-18)
+
+- Reorder Explore into a clear source → supported collection → optional topic flow. Source cards describe each catalog's capabilities before the user chooses a collection.
+- Remove Google Books, DOAB and Standard Ebooks from active discovery after key/quota, HTTP 403 and browser-CORS checks; use attributed BookRank metadata links for rankings.
+- Route only public Gutendex and Open Library catalog GETs through CORS.dev when needed; keep CORS-ready sources direct and keep Gutenberg records metadata-only until the user opens the source page.
+- Add comic and graphic-novel discovery through Open Library subjects and BookRank rankings without treating catalog records as book downloads.
+- Expand source-specific topic filters for nonfiction, science, religion, technology, psychology, health, nature, business and personal growth; include only topics supported by the selected catalog.
+- Keep news topics in separate accessible tabs and validate per-category feeds, source fallback, keyboard selection, and responsive layout.
+- Audit API-directory candidates from publicapis.dev and public-apis; document working, key-gated, blocked, and metadata-only integrations.
+- Refresh the local beta version, package metadata, README badges and source documentation. This beta remains a local checkout and has not been tagged or pushed.
+
 ## 0.9.0-beta.4 — Adaptive reading space (2026-10-17)
 
 - Rework Explore around swipeable curated shelves and genre rails, with clear controls to expand a shelf or show all results.

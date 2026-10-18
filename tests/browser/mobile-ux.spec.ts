@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {openSettingsCategory} from './settings-helpers.ts';
 
 test('calendar controls and backup picker stay aligned from phone to desktop',async({page})=>{
   await page.goto('/mobile/');
@@ -17,7 +18,7 @@ test('calendar controls and backup picker stay aligned from phone to desktop',as
     expect(metrics,`calendar at ${width}px`).toEqual({overlap:false,controlsOutside:false,partsOverlap:false});
   }
 
-  await page.getByRole('button',{name:'Settings',exact:true}).click();
+  await openSettingsCategory(page,'Your library & data');
   const restore=page.locator('#restore-library');
   await expect(restore).toBeVisible();
   for(const width of [320,360,393,768,1366]){

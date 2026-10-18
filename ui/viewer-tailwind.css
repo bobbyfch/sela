@@ -1,6 +1,7 @@
 @layer theme, base, components, utilities;
 
 @import "tailwindcss" source(none) prefix(tw);
+@import "./design-system.css";
 @import "./viewer-tailwind-utilities.css";
 @import "./palette-tokens.css";
 @import "./palette-mobile.css";

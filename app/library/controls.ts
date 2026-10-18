@@ -22,9 +22,11 @@ export const iconPaths = {
   check: 'm5 12 4 4L19 6', remove: 'M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7',
   undo: 'M3 10h11a7 7 0 0 1 0 14M3 10l6-6M3 10l6 6',
   share: 'M12 16V2m-5 5 5-5 5 5M5 11v10h14V11',
+  back: 'M20 12H4m7-7-7 7 7 7',
   shield: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6ZM8 12l3 3 5-6',
   filter: 'M4 6h16M7 12h10M10 18h4', more: 'M5 12h.01M12 12h.01M19 12h.01',
   refresh:'M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1',
+  play:'M8 5v14l11-7Z', pause:'M7 5h4v14H7Zm7 0h4v14h-4Z',
   image:'M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 9h.01',
   shelf:'M3 5h18M3 12h18M3 19h18M5 5v7m7-7v7m7-7v7M7 12v7m10-7v7',
   grid:'M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z',
@@ -96,13 +98,13 @@ export function bottomSheet(title: string, content: HTMLElement): {element:HTMLD
   const nativeClose=dialog.close.bind(dialog);
   const emit=(action:'register'|'state'|'unregister',open?:boolean)=>document.dispatchEvent(new CustomEvent('sela:control-sheet',{detail:{action,dialog,open}}));
   const finishClose=(token:number,value?:string)=>{if(token!==run||!isOpen)return;isOpen=false;dialog.dataset.closing='false';nativeClose(value);emit('state',false);};
-  const open=()=>{if(isOpen)return;++run;opener=document.activeElement instanceof HTMLElement?document.activeElement:null;isOpen=true;dialog.dataset.closing='false';dialog.setAttribute('open','');emit('state',true);};
+  const open=()=>{if(isOpen)return;++run;opener=document.activeElement instanceof HTMLElement?document.activeElement:null;const fromSettings=!!opener?.closest('.settings-page');if(fromSettings){dialog.dataset.settingsPage='true';iconAction(close,'back',title+' · Back to settings');}else{delete dialog.dataset.settingsPage;iconAction(close,'close',title+' · Close');}isOpen=true;dialog.dataset.closing='false';dialog.setAttribute('open','');emit('state',true);};
   const closeSheet=(value?:string)=>{if(!isOpen)return;const token=++run;if(matchMedia('(prefers-reduced-motion:reduce)').matches){finishClose(token,value);return;}dialog.dataset.closing='true';setTimeout(()=>finishClose(token,value),180);};
   dialog.showModal=open;
   dialog.close=closeSheet;
   dialog.addEventListener('close',()=>{dialog.dataset.closing='false';requestAnimationFrame(()=>{if(document.querySelector('.library-reader-overlay')&&!opener?.closest('.library-reader-overlay'))return;if(opener?.isConnected&&opener.getClientRects().length&&!opener.closest('dialog:not([open])'))opener.focus();});});
   emit('register',false);
-  return {element:dialog,setTitle(value,closeLabel='Close'){heading.textContent=value;iconAction(close,'close',closeLabel);emit('state',isOpen);},open,close:closeSheet,destroy(){++run;if(isOpen){isOpen=false;dialog.dataset.closing='false';nativeClose();}dialog.dataset.controlSheetDestroyed='true';emit('unregister');dialog.remove();}};
+  return {element:dialog,setTitle(value,closeLabel='Close'){heading.textContent=value;iconAction(close,dialog.dataset.settingsPage?'back':'close',closeLabel);emit('state',isOpen);},open,close:closeSheet,destroy(){++run;if(isOpen){isOpen=false;dialog.dataset.closing='false';nativeClose();}dialog.dataset.controlSheetDestroyed='true';emit('unregister');dialog.remove();}};
 }
 export function segmentedControl<T extends string>(label:string, choices:readonly {value:T;label:string}[], initial:T, change:(value:T)=>void) {
   const group=toolbar(label);group.classList.add('control-segmented');

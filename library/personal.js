@@ -305,7 +305,7 @@ ${r.text}
       if (value === "plant") face.append(controlIcon("leaf"));
       else {
         face.dataset.mascot = value;
-        face.style.backgroundImage = 'url("../library/assets/jculture-companions-v3.webp")';
+        face.style.backgroundImage = 'url("../library/assets/sela-companions-3d.webp")';
         face.style.backgroundPosition = position;
         face.style.backgroundSize = "200% 200%";
       }

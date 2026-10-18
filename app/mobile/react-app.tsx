@@ -32,11 +32,11 @@ document.addEventListener('sela:control-sheet', event => {
 
 const Shell = memo(ReaderShell);
 const tabs = [
-  ['home', 'Home', 'Beranda', 'm3 11 9-8 9 8v10H3Zm6 10v-8h6v8'],
-  ['library', 'Shelf', 'Rak', 'M4 3v18m5-18v18m5-18v18m4-17 3 16M2 21h20'],
-  ['browse', 'Explore', 'Jelajah', 'M3 4h7a3 3 0 0 1 3 3v14a5 5 0 0 0-5-2H3Zm18 0h-5a3 3 0 0 0-3 3v14a5 5 0 0 1 5-2h3Z'],
-  ['progress', 'Progress', 'Progres', 'M4 19V5m0 14h17M8 16v-4m5 4V8m5 8v-7'],
-  ['settings', 'Settings', 'Pengaturan', 'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-8 0v6'],
+  ['home', 'Home', 'Beranda'],
+  ['library', 'Shelf', 'Rak'],
+  ['browse', 'Explore', 'Jelajah'],
+  ['progress', 'Progress', 'Progres'],
+  ['settings', 'Settings', 'Pengaturan'],
 ] as const;
 
 function Navigation({ mount }: { mount: NavigationMount }) {
@@ -55,7 +55,7 @@ function Navigation({ mount }: { mount: NavigationMount }) {
   }, [mount, tab]);
   return createPortal(<>
     <span className="glass-navigation-indicator" aria-hidden="true" />
-    {tabs.map(([id, en, ind], index) => <Button variant="ghost" size="default" className="tw:relative tw:z-[1] tw:flex tw:h-auto tw:min-h-14 tw:flex-1 tw:flex-col tw:items-center tw:justify-center tw:gap-1 tw:rounded-[26px] tw:border-transparent tw:bg-transparent tw:px-1.5 tw:py-1 tw:text-inherit tw:shadow-none tw:hover:bg-white/10 tw:hover:text-inherit tw:aria-current:bg-white/15 tw:aria-current:text-inherit" key={id} type="button" data-tab={id}
+    {tabs.map(([id, en, ind], index) => <Button variant="ghost" size="default" className="tw:relative tw:z-[1] tw:flex tw:h-auto tw:min-h-12 tw:flex-1 tw:flex-col tw:items-center tw:justify-center tw:gap-0.5 tw:rounded-full tw:border-transparent tw:bg-transparent tw:px-1.5 tw:py-1 tw:text-inherit tw:shadow-none tw:hover:bg-white/10 tw:hover:text-inherit tw:aria-current:bg-white/15 tw:aria-current:text-inherit" key={id} type="button" data-tab={id}
       aria-current={id === tab} aria-label={mount.translate(en, ind)}
       onClick={() => mount.navigate(id)} onKeyDown={event => {
         const directions = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'];
@@ -81,6 +81,7 @@ function ControlSheetPortal({ sheet }: { sheet: ControlSheet }) {
     else document.body.append(sheet.dialog);
   }, [sheet.dialog]);
   const title = sheet.dialog.querySelector('h2')?.textContent?.trim() || 'Sela';
+  const settingsPage = sheet.dialog.dataset.settingsPage === 'true';
   return <DialogPrimitive.Root
     open={sheet.open}
     modal
@@ -88,7 +89,7 @@ function ControlSheetPortal({ sheet }: { sheet: ControlSheet }) {
     onOpenChange={open => { if (!open && sheet.open) sheet.dialog.close(); }}
   >
     <DialogPrimitive.Portal>
-      <DialogOverlay style={{ background: '#17171178', backdropFilter: 'blur(5px)' }} />
+      <DialogOverlay style={settingsPage ? { background: 'transparent', backdropFilter: 'none' } : { background: 'var(--sela-overlay-backdrop)', backdropFilter: 'blur(var(--sela-overlay-blur))' }} />
       <DialogPrimitive.Popup aria-label={title} className="tw:contents">
         <div className="tw:contents" ref={attachDialog} />
       </DialogPrimitive.Popup>

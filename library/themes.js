@@ -2,23 +2,13 @@
 import { controlIcon } from "./controls.js";
 export const paletteCatalog = [
   { key: "white", en: "Sela", id: "Sela", accent: "#3264c6", soft: "#eef4ff", motif: "sparkles" },
-  { key: "kids", en: "Pelangi", id: "Pelangi", accent: "#c83f59", soft: "#fff0f3", motif: "smile" },
-  { key: "cyberpunk", en: "Neon", id: "Neon", accent: "#7045bf", soft: "#f4efff", motif: "planet" },
-  { key: "forest", en: "Rimba", id: "Rimba", accent: "#147461", soft: "#eaf8f4", motif: "leaf" },
-  { key: "sakura", en: "Sakura", id: "Sakura", accent: "#b83f76", soft: "#fff0f7", motif: "flower" },
-  { key: "ocean", en: "Samudra", id: "Samudra", accent: "#147ba8", soft: "#eaf7fe", motif: "wave" },
-  { key: "lavender", en: "Lembayung", id: "Lembayung", accent: "#5f4ab9", soft: "#f0efff", motif: "moon" },
-  { key: "citrus", en: "Kenanga", id: "Kenanga", accent: "#557a1d", soft: "#f2f8e8", motif: "sun" },
-  { key: "laskar", en: "Senja", id: "Senja", accent: "#155d86", soft: "#fff4c2", motif: "compass" },
-  { key: "bumi", en: "Pesisir", id: "Pesisir", accent: "#12675a", soft: "#d8f1e9", motif: "mountain" },
-  { key: "hujan", en: "Hujan", id: "Hujan", accent: "#3e5f9f", soft: "#e5efff", motif: "rain" },
-  { key: "nurbaya", en: "Seroja", id: "Seroja", accent: "#884b68", soft: "#fce7f0", motif: "lotus" },
-  { key: "wijck", en: "Nila", id: "Nila", accent: "#155b78", soft: "#e4f5fb", motif: "crane" },
-  { key: "menara", en: "Embun", id: "Embun", accent: "#64751d", soft: "#f1f5d6", motif: "tower" },
-  { key: "cantik", en: "Purnama", id: "Purnama", accent: "#8a3f64", soft: "#fae6ef", motif: "shell" },
-  { key: "kopi", en: "Arunika", id: "Arunika", accent: "#80501f", soft: "#f9eee0", motif: "tea" },
-  { key: "laut", en: "Selat", id: "Selat", accent: "#006478", soft: "#ddf4f8", motif: "boat" },
-  { key: "rindu", en: "Jingga", id: "Jingga", accent: "#4d5e9d", soft: "#eceeff", motif: "lantern" }
+  { key: "forest", en: "Rimba", id: "Rimba", accent: "#16756a", soft: "#e8f7f3", motif: "leaf" },
+  { key: "sakura", en: "Sakura", id: "Sakura", accent: "#c14672", soft: "#fff0f6", motif: "flower" },
+  { key: "ocean", en: "Samudra", id: "Samudra", accent: "#087fa2", soft: "#e9f7fb", motif: "wave" },
+  { key: "lavender", en: "Lembayung", id: "Lembayung", accent: "#6555b8", soft: "#f0efff", motif: "moon" },
+  { key: "citrus", en: "Kenanga", id: "Kenanga", accent: "#687b17", soft: "#f4f7e7", motif: "sun" },
+  { key: "senja", en: "Senja", id: "Senja", accent: "#b84c2c", soft: "#fff1e9", motif: "mountain" },
+  { key: "arunika", en: "Arunika", id: "Arunika", accent: "#947000", soft: "#fbf5dc", motif: "tea" }
 ];
 export const palettes = paletteCatalog.map((palette) => palette.key);
 export function getPaletteDefinition(value) {
@@ -33,14 +23,33 @@ const legacyPalettes = {
   paper: "white",
   linen: "ocean",
   rimba: "forest",
-  nila: "lavender",
+  nila: "ocean",
   seroja: "sakura",
   ink: "lavender",
-  rose: "sakura"
+  rose: "sakura",
+  kids: "sakura",
+  cyberpunk: "lavender",
+  forest: "forest",
+  ocean: "ocean",
+  citrus: "citrus",
+  laskar: "senja",
+  bumi: "forest",
+  hujan: "ocean",
+  nurbaya: "sakura",
+  wijck: "ocean",
+  menara: "citrus",
+  cantik: "sakura",
+  kopi: "arunika",
+  laut: "ocean",
+  rindu: "lavender",
+  purnama: "sakura",
+  pelangi: "sakura",
+  selat: "ocean",
+  jingga: "senja"
 };
 const paletteKey = "sela-library:palette";
 const themeKey = "sela-library:theme";
-const paletteVersion = "4";
+const paletteVersion = "5";
 const darkPreference = typeof matchMedia === "function" ? matchMedia("(prefers-color-scheme: dark)") : { matches: false, addEventListener: () => {
 } };
 function isDarkAppearance(target) {
@@ -119,7 +128,7 @@ export function mountOledToggle(parent, t, target = document.documentElement) {
   const title = document.createElement("strong");
   title.textContent = t("Pure black in dark mode", "Hitam pekat saat mode gelap");
   const note = document.createElement("small");
-  note.textContent = t("Save power on OLED screens.", "Hemat daya pada layar OLED.");
+  note.textContent = t("Only changes dark mode; may save power on OLED screens.", "Hanya mengubah mode gelap; dapat menghemat daya pada layar OLED.");
   copy.append(title, note);
   const input = document.createElement("input");
   input.type = "checkbox";
@@ -130,7 +139,7 @@ export function mountOledToggle(parent, t, target = document.documentElement) {
   parent.append(row);
   const sync = () => {
     input.checked = target.dataset.oled === "true";
-    row.hidden = !(target.dataset.theme === "dark" || target.dataset.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    row.hidden = false;
   };
   document.addEventListener("sela:oled", sync);
   document.addEventListener("sela:appearance", sync);

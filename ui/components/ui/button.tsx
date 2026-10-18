@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
 const buttonVariants = cva(
-  "tw:group/button tw:inline-flex tw:shrink-0 tw:items-center tw:justify-center tw:rounded-lg tw:border tw:border-transparent tw:bg-clip-padding tw:text-sm tw:font-medium tw:whitespace-nowrap tw:transition-all tw:outline-none tw:select-none tw:focus-visible:border-ring tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50 tw:active:not-aria-[haspopup]:translate-y-px tw:disabled:pointer-events-none tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-3 tw:aria-invalid:ring-destructive/20 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
+  "tw:group/button tw:inline-flex tw:min-w-0 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-control tw:border tw:border-transparent tw:bg-clip-padding tw:font-sans tw:text-button tw:font-medium tw:whitespace-nowrap tw:transition-colors tw:duration-fast tw:ease-standard tw:outline-none tw:select-none tw:focus-visible:border-ring tw:focus-visible:ring-2 tw:focus-visible:ring-ring/50 tw:active:not-aria-[haspopup]:translate-y-px tw:disabled:pointer-events-none tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-2 tw:aria-invalid:ring-destructive/20 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
   {
     variants: {
       variant: {
@@ -20,16 +20,16 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "tw:h-8 tw:gap-1.5 tw:px-2.5 tw:has-data-[icon=inline-end]:pr-2 tw:has-data-[icon=inline-start]:pl-2",
-        xs: "tw:h-6 tw:gap-1 tw:rounded-[min(var(--radius-md),10px)] tw:px-2 tw:text-xs tw:in-data-[slot=button-group]:rounded-lg tw:has-data-[icon=inline-end]:pr-1.5 tw:has-data-[icon=inline-start]:pl-1.5 tw:[&_svg:not([class*=size-])]:size-3",
-        sm: "tw:h-7 tw:gap-1 tw:rounded-[min(var(--radius-md),12px)] tw:px-2.5 tw:text-[0.8rem] tw:in-data-[slot=button-group]:rounded-lg tw:has-data-[icon=inline-end]:pr-1.5 tw:has-data-[icon=inline-start]:pl-1.5 tw:[&_svg:not([class*=size-])]:size-3.5",
-        lg: "tw:h-9 tw:gap-1.5 tw:px-2.5 tw:has-data-[icon=inline-end]:pr-2 tw:has-data-[icon=inline-start]:pl-2",
-        icon: "tw:size-8",
+          "tw:h-control tw:gap-2 tw:px-4 tw:has-data-[icon=inline-end]:pr-3 tw:has-data-[icon=inline-start]:pl-3",
+        xs: "tw:h-control-xs tw:gap-1 tw:rounded-control-xs tw:px-2.5 tw:text-meta tw:in-data-[slot=button-group]:rounded-control-xs tw:has-data-[icon=inline-end]:pr-2 tw:has-data-[icon=inline-start]:pl-2 tw:[&_svg:not([class*=size-])]:size-3",
+        sm: "tw:h-control-sm tw:gap-1.5 tw:px-3 tw:text-label tw:in-data-[slot=button-group]:rounded-control-xs tw:has-data-[icon=inline-end]:pr-2.5 tw:has-data-[icon=inline-start]:pl-2.5 tw:[&_svg:not([class*=size-])]:size-3.5",
+        lg: "tw:h-control-lg tw:gap-2 tw:px-4 tw:has-data-[icon=inline-end]:pr-3 tw:has-data-[icon=inline-start]:pl-3",
+        icon: "tw:size-control",
         "icon-xs":
-          "tw:size-6 tw:rounded-[min(var(--radius-md),10px)] tw:in-data-[slot=button-group]:rounded-lg tw:[&_svg:not([class*=size-])]:size-3",
+          "tw:size-control-xs tw:rounded-control-xs tw:in-data-[slot=button-group]:rounded-control-xs tw:[&_svg:not([class*=size-])]:size-3",
         "icon-sm":
-          "tw:size-7 tw:rounded-[min(var(--radius-md),12px)] tw:in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "tw:size-9",
+          "tw:size-control-sm tw:rounded-control-xs tw:in-data-[slot=button-group]:rounded-control-xs",
+        "icon-lg": "tw:size-control-lg",
       },
     },
     defaultVariants: {

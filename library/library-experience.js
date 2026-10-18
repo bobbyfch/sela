@@ -25,9 +25,11 @@ function svg(name) {
   return node;
 }
 export function mountLibraryExperience({ mobile, t, status, refresh, openBook, readSample, addSample, addFiles }) {
-  if (mobile) initializePalette();
+  initializePalette();
   const selected = /* @__PURE__ */ new Set();
   let items = [], busy = false, page = "home", selectionMode = false, onlineCatalog, glassNavigation;
+  let settingsCategoryNavigate = () => {
+  };
   const labels = [], recentUrls = [];
   const el = (tag2, className, parent) => {
     const node = document.createElement(tag2);
@@ -125,7 +127,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   const browse = el("section", "app-page browse-page", main);
   browse.dataset.page = "browse";
   text(el("h2", "tw:mb-1 tw:text-2xl tw:font-bold tw:tracking-tight tw:text-sela-ink", browse), "Explore", "Jelajah");
-  text(el("p", "section-description tw:mb-5 tw:max-w-2xl tw:text-sm tw:leading-6 tw:text-sela-muted", browse), "Find a book for today, browse new releases, or let Sela surprise you.", "Temukan bacaan hari ini, jelajahi rilisan baru, atau biarkan Sela memberi kejutan.");
+  text(el("p", "section-description tw:mb-5 tw:max-w-2xl tw:text-sm tw:leading-6 tw:text-sela-muted", browse), "Choose a source, then browse its popular or newly added books by topic.", "Pilih sumber, lalu jelajahi buku populer atau yang baru ditambahkan berdasarkan topik.");
   function catalog(parent, saveBeforeRead = false) {
     const list = el("div", "catalog-list tw:grid tw:w-full tw:grid-cols-1 tw:gap-4", parent);
     for (const sample of samples) {
@@ -209,33 +211,31 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) updateSettingsWelcome();
     });
-    const appearance = el("section", "settings-card appearance-settings", settings);
-    text(el("h3", "", appearance), "Language & display", "Bahasa & tampilan");
-    for (const [id, en, ind, subEn, subId, icon] of [["language", "Language", "Bahasa", "Set the language for Sela.", "Atur bahasa untuk Sela.", "journal"], ["check-update", "Updates", "Pembaruan", "Check for a newer version.", "Periksa versi terbaru.", "refresh"]]) {
-      const control = id === "language" ? (() => {
-        const topbar = document.querySelector("#language"), clone = topbar.cloneNode(true);
-        clone.id = "settings-language";
-        clone.className = "settings-language-control";
-        clone.addEventListener("change", () => {
-          topbar.value = clone.value;
-          topbar.dispatchEvent(new Event("change", { bubbles: true }));
-        });
-        topbar.addEventListener("change", () => {
-          clone.value = topbar.value;
-        });
-        return clone;
-      })() : document.getElementById(id);
-      settingsRow(appearance, icon, en, ind, subEn, subId, control);
-    }
-    mountOledToggle(appearance, t);
-    info.open = false;
   }
-  if (mobile) {
-    const palette = el("section", "settings-card appearance-materials", settings);
-    text(el("h3", "", palette), "Color palettes", "Palet warna");
-    const sync = mountPalettes(palette, t);
-    document.addEventListener("sela:palette", sync);
+  const appearance = el("section", "settings-card appearance-settings", settings);
+  text(el("h3", "", appearance), "Language & display", "Bahasa & tampilan");
+  for (const [id, en, ind, subEn, subId, icon] of [["language", "Language", "Bahasa", "Set the language for Sela.", "Atur bahasa untuk Sela.", "journal"], ["check-update", "Updates", "Pembaruan", "Check for a newer version.", "Periksa versi terbaru.", "refresh"]]) {
+    const control = id === "language" ? (() => {
+      const topbar = document.querySelector("#language"), clone = topbar.cloneNode(true);
+      clone.id = "settings-language";
+      clone.className = "settings-language-control";
+      clone.addEventListener("change", () => {
+        topbar.value = clone.value;
+        topbar.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      topbar.addEventListener("change", () => {
+        clone.value = topbar.value;
+      });
+      return clone;
+    })() : document.getElementById(id);
+    settingsRow(appearance, icon, en, ind, subEn, subId, control);
   }
+  mountOledToggle(appearance, t);
+  info.open = false;
+  const palette = el("section", "settings-card appearance-materials", settings);
+  text(el("h3", "", palette), "Color palettes", "Palet warna");
+  const sync = mountPalettes(palette, t);
+  document.addEventListener("sela:palette", sync);
   const defaults = el("section", "settings-card", settings);
   text(el("h3", "", defaults), "Reading defaults", "Default bacaan");
   const about = el("section", "settings-card app-about", settings), aboutTrigger = el("button", "settings-action-row app-about-trigger", about);
@@ -246,17 +246,18 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   const aboutLabel = el("span", "settings-action-label", aboutTrigger);
   text(aboutLabel, "About Sela", "Tentang Sela");
   const aboutDialog = el("dialog", "control-sheet about-sheet", document.body);
+  aboutDialog.dataset.settingsPage = "true";
   aboutDialog.setAttribute("aria-labelledby", "about-title");
   const aboutHeader = el("header", "control-sheet-header", aboutDialog), aboutHeading = el("h2", "", aboutHeader);
   aboutHeading.id = "about-title";
   text(aboutHeading, "About Sela", "Tentang Sela");
   const aboutClose = el("button", "icon-action", aboutHeader);
   aboutClose.type = "button";
-  iconAction(aboutClose, "close", t("Close", "Tutup"));
+  iconAction(aboutClose, "back", t("Back to settings", "Kembali ke pengaturan"));
   aboutClose.onclick = () => aboutDialog.close();
   const aboutContent = el("div", "about-dialog-content", aboutDialog), aboutIdentity = el("div", "about-identity", aboutContent), aboutMark = el("span", "about-app-mark", aboutIdentity), aboutLogo = el("img", "", aboutMark);
   aboutLogo.alt = "";
-  aboutLogo.src = new URL(document.querySelector(".brand-logo")?.getAttribute("src") || "../logo.svg?v=0.9.0-beta.4", document.baseURI).href;
+  aboutLogo.src = new URL(document.querySelector(".brand-logo")?.getAttribute("src") || "../logo.svg?v=0.9.0-beta.7", document.baseURI).href;
   const aboutName = el("div", "about-identity-copy", aboutIdentity);
   text(el("strong", "", aboutName), "Sela Books", "Sela Books");
   text(el("small", "", aboutName), "Your personal bookshelf", "Perpustakaan pribadimu");
@@ -311,6 +312,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     aboutDialog.showModal();
   };
   document.addEventListener("sela:show-about", () => {
+    if (page !== "settings") navigate("settings");
     if (!aboutDialog.open) aboutDialog.showModal();
   });
   let savedDefaults = {};
@@ -628,6 +630,7 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
   function navigate(value) {
     if (!sections[value]) return;
     page = value;
+    if (value === "settings") settingsCategoryNavigate(null);
     for (const [name, node] of Object.entries(sections)) node.hidden = mobile && name !== value;
     document.body.dataset.page = value;
     document.dispatchEvent(new CustomEvent("sela:navigation-change", { detail: value }));
@@ -737,48 +740,100 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
     const queue = home.querySelector(".personal-desk"), focus = home.querySelector(".focus-card"), quote = home.querySelector(".home-reflection");
     home.replaceChildren(intro, continueSection, homeCatalog, ...quote ? [quote] : [], ...queue ? [queue] : [], progressView.homeWidget, ...homeWidgets ? [homeWidgets.section] : []);
     const ritual = intro.querySelector(".ritual");
-    if (focus && ritual) ritual.append(focus);
+    if (focus && ritual) {
+      ritual.append(focus);
+      ritual.classList.add("reading-timer-layout");
+    }
     applyHomeSectionPrefs();
   }
-  if (mobile) {
-    const directCards = () => Array.from(settings.querySelectorAll(":scope > .settings-card"));
-    const findCard = (predicate) => directCards().find((card) => predicate(card)) || null;
-    const byTitle = (pattern) => findCard((card) => pattern.test(card.querySelector(":scope > h3")?.textContent || ""));
-    const groups = [
-      { title: ["Reading & appearance", "Tampilan & bacaan"], description: ["Language, colors, and reading behavior.", "Bahasa, warna, dan cara membaca."], icon: "sun", cards: [findCard((card) => card.classList.contains("appearance-settings")), findCard((card) => card.classList.contains("appearance-materials")), byTitle(/Reading defaults|Default bacaan/i)] },
-      { title: ["Your library & data", "Rak dan data pribadimu"], description: ["Manage your books, backups, and connections.", "Kelola buku, cadangan, dan koneksi."], icon: "storage", cards: [byTitle(/Books & storage|Buku & penyimpanan/i), findCard((card) => card.classList.contains("backup-sharing")), byTitle(/Connections|Koneksi/i)] },
-      { title: ["Your space & routine", "Ruang dan rutinitas"], description: ["Make Sela feel right for your day.", "Atur Sela agar pas dengan harimu."], icon: "person", cards: [findCard((card) => card.classList.contains("personal-settings")), findCard((card) => card.classList.contains("settings-summary-card")), findCard((card) => card.classList.contains("home-routine-settings"))] },
-      { title: ["About Sela", "Tentang Sela"], description: ["Version, project details, and the people behind Sela.", "Versi, detail proyek, dan orang di balik Sela."], icon: "info", cards: [findCard((card) => card.classList.contains("app-about"))] }
-    ];
-    const wrapper = el("div", "settings-groups", settings);
-    const moved = /* @__PURE__ */ new Set();
-    for (const group of groups) {
-      const cards = group.cards.filter((card) => !!card && !moved.has(card));
-      if (!cards.length) continue;
-      const section = el("section", "settings-group", wrapper), heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
-      mark.setAttribute("aria-hidden", "true");
-      mark.append(controlIcon(group.icon));
-      const copy = el("div", "settings-group-copy", heading);
-      text(el("h3", "", copy), ...group.title);
-      text(el("p", "", copy), ...group.description);
-      const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
-      for (const card of cards) {
-        moved.add(card);
-        grid.append(card);
-      }
-    }
-    const ungrouped = directCards().filter((card) => !moved.has(card));
-    if (ungrouped.length) {
-      const section = el("section", "settings-group", wrapper), heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
-      mark.setAttribute("aria-hidden", "true");
-      mark.append(controlIcon("sliders"));
-      const copy = el("div", "settings-group-copy", heading);
-      text(el("h3", "", copy), "More settings", "Pengaturan lainnya");
-      text(el("p", "", copy), "Other tools for your reading space.", "Alat lain untuk ruang bacamu.");
-      const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
-      for (const card of ungrouped) grid.append(card);
+  const directCards = () => Array.from(settings.querySelectorAll(":scope > .settings-card"));
+  const findCard = (predicate) => directCards().find((card) => predicate(card)) || null;
+  const byTitle = (pattern) => findCard((card) => pattern.test(card.querySelector(":scope > h3")?.textContent || ""));
+  const groups = [
+    { title: ["Reading & appearance", "Tampilan & bacaan"], description: ["Language, colors, and reading behavior.", "Bahasa, warna, dan cara membaca."], icon: "sun", cards: [findCard((card) => card.classList.contains("appearance-settings")), findCard((card) => card.classList.contains("appearance-materials")), byTitle(/Reading defaults|Default bacaan/i)] },
+    { title: ["Your library & data", "Rak dan data pribadimu"], description: ["Manage your books, backups, and connections.", "Kelola buku, cadangan, dan koneksi."], icon: "storage", cards: [byTitle(/Books & storage|Buku & penyimpanan/i), findCard((card) => card.classList.contains("backup-sharing")), byTitle(/Connections|Koneksi/i)] },
+    { title: ["Your space & routine", "Ruang dan rutinitas"], description: ["Make Sela feel right for your day.", "Atur Sela agar pas dengan harimu."], icon: "person", cards: [findCard((card) => card.classList.contains("personal-settings")), findCard((card) => card.classList.contains("settings-summary-card")), findCard((card) => card.classList.contains("home-routine-settings"))] },
+    { title: ["About Sela", "Tentang Sela"], description: ["Version, project details, and the people behind Sela.", "Versi, detail proyek, dan orang di balik Sela."], icon: "info", cards: [findCard((card) => card.classList.contains("app-about"))] }
+  ];
+  const wrapper = el("div", "settings-groups", settings);
+  const moved = /* @__PURE__ */ new Set();
+  for (const group of groups) {
+    const cards = group.cards.filter((card) => !!card && !moved.has(card));
+    if (!cards.length) continue;
+    const section = el("section", "settings-group", wrapper);
+    section.dataset.settingsCategory = group.title[0];
+    const heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
+    mark.setAttribute("aria-hidden", "true");
+    mark.append(controlIcon(group.icon));
+    const copy = el("div", "settings-group-copy", heading);
+    text(el("h3", "", copy), ...group.title);
+    text(el("p", "", copy), ...group.description);
+    const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
+    for (const card of cards) {
+      moved.add(card);
+      grid.append(card);
     }
   }
+  const ungrouped = directCards().filter((card) => !moved.has(card));
+  if (ungrouped.length) {
+    const section = el("section", "settings-group", wrapper), heading = el("header", "settings-group-heading", section), mark = el("span", "settings-group-icon", heading);
+    mark.setAttribute("aria-hidden", "true");
+    mark.append(controlIcon("sliders"));
+    const copy = el("div", "settings-group-copy", heading);
+    text(el("h3", "", copy), "More settings", "Pengaturan lainnya");
+    text(el("p", "", copy), "Other tools for your reading space.", "Alat lain untuk ruang bacamu.");
+    const grid = el("div", "settings-group-grid tw:max-[900px]:!grid-cols-1", section);
+    for (const card of ungrouped) grid.append(card);
+  }
+  const categorySections = Array.from(wrapper.querySelectorAll(":scope > .settings-group"));
+  const categoryNav = el("nav", "settings-category-nav", wrapper);
+  categoryNav.setAttribute("aria-label", t("Settings categories", "Kategori pengaturan"));
+  const settingsTitle = settings.querySelector(":scope > h2");
+  const settingsWelcome = settings.querySelector(":scope > .settings-welcome");
+  const detailHeader = el("header", "settings-detail-toolbar", settings);
+  detailHeader.hidden = true;
+  const back = el("button", "settings-detail-back", detailHeader);
+  back.type = "button";
+  back.append(controlIcon("back"));
+  text(el("span", "", back), "Settings", "Pengaturan");
+  const detailTitle = el("h2", "", detailHeader);
+  settingsCategoryNavigate = (index = null) => {
+    const detail = index !== null && index >= 0 && index < categorySections.length;
+    settings.dataset.settingsView = detail ? "detail" : "overview";
+    categoryNav.hidden = detail;
+    detailHeader.hidden = !detail;
+    settingsTitle.hidden = detail;
+    if (settingsWelcome) settingsWelcome.hidden = detail;
+    categorySections.forEach((section, sectionIndex) => {
+      section.hidden = !detail || sectionIndex !== index;
+      const heading = section.querySelector(":scope > .settings-group-heading");
+      if (heading) heading.hidden = detail && sectionIndex === index;
+    });
+    if (detail) {
+      const heading = categorySections[index].querySelector(":scope > .settings-group-heading");
+      detailTitle.textContent = heading?.querySelector("h3")?.textContent || t("Settings", "Pengaturan");
+    }
+    settings.scrollTop = 0;
+    if (page === "settings") window.scrollTo({ top: 0, behavior: "instant" });
+  };
+  back.onclick = () => settingsCategoryNavigate(null);
+  categorySections.forEach((section, index) => {
+    const heading = section.querySelector(":scope > .settings-group-heading");
+    if (!heading) return;
+    const button = el("button", "settings-category-card", categoryNav);
+    button.type = "button";
+    button.setAttribute("aria-label", heading.querySelector("h3")?.textContent || t("Settings", "Pengaturan"));
+    const mark = heading.querySelector(".settings-group-icon");
+    if (mark) button.append(mark.cloneNode(true));
+    const copy = el("span", "settings-category-copy", button);
+    const title = el("strong", "", copy), description = el("small", "", copy);
+    title.textContent = heading.querySelector("h3")?.textContent || "";
+    description.textContent = heading.querySelector("p")?.textContent || "";
+    button.append(controlIcon("chevron"));
+    button.onclick = () => settingsCategoryNavigate(index);
+  });
+  settings.insertBefore(detailHeader, wrapper);
+  settingsCategoryNavigate(null);
   window.addEventListener("pagehide", () => recentUrls.forEach(URL.revokeObjectURL), { once: true });
   let collectionRun = 0;
   function lastTrace(book) {
@@ -873,6 +928,31 @@ export function mountLibraryExperience({ mobile, t, status, refresh, openBook, r
       }
       if (item.aria) item.node.setAttribute("aria-label", t(item.en, item.id));
       else item.node.textContent = t(item.en, item.id);
+    }
+    for (const section of categorySections) {
+      const group = groups.find((item) => item.title[0] === section.dataset.settingsCategory);
+      if (!group) continue;
+      const heading = section.querySelector(":scope > .settings-group-heading");
+      if (heading) {
+        const title = heading.querySelector("h3"), description = heading.querySelector("p");
+        if (title) title.textContent = t(...group.title);
+        if (description) description.textContent = t(...group.description);
+      }
+    }
+    for (const [index, button] of Array.from(categoryNav.querySelectorAll(".settings-category-card")).entries()) {
+      const heading = categorySections[index]?.querySelector(":scope > .settings-group-heading");
+      const copy = button.querySelector(".settings-category-copy");
+      if (heading && copy) {
+        const title = heading.querySelector("h3")?.textContent || "", description = heading.querySelector("p")?.textContent || "";
+        copy.children[0].textContent = title;
+        copy.children[1].textContent = description;
+        button.setAttribute("aria-label", title);
+      }
+    }
+    if (settings.dataset.settingsView === "detail") {
+      const selectedIndex = categorySections.findIndex((section) => !section.hidden);
+      const heading = categorySections[selectedIndex]?.querySelector("h3");
+      if (heading) detailTitle.textContent = heading.textContent || "";
     }
     tag.setAttribute("aria-label", t("Filter collections", "Filter koleksi"));
     defaultMode.setAttribute("aria-label", t("Default reading mode", "Mode baca default"));

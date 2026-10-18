@@ -379,7 +379,8 @@ function makeWaterWidget(t) {
   return { card, settings: personalize, localize: paint };
 }
 const newsTopicLabels = { books: ["Books & literature", "Buku & sastra"], science: ["Science", "Sains"], nature: ["Nature & climate", "Alam & iklim"], art: ["Art & design", "Seni & desain"], technology: ["Technology", "Teknologi"], culture: ["Culture & film", "Budaya & film"] };
-const newsSourceLabels = { auto: ["Automatic", "Otomatis"], google: ["Google News", "Google News"], gdelt: ["GDELT", "GDELT"], antara: ["ANTARA", "ANTARA"] };
+const newsTopicTabLabels = { books: ["Books", "Buku"], science: ["Science", "Sains"], nature: ["Nature", "Alam"], art: ["Art", "Seni"], technology: ["Technology", "Teknologi"], culture: ["Culture", "Budaya"] };
+const newsSourceLabels = { auto: ["Automatic", "Otomatis"], antara: ["ANTARA", "ANTARA"], guardian: ["The Guardian", "The Guardian"] };
 function appendFeedEmptyScene(parent, kind) {
   const scene = node("span", "home-feed-empty-scene", parent);
   scene.setAttribute("aria-hidden", "true");
@@ -389,23 +390,69 @@ function makeFeedWidget(kind, t) {
   const card = node("article", "home-widget-card home-feed-card tw:rounded-3xl tw:border tw:border-sela-line/70 tw:bg-sela-surface/75 tw:p-4 tw:shadow-sm tw:backdrop-blur-lg tw:sm:p-5");
   const header = node("div", "home-widget-heading tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3", card), copy = node("div", "tw:min-w-0 tw:flex-1"), title = node("h2", "tw:mb-1 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink", copy), subtitle = node("p", "home-widget-subtitle tw:m-0 tw:text-xs tw:leading-5 tw:text-sela-muted", copy);
   header.append(copy);
-  const controls = node("div", "tw:flex tw:shrink-0 tw:items-center tw:gap-1", header), list = node("div", "home-feed-list tw:mt-3 tw:space-y-1");
+  const controls = node("div", kind === "news" ? "tw:flex tw:w-full tw:shrink-0 tw:items-center tw:justify-end tw:gap-1 tw:sm:w-auto" : "tw:flex tw:shrink-0 tw:items-center tw:gap-1", header), newsTabs = kind === "news" ? node("div", "home-news-topic-tabs tw:mt-3 tw:flex tw:gap-2 tw:overflow-x-auto tw:py-1", card) : void 0, list = node("div", "home-feed-list tw:mt-2 tw:space-y-1");
+  if (newsTabs) {
+    newsTabs.setAttribute("role", "tablist");
+    newsTabs.setAttribute("aria-label", t("News categories", "Kategori berita"));
+  }
   list.setAttribute("aria-live", "polite");
   list.setAttribute("aria-busy", "false");
   card.append(list);
   const refresh = iconAction(node("button", "tw:grid tw:size-10 tw:place-items-center tw:rounded-full tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-accent", controls), "refresh", t("Refresh stories", "Muat ulang cerita"));
   refresh.type = "button";
-  let topicButton, sourcePicker, sequence = 0, controller, topics = readNewsTopics(), source = readNewsSource();
+  let topicButton, sourcePicker, sequence = 0, controller, topics = readNewsTopics(), activeTopic = topics[0] || "books", source = readNewsSource();
+  function renderNewsTabs() {
+    if (!newsTabs) return;
+    if (!topics.includes(activeTopic)) activeTopic = topics[0] || "books";
+    newsTabs.hidden = topics.length < 2;
+    newsTabs.replaceChildren();
+    for (const key of topics) {
+      const tab = node("button", "tw:min-h-9 tw:shrink-0 tw:rounded-full tw:px-3 tw:text-xs tw:font-semibold tw:transition-colors tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent", newsTabs);
+      tab.type = "button";
+      tab.id = `home-news-tab-${key}`;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-controls", "home-news-panel");
+      tab.setAttribute("aria-selected", String(key === activeTopic));
+      tab.tabIndex = key === activeTopic ? 0 : -1;
+      tab.textContent = t(...newsTopicTabLabels[key]);
+      if (key === activeTopic) tab.classList.add("tw:bg-sela-accent", "tw:text-white", "tw:shadow-sm");
+      else tab.classList.add("tw:bg-sela-canvas", "tw:text-sela-muted", "hover:tw:text-sela-ink");
+      tab.addEventListener("click", () => {
+        activeTopic = key;
+        renderNewsTabs();
+        void load();
+      });
+    }
+    list.id = "home-news-panel";
+    if (topics.length > 1) {
+      list.setAttribute("role", "tabpanel");
+      list.setAttribute("aria-labelledby", `home-news-tab-${activeTopic}`);
+      list.setAttribute("aria-label", t(...newsTopicLabels[activeTopic]));
+    } else {
+      list.setAttribute("role", "region");
+      list.removeAttribute("aria-labelledby");
+      list.setAttribute("aria-label", t(...newsTopicLabels[activeTopic]));
+    }
+  }
+  newsTabs?.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const current = topics.indexOf(activeTopic), next = event.key === "Home" ? 0 : event.key === "End" ? topics.length - 1 : (current + (event.key === "ArrowRight" ? 1 : -1) + topics.length) % topics.length;
+    activeTopic = topics[next] || "books";
+    renderNewsTabs();
+    newsTabs.querySelector('[aria-selected="true"]')?.focus();
+    void load();
+  });
   if (kind === "on-this-day") {
     title.textContent = t("On this day", "Pada hari ini");
     subtitle.textContent = t("A small window into the past.", "Jendela kecil untuk melihat masa lalu.");
   } else {
     title.textContent = t("Around the world", "Kabar dari berbagai tempat");
-    subtitle.textContent = t("Stories shaped by your topics and app language.", "Berita sesuai topik dan bahasa aplikasi.");
+    subtitle.textContent = t("Choose a topic tab to keep stories in their own lane.", "Pilih tab topik agar berita tetap terpisah.");
     sourcePicker = node("select", "tw:h-10 tw:w-[7.5rem] tw:min-w-0 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-2.5 tw:text-[11px] tw:font-medium tw:text-sela-ink tw:shadow-sm tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent", controls);
     sourcePicker.setAttribute("aria-label", t("News source", "Sumber berita"));
     sourcePicker.title = t("Choose a news source", "Pilih sumber berita");
-    for (const value of ["auto", "google", "gdelt", "antara"]) {
+    for (const value of ["auto", "antara", "guardian"]) {
       const option = document.createElement("option");
       option.value = value;
       option.textContent = t(...newsSourceLabels[value]);
@@ -477,7 +524,7 @@ function makeFeedWidget(kind, t) {
       node("i", "", lines);
     }
     try {
-      const items = kind === "on-this-day" ? await loadOnThisDay(locale(), /* @__PURE__ */ new Date(), controller.signal) : await loadTopicNews(topics, locale(), controller.signal, source, (partial) => {
+      const items = kind === "on-this-day" ? await loadOnThisDay(locale(), /* @__PURE__ */ new Date(), controller.signal) : await loadTopicNews(activeTopic, locale(), controller.signal, source, (partial) => {
         if (current === sequence) render(partial);
       });
       if (current === sequence) render(items, items.length ? "ready" : "empty");
@@ -494,7 +541,7 @@ function makeFeedWidget(kind, t) {
   function openTopicSettings() {
     if (kind !== "news") return;
     const body = node("div", "personal-sheet news-topics-sheet tw:space-y-3"), hint = node("p", "tw:text-sm tw:leading-6 tw:text-sela-muted", body);
-    hint.textContent = t("Choose up to four topics. Only topic words and your app language are sent to the news service.", "Pilih maksimal empat topik. Hanya kata topik dan bahasa aplikasi yang dikirim ke layanan berita.");
+    hint.textContent = t("Choose up to four topics. Each topic gets its own tab and story list.", "Pilih maksimal empat topik. Setiap topik punya tab dan daftar berita sendiri.");
     const checks = /* @__PURE__ */ new Map();
     for (const key of HOME_NEWS_TOPICS) {
       const row = node("label", "tw:flex tw:min-h-12 tw:items-center tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:px-3 tw:py-2 tw:text-sm tw:font-medium tw:text-sela-ink", body), input = node("input", "tw:size-4 tw:accent-sela-accent", row);
@@ -517,6 +564,8 @@ function makeFeedWidget(kind, t) {
         return;
       }
       topics = saveNewsTopics(selected);
+      if (!topics.includes(activeTopic)) activeTopic = topics[0];
+      renderNewsTabs();
       modal.close();
       void load();
     };
@@ -524,7 +573,7 @@ function makeFeedWidget(kind, t) {
   }
   function localize() {
     title.textContent = kind === "news" ? t("Around the world", "Kabar dari berbagai tempat") : t("On this day", "Pada hari ini");
-    subtitle.textContent = kind === "news" ? t("Stories shaped by your topics and app language.", "Berita sesuai topik dan bahasa aplikasi.") : t("A small window into the past.", "Jendela kecil untuk melihat masa lalu.");
+    subtitle.textContent = kind === "news" ? t("Choose a topic tab to keep stories in their own lane.", "Pilih tab topik agar berita tetap terpisah.") : t("A small window into the past.", "Jendela kecil untuk melihat masa lalu.");
     if (topicButton) iconAction(topicButton, "sliders", t("Choose news topics", "Pilih topik berita"));
     if (sourcePicker) {
       sourcePicker.setAttribute("aria-label", t("News source", "Sumber berita"));
@@ -533,6 +582,7 @@ function makeFeedWidget(kind, t) {
       const antarOption = [...sourcePicker.options].find((option) => option.value === "antara");
       if (antarOption) antarOption.disabled = localeBase(locale()) !== "id";
       sourcePicker.value = source;
+      renderNewsTabs();
     }
     iconAction(refresh, "refresh", t("Refresh stories", "Muat ulang cerita"));
   }
@@ -869,7 +919,7 @@ function makeIslamicShelf(t, openBook) {
   const heading = node("div", "home-scripture-shelf-heading tw:flex tw:items-center tw:justify-between tw:gap-4", section), copy = node("div", "tw:min-w-0", heading), title = node("h2", "tw:m-0 tw:text-xl tw:font-bold tw:tracking-tight tw:text-sela-ink", copy), subtitle = node("p", "tw:mb-0 tw:mt-1 tw:max-w-2xl tw:text-sm tw:leading-6 tw:text-sela-muted", copy), sticker = node("span", "tw:hidden tw:size-12 tw:shrink-0 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:shadow-sm tw:md:block", heading);
   title.id = "faith-scripture-shelf-title";
   sticker.setAttribute("aria-hidden", "true");
-  sticker.style.backgroundImage = 'url("' + new URL("../library/assets/jculture-companions-v3.webp", import.meta.url).href + '")';
+  sticker.style.backgroundImage = 'url("' + new URL("../library/assets/sela-companions-3d.webp", import.meta.url).href + '")';
   sticker.style.backgroundSize = "200% 200%";
   sticker.style.backgroundPosition = "0 0";
   const quranBooks = [

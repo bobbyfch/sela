@@ -36,16 +36,16 @@ test('public, app, embedded reader and CDN viewer ship tree-shaken Tailwind outp
   assert.match(viewerCss, /\.sela-tools/);
   assert.doesNotMatch(viewerCss, /\.tw\\:|--tw-spacing|--tw-color-|@import|@utility|\.hidden\{|\.grid\{|\.block\{/);
   const mobileCssGzipBytes = gzipSync(mobileCss).length;
-  // Home-world and palette treatments bring the complete app shell just above the former cap.
-  assert.ok(mobileCssGzipBytes < 51_000, `mobile Tailwind output is ${mobileCssGzipBytes} compressed bytes (51 KB budget)`);
+  // Keep the categorized settings pages and scene art within a tight app-shell budget.
+  assert.ok(mobileCssGzipBytes < 53_500, `mobile Tailwind output is ${mobileCssGzipBytes} compressed bytes (53.5 KB budget)`);
   assert.ok(gzipSync(appReaderCss).length < 40_000, `app reader Tailwind output is ${gzipSync(appReaderCss).length} compressed bytes`);
   assert.ok(gzipSync(viewerCss).length < 10_000, `standalone viewer Tailwind output is ${gzipSync(viewerCss).length} compressed bytes`);
   assert.match(publicHtml, /site\/public\.css\?v=/);
   assert.match(mobileHtml, /\.\.\/site\/mobile-app\.css/);
   assert.match(publicHtml, /tw:min-\[901px\]:grid-cols-/);
   assert.match(mobileHtml, /tw:flex-wrap/);
-  assert.match(publicHtml, /site\/illustrations\/reading-corner-jakarta\.webp/);
-  assert.match(publicHtml, /site\/illustrations\/book-cart\.webp/);
+   assert.match(publicHtml, /site\/art\/sela-reader-mascot-3d\.webp/);
+   assert.match(publicHtml, /library\/assets\/sela-companions-3d\.webp/);
   assert.doesNotMatch(publicHtml, /site\/illustrations\/book-garden\.webp/);
   assert.match(publicHtml, /id="copy-config"/);
   assert.match(publicHtml, /Your website setup/);
@@ -54,8 +54,8 @@ test('public, app, embedded reader and CDN viewer ship tree-shaken Tailwind outp
   assert.match(publicEntry, /@import "@phosphor-icons\/web\/fill"/);
   assert.doesNotMatch(publicEntry, /public-components\.css/);
   assert.match(manifest, /site\/Phosphor-Fill\.woff2/);
-  assert.match(manifest, /site\/illustrations\/reading-corner-jakarta\.webp/);
-  assert.match(manifest, /library\/assets\/jculture-companions-v3\.webp/);
+   assert.match(manifest, /site\/art\/sela-reader-mascot-3d\.webp/);
+   assert.match(manifest, /library\/assets\/sela-companions-3d\.webp/);
   assert.doesNotMatch(manifest, /site\/illustrations\/book-garden\.webp/);
   assert.match(mobileEntry, /app-tailwind-utilities\.css/);
   assert.match(mobileEntry, /@import "tailwindcss" source\(none\) prefix\(tw\)/);

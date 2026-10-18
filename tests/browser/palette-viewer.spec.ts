@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
+import {openSettingsCategory} from './settings-helpers.ts';
 
-const paletteKeys=['white','kids','cyberpunk','forest','sakura','ocean','lavender','citrus','laskar','bumi','hujan','nurbaya','wijck','menara','cantik','kopi','laut','rindu'];
+const paletteKeys=['white','forest','sakura','ocean','lavender','citrus','senja','arunika'];
 
 test('every palette changes viewer controls and motif without losing responsive fit',async({page})=>{
  test.setTimeout(180_000);
@@ -10,7 +11,7 @@ test('every palette changes viewer controls and motif without losing responsive 
  const reader=page.locator('[data-product-reader="app"]');
  await expect(reader).toBeVisible();
  await reader.getByRole('button',{name:'Reader settings',exact:true}).click();
- await expect(reader.locator('.app-reader-palettes [data-palette-choice]')).toHaveCount(18);
+ await expect(reader.locator('.app-reader-palettes [data-palette-choice]')).toHaveCount(8);
 
  for(const width of [390,768,1440]){
   await page.setViewportSize({width,height:900});
@@ -40,8 +41,8 @@ test('every palette changes viewer controls and motif without losing responsive 
     expect(current.motif).not.toBe('');
     accents.add(current.accent);motifs.add(current.motif);
    }
-   expect(accents.size).toBe(18);
-   expect(motifs.size).toBe(18);
+   expect(accents.size).toBe(8);
+   expect(motifs.size).toBe(8);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
  }
@@ -75,7 +76,7 @@ test('home illustration keeps its wide composition and reflects palette, daypart
   expect(layout.ratio).not.toBe('auto');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
- await page.locator('[data-tab="settings"]').click();
+ await openSettingsCategory(page,'Reading & appearance');
  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
  await expect(stage).toHaveAttribute('data-palette','sakura');
  await page.locator('[data-tab="home"]').click();
@@ -93,7 +94,7 @@ test('home illustration adopts a palette chosen while its companion atlas loads'
  let notifyAtlasRequest=()=>{};
  const atlasRequested=new Promise<void>(resolve=>{notifyAtlasRequest=resolve;});
  const atlasGate=new Promise<void>(resolve=>{releaseAtlas=resolve;});
- await page.route('**/jculture-companions-v3.webp',async route=>{notifyAtlasRequest();await atlasGate;await route.continue();});
+ await page.route('**/sela-companions-3d.webp',async route=>{notifyAtlasRequest();await atlasGate;await route.continue();});
  try{
   await page.goto('/app/',{waitUntil:'commit'});
   const stage=page.locator('.home-world-stage');
@@ -103,7 +104,7 @@ test('home illustration adopts a palette chosen while its companion atlas loads'
    atlasRequested.then(()=> 'atlas'),
    expect.poll(()=>home.getAttribute('data-world')).toBe('art-only').then(()=> 'art-only')
   ]);
-  await page.locator('[data-tab="settings"]').click();
+ await openSettingsCategory(page,'Reading & appearance');
   await expect(page.locator('.app-palette-picker [data-palette-choice="sakura"]')).toBeVisible();
   await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
@@ -122,7 +123,7 @@ test('art-only Home fallback keeps its palette when WebGL is unavailable',async(
  await page.goto('/app/');
  await expect(page.locator('.home-page')).toHaveAttribute('data-world','art-only');
  const stage=page.locator('.home-world-stage');
- await page.locator('[data-tab="settings"]').click();
+  await openSettingsCategory(page,'Reading & appearance');
  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
  await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
  await expect(stage).toHaveAttribute('data-palette','sakura');

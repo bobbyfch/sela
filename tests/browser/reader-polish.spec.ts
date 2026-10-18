@@ -1,8 +1,9 @@
 import {test,expect} from '@playwright/test';
+import {openSettingsCategory} from './settings-helpers.ts';
 
 test('reader audio, ambience, theme sync, and accessible controls work as separate tools',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- await page.route('https://api.gdeltproject.org/**',route=>route.fulfill({json:{articles:[]}}));
+ await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>route.fulfill({contentType:'application/rss+xml',body:'<rss><channel/></rss>'}));
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  await page.getByRole('button',{name:'Read sample',exact:true}).click();
  const reader=page.locator('[data-product-reader=app]');await expect(reader).toBeVisible({timeout:15000});
@@ -38,8 +39,8 @@ test('HTML reading pages use the white light surface and Home sections persist',
  const reader=page.locator('[data-product-reader=app]'),chapter=reader.locator('.sela-epub-chapter:not([hidden])').first();await expect(chapter).toBeVisible();
  expect(await chapter.evaluate(element=>getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
  for(const width of [320,390,768,1024,1440]){await page.setViewportSize({width,height:900});expect(await reader.evaluate(element=>element.scrollWidth<=innerWidth)).toBe(true);}
- await reader.getByRole('button',{name:'Back to library',exact:true}).click();await page.getByRole('button',{name:'Settings',exact:true}).click();
+ await reader.getByRole('button',{name:'Back to library',exact:true}).click();await openSettingsCategory(page,'Your space & routine');
  const starter=page.getByRole('checkbox',{name:/Starter books/});await starter.uncheck();await page.getByRole('button',{name:'Home',exact:true}).click();await expect(page.locator('.home-sample-section')).toBeHidden();
- await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(starter).not.toBeChecked();await starter.check();await page.getByRole('button',{name:'Home',exact:true}).click();await expect(page.locator('.home-sample-section')).toBeVisible();
+ await openSettingsCategory(page,'Your space & routine');await expect(starter).not.toBeChecked();await starter.check();await page.getByRole('button',{name:'Home',exact:true}).click();await expect(page.locator('.home-sample-section')).toBeVisible();
  await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-sample-section')).toBeVisible();
 });
