@@ -45,5 +45,5 @@ test('offline manifests contain runtime assets and never TypeScript sources', as
   assert(manifest.mobileShell.includes('app/app.js'));
   assert(manifest.mobileShell.includes('app/index.html'));
   assert(manifest.mobileShell.includes('dist/js/sela.esm.js'));
-  assert(manifest.mobileShell.includes('library/assets/jculture-isometric.webp'), 'Offline cache omits the Home companion atlas');
+  assert(manifest.mobileShell.includes('library/assets/sela-companions-3d.webp'), 'Offline cache omits the Home companion atlas');
 });

@@ -20,11 +20,17 @@ Public-site icons use the locally bundled Phosphor Icons web font 2.1.2,
 MIT licensed, Copyright Phosphor Icons. Only the filled weight is included;
 its license is preserved in `licenses/Phosphor-MIT.txt`.
 
+The app navigation and controls use tree-shaken Lucide React 1.59.0 icons.
+Lucide is ISC licensed; its license and required MIT notice for icons derived
+from Feather are preserved in `licenses/Lucide-React.txt`.
+
 The optional EPUB/CBZ adapter includes fflate 0.8.3 (MIT), Copyright Arjun
 Barrett. Its full license is preserved in `dist/fflate-LICENSE.txt`.
 
-The public reading-nook and book-cart illustrations were generated for Sela
-and are included under this project's MIT license.
+The transparent 3D reading companion and four-animal companion atlas were
+created for Sela. Their original artwork is included under this project's MIT
+license. The app icon, favicon, and navigation glyphs are custom Sela artwork;
+no Apple, OpenAI, or Meta logos or UI assets are included.
 
 The mobile Home room animation optionally bundles Three.js 0.186.1 (MIT),
 Copyright three.js authors. Its full license is preserved in

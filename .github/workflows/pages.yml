@@ -50,7 +50,7 @@ jobs:
           npm run build
           mkdir -p pages-site
           cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt manifest.webmanifest sela-sw.js offline-assets.json README.md README.id.md THIRD_PARTY_NOTICES.md pages-site/
-          cp -r site dist example mobile library docs pages-site/
+          cp -r site dist example mobile library docs licenses pages-site/
           mkdir -p pages-site/app
           cp app/index.html app/*.js app/*.webmanifest app/*-LICENSE.txt pages-site/app/
           touch pages-site/.nojekyll

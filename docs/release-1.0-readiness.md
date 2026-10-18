@@ -1,7 +1,7 @@
 # Sela 1.0 release readiness
 
 **Review date:** 18 October 2026
-**Current package version:** 0.9.0-beta.4
+**Current package version:** 0.9.0-beta.7
 **Release state:** Not ready to publish as 1.0 yet. This review records shipped work, verified behavior, and content or release gates that still need evidence.
 
 ## Product and stack decision
@@ -14,23 +14,27 @@ Base UI fits the app shell because it provides accessible, unstyled React primit
 
 ## Work completed in this pass
 
+- Refreshed the app mark, installed-app icons, and outline navigation icons; replaced retired character illustrations with original transparent 3D companion art and an animal atlas.
+- Consolidated the palette list to eight visually distinct themes and updated settings into navigable, full-page categories with a back action. OLED remains a dedicated black-background option for dark appearance.
+- Added `docs/design-system.md` and aligned the public page, app shell, and viewer styling with shared component and responsive rules.
+
 - Added a visible, responsive add-books surface on the Sela shelf, alongside existing drag-and-drop and keyboard-accessible native file input flows.
 - Reworked viewer audiobook and room atmosphere into separate visible cards. Audiobook selection remains local; EPUB Media Overlay narration uses embedded book assets. Rain, wind, stream, and wave ambience are generated in the browser with Web Audio, pause when the tab is hidden, and make no third-party audio requests.
 - Replaced reading-mode and page-fit dropdowns with labeled choice cards. Replaced the collapsed reading-profile manager with a visible grid and inline save/update/delete controls.
 - Added a reader setting to follow the app’s light/dark appearance, enabled by default and shared between the app and reader.
 - Changed HTML/EPUB text pages to use the light reading surface instead of the surrounding gray canvas.
 - Simplified viewer attribution to “Sela Books · © [current year]”.
-- Added ten palette choices with Indonesian nature and poetic names, retaining the existing eight palettes and their legacy mappings. The labels are Sela, Pelangi, Neon, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, Pesisir, Hujan, Seroja, Nila, Embun, Purnama, Arunika, Selat, and Jingga.
+- Reduced the active palette picker to eight distinct Indonesian-named palettes: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, and Arunika. Legacy saved names continue to map to these current palettes.
 - Added controls for showing or hiding five Home sections: continue reading, starter books, reflection, reading queue, and daily widgets. The selection persists on the device.
 - Added a local reading-time tracker with daily totals, 7-day/30-day views, streak and peak-day summaries, plus a Home widget. Reading time is recorded only while a book is open in a visible tab.
 - Added an optional Islamic prayer-time card. It sends saved weather coordinates to AlAdhan only after the user taps the request button, uses the KEMENAG RI calculation method, and labels results as estimates to confirm locally.
 - Added local Orama-powered search with Indonesian intent expansion and stemming; book metadata stays in the browser.
 - Added the fifth app area, Progress, and refreshed shelf details and explicit-selection interactions, centralized palette-aware default covers, and shelf material controls.
-- Replaced the flat book-only launcher mark with the Sela mage-and-companions artwork across the logo, favicon, 192/512 px PWA icons, Android maskable icon, and 180 px Apple touch icon; updated manifest theme color and offline cache lists.
+- Redrew the book launcher mark, favicon, 192/512 px PWA icons, Android maskable icon, and 180 px Apple touch icon. Updated manifest theme color and offline cache lists.
 - Regenerated the public desktop/mobile product captures and social preview from the current app so they no longer show the retired book mark or install button.
 - Re-audited the public page, all five app tabs, and viewer in 42 browser screenshots across 320, 393, 820, 1024, 1440, and 1920 px; found no page errors, horizontal overflow, or footer/bottom-navigation overlap.
 - Added a public setup selector for a pinned CDN release or unversioned jsDelivr URL. The page recommends pinned releases and warns that latest can change without notice.
-- Updated the companion scene to keep its local Jakarta artwork at the source aspect ratio and apply lightweight daypart, weather, appearance, and palette-motif layers in CSS; this does not download duplicate raster variants.
+- Replaced the retired scene art with the transparent 3D chibi reader and companion atlas; lightweight daypart, weather, appearance, and palette-motif layers remain optional scene details.
 - Kept the Home illustration responsive when WebGL is unavailable: the artwork-only fallback now continues to update daypart and weather filters, and the desktop prayer card has slightly tighter vertical spacing.
 - Added Quran topic cards for eight everyday-life starting points and retained verse/surah references. The complete cited surah opens in the reader. These cards are not a complete topic index or religious ruling.
 - Expanded the Islamic reading rail to 25 distinct prophet references with selected surah and verse anchors. The rail is explicitly a Quran passage index, not a set of complete biographies or a dated chronology; figures with brief Quran mentions are marked.
@@ -48,7 +52,7 @@ Base UI fits the app shell because it provides accessible, unstyled React primit
 | Light text-page surface | HTML and EPUB chapter backgrounds now use the reading panel token. | Reader light-surface and long-text checks pass locally in Chromium, Firefox, and WebKit. |
 | Responsive layouts | Public page, five app tabs, and viewer were visually rechecked in 42 Chromium viewport captures at 320, 393, 820, 1024, 1440, and 1920 px; no page errors, horizontal overflow, or footer/navigation overlap were found. Home artwork is preloaded before its lazy scene module; cold-cache Home and live sample-PDF reader smoke checks pass from 320 through 1440 px. | Physical-device and assistive-technology review remain release gates; automated browser coverage cannot replace those checks. |
 | Viewer credit | Shows Sela Books and the current copyright year, linked to the Sela repository. | No personal name is displayed in this reader credit. |
-| Palettes | 18 palettes now share one name/color/motif catalog across the app, reader chrome, quote cards, and swatches; each accent passes 4.5:1 with white text. Chromium exercises every palette in light/dark at phone, tablet, and desktop widths. | Physical-device and assistive-technology review remain release gates. |
+| Palettes | Eight palettes now share one name/color/motif catalog across the app, reader chrome, quote cards, and swatches; each accent passes 4.5:1 with white text. Chromium exercises every palette in light/dark at phone, tablet, and desktop widths. | Physical-device and assistive-technology review remain release gates. |
 | Long buttons/icons | Reader controls are primarily icon buttons with accessible names; profile and ambience choices stay labeled. | Do not remove visible text from controls where the icon alone would be ambiguous. |
 | App theme sync | Reader follows app appearance by default; users can turn sync off in viewer settings. | Verify embedded viewers and app reader independently. |
 | Liquid glass | Used as a restrained translucent surface on the new audio and ambience cards. | Keep text contrast and focus indicators independent of backdrop blur; glass is decorative and should remain optional under reduced effects. |
@@ -61,7 +65,7 @@ Base UI fits the app shell because it provides accessible, unstyled React primit
 | Clone deterrence / watermark | The site has normal creator attribution and metadata; no hidden watermark or anti-copy mechanism is claimed. | Public static pages can be copied; attribution helps identify origin but cannot prevent copying. |
 | Free eBooks | All 8 configured direct Gutenberg/GITenberg text URLs passed a full GET: HTTP 200, `text/plain`, non-HTML content, and a matching title marker. | Google Books, Open Library, Gutendex, Wikisource, and OPDS are dynamic catalogues. Their results cannot all be prevalidated; availability, rights, and downloads vary by country/source and may change. |
 | Smart search | Orama 3.1.18 and Indonesian/English stemmers are bundled into a 73 KB lazy-loaded browser module (24.5 KB gzip), included in the offline app shell. Indonesian intent expansion stays on-device. | Run a physical-device performance check on a large library; search remains local and does not promise semantic recommendations from remote catalogs. |
-| CDN “latest” option | Public setup playground generates both pinned and unversioned jsDelivr snippets; both were checked in Chromium. The version shown is 0.9.0-beta.4. | Pin a release for production. jsDelivr advises against unversioned production URLs because their contents can change without notice. |
+| CDN “latest” option | Public setup playground generates both pinned and unversioned jsDelivr snippets; both were checked in Chromium. The version shown is 0.9.0-beta.7. | Pin a release for production. jsDelivr advises against unversioned production URLs because their contents can change without notice. |
 | Home customization | Five Home sections have visible toggles and persist in local storage. | The current user choice is section visibility, not arbitrary drag-and-drop layout. Validate first-run, empty-shelf, returning-reader, and language-switch states. |
 | Astro migration | Astro is already used for the public site. | No framework migration is recommended. Measure actual build stages before considering structural changes. |
 | Prayer times | Optional estimates use AlAdhan’s KEMENAG RI method and are requested only after an explicit tap. A Jakarta sample request returned HTTP 200 with Asia/Jakarta timings on 17 October 2026; browser checks rendered five prayer times without console errors at 320, 768, and 1440 px. | The new 503/error-and-retry regression passes in Chromium, Firefox, and WebKit. Calculated times can differ from local mosque schedules; users should confirm locally. |

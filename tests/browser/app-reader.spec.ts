@@ -1,9 +1,9 @@
 import {test,expect} from '@playwright/test';
 test('app reader owns its chrome, settings, modes and palettes at phone, tablet and desktop sizes',async({page})=>{
  test.setTimeout(90_000);
- const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));await page.route('https://api.gdeltproject.org/api/v2/doc/doc?**',route=>route.fulfill({json:{articles:[]}}));
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>route.fulfill({contentType:'application/rss+xml',body:'<rss><channel/></rss>'}));
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true',{timeout:15000});
- await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Sakura',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
+ await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Reading & appearance',exact:true}).click();await page.getByRole('button',{name:'Sakura',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
  await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('html')).toHaveAttribute('data-palette','sakura');
  await page.getByRole('button',{name:'Read sample',exact:true}).click();const app=page.locator('[data-product-reader=app]');await expect(app).toBeVisible({timeout:15000});expect(requests.some(url=>url.endsWith('/library/reader-shell.js'))).toBe(false);expect(requests.filter(url=>url.endsWith('/dist/js/sela.app.js'))).toHaveLength(1);
  await expect(app.locator('.library-reader-header')).toHaveCount(0);await expect(app.locator('.library-reader-footer')).toHaveCount(0);await expect(app.locator('.app-reading-title')).toContainText('Yang Tidak Ikut Pulang');
@@ -25,7 +25,7 @@ test('reader translation payload loads only for a supported non-English app lang
  await page.route('https://raw.githubusercontent.com/GITenberg/Japanese-Book/main/1.txt',route=>route.fulfill({body:'A Japanese reader translation sample.'}));
  await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
  await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('ja-JP');
- await page.locator('[data-tab=browse]').click();await page.locator('.open-catalog').getByRole('button',{name:'For you',exact:true}).click();await expect(page.locator('.open-book-cover').first()).toHaveAttribute('aria-label',/A Translation Sample$/);await page.locator('.open-book-cover').click();await page.locator('.control-sheet[open] .book-detail-read').click();
+ await page.locator('[data-tab=browse]').click();await page.locator('.open-catalog').getByRole('button',{name:'GITenberg',exact:true}).click();await expect(page.locator('.open-book-cover').first()).toHaveAttribute('aria-label',/A Translation Sample$/);await page.locator('.open-book-cover').click();await page.locator('.control-sheet[open] .book-detail-read').click();
  const app=page.locator('[data-product-reader=app]');await expect(app).toBeVisible({timeout:15000});
  await expect.poll(()=>requests.some(url=>url.endsWith('/dist/js/sela.locales.js'))).toBe(true);
  await app.getByRole('button',{name:'読書設定',exact:true}).click();await app.locator('.app-advanced').click();await expect(app.locator('.sela-tools')).toContainText('目次');

@@ -9,12 +9,14 @@ async function json(url,signal){
  if(cache.size>40)cache.delete(cache.keys().next().value);cache.set(url,{time:Date.now(),data});return data;
 }
 const wiki=(params,signal)=>json('https://id.wikisource.org/w/api.php?'+new URLSearchParams({format:'json',origin:'*',...params}),signal);
-export async function searchBooks({source='gitenberg',query='',page=1,continuation,category='',signal}: Record<string, any>={}){
- if(!['wikisource','gitenberg'].includes(source))return externalBooks({source,query,page,category,signal});
+export async function searchBooks({source='gitenberg',query='',page=1,continuation,category='',collection='',signal}: Record<string, any>={}){
+ if(!['wikisource','gitenberg'].includes(source))return externalBooks({source,query,page,category,collection,signal});
  if(source==='wikisource'){
-  const data=await wiki(query?{action:'query',list:'search',srnamespace:'0',srsearch:query,srlimit:'24',sroffset:String((page-1)*24)}:{action:'query',list:'categorymembers',cmtitle:'Kategori:Novel',cmnamespace:'0',cmlimit:'24',...(continuation?{cmcontinue:continuation}:{})},signal);
-  const rows=data.query?.search||data.query?.categorymembers||[];
-  return {books:rows.map(b=>({id:'ws-'+b.pageid,title:b.title,source,author:'',language:'id',genre:'Wikisumber',rights:'Original work: see source. Wikisource contributions: CC BY-SA.',pageid:b.pageid})),next:query?data.continue?.sroffset!=null:data.continue?.cmcontinue!=null,continuation:data.continue?.cmcontinue,total:data.query?.searchinfo?.totalhits};
+  const categories:Record<string,string>={fiction:'Kategori:Novel',poetry:'Kategori:Puisi','short-stories':'Kategori:Cerita pendek'};
+  const browseCategory=categories[category];
+  const data=await wiki(browseCategory?{action:'query',list:'categorymembers',cmtitle:browseCategory,cmnamespace:'0',cmlimit:'24',...(continuation?{cmcontinue:continuation}:{})}:query?{action:'query',list:'search',srnamespace:'0',srsearch:query,srlimit:'24',sroffset:String((page-1)*24)}:{action:'query',list:'categorymembers',cmtitle:'Kategori:Novel',cmnamespace:'0',cmlimit:'24',...(continuation?{cmcontinue:continuation}:{})},signal);
+  const rows=(data.query?.search||data.query?.categorymembers||[]).filter(b=>!query||String(b.title||'').toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+  return {books:rows.map(b=>({id:'ws-'+b.pageid,title:b.title,source,author:'',language:'id',genre:browseCategory?.replace('Kategori:','')||'Wikisumber',rights:'Original work: see source. Wikisource contributions: CC BY-SA.',pageid:b.pageid})),next:browseCategory?!!data.continue?.cmcontinue:query?data.continue?.sroffset!=null:data.continue?.cmcontinue!=null,continuation:data.continue?.cmcontinue,total:data.query?.searchinfo?.totalhits};
  }
  const q=(query.replace(/[:<>]/g,' ').slice(0,100)+' user:GITenberg').trim();
  const data=await json('https://api.github.com/search/repositories?'+new URLSearchParams({q,per_page:'24',page:String(page)}),signal);

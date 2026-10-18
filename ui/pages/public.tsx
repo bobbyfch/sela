@@ -139,7 +139,7 @@ function PublicNavigation() {
             aria-label={"Light theme"}
             title={"Light"}
             aria-pressed={"false"}
-            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
+            className={"tw:grid tw:!size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
             <i className={"ph-fill ph-sun tw:text-[19px]"} aria-hidden={true}></i>
           </Button>
@@ -151,7 +151,7 @@ function PublicNavigation() {
             aria-label={"Dark theme"}
             title={"Dark"}
             aria-pressed={"false"}
-            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
+            className={"tw:grid tw:!size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
             <i className={"ph-fill ph-moon-stars tw:text-[19px]"} aria-hidden={true}></i>
           </Button>
@@ -163,7 +163,7 @@ function PublicNavigation() {
             aria-label={"System theme"}
             title={"System"}
             aria-pressed={"false"}
-            className={"tw:grid tw:size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
+            className={"tw:grid tw:!size-11 tw:place-items-center tw:rounded-xl tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-canvas tw:hover:text-sela-ink tw:aria-pressed:bg-sela-accent tw:aria-pressed:text-white"}
           >
             <i className={"ph-fill ph-desktop-tower tw:text-[19px]"} aria-hidden={true}></i>
           </Button>
@@ -369,7 +369,7 @@ function PublicContent() {
 function PublicFooter() {
   return (
     <footer className="cozy-footer tw:mx-auto tw:mt-16 tw:flex tw:w-full tw:max-w-[1440px] tw:flex-wrap tw:items-center tw:gap-x-5 tw:gap-y-3 tw:border-t tw:border-sela-line tw:px-4 tw:py-8 tw:text-sela-muted tw:sm:px-6 tw:lg:px-10">
-      <img className="footer-mascot tw:order-1 tw:w-20 tw:shrink-0 tw:drop-shadow-md tw:sm:w-24" src="site/illustrations/book-cart.webp" width="900" height="675" loading="lazy" alt="" aria-hidden="true" />
+      <img className="footer-mascot tw:order-1 tw:w-20 tw:shrink-0 tw:drop-shadow-md tw:sm:w-24" src="library/assets/sela-companions-3d.webp" width="1024" height="1024" loading="lazy" decoding="async" alt="" aria-hidden="true" />
       <p className="footer-invitation tw:order-2 tw:my-0 tw:min-w-[220px] tw:flex-1 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink tw:sm:text-lg" data-en="A little corner for your next chapter." data-id="Sudut kecil untuk bab berikutnya.">A little corner for your next chapter.</p>
       <small className="tw:order-4 tw:w-full tw:max-w-3xl tw:text-xs tw:leading-6" data-i18n={"regionNote"}>
         {
@@ -532,7 +532,7 @@ function SampleGallery() {
             data-story-open={""}
             aria-label={"Read Yang Tidak Ikut Pulang"}
           >
-            <span className={"trial-cover tw:relative tw:block tw:aspect-[2/3] tw:w-full tw:max-w-[180px] tw:overflow-hidden tw:rounded-2xl tw:bg-sela-surface tw:shadow-lg tw:shadow-slate-900/10"}>
+            <span className={"trial-cover tw:relative tw:block tw:h-[270px] tw:shrink-0 tw:aspect-[2/3] tw:w-full tw:max-w-[180px] tw:overflow-hidden tw:rounded-2xl tw:bg-sela-surface tw:shadow-lg tw:shadow-slate-900/10"}>
               <img
                 className="tw:absolute tw:inset-0 tw:size-full tw:object-cover tw:transition-transform tw:duration-500 tw:group-hover:scale-105"
                 src={"example/story/cover.jpg"}
@@ -614,7 +614,7 @@ function SampleGallery() {
 function ReadingCorner() {
   return (
     <section className="reading-corner tw:relative tw:isolate tw:my-8 tw:min-h-[420px] tw:overflow-hidden tw:rounded-[26px] tw:bg-sela-canvas tw:shadow-sm tw:sm:my-10 tw:sm:min-h-[500px] tw:lg:min-h-[560px] tw:max-sm:grid tw:max-sm:grid-rows-[210px_auto] tw:max-sm:min-h-0" aria-labelledby="reading-corner-title">
-      <img className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-[66%_center] tw:sm:object-center tw:max-sm:relative tw:max-sm:inset-auto tw:max-sm:h-[210px] tw:max-sm:object-[68%_center]" src="site/illustrations/reading-corner-jakarta.webp" width="2172" height="724" loading="lazy" decoding="async" alt="An Indonesian child reading with two friendly magical companions above a Jakarta rooftop garden" />
+      <img className="public-reading-mascot tw:absolute tw:inset-y-0 tw:right-0 tw:h-full tw:w-[52%] tw:object-contain tw:object-right-bottom tw:sm:w-[48%] tw:max-sm:relative tw:max-sm:inset-auto tw:max-sm:h-[210px] tw:max-sm:w-full tw:max-sm:object-center" src="site/art/sela-reader-mascot-3d.webp" width="960" height="1022" loading="lazy" decoding="async" alt="A friendly 3D reading companion holding a book" />
       <div className="tw:absolute tw:inset-0 tw:bg-gradient-to-t tw:from-sela-canvas/95 tw:via-sela-canvas/42 tw:to-transparent tw:sm:bg-gradient-to-r tw:sm:from-sela-canvas/95 tw:sm:via-sela-canvas/65 tw:sm:to-sela-canvas/5 tw:max-sm:hidden" aria-hidden="true"></div>
       <div className="tw:relative tw:mx-auto tw:flex tw:min-h-[420px] tw:max-w-[1440px] tw:flex-col tw:items-start tw:justify-end tw:px-5 tw:pb-8 tw:pt-16 tw:sm:min-h-[500px] tw:sm:px-9 tw:sm:pb-12 tw:lg:min-h-[560px] tw:lg:px-12 tw:max-sm:min-h-0 tw:max-sm:justify-start tw:max-sm:px-5 tw:max-sm:py-5">
         <p className="tw:mb-3 tw:text-[10px] tw:font-bold tw:tracking-[.2em] tw:text-sela-pink" data-en="A LITTLE PAUSE" data-id="JEDA SEJENAK">A LITTLE PAUSE</p>

@@ -6,9 +6,12 @@ import { searchBooks, acquireBook } from "./book-sources.js";
 import { bottomSheet, controlIcon, iconAction, notify } from "./controls.js";
 import { catalogCoverUrl } from "./covers.js";
 export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
-  const description = node(parent, "p", t("Discover open books. Read here or keep an offline copy.", "Temukan buku terbuka. Baca di sini atau simpan offline."));
+  const description = node(parent, "p", t("Explore books across trusted catalogs. Read available editions here or open the source listing.", "Jelajahi bacaan dari katalog tepercaya. Baca edisi yang tersedia di sini atau buka halaman sumber."));
   const form = node(parent, "form"), source = node(form, "select");
   source.setAttribute("aria-label", t("Book source", "Sumber buku"));
+  source.hidden = true;
+  source.tabIndex = -1;
+  source.setAttribute("aria-hidden", "true");
   for (const [value, label] of catalogSources) {
     const option = node(source, "option", label);
     option.value = value;
@@ -44,28 +47,38 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   more.hidden = true;
   const results = node(resultsSection, "div", "", "open-results tw:flex tw:min-w-0 tw:snap-x tw:snap-mandatory tw:gap-4 tw:overflow-x-auto tw:overscroll-x-contain tw:pb-4");
   let resultsExpanded = false;
-  let sourceChip;
   let activeCategory = "";
-  let activeCategoryKey = "trending";
+  let activeCategoryKey = "all";
   let changingCategory = false;
   let lastFirstId = "";
   const categoryOptions = [
-    ["free", "Free eBooks", "E-book gratis", "new", "Find free editions that can be opened or saved.", "Cari edisi gratis yang dapat dibuka atau disimpan.", "download"],
-    ["trending", "Top reads", "Buku populer", "", "Reader favourites, refreshed daily.", "Pilihan pembaca yang diperbarui setiap hari.", "books"],
-    ["open", "Open editions", "Edisi terbuka", "", "Read or check the edition terms.", "Baca atau cek ketentuan edisinya.", "open"],
-    ["new", "New releases", "Rilisan terbaru", "new", "Recent editions from bookshops.", "Edisi terbaru dari toko buku.", "clock"],
-    ["hidden", "Hidden gems", "Temuan tersembunyi", "fiction", "A little outside the usual lists.", "Pilihan menarik di luar daftar populer.", "sparkle"],
-    ["paid", "Preview & buy", "Pratinjau & beli", "new", "Availability depends on region.", "Ketersediaan bergantung wilayah.", "store"],
-    ["all", "For you", "Untukmu", "", "A mix from open collections.", "Campuran dari koleksi terbuka.", "compass"],
+    ["trending", "Most read", "Paling banyak dibaca", "", "Reader activity or downloads, as reported by this source.", "Aktivitas pembaca atau unduhan menurut sumber ini.", "books"],
+    ["open", "Open texts", "Teks terbuka", "", "Read or check the source\u2019s reuse terms.", "Baca atau periksa ketentuan penggunaan ulang sumber.", "open"],
+    ["recent", "Recently added", "Baru ditambahkan", "", "Recent Project Gutenberg IDs, not publisher release dates.", "ID Project Gutenberg terbaru, bukan tanggal rilis penerbit.", "clock"],
+    ["hidden", "Hidden gems", "Temuan tersembunyi", "", "Reader-rated works outside the most popular lists.", "Karya dengan rating pembaca di luar daftar terpopuler.", "sparkle"],
+    ["all", "Browse all", "Jelajahi semua", "", "Browse the selected source\u2019s available catalog.", "Jelajahi katalog yang tersedia dari sumber ini.", "compass"],
     ["fiction", "Novels & fiction", "Novel & fiksi", "fiction", "", "", "book"],
-    ["comics", "Comics & manga", "Komik & manga", "comics", "", "", "book"],
+    ["comics", "Comics", "Komik", "comics", "", "", "book"],
+    ["graphic_novels", "Graphic novels", "Novel grafis", "graphic_novels", "", "", "book"],
     ["nonfiction", "Non-fiction", "Nonfiksi", "nonfiction", "", "", "journal"],
+    ["short-stories", "Short stories", "Cerita pendek", "short-stories", "", "", "feather"],
     ["children", "Children", "Anak-anak", "childrens_literature", "", "", "smiley"],
     ["history", "History", "Sejarah", "history", "", "", "scroll"],
     ["fantasy", "Fantasy", "Fantasi", "fantasy", "", "", "sparkle"],
     ["mystery", "Mystery", "Misteri", "mystery_and_detective_stories", "", "", "magnifying-glass"],
     ["romance", "Romance", "Romansa", "romance", "", "", "heart"],
     ["science_fiction", "Science fiction", "Fiksi ilmiah", "science_fiction", "", "", "planet"],
+    ["science", "Science & learning", "Sains & pembelajaran", "science", "", "", "planet"],
+    ["religion", "Religion", "Agama", "religion", "", "", "lightbulb"],
+    ["technology", "Technology", "Teknologi", "technology", "", "", "journal"],
+    ["psychology", "Psychology", "Psikologi", "psychology", "", "", "user"],
+    ["health", "Health & wellbeing", "Kesehatan", "health", "", "", "heart"],
+    ["nature", "Nature", "Alam", "nature", "", "", "leaf"],
+    ["business", "Business", "Bisnis", "business", "", "", "books"],
+    ["self_help", "Personal growth", "Pengembangan diri", "self_help", "", "", "lightbulb"],
+    ["cooking", "Cooking", "Memasak", "cooking", "", "", "heart"],
+    ["music", "Music", "Musik", "music", "", "", "books"],
+    ["personal_finance", "Personal finance", "Keuangan pribadi", "personal_finance", "", "", "lightbulb"],
     ["poetry", "Poetry", "Puisi", "poetry", "", "", "feather"],
     ["philosophy", "Philosophy", "Filsafat", "philosophy", "", "", "lightbulb"],
     ["biography", "Biography", "Biografi", "biography", "", "", "user"]
@@ -73,38 +86,156 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   const discoveryIcons = { books: "books", sparkle: "sparkles", clock: "clock", compass: "compass", open: "read", download: "download", store: "store", book: "read", "magnifying-glass": "search", heart: "favorite", planet: "planet", scroll: "journal", feather: "leaf", smiley: "smile", lightbulb: "lightbulb", user: "person" };
   const categoryButtons = /* @__PURE__ */ new Map();
   let surprise;
-  function markCategory(value) {
-    for (const [key, button] of categoryButtons) button.setAttribute("aria-pressed", String(key === value));
+  const providers = [
+    { id: "sela", source: "local", label: ["Sela picks", "Pilihan Sela"], description: ["Curated classics \xB7 locally indexed \xB7 text opens from stable editions.", "Klasik pilihan \xB7 indeks lokal \xB7 teks dibuka dari edisi stabil."], collections: ["all"], defaultCollection: "all", topics: ["fiction", "nonfiction", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "poetry", "philosophy", "biography"] },
+    { id: "gutenberg", source: "gutendex", label: ["Project Gutenberg", "Project Gutenberg"], description: ["Gutenberg catalog \xB7 popular, recently added and topic search; open editions on the source site.", "Katalog Gutenberg \xB7 populer, baru ditambahkan dan pencarian topik; edisi dibuka di situs sumber."], collections: ["trending", "recent"], defaultCollection: "trending", topics: ["fiction", "nonfiction", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "poetry", "philosophy", "biography"] },
+    { id: "wikisource", source: "wikisource", label: ["Wikisource", "Wikisumber"], description: ["Community transcriptions \xB7 browse Indonesian novels, poetry and short stories.", "Transkripsi komunitas \xB7 jelajahi novel, puisi dan cerita pendek Indonesia."], collections: ["open"], defaultCollection: "open", topics: ["fiction", "poetry", "short-stories"] },
+    { id: "gitenberg", source: "gitenberg", label: ["GITenberg", "GITenberg"], description: ["Gutenberg mirror \xB7 searchable titles and downloadable plain text.", "Mirror Gutenberg \xB7 pencarian judul dan unduhan teks."], collections: ["all"], defaultCollection: "all", topics: [] },
+    { id: "openlibrary", source: "openlibrary-trending", label: ["Open Library", "Open Library"], description: ["Top reads, hidden gems, genre shelves and comics \xB7 edition access varies.", "Bacaan populer, temuan tersembunyi, genre dan komik \xB7 akses edisi bervariasi."], collections: ["trending", "hidden", "all"], defaultCollection: "trending", topics: ["fiction", "comics", "graphic_novels", "nonfiction", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "religion", "technology", "psychology", "health", "nature", "business", "self_help", "poetry", "philosophy", "biography"] },
+    { id: "bookrank", source: "bookrank", label: ["BookRank", "BookRank"], description: ["Open-data rankings \xB7 science, religion, cooking and comics \xB7 source links only.", "Peringkat berbasis data terbuka \xB7 sains, agama, memasak, dan komik \xB7 hanya tautan sumber."], collections: ["trending"], defaultCollection: "trending", topics: ["fiction", "comics", "graphic_novels", "history", "fantasy", "mystery", "romance", "science_fiction", "science", "religion", "technology", "psychology", "health", "nature", "business", "self_help", "cooking", "music", "personal_finance", "poetry", "philosophy", "biography"] },
+    { id: "openstax", source: "openstax", label: ["OpenStax", "OpenStax"], description: ["Free publisher-hosted textbooks \xB7 official web and PDF links.", "Buku ajar gratis dari penerbit \xB7 tautan web dan PDF resmi."], collections: ["open"], defaultCollection: "open", topics: [] },
+    { id: "indonesia-tech", source: "id-tech", label: ["Indonesian tech", "Teknologi Indonesia"], description: ["A local directory of Indonesian programming books and learning resources.", "Direktori lokal buku pemrograman dan sumber belajar berbahasa Indonesia."], collections: ["all"], defaultCollection: "all", topics: [] },
+    { id: "opds", source: "opds", label: ["My OPDS catalog", "Katalog OPDS-ku"], description: ["Connect an HTTPS OPDS 1 or 2 catalog that allows browser access.", "Hubungkan katalog OPDS 1 atau 2 melalui HTTPS yang mengizinkan akses browser."], collections: ["open"], defaultCollection: "open", topics: [] }
+  ];
+  let activeProviderId = "sela", activeCollectionKey = "all", activeTopicKey = "", activeWikiLanguage = "id";
+  const providerButtons = /* @__PURE__ */ new Map();
+  const collectionKeys = /* @__PURE__ */ new Set(["trending", "open", "recent", "hidden", "all"]);
+  function markCategory(_value) {
+    for (const [key, button] of categoryButtons) button.setAttribute("aria-pressed", String(collectionKeys.has(key) ? key === activeCollectionKey : key === activeTopicKey));
   }
   function setResultsExpanded(expanded) {
     resultsExpanded = expanded;
     results.className = "open-results tw:min-w-0 tw:gap-4 tw:pb-4 " + (expanded ? "tw:grid tw:grid-cols-2 tw:sm:grid-cols-3 tw:lg:grid-cols-4 tw:xl:grid-cols-5" : "tw:flex tw:snap-x tw:snap-mandatory tw:overflow-x-auto tw:overscroll-x-contain");
     render();
   }
-  const categorySections = node(parent, "div", "", "discovery-browse-sections tw:my-8 tw:space-y-8 tw:max-[370px]:my-2 tw:max-[370px]:space-y-4");
-  categorySections.setAttribute("aria-label", t("Browse the bookshop", "Jelajahi toko buku"));
-  const categoryGroups = [{ title: ["Curated shelves", "Rak pilihan"], keys: ["free", "trending", "open", "new", "hidden", "paid", "all"] }, { title: ["Formats & genres", "Format & genre"], keys: ["fiction", "comics", "nonfiction", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "poetry", "philosophy", "biography"] }];
-  function updateResultsHeading() {
-    const option = categoryOptions.find((item) => item[0] === activeCategoryKey), searching = !!query.value.trim();
-    const label = searching ? t("Search results", "Hasil pencarian") : t(option?.[1] || "Books", option?.[2] || "Buku");
-    resultsHeading.textContent = label;
-    resultsIntro.textContent = searching ? t("Matching titles from the selected source.", "Judul yang cocok dari sumber pilihan.") : t("A few good books to start with.", "Beberapa buku pilihan untuk memulai.");
-    categorySections.hidden = searching;
+  const providerSection = node(parent, "section", "", "discovery-source-step tw:mb-7 tw:min-w-0");
+  const providerHeading = node(providerSection, "h3", t("1 \xB7 Choose a source", "1 \xB7 Pilih sumber"), "tw:mb-3 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink");
+  providerHeading.id = "discovery-source-heading";
+  const providerGrid = node(providerSection, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-1 tw:gap-2.5 tw:sm:grid-cols-2 tw:lg:grid-cols-3 tw:xl:grid-cols-4");
+  providerGrid.setAttribute("role", "group");
+  providerGrid.setAttribute("aria-labelledby", providerHeading.id);
+  for (const provider of providers) {
+    const card = node(providerGrid, "button", "", "discovery-source-card tw:flex tw:min-h-24 tw:min-w-0 tw:flex-col tw:items-start tw:gap-1.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3.5 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+    card.type = "button";
+    card.dataset.provider = provider.id;
+    card.setAttribute("aria-pressed", String(provider.id === activeProviderId));
+    const label = node(card, "span", t(...provider.label), "tw:block tw:w-full tw:truncate tw:text-sm tw:font-semibold tw:text-sela-ink");
+    label.dataset.providerLabel = provider.id;
+    const description2 = node(card, "span", t(...provider.description), "tw:block tw:line-clamp-2 tw:text-xs tw:leading-5 tw:text-sela-muted");
+    description2.dataset.providerDescription = provider.id;
+    card.setAttribute("aria-label", t(...provider.label));
+    card.setAttribute("aria-description", t(...provider.description));
+    card.onclick = () => selectProvider(provider.id);
+    providerButtons.set(provider.id, card);
   }
-  function chooseCategory(key) {
-    activeCategoryKey = key;
-    activeCategory = categoryOptions.find((item) => item[0] === key)?.[3] || "";
-    if (["trending", "all", "open"].includes(key)) activeCategory = "";
-    markCategory(key);
+  const wikiLanguageSection = node(parent, "section", "", "tw:mb-6 tw:min-w-0");
+  wikiLanguageSection.hidden = true;
+  const wikiLanguageHeading = node(wikiLanguageSection, "h3", t("Edition language", "Bahasa edisi"), "tw:mb-2 tw:text-sm tw:font-semibold tw:text-sela-ink");
+  const wikiLanguageRow = node(wikiLanguageSection, "div", "", "tw:flex tw:flex-wrap tw:gap-2");
+  const wikiLanguages = [["id", "Indonesia", "Indonesia"], ["en", "English", "Inggris"], ["jv", "Javanese", "Jawa"], ["su", "Sundanese", "Sunda"], ["fr", "French", "Prancis"], ["es", "Spanish", "Spanyol"], ["de", "German", "Jerman"], ["nl", "Dutch", "Belanda"], ["pt", "Portuguese", "Portugis"], ["it", "Italian", "Italia"], ["zh", "Chinese", "Mandarin"], ["ja", "Japanese", "Jepang"], ["ru", "Russian", "Rusia"], ["ar", "Arabic", "Arab"]];
+  const wikiLanguageButtons = /* @__PURE__ */ new Map();
+  for (const [code, en, id] of wikiLanguages) {
+    const button = node(wikiLanguageRow, "button", t(en, id), "tw:min-h-9 tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-surface tw:px-3 tw:text-xs tw:font-semibold tw:text-sela-ink tw:hover:border-sela-accent");
+    button.type = "button";
+    button.setAttribute("aria-pressed", String(code === activeWikiLanguage));
+    button.onclick = () => {
+      activeWikiLanguage = code;
+      activeCollectionKey = "open";
+      activeCategoryKey = "open";
+      activeTopicKey = "";
+      activeCategory = "";
+      setProviderSource();
+    };
+    wikiLanguageButtons.set(code, button);
+  }
+  const categorySections = node(parent, "div", "", "discovery-browse-sections tw:my-8 tw:space-y-8 tw:max-[370px]:my-2 tw:max-[370px]:space-y-4");
+  categorySections.setAttribute("aria-label", t("Choose a collection, then filter by topic", "Pilih koleksi, lalu saring berdasarkan topik"));
+  const categoryGroups = [{ title: ["2 \xB7 Choose a collection", "2 \xB7 Pilih koleksi"], keys: ["trending", "open", "recent", "hidden", "all"] }, { title: ["3 \xB7 Filter by topic", "3 \xB7 Saring berdasarkan topik"], keys: ["fiction", "comics", "graphic_novels", "nonfiction", "short-stories", "children", "history", "fantasy", "mystery", "romance", "science_fiction", "science", "religion", "technology", "psychology", "health", "nature", "business", "self_help", "cooking", "music", "personal_finance", "poetry", "philosophy", "biography"] }];
+  function selectedProvider() {
+    return providers.find((provider) => provider.id === activeProviderId) || providers[0];
+  }
+  function sourceForSelection() {
+    const provider = selectedProvider();
+    if (provider.id === "openlibrary") return activeCollectionKey === "trending" ? "openlibrary-trending" : activeCollectionKey === "hidden" ? "openlibrary-hidden" : "openlibrary";
+    if (provider.id === "wikisource") return activeWikiLanguage === "id" ? "wikisource" : "wiki-" + activeWikiLanguage;
+    return provider.source;
+  }
+  function topicValue(key) {
+    const provider = selectedProvider();
+    if (provider.id === "bookrank") {
+      const map = { fiction: "literary-fiction", comics: "comics", graphic_novels: "graphic-novels", history: "history", fantasy: "fantasy", mystery: "crime", romance: "romance", science_fiction: "science-fiction", science: "popular-science", self_help: "self-help", personal_finance: "personal-finance", poetry: "poetry", philosophy: "philosophy", biography: "biography" };
+      return map[key] || key;
+    }
+    if (provider.id === "gutenberg") {
+      const map = { fiction: "fiction", nonfiction: "non-fiction", comics: "comic", children: "children", history: "history", fantasy: "fantasy", mystery: "mystery", romance: "romance", science_fiction: "science fiction", poetry: "poetry", philosophy: "philosophy", biography: "biography" };
+      return map[key] || key;
+    }
+    return categoryOptions.find((item) => item[0] === key)?.[3] || key;
+  }
+  function updateProviderUI() {
+    const provider = selectedProvider();
+    for (const [id, button] of providerButtons) button.setAttribute("aria-pressed", String(id === provider.id));
+    for (const [key, button] of categoryButtons) {
+      const visible = collectionKeys.has(key) ? provider.collections.some((value) => value === key) : provider.topics.some((value) => value === key) && (provider.id !== "openlibrary" || ["all", "hidden"].includes(activeCollectionKey));
+      button.hidden = !visible;
+    }
+    const topicSection = categorySections.children[1];
+    if (topicSection) topicSection.hidden = !provider.topics.length || provider.id === "openlibrary" && !["all", "hidden"].includes(activeCollectionKey);
+    wikiLanguageSection.hidden = provider.id !== "wikisource";
+    for (const [code, button] of wikiLanguageButtons) button.setAttribute("aria-pressed", String(code === activeWikiLanguage));
+    const config = parent.querySelector(".catalog-source-setup");
+    if (config) config.hidden = provider.id !== "opds";
+    markCategory(activeCategoryKey);
     updateResultsHeading();
-    setResultsExpanded(false);
+  }
+  function setProviderSource(_reload = true) {
     changingCategory = true;
-    source.value = key === "trending" ? "openlibrary-trending" : key === "hidden" ? "openlibrary-hidden" : key === "open" ? "gutendex" : key === "free" ? "google-books-free" : key === "paid" ? "google-books-paid" : key === "new" ? "google-books" : key === "all" ? document.documentElement.lang === "id" ? "wikisource" : "gitenberg" : "openlibrary";
+    source.value = sourceForSelection();
     source.dispatchEvent(new Event("change"));
     changingCategory = false;
+    updateProviderUI();
   }
+  function selectProvider(id) {
+    const provider = providers.find((item) => item.id === id);
+    if (!provider) return;
+    activeProviderId = id;
+    activeCollectionKey = provider.defaultCollection;
+    activeTopicKey = "";
+    activeCategoryKey = activeCollectionKey;
+    activeCategory = "";
+    activeWikiLanguage = "id";
+    setResultsExpanded(false);
+    setProviderSource(id !== "opds");
+  }
+  function updateResultsHeading() {
+    const option = categoryOptions.find((item) => item[0] === activeCategoryKey), collection = categoryOptions.find((item) => item[0] === activeCollectionKey), provider = selectedProvider(), searching = !!query.value.trim();
+    const label = searching ? t("Search results", "Hasil pencarian") : t(option?.[1] || "Books", option?.[2] || "Buku");
+    resultsHeading.textContent = label;
+    const providerName = t(...provider.label), collectionName = t(collection?.[1] || "Browse all", collection?.[2] || "Jelajahi semua"), topicName = categoryOptions.find((item) => item[0] === activeTopicKey);
+    resultsIntro.textContent = searching ? t("Search within ", "Cari di ") + providerName + (activeTopicKey ? " \xB7 " + t(topicName?.[1] || "Topic", topicName?.[2] || "Topik") : "") : providerName + " \xB7 " + collectionName + (topicName ? " \xB7 " + t(topicName[1], topicName[2]) : "");
+  }
+  function chooseCategory(key) {
+    const provider = selectedProvider();
+    if (collectionKeys.has(key)) {
+      if (!provider.collections.some((value) => value === key)) return;
+      activeCollectionKey = key;
+      activeTopicKey = "";
+      activeCategory = "";
+      activeCategoryKey = key;
+    } else {
+      if (!provider.topics.some((value) => value === key) || provider.id === "openlibrary" && !["all", "hidden"].includes(activeCollectionKey)) return;
+      activeTopicKey = key;
+      activeCategory = topicValue(key);
+      activeCategoryKey = key;
+    }
+    markCategory(key);
+    setResultsExpanded(false);
+    setProviderSource();
+  }
+  const categoryGroupSections = [];
   for (const group of categoryGroups) {
     const section = node(categorySections, "section", "", "tw:min-w-0");
+    categoryGroupSections.push(section);
     section.setAttribute("aria-label", t(...group.title));
     const header = node(section, "div", "", "tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3");
     const heading = node(header, "h3", t(...group.title), "tw:m-0 tw:text-base tw:font-semibold tw:tracking-tight tw:text-sela-ink");
@@ -116,8 +247,8 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       surprise = node(actions, "button", t("Surprise me", "Beri kejutan"), "tw:inline-flex tw:min-h-9 tw:items-center tw:gap-1.5 tw:rounded-lg tw:px-2.5 tw:text-sm tw:font-semibold tw:text-sela-muted tw:transition-colors tw:hover:bg-sela-accent/10 tw:hover:text-sela-accent");
       surprise.type = "button";
       surprise.onclick = () => {
-        const choices = categoryOptions.filter((item) => item[0] !== "all" && item[0] !== (source.value === "openlibrary-trending" ? "trending" : source.value === "google-books" ? "new" : "")).map((item) => item[0]);
-        chooseCategory(choices[Math.floor(Math.random() * choices.length)]);
+        const provider = selectedProvider(), choices = [...provider.collections.filter((key) => key !== activeCollectionKey), ...provider.topics.filter((key) => key !== activeTopicKey)];
+        if (choices.length) chooseCategory(choices[Math.floor(Math.random() * choices.length)]);
       };
     }
     for (const key of group.keys) {
@@ -137,9 +268,12 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       categoryButtons.set(key, button);
     }
   }
+  updateProviderUI();
+  parent.insertBefore(providerSection, form);
+  parent.insertBefore(wikiLanguageSection, categorySections);
   parent.insertBefore(categorySections, resultsSection);
-  const sourceAttribution = node(resultsSection, "a", "Powered by Google", "tw:mb-3 tw:inline-flex tw:min-h-8 tw:items-center tw:text-xs tw:font-semibold tw:text-sela-muted tw:underline-offset-4 hover:tw:text-sela-accent hover:tw:underline");
-  sourceAttribution.href = "https://books.google.com/";
+  const sourceAttribution = node(resultsSection, "a", t("Source catalog", "Katalog sumber"), "tw:mb-3 tw:inline-flex tw:min-h-8 tw:items-center tw:text-xs tw:font-semibold tw:text-sela-muted tw:underline-offset-4 hover:tw:text-sela-accent hover:tw:underline");
+  sourceAttribution.href = "https://openlibrary.org/";
   sourceAttribution.target = "_blank";
   sourceAttribution.rel = "noopener noreferrer";
   sourceAttribution.hidden = true;
@@ -151,7 +285,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   const terms = node(parent, "small", t("Open editions vary in completeness and copyright by country. Source credits remain in each book. Public APIs may limit requests.", "Kelengkapan edisi dan hak cipta berbeda menurut sumber dan negara. Kredit tetap disertakan. API publik dapat membatasi permintaan."));
   let controller, timer, page = 1, continuation, books = [], urls = [], imageObservers = [], destroyed = false, sequence = 0, fallbackNotice = "";
   function shuffleBooks() {
-    if (["openlibrary-trending", "openlibrary-hidden", "google-books", "google-books-free", "google-books-paid"].includes(source.value) || books.length < 2) return;
+    if (["openlibrary-trending", "openlibrary-hidden", "bookrank"].includes(source.value) || books.length < 2) return;
     for (let i = books.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [books[i], books[j]] = [books[j], books[i]];
@@ -259,12 +393,6 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
         rightsButton.type = "button";
         iconAction(rightsButton, "info", t("Source and rights information", "Informasi sumber dan hak penggunaan"));
         rightsButton.onclick = () => notify([book.rights || t("Check this edition\u2019s rights at the source.", "Periksa hak penggunaan edisi di sumber."), book.source || source.value].join(" \xB7 "), "info");
-        if (String(book.source).startsWith("google-books")) {
-          const powered = node(credits, "a", "Powered by Google", "tw:text-xs tw:font-semibold tw:text-sela-muted tw:underline-offset-4 hover:tw:text-sela-accent hover:tw:underline");
-          powered.href = "https://books.google.com/";
-          powered.target = "_blank";
-          powered.rel = "noopener noreferrer";
-        }
         const actionBar = node(body, "div", "", "book-detail-actions");
         for (const action of actions.querySelectorAll("button,a")) {
           const clone = action.cloneNode(true);
@@ -325,7 +453,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       details.onclick = openDetails;
       coverButton.onclick = openDetails;
       if (book.external && !book.url && !book.pageid) {
-        const link = node(actions, "a", t("View edition", "Lihat edisi"));
+        const link = node(actions, "a", book.source === "bookrank" ? t("View source record", "Lihat catatan sumber") : t("View edition", "Lihat edisi"));
         const url = new URL(book.external);
         if (url.protocol === "https:") {
           link.href = url.href;
@@ -401,8 +529,11 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       if (source.value === "local" || source.value === "id-tech") {
         const filename = source.value === "local" ? "public-books.json" : "indonesia-tech-books.json", response = await fetch(new URL("../../library/" + filename, import.meta.url), { signal: controller.signal });
         if (!response.ok) throw Error("Collection unavailable");
-        const all = await response.json(), terms2 = searchQuery.toLocaleLowerCase().split(/\s+/).filter(Boolean);
-        data = { books: all.filter((b) => !terms2.length || terms2.some((term) => (b.title + " " + b.author + " " + b.genre + " " + (b.description || "")).toLocaleLowerCase().includes(term))), next: false, total: all.length };
+        const all = await response.json(), terms2 = searchQuery.toLocaleLowerCase().split(/\s+/).filter(Boolean), aliases = { fiction: ["fiction", "novel"], nonfiction: ["non-fiction", "nonfiction", "nonfiction"], children: ["children", "juvenile", "family"], history: ["history", "historical"], fantasy: ["fantasy"], mystery: ["mystery"], romance: ["romance"], science_fiction: ["science fiction", "science-fiction"], poetry: ["poetry"], philosophy: ["philosophy"], biography: ["biography"] }, termsForTopic = activeTopicKey ? aliases[activeTopicKey] || [categoryOptions.find((item) => item[0] === activeTopicKey)?.[1].toLocaleLowerCase() || activeTopicKey] : [], books2 = all.filter((b) => {
+          const haystack = (b.title + " " + b.author + " " + b.genre + " " + (b.description || "")).toLocaleLowerCase();
+          return (!terms2.length || terms2.some((term) => haystack.includes(term))) && (!termsForTopic.length || termsForTopic.some((term) => haystack.includes(term)));
+        });
+        data = { books: books2, next: false, total: books2.length };
       } else if (source.value === "opds") {
         const { opdsBooks } = await import("./opds.js");
         data = await opdsBooks(append ? continuation : address.value, { query: searchQuery, signal: controller.signal, headers: authHeaders(append ? continuation : address.value) });
@@ -410,10 +541,10 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
           localStorage.setItem("sela-opds-url", address.value);
         } catch {
         }
-      } else data = await searchBooks({ source: source.value, query: searchQuery, page, continuation, category: activeCategory, signal: controller.signal });
+      } else data = await searchBooks({ source: source.value, query: searchQuery, page, continuation, category: activeCategory, collection: activeCollectionKey, signal: controller.signal });
       if (current !== sequence || destroyed) return;
       books = append ? [...books, ...data.books.filter((b) => !books.some((old) => old.id === b.id))] : data.books;
-      if (!append && !["openlibrary-trending", "openlibrary-hidden", "google-books", "google-books-free", "google-books-paid"].includes(source.value) && books.length > 1) {
+      if (!append && !["openlibrary-trending", "openlibrary-hidden", "bookrank"].includes(source.value) && books.length > 1) {
         for (let i = books.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [books[i], books[j]] = [books[j], books[i]];
@@ -429,15 +560,20 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     } catch (e) {
       if (current !== sequence || destroyed) return;
       if (requestSource !== "local") {
-        const failed = source.selectedOptions[0]?.textContent || requestSource;
+        const failed = t(...selectedProvider().label);
+        activeProviderId = "sela";
+        activeCollectionKey = "all";
+        activeTopicKey = "";
+        activeCategory = "";
+        activeCategoryKey = "all";
         source.value = "local";
         address.hidden = address.disabled = true;
-        if (sourceChip) sourceChip.textContent = source.selectedOptions[0]?.textContent || "";
-        fallbackNotice = t("This source did not respond; switched to local classics.", "Sumber tidak merespons; beralih ke koleksi klasik lokal.") + " \xB7 " + failed;
+        updateProviderUI();
+        fallbackNotice = t("This source did not respond; switched to Sela picks.", "Sumber tidak merespons; beralih ke pilihan Sela.") + " \xB7 " + failed;
         void load(false);
         return;
       }
-      feedback.textContent = t("Local classics are temporarily unavailable. Check your connection and retry.", "Koleksi klasik lokal sedang tidak tersedia. Periksa koneksi lalu coba lagi.");
+      feedback.textContent = t("Sela picks are temporarily unavailable. Check your connection and retry.", "Pilihan Sela sedang tidak tersedia. Periksa koneksi lalu coba lagi.");
       notify(feedback.textContent, "error");
       sourceLink.removeAttribute("href");
       sourceLink.hidden = true;
@@ -460,22 +596,22 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     void load();
   };
   source.onchange = () => {
-    const google = source.value.startsWith("google-books"), indonesian = source.value === "id-tech";
-    sourceAttribution.hidden = !google && !indonesian;
-    if (indonesian) {
-      sourceAttribution.textContent = "Index \xB7 EbookFoundation Free Programming Books";
-      sourceAttribution.href = "https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-id.md";
-    } else if (google) {
-      sourceAttribution.textContent = "Powered by Google";
-      sourceAttribution.href = "https://books.google.com/";
-    }
+    const indonesian = source.value === "id-tech";
+    const sourceLinks = { wikisource: ["Wikisource \xB7 Indonesian editions", "https://id.wikisource.org/"], "gitenberg": ["GITenberg \xB7 Gutenberg mirror", "https://gitenberg.org/"], gutendex: ["Gutendex \xB7 Project Gutenberg catalog", "https://gutendex.com/"], "openlibrary": ["Open Library catalog", "https://openlibrary.org/"], "openlibrary-trending": ["Open Library \xB7 reader trends", "https://openlibrary.org/trending/daily"], "openlibrary-hidden": ["Open Library \xB7 reader ratings", "https://openlibrary.org/"], "bookrank": ["BookRank \xB7 CC BY 4.0 rankings", "https://openbookrank.com/en/open-data"], openstax: ["OpenStax \xB7 publisher editions", "https://openstax.org/subjects"], local: ["Sela \xB7 curated classics", "https://www.gutenberg.org/"], opds: ["OPDS \xB7 personal catalog", address.value] };
+    const wikiMatch = source.value.match(/^wiki-(.+)$/), pair = sourceLinks[source.value] || (wikiMatch ? [`Wikisource \xB7 ${wikiMatch[1]}`, `https://${wikiMatch[1]}.wikisource.org/`] : ["Selected source", "https://openlibrary.org/"]);
+    sourceAttribution.textContent = indonesian ? "Index \xB7 EbookFoundation Free Programming Books" : pair[0];
+    sourceAttribution.href = pair[1];
+    sourceAttribution.hidden = false;
     if (!changingCategory) {
       activeCategory = "";
-      activeCategoryKey = "all";
-      markCategory("all");
+      activeTopicKey = "";
+      activeCategoryKey = activeCollectionKey;
+      markCategory(activeCollectionKey);
     }
-    updateResultsHeading();
+    updateProviderUI();
     address.hidden = address.disabled = source.value !== "opds";
+    const config = parent.querySelector(".catalog-source-setup");
+    if (config) config.hidden = source.value !== "opds";
     if (source.value !== "opds" || address.value) void load();
     else {
       clearTimeout(timer);
@@ -484,7 +620,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       submit.disabled = more.disabled = false;
       books = [];
       render();
-      feedback.textContent = t("Paste an open OPDS catalog URL, then Search.", "Tempel URL katalog OPDS terbuka, lalu Cari.");
+      feedback.textContent = t("Add an HTTPS OPDS catalog URL, then search it.", "Tambahkan URL katalog OPDS HTTPS, lalu cari katalog tersebut.");
       more.hidden = true;
     }
   };
@@ -498,14 +634,12 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     page++;
     void load(true);
   };
-  const chip = node(form, "button", source.selectedOptions[0]?.textContent || "Sources");
-  sourceChip = chip;
-  chip.type = "button";
-  chip.className = "catalog-source-chip";
-  const sourceBody = document.createElement("div");
-  sourceBody.className = "catalog-source-options";
-  sourceBody.append(source, address);
-  const profiles = node(sourceBody, "select");
+  const sourceBody = node(parent, "section", "", "catalog-source-setup tw:mb-7 tw:space-y-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-4");
+  sourceBody.hidden = true;
+  const sourceBodyTitle = node(sourceBody, "h3", t("Connect your OPDS catalog", "Hubungkan katalog OPDS-mu"), "tw:m-0 tw:text-base tw:font-semibold tw:text-sela-ink");
+  node(sourceBody, "p", t("Use an HTTPS catalog that allows browser access. Credentials stay in this session.", "Gunakan katalog HTTPS yang mengizinkan akses browser. Kredensial hanya dipakai selama sesi ini."), "tw:m-0 tw:text-sm tw:leading-6 tw:text-sela-muted");
+  const savedLabel = node(sourceBody, "p", t("Saved catalogs", "Katalog tersimpan"), "tw:m-0 tw:text-xs tw:font-semibold tw:text-sela-muted");
+  const profiles = node(sourceBody, "div", "", "tw:flex tw:flex-wrap tw:gap-2");
   profiles.setAttribute("aria-label", t("My saved catalogs", "Katalog tersimpanku"));
   function readProfiles() {
     try {
@@ -517,21 +651,35 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   }
   function renderProfiles() {
     profiles.replaceChildren();
-    node(profiles, "option", t("Saved catalogs", "Katalog tersimpan")).value = "";
-    for (const p of readProfiles()) node(profiles, "option", p.name).value = p.url;
+    const rows = readProfiles();
+    if (!rows.length) {
+      node(profiles, "small", t("No saved catalogs yet.", "Belum ada katalog tersimpan."), "tw:text-xs tw:text-sela-muted");
+      return;
+    }
+    for (const p of rows) {
+      const button = node(profiles, "button", p.name, "tw:min-h-9 tw:max-w-full tw:truncate tw:rounded-full tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-xs tw:font-semibold tw:text-sela-ink tw:hover:border-sela-accent");
+      button.type = "button";
+      button.onclick = () => {
+        address.value = p.url;
+        rememberOrigin();
+      };
+    }
   }
   renderProfiles();
-  profiles.onchange = () => {
-    if (!profiles.value) return;
-    source.value = "opds";
-    address.value = profiles.value;
-    source.dispatchEvent(new Event("change"));
-  };
-  const name = node(sourceBody, "input");
+  const opdsRow = node(sourceBody, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-1 tw:gap-2 tw:sm:grid-cols-[minmax(0,1fr)_minmax(160px,auto)]");
+  address.className = "tw:min-h-11 tw:min-w-0 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-sm tw:text-sela-ink";
+  address.placeholder = "https://\u2026/opds";
+  opdsRow.append(address);
+  const find = node(opdsRow, "button", t("Search catalog", "Cari katalog"), "tw:min-h-11 tw:rounded-xl tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-white");
+  find.type = "button";
+  find.onclick = () => void load();
+  const profileRow = node(sourceBody, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-1 tw:gap-2 tw:sm:grid-cols-[minmax(0,1fr)_auto]");
+  const name = node(profileRow, "input");
   name.placeholder = t("Catalog name", "Nama katalog");
   name.maxLength = 40;
   name.setAttribute("aria-label", name.placeholder);
-  const saveProfile = node(sourceBody, "button", t("Save catalog", "Simpan katalog"));
+  name.className = "tw:min-h-10 tw:min-w-0 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-sm tw:text-sela-ink";
+  const saveProfile = node(profileRow, "button", t("Save catalog", "Simpan katalog"), "tw:min-h-10 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-sm tw:font-semibold tw:text-sela-ink");
   saveProfile.type = "button";
   saveProfile.onclick = () => {
     try {
@@ -547,12 +695,15 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       notify(e.message, "error");
     }
   };
-  const username = node(sourceBody, "input"), password = node(sourceBody, "input");
+  const authRow = node(sourceBody, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-1 tw:gap-2 tw:sm:grid-cols-2");
+  const username = node(authRow, "input"), password = node(authRow, "input");
   username.placeholder = t("Username \xB7 optional", "Username \xB7 opsional");
   username.setAttribute("aria-label", username.placeholder);
+  username.className = "tw:min-h-10 tw:min-w-0 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-sm tw:text-sela-ink";
   password.type = "password";
   password.placeholder = t("Password \xB7 session only", "Password \xB7 sesi ini saja");
   password.setAttribute("aria-label", password.placeholder);
+  password.className = username.className;
   let authOrigin = "";
   const rememberOrigin = () => {
     try {
@@ -571,27 +722,30 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     }
     return same && (username.value || password.value) ? { Authorization: "Basic " + btoa(unescape(encodeURIComponent(username.value + ":" + password.value))) } : {};
   }
-  const find = node(sourceBody, "button", t("Search this catalog", "Cari katalog ini"));
-  find.type = "button";
-  find.onclick = () => {
-    sourceSheet.close();
-    void load();
-  };
-  const sourceSheet = bottomSheet(t("Book sources", "Sumber buku"), sourceBody);
-  chip.onclick = () => sourceSheet.open();
-  source.addEventListener("change", () => {
-    chip.textContent = source.selectedOptions[0].textContent;
-  });
+  parent.insertBefore(sourceBody, categorySections);
+  updateProviderUI();
   void load();
   window.addEventListener("pagehide", () => {
     destroyed = true;
     controller?.abort();
     clearTimeout(timer);
     urls.forEach(URL.revokeObjectURL);
-    sourceSheet.destroy();
   }, { once: true });
   return { shuffle: shuffleBooks, localize() {
-    description.textContent = t("Search a real bookshop: open editions, reader favourites, hidden gems, and books to preview or buy.", "Cari di toko buku digital: edisi terbuka, bacaan populer, hidden gem, serta buku untuk dipratinjau atau dibeli.");
+    description.textContent = t("Explore books across trusted catalogs. Read available editions here or open the source listing.", "Jelajahi bacaan dari katalog tepercaya. Baca edisi yang tersedia di sini atau buka halaman sumber.");
+    providerHeading.textContent = t("1 \xB7 Choose a source", "1 \xB7 Pilih sumber");
+    for (const provider of providers) {
+      const button = providerButtons.get(provider.id), label = button?.querySelector("[data-provider-label]"), copy = button?.querySelector("[data-provider-description]");
+      if (label) label.textContent = t(...provider.label);
+      if (copy) copy.textContent = t(...provider.description);
+      button?.setAttribute("aria-label", t(...provider.label));
+      button?.setAttribute("aria-description", t(...provider.description));
+    }
+    wikiLanguageHeading.textContent = t("Edition language", "Bahasa edisi");
+    for (const [code, en, id] of wikiLanguages) {
+      const button = wikiLanguageButtons.get(code);
+      if (button) button.textContent = t(en, id);
+    }
     query.placeholder = t("Search titles or authors", "Cari judul atau penulis");
     query.setAttribute("aria-label", query.placeholder);
     source.setAttribute("aria-label", t("Book source", "Sumber buku"));
@@ -616,10 +770,13 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
       const heading = section?.querySelector("h3");
       if (heading) heading.textContent = t(...group.title);
     }
-    categorySections.setAttribute("aria-label", t("Browse the bookshop", "Jelajahi toko buku"));
+    categorySections.setAttribute("aria-label", t("Choose a collection, then filter by topic", "Pilih koleksi, lalu saring berdasarkan topik"));
+    providerSection.setAttribute("aria-label", t("Choose a source", "Pilih sumber"));
+    sourceBodyTitle.textContent = t("Connect your OPDS catalog", "Hubungkan katalog OPDS-mu");
+    savedLabel.textContent = t("Saved catalogs", "Katalog tersimpan");
+    updateProviderUI();
     surprise.textContent = t("Surprise me", "Beri kejutan");
     updateResultsHeading();
-    if (sourceChip) sourceChip.textContent = source.selectedOptions[0]?.textContent || t("Book sources", "Sumber buku");
     render();
   } };
 }

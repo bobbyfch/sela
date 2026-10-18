@@ -6,8 +6,8 @@ import { getPaletteDefinition } from './themes.ts';
 
 type Companion = 'fox' | 'tanuki' | 'crane' | 'rabbit' | 'plant';
 type Mascot = Exclude<Companion, 'plant'>;
-const artUrl = new URL('../site/art/sela-mage-sky.webp', location.href).href;
-const atlasUrl = new URL('../library/assets/jculture-companions-v3.webp', location.href).href;
+const artUrl = new URL('../site/art/sela-reader-mascot-3d.webp', location.href).href;
+const atlasUrl = new URL('../library/assets/sela-companions-3d.webp', location.href).href;
 const mascotCell: Record<Mascot, { column: number; row: number }> = {
   fox: { column: 0, row: 0 },
   tanuki: { column: 1, row: 0 },
@@ -15,7 +15,7 @@ const mascotCell: Record<Mascot, { column: number; row: number }> = {
   rabbit: { column: 1, row: 1 }
 };
 
-/** A bright Jakarta reading scene with an optional animated personal companion. */
+/** A lightweight, transparent 3D reading mascot with an optional animated companion. */
 export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
   const intro = home.querySelector<HTMLElement>('.room-intro');
   if (!intro) return () => {};
@@ -142,8 +142,7 @@ export async function mountHomeWorld(home: HTMLElement): Promise<() => void> {
     camera.updateProjectionMatrix();
     renderer.setSize(Math.max(1, size.width), Math.max(1, size.height), false);
 
-    // The illustration keeps open sky on the left; place the companion there,
-    // away from the mage and the animals baked into the artwork.
+    // Keep the selected companion on the opposite side from the reading mascot.
     petX = -aspect * viewHeight / 2 + .405 * viewHeight;
     petY = -.16 * viewHeight;
     petHeight = compact ? .68 : tablet ? .78 : .82;

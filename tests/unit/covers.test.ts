@@ -19,8 +19,8 @@ test('Gutendex and Open Library results expose their real cover artwork',async()
   try{
     globalThis.fetch=async input=>{
       const url=String(input);
-      if(url.startsWith('https://gutendex.com/'))return new Response(JSON.stringify({count:1,next:null,results:[{id:84,title:'Frankenstein',authors:[{name:'Mary Shelley'}],languages:['en'],subjects:['Science fiction'],formats:{'application/epub+zip':'https://www.gutenberg.org/ebooks/84.epub','image/jpeg':'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg'}}]}),{status:200,headers:{'content-type':'application/json'}});
-      if(url.startsWith('https://openlibrary.org/'))return new Response(JSON.stringify({numFound:1,docs:[{key:'/works/OL123W',title:'Frankenstein',cover_i:98765,author_name:['Mary Shelley']}]}),{status:200,headers:{'content-type':'application/json'}});
+      if(url.startsWith('https://proxy.cors.dev/https://gutendex.com/'))return new Response(JSON.stringify({count:1,next:null,results:[{id:84,title:'Frankenstein',authors:[{name:'Mary Shelley'}],languages:['en'],subjects:['Science fiction'],formats:{'application/epub+zip':'https://www.gutenberg.org/ebooks/84.epub','image/jpeg':'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg'}}]}),{status:200,headers:{'content-type':'application/json'}});
+      if(url.startsWith('https://proxy.cors.dev/https://openlibrary.org/'))return new Response(JSON.stringify({numFound:1,docs:[{key:'/works/OL123W',title:'Frankenstein',cover_i:98765,author_name:['Mary Shelley']}]}),{status:200,headers:{'content-type':'application/json'}});
       throw new Error('Unexpected request: '+url);
     };
     const gutenberg=await externalBooks({source:'gutendex',query:'Frankenstein',signal});
@@ -52,8 +52,8 @@ test('Open Library trending and genre routes map live records to trusted covers 
   try{
     globalThis.fetch=async input=>{
       const url=new URL(String(input));
-      if(url.pathname==='/trending/daily.json')return new Response(JSON.stringify({works:[{key:'/works/OL9W',title:'Trending Work',author_name:['Reader'],cover_i:909,first_publish_year:2025}]}),{status:200,headers:{'content-type':'application/json'}});
-      if(url.pathname==='/subjects/fantasy.json')return new Response(JSON.stringify({work_count:1,works:[{key:'/works/OL10W',title:'Fantasy Work',authors:[{name:'Writer'}],cover_id:910,first_publish_year:2024}]}),{status:200,headers:{'content-type':'application/json'}});
+      if(url.pathname.endsWith('/trending/daily.json'))return new Response(JSON.stringify({works:[{key:'/works/OL9W',title:'Trending Work',author_name:['Reader'],cover_i:909,first_publish_year:2025}]}),{status:200,headers:{'content-type':'application/json'}});
+      if(url.pathname.endsWith('/subjects/fantasy.json'))return new Response(JSON.stringify({work_count:1,works:[{key:'/works/OL10W',title:'Fantasy Work',authors:[{name:'Writer'}],cover_id:910,first_publish_year:2024}]}),{status:200,headers:{'content-type':'application/json'}});
       throw new Error('Unexpected request: '+url.href);
     };
     const signal=new AbortController().signal;
@@ -69,41 +69,20 @@ test('Open Library trending and genre routes map live records to trusted covers 
   }finally{globalThis.fetch=originalFetch;}
 });
 
-test('Google Books provides recent titles and only its HTTPS purchase link',async()=>{
+test('BookRank returns attributed comic rankings as metadata and source links only',async()=>{
   const originalFetch=globalThis.fetch;
   try{
-    globalThis.fetch=async input=>{
-      const url=new URL(String(input));
-      assert.equal(url.hostname,'www.googleapis.com');
-      assert.equal(url.searchParams.get('orderBy'),'newest');
-      assert.equal(url.searchParams.get('country'),'US');
-      assert.match(url.searchParams.get('q')||'',/subject:fiction/);
-      return new Response(JSON.stringify({totalItems:1,items:[{id:'vol-1',volumeInfo:{title:'A New Story',authors:['A Writer'],publishedDate:'2026-04',language:'en',description:'A lovely book.',imageLinks:{thumbnail:'http://books.google.com/books/content?id=cover-1&printsec=frontcover&img=1&zoom=1&source=gbs_api'},infoLink:'https://books.google.com/books?id=vol-1'},saleInfo:{saleability:'FOR_SALE',buyLink:'https://books.google.com/books?id=vol-1&buy=1'}}]}),{status:200,headers:{'content-type':'application/json'}});
-    };
-    const result=await externalBooks({source:'google-books',category:'new',signal:new AbortController().signal});
-    assert.equal(result.books[0].title,'A New Story');
-    assert.equal(result.books[0].year,'2026');
-    assert.equal(result.books[0].buyLink,'https://books.google.com/books?id=vol-1&buy=1');
-    assert.equal(result.books[0].coverUrl,'https://books.google.com/books/content?id=cover-1&printsec=frontcover&img=1&zoom=1&source=gbs_api');
-    assert.equal(result.next,false);
+    globalThis.fetch=async input=>{const url=new URL(String(input));assert.equal(url.hostname,'openbookrank.com');assert.equal(url.pathname,'/api/v1/rankings/comics.json');return new Response(JSON.stringify({name:'Comics',items:[{slug:'maus',title:'Maus',author:'Art Spiegelman',rank:1,score:98.2,ratings:1200,url:'https://openbookrank.com/books/maus'}]}),{status:200,headers:{'content-type':'application/json'}});};
+    const result=await externalBooks({source:'bookrank',category:'comics',query:'Maus',signal:new AbortController().signal});
+    assert.equal(result.books[0].title,'Maus');assert.equal(result.books[0].trendingRank,1);assert.equal(result.books[0].rating,98.2);assert.equal(result.books[0].external,'https://openbookrank.com/books/maus');assert.match(result.books[0].rights,/CC BY 4.0/);assert.equal(result.books[0].url,undefined);assert.equal(result.books[0].format,undefined);
   }finally{globalThis.fetch=originalFetch;}
 });
 
-test('Google Books paid results preserve the regional buy and preview links plus the largest provided cover',async()=>{
+test('Gutendex recent collection maps to newer catalog IDs and selected topics',async()=>{
   const originalFetch=globalThis.fetch;
   try{
-    globalThis.fetch=async input=>{
-      const url=new URL(String(input));
-      assert.equal(url.searchParams.get('filter'),'paid-ebooks');
-      return new Response(JSON.stringify({totalItems:1,items:[{id:'paid-1',volumeInfo:{title:'A Paid Novel',authors:['A Writer'],previewLink:'https://books.google.com/books?id=paid-1&printsec=frontcover',imageLinks:{thumbnail:'http://books.google.com/books/content?id=paid-cover&img=1&zoom=1',extraLarge:'http://books.google.com/books/content?id=paid-cover&img=1&zoom=2'},infoLink:'https://books.google.com/books?id=paid-1'},saleInfo:{saleability:'FOR_SALE',buyLink:'https://play.google.com/store/books/details?id=paid-1',retailPrice:{amount:8.5,currencyCode:'USD'}},accessInfo:{viewability:'PARTIAL'}}]}),{status:200,headers:{'content-type':'application/json'}});
-    };
-    const result=await externalBooks({source:'google-books-paid',query:'A Paid Novel',signal:new AbortController().signal});
-    assert.equal(result.books[0].accessType,'paid');
-    assert.equal(result.books[0].previewLink,'https://books.google.com/books?id=paid-1&printsec=frontcover');
-    assert.equal(result.books[0].buyLink,'https://play.google.com/store/books/details?id=paid-1');
-    assert.match(result.books[0].coverDownloadUrl,/zoom=2/);
-    assert.equal(result.books[0].googlePrice,8.5);
-    assert.equal(result.books[0].googleCurrency,'USD');
+    globalThis.fetch=async input=>{const url=new URL(String(input));assert.equal(url.searchParams.get('sort'),'descending');assert.equal(url.searchParams.get('topic'),'comic');assert.equal(url.searchParams.get('page'),'2');return new Response(JSON.stringify({count:25,next:'https://gutendex.com/books/?page=3',results:[{id:9200,title:'A Comic Story',authors:[{name:'A Writer'}],languages:['en'],subjects:['Comics'],formats:{'text/plain':'https://www.gutenberg.org/ebooks/9200.txt.utf-8'}}]}),{status:200,headers:{'content-type':'application/json'}});};
+    const result=await externalBooks({source:'gutendex',query:'comic',page:2,category:'comics',collection:'recent',signal:new AbortController().signal});assert.equal(result.books[0].title,'A Comic Story');assert.equal(result.books[0].url,undefined);assert.equal(result.books[0].external,'https://www.gutenberg.org/ebooks/9200');assert.equal(result.next,true);
   }finally{globalThis.fetch=originalFetch;}
 });
 
