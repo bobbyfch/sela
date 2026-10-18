@@ -80,6 +80,7 @@ test('home illustration keeps its wide composition and reflects palette, daypart
  await page.locator('.app-palette-picker [data-palette-choice="sakura"]').click();
  await expect(stage).toHaveAttribute('data-palette','sakura');
  await page.locator('[data-tab="home"]').click();
+ await expect(page.locator('.home-page')).toHaveAttribute('data-world',/^(ready|art-only)$/);
  const daypartFilter=await art.evaluate(element=>getComputedStyle(element).getPropertyValue('--world-filter-time'));
  await stage.evaluate(element=>{element.dataset.daypart='sunset';element.dataset.weather='rain';});
  await expect.poll(()=>art.evaluate(element=>getComputedStyle(element).filter)).toContain('sepia');
