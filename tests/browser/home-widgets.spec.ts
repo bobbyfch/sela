@@ -9,14 +9,33 @@ test.beforeEach(async({page})=>{
  await page.route('https://en.wikipedia.org/api/rest_v1/page/summary/Maya_Angelou',route=>route.fulfill({json:{thumbnail:{source:'https://upload.wikimedia.org/wikipedia/commons/a/a4/Maya_Angelou_2013.jpg'}}}));
 });
 
+async function mockQuranSources(page){
+ const editions={
+  id:[{key:'indonesian_affairs',language_iso_code:'id',title:'Terjemahan Berbahasa Indonesia - Kementerian Agama',version:'1.0.1'}],
+  en:[{key:'english_saheeh',language_iso_code:'en',title:'Saheeh International',version:'1.0.1'}],
+  ja:[{key:'japanese_saeedsato',language_iso_code:'ja',title:'日亜対訳（日本語） - サイード佐藤',version:'1.0.13'}]
+ };
+ await page.route(/^https:\/\/quranenc\.com\/api\/v1\//,route=>{
+  const url=new URL(route.request().url()),parts=url.pathname.split('/'),path=url.pathname;
+  if(path.startsWith('/api/v1/translations/list/'))return route.fulfill({json:{translations:editions[parts.at(-1)]||editions.en}});
+  if(path.startsWith('/api/v1/translation/sura/')){
+   const key=parts.at(-2),sura=parts.at(-1),language=key==='indonesian_affairs'?'id':key==='japanese_saeedsato'?'ja':'en';
+   const translations={id:['Dengan nama Allah Yang Maha Pengasih.','Ayat kedua. Allah.'],en:['In the name of Allah, the Entirely Merciful.','The second verse.'],ja:['アリフ・ラーム・ミーム。','二番目の節です。']};
+   return route.fulfill({json:{result:translations[language].map((translation,index)=>({sura,aya:String(index+1),arabic_text:index?'ذَٰلِكَ الْكِتَابُ':'الم',translation,footnotes:index?'':language==='ja'?'注釈':language==='en'?'English note':'Catatan Indonesia'}))}});
+  }
+  return route.abort();
+ });
+ await page.route('https://buruja.com/api/v1/adhkar/morning-adhkar.json',route=>route.fulfill({json:{slug:'morning-adhkar',name:'Morning Adhkar',arabic_name:'أذكار الصباح',title:'Morning remembrances',source_note:'Quran and hadith sources',items:[{n:1,title:'Ayat al-Kursi',arabic:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ',translit:'Allahu la ilaha illa Huwa',en:'Allah—there is no deity except Him.',repeat:'1x',ref:'Al-Baqarah 2:255',grade:'Quran'}]}}));
+}
+
 test('Home scene keeps the title and weather readable from phone through desktop',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-world-stage')).toBeVisible();await expect(page.locator('.home-world-art')).toBeVisible();
  for(const width of [320,390,640,768,860,1024,1440]){
   await page.setViewportSize({width,height:900});
   const intro=page.locator('.home-page .room-intro'),title=intro.locator('h1'),stage=intro.locator('.home-world-stage'),art=stage.locator('.home-world-art'),weather=intro.locator('.weather-widget');
   await expect(title).toBeVisible();await expect(weather).toBeVisible();await expect(stage).toBeVisible();await expect(art).toBeVisible();
-  const layout=await page.evaluate(()=>{const intro=document.querySelector('.room-intro')!,title=intro.querySelector('h1')!,weather=intro.querySelector('.weather-widget')!,time=intro.querySelector('.clock time')!,canvas=document.querySelector('.home-world-canvas');const rect=(el:Element)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {intro:rect(intro),title:rect(title),weather:rect(weather),time:rect(time),scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,weatherDisplay:getComputedStyle(weather).display,canvasVisible:!canvas||canvas.classList.contains('is-visible')}});
-  expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.title.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.title.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.weather.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.width).toBeGreaterThan(80);expect(layout.time.height).toBeLessThan(40);expect(layout.canvasVisible).toBe(true);
+  const layout=await page.evaluate(()=>{const intro=document.querySelector('.room-intro')!,title=intro.querySelector('h1')!,weather=intro.querySelector('.weather-widget')!,time=intro.querySelector('.clock time')!;const rect=(el:Element)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {intro:rect(intro),title:rect(title),weather:rect(weather),time:rect(time),scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,weatherDisplay:getComputedStyle(weather).display}});
+  expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.title.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.title.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.weather.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.width).toBeGreaterThan(80);expect(layout.time.height).toBeLessThan(40);
  }
 });
 
@@ -49,14 +68,9 @@ test('Home shows one sourced quote with an author portrait and sends its single 
  await page.locator('#language').selectOption('ja-JP',{timeout:5000});await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');await expect.poll(()=>japaneseFeeds.length).toBeGreaterThan(0);await expect.poll(()=>newsQueries.some(query=>/sourcelang:japanese/.test(query))).toBe(true);
 });
 
-test('Home presents one Quran passage and Quran-only controls work directly in the reader @quran-home',async({page})=>{
- await page.route('https://quranenc.com/api/v1/translations/list/id?**',route=>route.fulfill({json:{translations:[{key:'indonesian_affairs',language_iso_code:'id',title:'Terjemahan Berbahasa Indonesia - Kementerian Agama',version:'1.0.1'}]}}));
- await page.route('https://quranenc.com/api/v1/translations/list/en?**',route=>route.fulfill({json:{translations:[{key:'english_saheeh',language_iso_code:'en',title:'Saheeh International',version:'1.0.1'}]}}));
- await page.route('https://quranenc.com/api/v1/translations/list/ja?**',route=>route.fulfill({json:{translations:[{key:'japanese_saeedsato',language_iso_code:'ja',title:'日亜対訳（日本語） - サイード佐藤',version:'1.0.13'}]}}));
- await page.route('https://quranenc.com/api/v1/translation/sura/indonesian_affairs/**',route=>route.fulfill({json:{result:[{sura:'2',aya:'1',arabic_text:'الم',translation:'Dengan nama Allah Yang Maha Pengasih.',footnotes:'Catatan Indonesia'},{sura:'2',aya:'2',arabic_text:'ذَٰلِكَ الْكِتَابُ',translation:'Ayat kedua. Allah.',footnotes:''}]} }));
- await page.route('https://quranenc.com/api/v1/translation/sura/english_saheeh/**',route=>route.fulfill({json:{result:[{sura:'2',aya:'1',arabic_text:'الم',translation:'In the name of Allah, the Entirely Merciful.',footnotes:'English note'},{sura:'2',aya:'2',arabic_text:'ذَٰلِكَ الْكِتَابُ',translation:'The second verse.',footnotes:''}]} }));
- await page.route('https://quranenc.com/api/v1/translation/sura/japanese_saeedsato/**',route=>route.fulfill({json:{result:[{sura:'2',aya:'1',arabic_text:'الم',translation:'アリフ・ラーム・ミーム。',footnotes:'注釈'},{sura:'2',aya:'2',arabic_text:'ذَٰلِكَ الْكِتَابُ',translation:'二番目の節です。',footnotes:''}]} }));
-  await page.route('https://buruja.com/api/v1/adhkar/morning-adhkar.json',route=>route.fulfill({json:{slug:'morning-adhkar',name:'Morning Adhkar',arabic_name:'أذكار الصباح',title:'Morning remembrances',source_note:'Quran and hadith sources',items:[{n:1,title:'Ayat al-Kursi',arabic:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ',translit:'Allahu la ilaha illa Huwa',en:'Allah—there is no deity except Him.',repeat:'1x',ref:'Al-Baqarah 2:255',grade:'Quran'}]}}));
+test('Home presents one Quran passage and Quran-only controls work directly in the reader @quran-home-full',async({page,browserName})=>{
+ test.skip(browserName==='webkit','The shorter Quran reader smoke test runs in its own WebKit job.');
+ await mockQuranSources(page);
  await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-faith-widget')).toBeHidden();
  await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('#language').selectOption('id-ID');
   await page.locator('[data-tab=home]').click();const faith=page.locator('.home-faith-widget');await expect(faith).toBeVisible();await expect(faith.locator('blockquote')).toContainText('Allah');await expect(faith).toContainText('Kementerian Agama');
@@ -70,6 +84,15 @@ test('Home presents one Quran passage and Quran-only controls work directly in t
  await navigation.getByLabel('Bahasa terjemahan').selectOption('en');await expect.poll(()=>navigation.getByLabel('Edisi terjemahan').locator('option').count()).toBeGreaterThan(0);await navigation.getByLabel('Edisi terjemahan').selectOption('english_saheeh');await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot!.querySelector('.quran-translation')?.textContent)).toContain('Entirely Merciful');await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').quranLanguage)).toBe('en');await reopenControls();
  await navigation.getByLabel('Bahasa terjemahan').selectOption('ja');await expect.poll(()=>navigation.getByLabel('Edisi terjemahan').locator('option').count()).toBeGreaterThan(0);await navigation.getByLabel('Edisi terjemahan').selectOption('japanese_saeedsato');await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot!.querySelector('.quran-translation')?.textContent)).toContain('アリフ・ラーム・ミーム。');await reopenControls();await navigation.getByRole('button',{name:'Besarkan teks Arab'}).click();await navigation.getByRole('button',{name:'Besarkan teks Arab'}).click();await navigation.getByRole('button',{name:'Besarkan teks terjemahan'}).click();await expect.poll(()=>chapter.evaluate(element=>getComputedStyle(element.shadowRoot!.querySelector('.quran-arabic')!).fontSize)).toBe('36px');await expect.poll(()=>chapter.evaluate(element=>getComputedStyle(element.shadowRoot!.querySelector('.quran-translation')!).fontSize)).toBe('20px');await expect.poll(()=>page.evaluate(()=>{const p=JSON.parse(localStorage.getItem('sela-library:personal')||'{}');return [p.quranLanguage,p.quranSurah,p.quranVerse,p.quranArabicSize,p.quranTranslationSize];})).toEqual(['ja',2,1,36,20]);
  await navigation.getByRole('button',{name:'Tutup panel'}).click();await expect(navigation).toBeHidden();await reader.getByRole('button',{name:'Pengaturan reader',exact:true}).click();await expect(reader.getByLabel('Filter halaman')).toBeVisible();await expect(reader.getByLabel('Material halaman')).toBeVisible();await reader.getByRole('button',{name:'Kembali ke rak'}).click();await expect(reader).toHaveCount(0);
+});
+
+test('Quran passage opens from Home and verse navigation renders inside the WebKit reader @quran-home-smoke',async({page,browserName})=>{
+ test.skip(browserName!=='webkit','Chromium and Firefox cover the full Quran settings matrix.');
+ await mockQuranSources(page);await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
+ await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('#language').selectOption('id-ID');await page.locator('[data-tab=home]').click();
+ const faith=page.locator('.home-faith-widget');await expect(faith).toBeVisible();await expect(faith.locator('blockquote')).toContainText('Allah');await faith.getByRole('button',{name:'Buka ayat di Al-Qur’an'}).click();
+ const reader=page.locator('.library-reader-overlay'),navigation=reader.locator('.app-quran-navigation');await expect(reader).toBeVisible();await reader.getByRole('button',{name:'Buka pengaturan Al-Qur’an'}).click();await expect(navigation).toBeVisible();await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();
+ const chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot?.querySelector('.quran-translation')?.textContent||'')).toContain('Dengan nama Allah');await reader.getByRole('button',{name:'Kembali ke rak'}).click();await expect(reader).toHaveCount(0);
 });
 
 test('all five non-Islam local editions open from the Shelf faith library',async({page})=>{

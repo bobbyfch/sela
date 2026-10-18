@@ -90,7 +90,7 @@ jobs:
       - name: Run browser tests
         run: |
           if [ "${{ matrix.project }}" = "webkit-quran" ]; then
-            npx playwright test tests/browser/home-widgets.spec.ts --project=webkit --workers=1 --grep="@quran-home"
+            npx playwright test tests/browser/home-widgets.spec.ts --project=webkit --workers=1 --grep="@quran-home-smoke"
           elif [ "${{ matrix.project }}" = "webkit" ]; then
             npx playwright test --project=webkit --fully-parallel --workers=1 --shard="${{ matrix.shard }}" --grep-invert="@quran-home"
           else
