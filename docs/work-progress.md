@@ -50,3 +50,10 @@
 - The mobile pass also covers the Discover and shelf layouts at narrow widths, including the constrained full-screen drop prompt and stable responsive measurements.
 - The optional multi-framework matrix (`npm run test:frameworks`) was not run. Its host runtimes are not provisioned by this recovery workflow, so it is outside the required CI gate.
 - The Work workspace has no local checkout, so local tests were not run. Live GitHub Pages verification and deployment remain outstanding; this PR has not deployed the changes.
+
+
+### Catalog failure follow-up · 21 October 2026
+- Run 39612168669 passed build, unit/type checks, PWA, Chromium, and most WebKit jobs, but Firefox found one failure in the failed-catalog-download test: the error alert did not remain visible after a 503 response.
+- The catalog search effect could still have a debounced request pending when the Search form was submitted. The submit handler now cancels that timer, preventing a second request from clearing the download error. The tracked app bundles and offline asset manifest were regenerated from the CI build output.
+- Run 39614776545 on commit 984a2efd4524260e40fe404cbc11240feeefddd5 passed the build/generated-artifact check, unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
+- The optional multi-framework matrix remains unrun because its host runtimes are not provisioned by this recovery workflow. Local tests and direct production Pages verification remain outstanding; no deployment has been made.
