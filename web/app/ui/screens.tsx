@@ -705,6 +705,27 @@ export function SettingsDetail() {
   </div>;
 }
 
+function waitForReader<T>(promise: Promise<T>, signal: AbortSignal, timeoutMessage: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      signal.removeEventListener('abort', abort);
+    };
+    const finish = (action: () => void) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      action();
+    };
+    const abort = () => finish(() => reject(new DOMException('Reader load cancelled.', 'AbortError')));
+    const timer = window.setTimeout(() => finish(() => reject(new Error(timeoutMessage))), 20000);
+    if (signal.aborted) { abort(); return; }
+    signal.addEventListener('abort', abort, { once: true });
+    promise.then(value => finish(() => resolve(value)), reason => finish(() => reject(reason)));
+  });
+}
+
 export function ReaderScreen() {
   const { bookId = '' } = useParams();
   const navigate = useNavigate();
@@ -712,7 +733,10 @@ export function ReaderScreen() {
   const { store, preferences, lang } = useWorkspace();
   const mountRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingPhase, setLoadingPhase] = useState<'file' | 'engine' | 'rendering' | 'ready' | 'error'>('file');
   const [error, setError] = useState('');
+  const [errorKind, setErrorKind] = useState<'recoverable' | 'missing'>('recoverable');
+  const [retryToken, setRetryToken] = useState(0);
   const [activeReader, setActiveReader] = useState<any>(null);
   const [toolsOpened, setToolsOpened] = useState(false);
   const [toolsTab, setToolsTab] = useState('layout');
@@ -731,29 +755,50 @@ export function ReaderScreen() {
     let disposed = false;
     let stopTracker: (() => void) | undefined;
     let instance: any;
+    const abort = new AbortController();
     const load = async () => {
       if (store.loading) return;
-      if (!bookId || !mountRef.current) {
-        setError(copy(lang, 'This book could not be found.', 'Buku ini tidak ditemukan.'));
-        setLoading(false);
-        return;
-      }
-      setLoading(true); setError('');
+      setLoading(true);
+      setLoadingPhase('file');
+      setError('');
+      setErrorKind('recoverable');
       try {
+        if (!bookId || !mountRef.current) {
+          setErrorKind('missing');
+          throw new Error(copy(lang, 'This book could not be found.', 'Buku ini tidak ditemukan.'));
+        }
         const activeBook = store.books.find(item => item.id === bookId);
-        if (!activeBook) throw new Error(copy(lang, 'This book is no longer on your shelf.', 'Buku ini sudah tidak ada di rak.'));
-        const [blob, sdk, tracker] = await Promise.all([
+        if (!activeBook) {
+          setErrorKind('missing');
+          throw new Error(copy(lang, 'This book is no longer on your shelf.', 'Buku ini sudah tidak ada di rak.'));
+        }
+        const blob = await waitForReader(
           getFile(bookId),
-          loadReaderSdk(),
-          import('../../../app/library/reading-tracker.ts'),
-        ]);
+          abort.signal,
+          copy(lang, 'The saved file took too long to open. Try again or return to your shelf.', 'File tersimpan terlalu lama dibuka. Coba lagi atau kembali ke rak.'),
+        );
         if (disposed) return;
-        if (!blob) throw new Error(copy(lang, 'The original book file is missing. Restore it from your backup.', 'File buku asli tidak ditemukan. Pulihkan dari cadangan.'));
-        const data = await blob.arrayBuffer();
+        if (!blob) {
+          setErrorKind('missing');
+          throw new Error(copy(lang, 'The original book file is missing. Return to your shelf to import it again or restore a backup.', 'File buku asli tidak ditemukan. Kembali ke rak untuk mengimpornya lagi atau pulihkan dari cadangan.'));
+        }
+        const data = await waitForReader(
+          blob.arrayBuffer(),
+          abort.signal,
+          copy(lang, 'The saved file took too long to prepare. Try again or return to your shelf.', 'File tersimpan terlalu lama disiapkan. Coba lagi atau kembali ke rak.'),
+        );
+        if (disposed) return;
+        setLoadingPhase('engine');
+        const engineMessage = copy(lang, 'The reader engine took too long to load. Try again or refresh the app.', 'Mesin pembaca terlalu lama dimuat. Coba lagi atau muat ulang aplikasi.');
+        const [sdk, tracker] = await Promise.all([
+          waitForReader(loadReaderSdk(), abort.signal, engineMessage),
+          waitForReader(import('../../../app/library/reading-tracker.ts'), abort.signal, engineMessage),
+        ]);
         if (disposed) return;
         const Reader = (sdk.default || sdk.Sela) as new (options: Record<string, unknown>) => any;
         const mode = defaultReadingMode(activeBook.format, preferences);
-        instance = new Reader({ data, format: activeBook.format, title: activeBook.name, metadata: activeBook.metadata, id: activeBook.id, storagePrefix: 'sela-library:', presentation: 'inline', container: mountRef.current, appContext: true, headless: true, language: lang, mode, theme: preferences.appearance === 'light' ? 'light' : 'dark', persistPreferences: true, assetBase: '../dist/', cssUrl: '../dist/css/sela.app.css', onClose: () => navigate('/shelf', { replace: true }), onError: (detail: { error: Error }) => setError(detail.error.message) });
+        setLoadingPhase('rendering');
+        instance = new Reader({ data, format: activeBook.format, title: activeBook.name, metadata: activeBook.metadata, id: activeBook.id, storagePrefix: 'sela-library:', presentation: 'inline', container: mountRef.current, appContext: true, headless: true, language: lang, mode, theme: preferences.appearance === 'light' ? 'light' : 'dark', persistPreferences: true, assetBase: '../dist/', cssUrl: '../dist/css/sela.app.css', onClose: () => navigate('/shelf', { replace: true }), onError: (detail: { error: Error }) => { if (!disposed) { setErrorKind('recoverable'); setLoadingPhase('error'); setError(detail.error.message); } } });
         instance.on?.('progressChanged', (detail: { page: number; pages: number; progress: number }) => {
           void store.patchBook(activeBook.id, { progress: detail.page, total: detail.pages });
         });
@@ -766,25 +811,45 @@ export function ReaderScreen() {
         instance.overlay?.addEventListener('sela:request-previews', openPreviews);
         const requestedPage = Number(new URLSearchParams(location.search).get('page'));
         if (Number.isInteger(requestedPage) && requestedPage > 0) instance.goTo?.(requestedPage);
-        if (!disposed) { setActiveReader(instance); void store.patchBook(activeBook.id, { opened: Date.now() }); }
+        if (!disposed) { setActiveReader(instance); setLoadingPhase('ready'); void store.patchBook(activeBook.id, { opened: Date.now() }); }
       } catch (reason) {
-        if (!disposed) setError(reason instanceof Error ? reason.message : copy(lang, 'The reader could not open this book.', 'Buku belum dapat dibuka.'));
+        instance?.destroy?.();
+        instance = undefined;
+        if (!disposed) {
+          setLoadingPhase('error');
+          setError(reason instanceof Error ? reason.message : copy(lang, 'The reader could not open this book.', 'Buku belum dapat dibuka.'));
+        }
       } finally { if (!disposed) setLoading(false); }
     };
     void load();
-    return () => { disposed = true; stopTracker?.(); setActiveReader(null); setToolsOpened(false); setToolsTab('layout'); setSelectedQuoteText(''); selectionSnapshot.current = ''; setPreviewsOpened(false); instance?.destroy?.(); };
-  }, [bookId, location.search, store.loading]);
+    return () => { disposed = true; abort.abort(); stopTracker?.(); setActiveReader(null); setToolsOpened(false); setToolsTab('layout'); setSelectedQuoteText(''); selectionSnapshot.current = ''; setPreviewsOpened(false); instance?.destroy?.(); };
+  }, [bookId, location.search, store.loading, retryToken]);
   const saveReaderMetadata = async (metadata: BookMetadata) => {
     if (!currentBook) throw new Error(copy(lang, 'This book is no longer on the shelf.', 'Buku ini sudah tidak ada di rak.'));
     await store.patchBook(currentBook.id, { name: metadata.title?.trim() || currentBook.name, metadata });
     if (activeReader) { activeReader.options.title = metadata.title || currentBook.name; activeReader.options.metadata = metadata; }
   };
+  const phaseCopy = loadingPhase === 'file'
+    ? copy(lang, 'Opening your saved book…', 'Membuka buku tersimpan…')
+    : loadingPhase === 'engine'
+      ? copy(lang, 'Loading the reader…', 'Memuat pembaca…')
+      : copy(lang, 'Rendering the pages…', 'Menyiapkan halaman…');
   return <div className="reader-layout">
     <Suspense fallback={null}><FocusTimerBadge /></Suspense>
     {activeReader && currentBook && <Suspense fallback={null}><ReaderChrome reader={activeReader} title={currentBook.metadata?.title || currentBook.name} author={currentBook.metadata?.author} lang={lang} onBack={() => activeReader.close()} onCaptureSelection={text => { if (text) selectionSnapshot.current = text; }} onOpenTools={() => openReaderTools('layout')} onOpenPreviews={() => setPreviewsOpened(true)} /></Suspense>}
     {activeReader && currentBook && <Suspense fallback={null}><ReaderToolsDialog reader={activeReader} book={currentBook} onSaveMetadata={saveReaderMetadata} opened={toolsOpened} onOpenedChange={setToolsOpened} showTrigger={false} onShowPreviews={() => setPreviewsOpened(true)} initialTab={toolsTab} selectedText={selectedQuoteText} /></Suspense>}
     {activeReader && currentBook && <Suspense fallback={null}><ReaderPreviewsDialog reader={activeReader} format={currentBook.format || ''} lang={lang} opened={previewsOpened} onClose={() => setPreviewsOpened(false)} /></Suspense>}
-    {error && <Alert className="reader-error" color="red" title={copy(lang, 'Reader message', 'Pesan pembaca')} withCloseButton onClose={() => setError('')}>{error}</Alert>}
-    <main className="reader-body"><div ref={mountRef} className="reader-mount" aria-label={copy(lang, 'Book reader', 'Pembaca buku')} />{loading && <div className="reader-loading"><LoaderCircle className="spin" size={24} /><Text>{copy(lang, 'Preparing your book…', 'Menyiapkan buku…')}</Text></div>}</main>
+    {error && <Alert className="reader-error" color="red" title={copy(lang, 'Reader message', 'Pesan pembaca')} role="alert">
+      <Text size="sm">{error}</Text>
+      <Group mt="sm" gap="xs">
+        {errorKind === 'recoverable' && <Button leftSection={<RefreshCw size={15} />} onClick={() => setRetryToken(value => value + 1)}>{copy(lang, 'Try again', 'Coba lagi')}</Button>}
+        <Button variant="default" onClick={() => navigate('/shelf', { replace: true })}>{errorKind === 'missing' ? copy(lang, 'Back to shelf to re-import', 'Kembali ke rak untuk impor ulang') : copy(lang, 'Back to shelf', 'Kembali ke rak')}</Button>
+      </Group>
+    </Alert>}
+    <main className="reader-body" aria-busy={loading}>
+      <div ref={mountRef} className="reader-mount" aria-label={copy(lang, 'Book reader', 'Pembaca buku')} />
+      {loading && <div className="reader-loading" role="status" aria-live="polite"><LoaderCircle className="spin" size={24} /><Text>{phaseCopy}</Text></div>}
+    </main>
   </div>;
 }
+

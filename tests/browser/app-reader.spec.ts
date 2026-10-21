@@ -79,3 +79,25 @@ test('reader chrome and reading desk follow the supported Indonesian app languag
  await reader.getByRole('button',{name:'Kembali ke rak',exact:true}).click();
  await expect(reader).toHaveCount(0);
 });
+
+
+test('reader shows a recoverable error and retries a failed SDK request', async ({ page }) => {
+  let requests = 0;
+  await page.route('**/dist/js/sela.esm.js', async route => {
+    requests += 1;
+    await route.fulfill({ status: 503, contentType: 'text/plain', body: 'Reader engine temporarily unavailable' });
+  });
+  await page.goto('/app/');
+  await expect(page.locator('.sela-app')).toBeVisible();
+  await page.getByRole('button', { name: /^(?:Download & read sample|Read sample)$/ }).click();
+  const error = page.locator('.reader-error');
+  await expect(error).toBeVisible();
+  await expect(error).toContainText('The reader engine took too long to load');
+  await expect(error.getByRole('button', { name: 'Try again', exact: true })).toBeVisible();
+  expect(requests).toBeGreaterThan(0);
+  await page.unroute('**/dist/js/sela.esm.js');
+  await error.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(page.locator('.reader-chrome-top')).toBeVisible({ timeout: 20000 });
+  expect(await page.locator('.book-card').count()).toBe(0);
+  await expect(page.locator('.reader-error')).toHaveCount(0);
+});

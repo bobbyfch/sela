@@ -87,3 +87,21 @@ jobs:
           else
             npx playwright test --project=${{ matrix.project }}
           fi
+
+
+  pwa-tests:
+    needs: checks
+    name: installed-pwa-offline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test installed PWA offline reading
+        run: npx playwright test --project=chromium-pwa

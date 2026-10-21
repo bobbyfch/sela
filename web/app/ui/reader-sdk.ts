@@ -1,5 +1,9 @@
-const readerSdkPath = ['/dist', 'js', 'sela.esm.js'].join('/');
+export function resolveReaderSdkUrl(baseUrl: string | URL = document.baseURI): URL {
+  const appBase = new URL('./', baseUrl);
+  return new URL('../dist/js/sela.esm.js', appBase);
+}
 
 export async function loadReaderSdk() {
-  return import(/* @vite-ignore */ new URL(readerSdkPath, window.location.origin).href);
+  const sdkUrl = resolveReaderSdkUrl();
+  return import(/* @vite-ignore */ sdkUrl.href);
 }

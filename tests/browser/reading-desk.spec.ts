@@ -35,7 +35,7 @@ test('mobile focus timer remains reachable without covering the dock', async ({ 
   await expect(timer).toBeVisible();
   for (const width of [320, 393, 600]) {
     await page.setViewportSize({ width, height: 852 });
-    await timer.scrollIntoViewIfNeeded();
+    await timer.evaluate((element: HTMLElement) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
     for (const appearance of ['light', 'dark'] as const) {
       if (await app.getAttribute('data-appearance') !== appearance) {
         await page.getByRole('button', { name: appearance === 'dark' ? 'Switch to dark mode' : 'Switch to light mode', exact: true }).click();

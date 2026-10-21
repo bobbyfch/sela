@@ -1179,3 +1179,26 @@ button, input { font: inherit; }
   .faith-quran-controls .faith-jump-control .mantine-Button-root { min-width: 42px; padding-inline: 7px; }
   .faith-quran-controls .faith-jump-control > span { font-size: 9px; }
 }
+
+
+@media (max-width: 30em) {
+  .catalog-explorer > *,
+  .catalog-explorer section {
+    min-width: 0;
+  }
+
+  .catalog-heading-row,
+  .catalog-section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .catalog-count-badge {
+    align-self: flex-start;
+  }
+
+  .catalog-section-heading > .catalog-results-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

@@ -45,7 +45,7 @@ test('Islamic tools explain their preference gate and appear after the user sele
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').faith)).toBe('islam');
  await page.goBack();
  await expect(page.locator('.faith-reading-widget')).toBeVisible();
- await expect(page.locator('.islamic-reading-shelf')).toBeVisible();
+ await expect(page.locator('.islamic-reading-shortcuts')).toBeVisible();
  await expect(page.locator('.prayer-times-widget')).toBeVisible();
  await expect(page.locator('.prayer-times-widget').getByRole('button',{name:'Load today’s times'})).toBeVisible();
 });
