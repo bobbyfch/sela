@@ -55,7 +55,11 @@ test('mobile focus timer remains reachable without covering the dock', async ({ 
 
 test('failed catalog download stays in discovery and never reports a shelf import', async ({ page }) => {
   await page.addInitScript(setEnglish);
-  await page.route('https://raw.githubusercontent.com/GITenberg/**', route => route.fulfill({ status: 503, body: 'Unavailable' }));
+  let failedDownloads = 0;
+  await page.route(url => url.hostname === 'raw.githubusercontent.com' && /\/gitenberg\/frankenstein_84\/.+\.txt$/i.test(url.pathname), route => {
+    failedDownloads += 1;
+    return route.fulfill({ status: 503, body: 'Unavailable' });
+  });
   await page.goto('/app/#/discover');
   const catalog = page.locator('.catalog-explorer');
   await catalog.getByLabel('Search books', { exact: true }).fill('Frankenstein');
@@ -63,6 +67,7 @@ test('failed catalog download stays in discovery and never reports a shelf impor
   const result = catalog.locator('.catalog-result-card');
   await expect(result).toHaveCount(1);
   await result.getByRole('button', { name: 'Download & add to shelf', exact: true }).click();
+  await expect.poll(() => failedDownloads).toBeGreaterThan(0);
   await expect(catalog.getByRole('alert')).toContainText(/could not|unavailable|failed/i, { timeout: 15000 });
   await page.getByRole('link', { name: 'My shelf', exact: true }).click();
   await expect(page.locator('.book-card')).toHaveCount(0);
