@@ -20,7 +20,7 @@
 
 ### Verification status
 - Local checkout is not present in this Work workspace; local build and tests have not run.
-- Branch CI and browser verification are pending.
+- Branch CI and browser verification now pass on the recovery branch; see the final verification record below.
 - Live production path and deployment are not yet verified.
 
 
@@ -32,14 +32,20 @@
 ### CI browser follow-up · 21 October 2026
 - Run 39593295854: the WebKit layout suite exposed remaining 320px Discover internal overflow (488px scroll width inside a 320px container). The first fix did not remove the underlying overflowing descendant; the next regression run adds the descendant measurements needed to target it.
 - The new SDK failure test's sample button matcher also needed the app's Indonesian labels for WebKit's default locale. That matcher now covers both English and Indonesian.
-- The separate PWA rerun is in progress; Viewer/PWA release gates remain open.
+- At that point the separate PWA rerun was in progress; its final result is recorded below.
 
 
 ### PWA locale follow-up · 21 October 2026
 - Run 39593650404 reached the real update notice successfully. The app localized it to Indonesian from the browser's default preferences, while the test expected English. The PWA test now sets English explicitly before app startup so it checks one stable copy rather than depending on the CI locale.
-- The old-to-new cache replacement and offline reopen assertions still need a passing run.
+- At that point the old-to-new cache replacement and offline reopen assertions still needed a passing run; the final result is recorded below.
 
 
 ### Reader error follow-up · 21 October 2026
 - Failed dynamic imports now show a recoverable, non-technical reader-engine message; timeouts keep their separate timeout copy. The test fixes app language to English and verifies a failed SDK request can be retried successfully.
 - Production GitHub Pages remains untested because the available web inspection service cannot fetch the Pages domain.
+
+
+### Final verification · 21 October 2026
+- Run 39603567263 on commit d2d5381bdc2f4afc7fb24cc8aaf726613a328fa5 completed successfully: build and generated-artifact checks, unit tests, test types, typecheck, Chromium browser tests, Firefox browser tests, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
+- The optional multi-framework matrix (`npm run test:frameworks`) was not run. Its host runtimes are not provisioned by this recovery workflow, so it is outside the required CI gate.
+- The Work workspace has no local checkout, so local tests were not run. Live GitHub Pages verification and deployment remain outstanding; this PR has not deployed the changes.
