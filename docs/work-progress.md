@@ -22,3 +22,8 @@
 - Local checkout is not present in this Work workspace; local build and tests have not run.
 - Branch CI and browser verification are pending.
 - Live production path and deployment are not yet verified.
+
+
+### CI follow-up · 21 October 2026
+- Run 39593295854 at commit ef05d5afed6328f7ba4a1c57c45424cda51935b3: build/generated-artifact check, unit tests, test types, and typecheck passed.
+- The first enabled-service-worker test stopped before browser interaction because its matcher assumed single-quoted worker constants; the generated worker uses double quotes. The test is being corrected to support the emitted format. The old-to-new worker behavior remains unverified until the rerun passes.

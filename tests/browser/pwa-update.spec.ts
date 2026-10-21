@@ -35,8 +35,8 @@ test('a real service-worker update preserves local books and the new shell opens
   page.on('pageerror', error => pageErrors.push(error.message));
   const workerPath = resolve('app/sw.js');
   const originalWorker = await readFile(workerPath, 'utf8');
-  const versionMatch = originalWorker.match(/APP_VERSION='([^']+)'/);
-  const cacheMatch = originalWorker.match(/const CACHE='([^']+)'/);
+  const versionMatch = originalWorker.match(/\bAPP_VERSION\s*=\s*["']([^"']+)["']/);
+  const cacheMatch = originalWorker.match(/\bCACHE\s*=\s*["']([^"']+)["']/);
   expect(versionMatch, 'built worker must contain an app version').not.toBeNull();
   expect(cacheMatch, 'built worker must contain its cache name').not.toBeNull();
   const oldVersion = versionMatch![1];
@@ -44,8 +44,8 @@ test('a real service-worker update preserves local books and the new shell opens
   const nextVersion = oldVersion + '-pwa-test';
   const nextCache = oldCache + '-pwa-test';
   const updatedWorker = originalWorker
-    .replace("APP_VERSION='" + oldVersion + "'", "APP_VERSION='" + nextVersion + "'")
-    .replace("const CACHE='" + oldCache + "'", "const CACHE='" + nextCache + "'");
+    .replace(/(\bAPP_VERSION\s*=\s*["'])[^"']+(["'])/, `$1${nextVersion}$2`)
+    .replace(/(\bCACHE\s*=\s*["'])[^"']+(["'])/, `$1${nextCache}$2`);
   expect(updatedWorker).not.toBe(originalWorker);
   let workerChanged = false;
 
