@@ -89,7 +89,7 @@ test('reader shows a recoverable error and retries a failed SDK request', async 
   });
   await page.goto('/app/');
   await expect(page.locator('.sela-app')).toBeVisible();
-  await page.getByRole('button', { name: /^(?:Download & read sample|Read sample)$/ }).click();
+  await page.getByRole('button', { name: /^(?:Download & read sample|Read sample|Unduh & baca contoh|Baca contoh)$/ }).click();
   const error = page.locator('.reader-error');
   await expect(error).toBeVisible();
   await expect(error).toContainText('The reader engine took too long to load');
