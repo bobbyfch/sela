@@ -1,5 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { AppShell, ActionIcon, Button, Group, Text, Tooltip, UnstyledButton } from '@mantine/core';
+import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { Alert, AppShell, ActionIcon, Button, Group, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { HashRouter, Link as RouterLink, NavLink as RouterNavLink, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { notifications } from '@mantine/notifications';
 import { Dropzone } from '@mantine/dropzone';
@@ -44,6 +44,33 @@ const bookDropAccept = {
 };
 const appPwaPath = ['./', 'pwa.js'].join('');
 
+type RouteFailureBoundaryProps = { children: ReactNode; lang: string; onBack: () => void };
+type RouteFailureBoundaryState = { failed: boolean };
+
+class RouteFailureBoundary extends Component<RouteFailureBoundaryProps, RouteFailureBoundaryState> {
+  state: RouteFailureBoundaryState = { failed: false };
+
+  static getDerivedStateFromError(): RouteFailureBoundaryState {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('A Sela screen could not be loaded.', error);
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    const { lang, onBack } = this.props;
+    return <Alert className="reader-error" color="red" title={copy(lang, 'This part of Sela could not be loaded', 'Bagian Sela ini belum dapat dimuat')} role="alert">
+      <Text size="sm">{copy(lang, 'An app file may be missing or out of date. Refresh to try again; your books and reading progress stay on this device.', 'Berkas aplikasi mungkin hilang atau sudah lama. Muat ulang untuk mencoba lagi; buku dan progres membaca tetap tersimpan di perangkat ini.')}</Text>
+      <Group mt="sm" gap="xs">
+        <Button onClick={() => window.location.reload()}>{copy(lang, 'Refresh app', 'Muat ulang app')}</Button>
+        <Button variant="default" onClick={onBack}>{copy(lang, 'Back to shelf', 'Kembali ke rak')}</Button>
+      </Group>
+    </Alert>;
+  }
+}
+
 function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,10 +114,12 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
   };
 
   if (isReader || isFaithReader) return <div className={`sela-app reader-app${isFaithReader ? ' faith-reader-app' : ''}`} data-theme={workspace.preferences.theme} data-appearance={workspace.preferences.appearance} data-importing={workspace.importing || undefined}>
-    <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, isReader ? 'Opening your book…' : 'Opening your reading…', isReader ? 'Membuka bukumu…' : 'Membuka bacaan…')}</div>}><Routes>
-      <Route path="/read/:bookId" element={<ReaderScreen />} />
-      <Route path="/faith/*" element={<FaithReaderScreen />} />
-    </Routes></Suspense>
+    <RouteFailureBoundary key={location.pathname} lang={lang} onBack={() => navigate('/shelf', { replace: true })}>
+      <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, isReader ? 'Opening your book…' : 'Opening your reading…', isReader ? 'Membuka bukumu…' : 'Membuka bacaan…')}</div>}><Routes>
+        <Route path="/read/:bookId" element={<ReaderScreen />} />
+        <Route path="/faith/*" element={<FaithReaderScreen />} />
+      </Routes></Suspense>
+    </RouteFailureBoundary>
   </div>;
 
   return <div className="sela-app" data-theme={workspace.preferences.theme} data-appearance={workspace.preferences.appearance} data-importing={workspace.importing || undefined}>
@@ -149,15 +178,17 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
 
       <AppShell.Main className="app-content">
         {workspace.store.error && <div className="global-error" role="alert"><span>{workspace.store.error}</span><Button size="compact-sm" variant="subtle" onClick={() => void workspace.store.refresh()}>{copy(lang, 'Retry', 'Coba lagi')}</Button></div>}
-        <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, 'Opening this page…', 'Membuka halaman…')}</div>}><Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/shelf" element={<ShelfScreen />} />
-          <Route path="/discover" element={<DiscoverScreen />} />
-          <Route path="/progress" element={<ProgressScreen />} />
-          <Route path="/settings" element={<SettingsScreen />} />
-          <Route path="/settings/:section" element={<SettingsDetail />} />
-          <Route path="*" element={<HomeScreen />} />
-        </Routes></Suspense>
+        <RouteFailureBoundary key={location.pathname} lang={lang} onBack={() => navigate('/shelf', { replace: true })}>
+          <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, 'Opening this page…', 'Membuka halaman…')}</div>}><Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/shelf" element={<ShelfScreen />} />
+            <Route path="/discover" element={<DiscoverScreen />} />
+            <Route path="/progress" element={<ProgressScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/settings/:section" element={<SettingsDetail />} />
+            <Route path="*" element={<HomeScreen />} />
+          </Routes></Suspense>
+        </RouteFailureBoundary>
         <div id="app-offline-status" className="visually-hidden" role="status" />
         <div id="update-status" className="visually-hidden" role="status" aria-hidden="true" />
       </AppShell.Main>
