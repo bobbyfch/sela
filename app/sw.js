@@ -1,6 +1,6 @@
 // Generated from web/app/platform/sw.ts by npm run build. Do not edit.
 const worker = self;
-const CACHE="sela-bookshelf-0.9.0-beta.8-6c3299e4f7ce4d5a", APP_VERSION = "0.9.0-beta.8", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
+const CACHE="sela-bookshelf-0.9.0-beta.8-f29c666adf0ca830", APP_VERSION = "0.9.0-beta.8", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
 const url = (p) => new URL(p, ROOT).href;
 let allowed;
 const incomingDB = () => new Promise((resolve, reject) => {
