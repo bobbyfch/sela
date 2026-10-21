@@ -30,7 +30,10 @@ jobs:
         env:
           CHECK_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
-          if git diff --quiet "$CHECK_SHA^" "$CHECK_SHA" -- \
+          BASE_TAG=$(git describe --tags --abbrev=0 --match 'v*' "$CHECK_SHA" 2>/dev/null || true)
+          BASE_SHA=${BASE_TAG:-$(git rev-parse "$CHECK_SHA^")}
+          echo "Comparing release inputs from $BASE_SHA to $CHECK_SHA"
+          if git diff --quiet "$BASE_SHA" "$CHECK_SHA" -- \
             .github/workflows/release.yml .github/workflows/ci.yml package.json package-lock.json CHANGELOG.md scripts/build.ts \
             playwright.config.ts ui/app-materials.css ui/mobile-tailwind.css ui/app-redesign-utilities.css \
             app/library/discovery.ts app/library/reading-desk.ts site/mobile-app.css site/public.css mobile/sw.js \
