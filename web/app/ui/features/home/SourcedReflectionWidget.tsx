@@ -65,11 +65,30 @@ export function SourcedReflectionWidget() {
     try {
       const rows = await fetchSourcedQuotes(topic as Exclude<ReflectionTopic, 'personal'>, language, controller.signal);
       const latest = readPersonal();
-      if (latest.quoteTopic !== topic || (latest.quoteLanguage === 'auto' ? lang : latest.quoteLanguage) !== language) return;
+      const latestTopic = topics.some(item => item.value === latest.quoteTopic) ? latest.quoteTopic : 'reading';
+      const latestLanguage = latest.quoteLanguage === 'id' || latest.quoteLanguage === 'en' ? latest.quoteLanguage : lang;
+      if (latestTopic !== topic || latestLanguage !== language) return;
       setQuotes(rows); setIndex(0); setPortrait(''); setStatus(t('Sourced quotes are ready.', 'Kutipan bersumber siap.'));
     } catch (error) { setStatus(error instanceof Error ? t('Wikiquote is unavailable. Your offline reflection is still here.', 'Wikiquote belum tersedia. Renungan offline tetap bisa dibaca.') : t('Wikiquote is unavailable.', 'Wikiquote belum tersedia.')); }
     finally { setLoading(false); }
   };
+
+  useEffect(() => {
+    if (topic === 'personal' || readQuoteCache(topic, language).length) return;
+    const controller = new AbortController();
+    let active = true;
+    setLoading(true); setStatus(t('Loading a sourced reflection…', 'Memuat renungan bersumber…'));
+    void fetchSourcedQuotes(topic as Exclude<ReflectionTopic, 'personal'>, language, controller.signal).then(rows => {
+      const latest = readPersonal();
+      const latestTopic = topics.some(item => item.value === latest.quoteTopic) ? latest.quoteTopic : 'reading';
+      const latestLanguage = latest.quoteLanguage === 'id' || latest.quoteLanguage === 'en' ? latest.quoteLanguage : lang;
+      if (!active || latestTopic !== topic || latestLanguage !== language) return;
+      setQuotes(rows); setIndex(0); setStatus(t('Sourced reflection ready.', 'Renungan bersumber siap.'));
+    }).catch(() => {
+      if (active && !controller.signal.aborted) setStatus(t('Sourced quotes are unavailable. Your offline reflection is still here.', 'Kutipan belum tersedia. Renungan offline tetap bisa dibaca.'));
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; controller.abort(); setLoading(false); };
+  }, [topic, language, lang]);
 
   return <Card className="reflection-widget" radius="xl" withBorder>
     <Group justify="space-between" align="flex-start"><div><Text className="page-eyebrow">{t('A SMALL REMINDER', 'PENGINGAT KECIL')}</Text><Title order={2}>{t('The reading note', 'Catatan hari ini')}</Title></div><Sparkles size={18} aria-hidden="true" /></Group>

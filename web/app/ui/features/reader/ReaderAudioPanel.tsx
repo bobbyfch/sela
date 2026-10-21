@@ -4,14 +4,15 @@ import { CloudRain, Waves, Wind, AudioLines, Volume2 } from 'lucide-react';
 
 type AmbientKind = 'rain' | 'wind' | 'stream' | 'waves';
 const ambience: { key: AmbientKind; en: string; id: string; icon: typeof CloudRain; frequency: number; type: BiquadFilterType; gain: number }[] = [
-  { key: 'rain', en: 'Rain', id: 'Hujan', icon: CloudRain, frequency: 1500, type: 'lowpass', gain: 0.065 },
-  { key: 'wind', en: 'Wind', id: 'Angin', icon: Wind, frequency: 360, type: 'lowpass', gain: 0.07 },
-  { key: 'stream', en: 'Stream', id: 'Aliran air', icon: AudioLines, frequency: 780, type: 'bandpass', gain: 0.05 },
+  { key: 'rain', en: 'Rain', id: 'Hujan', icon: CloudRain, frequency: 1500, type: 'lowpass', gain: 0.18 },
+  { key: 'wind', en: 'Wind', id: 'Angin', icon: Wind, frequency: 360, type: 'lowpass', gain: 0.14 },
+  { key: 'stream', en: 'Stream', id: 'Aliran air', icon: AudioLines, frequency: 780, type: 'bandpass', gain: 0.12 },
   { key: 'waves', en: 'Waves', id: 'Ombak', icon: Waves, frequency: 430, type: 'lowpass', gain: 0.07 },
 ];
 
 export function ReaderAudioPanel({ lang }: { lang: 'en' | 'id' }) {
   const [selected, setSelected] = useState<AmbientKind | ''>('');
+  const selectedRef = useRef<AmbientKind | ''>('');
   const [timerMinutes, setTimerMinutes] = useState(0);
   const [audioName, setAudioName] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
@@ -27,7 +28,7 @@ export function ReaderAudioPanel({ lang }: { lang: 'en' | 'id' }) {
     const nodes = nodesRef.current; nodesRef.current = null;
     try { nodes?.source.stop(); } catch { /* Already stopped. */ }
     try { nodes?.oscillator?.stop(); } catch { /* Already stopped. */ }
-    setSelected('');
+    selectedRef.current = ''; setSelected('');
   };
   const stopEverything = () => {
     window.clearTimeout(timerRef.current); timerRef.current = undefined;
@@ -36,9 +37,16 @@ export function ReaderAudioPanel({ lang }: { lang: 'en' | 'id' }) {
   };
   const toggleAmbient = async (kind: AmbientKind) => {
     try {
-      if (selected === kind) { stopAmbient(); await contextRef.current?.suspend(); return; }
+      if (selectedRef.current === kind) { stopAmbient(); await contextRef.current?.suspend(); return; }
       stopAmbient();
-      const context = contextRef.current ||= new AudioContext();
+      const AudioContextConstructor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextConstructor) throw new Error('Web Audio is unavailable');
+      const context = contextRef.current?.state === 'closed'
+        ? new AudioContextConstructor()
+        : contextRef.current || new AudioContextConstructor();
+      contextRef.current = context;
+      if (context.state !== 'running') await context.resume();
+      if (context.state !== 'running') throw new Error('Web Audio could not start');
       const choice = ambience.find(item => item.key === kind)!;
       const buffer = context.createBuffer(1, context.sampleRate * 3, context.sampleRate);
       const samples = buffer.getChannelData(0); let brown = 0;
@@ -48,7 +56,7 @@ export function ReaderAudioPanel({ lang }: { lang: 'en' | 'id' }) {
       const gain = context.createGain(); gain.gain.value = choice.gain; source.connect(filter).connect(gain).connect(context.destination);
       let oscillator: OscillatorNode | undefined;
       if (kind === 'wind' || kind === 'waves') { oscillator = context.createOscillator(); const modulation = context.createGain(); oscillator.frequency.value = kind === 'waves' ? 0.09 : 0.055; modulation.gain.value = kind === 'waves' ? 0.025 : 0.018; oscillator.connect(modulation).connect(gain.gain); oscillator.start(); }
-      nodesRef.current = { source, filter, gain, oscillator }; source.start(); await context.resume(); setSelected(kind); setStatus('');
+      nodesRef.current = { source, filter, gain, oscillator }; source.start(); selectedRef.current = kind; setSelected(kind); setStatus('');
     } catch { stopAmbient(); setStatus(t('Room sound is unavailable in this browser.', 'Suasana audio belum tersedia di browser ini.')); }
   };
   const chooseFile = (file: File | null) => {

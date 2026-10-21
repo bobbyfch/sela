@@ -113,3 +113,9 @@ OpenDyslexic is bundled for the optional reader font through
 `@fontsource/opendyslexic` 5.3.0. The font is licensed under the SIL Open Font
 License 1.1; the build copies the package license to
 `dist/opendyslexic-LICENSE.txt`. Source: https://opendyslexic.org/.
+
+
+Noto Naskh Arabic is bundled locally for reliable Arabic-script rendering in the Quran reader.
+Copyright 2022 The Noto Project Authors. SIL Open Font License 1.1.
+Source: https://github.com/google/fonts/tree/main/ofl/notonaskharabic
+The full license is preserved in licenses/Noto-Naskh-Arabic-OFL.txt.

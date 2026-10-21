@@ -9,6 +9,16 @@ function weatherLabel(code: number, lang: 'id' | 'en'): string {
   return labels[code]?.[lang === 'id' ? 1 : 0] || (lang === 'id' ? 'Cuaca berubah' : 'Changing weather');
 }
 
+function weatherMood(code: number): string {
+  if (code === 0) return 'sunny';
+  if (code <= 3) return 'cloudy';
+  if (code === 45 || code === 48) return 'fog';
+  if (code >= 95) return 'storm';
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'snow';
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'rain';
+  return 'cloudy';
+}
+
 export function WeatherWidget({ settingsOnly = false }: { settingsOnly?: boolean }) {
   const { lang } = useWorkspace();
   const [location, setLocation] = useState<SavedLocation | null>(readSavedLocation);
@@ -72,14 +82,14 @@ export function WeatherWidget({ settingsOnly = false }: { settingsOnly?: boolean
   const turnOff = () => { clearSavedLocation(); setLocation(null); setWeather(null); setOpen(false); };
   const displayLocation = location?.name || t('Saved city', 'Kota tersimpan');
   return <>
-    {!settingsOnly && <Card className="home-widget-card weather-widget" withBorder radius="xl" padding="lg">
+    {!settingsOnly && <Card className="home-widget-card weather-widget" data-weather={weather ? weatherMood(weather.current.weather_code) : 'neutral'} withBorder radius="xl" padding="lg">
       <Group justify="space-between" align="flex-start" wrap="nowrap"><div><Text className="page-eyebrow">{t('A LOCAL GLANCE', 'SEKILAS DI SEKITAR')}</Text><Title order={3}>{t('Weather', 'Cuaca')}</Title><Text size="sm" c="dimmed">{location ? displayLocation : t('No location is saved.', 'Belum ada lokasi tersimpan.')}</Text></div><Tooltip label={t('Weather settings', 'Pengaturan cuaca')} withArrow><ActionIcon variant="subtle" aria-label={t('Weather settings', 'Pengaturan cuaca')} onClick={() => setOpen(true)}><MapPin size={16} /></ActionIcon></Tooltip></Group>
       {weather ? <div className="weather-current"><strong>{Math.round(weather.current.temperature_2m)}°C</strong><span>{weatherLabel(weather.current.weather_code, lang)}</span><small>{location?.name === t('Nearby location', 'Lokasi sekitar') ? t('Nearby', 'Sekitar sini') : displayLocation}{Date.now() - weather.at > 30 * 60 * 1000 ? ` · ${t('last updated', 'data terakhir')}` : ''}</small></div> : <Text size="sm" c="dimmed">{location ? t('Forecast will appear here.', 'Prakiraan akan muncul di sini.') : t('Choose a city or use your location when you are ready.', 'Pilih kota atau gunakan lokasi setelah kamu siap.')}</Text>}
       {error && <Alert color="yellow" role="status">{error}</Alert>}{loading && <Text size="xs" c="dimmed" role="status">{message || t('Updating forecast…', 'Memperbarui prakiraan…')}</Text>}
       <Group justify="space-between"><Button variant="default" size="compact-sm" onClick={() => setOpen(true)}>{location ? t('Change location', 'Ganti lokasi') : t('Choose a city', 'Pilih kota')}</Button>{location && <Tooltip label={t('Refresh forecast', 'Perbarui prakiraan')} withArrow><ActionIcon variant="subtle" aria-label={t('Refresh forecast', 'Perbarui prakiraan')} loading={loading} onClick={() => setRefreshKey(value => value + 1)}><RefreshCw size={15} /></ActionIcon></Tooltip>}</Group>
     </Card>}
     <Modal opened={open} onClose={() => setOpen(false)} title={settingsOnly ? t('Choose a city', 'Pilih kota') : t('Weather location', 'Lokasi cuaca')} centered radius="lg" withinPortal portalProps={{ target: '.sela-app' }}>
-      <Stack><Text size="sm" c="dimmed">{settingsOnly ? t('Choose a city for prayer-time estimates. The city stays on this device and is used only when you request a schedule.', 'Pilih kota untuk perkiraan jadwal salat. Kota tersimpan di perangkat ini dan hanya digunakan saat kamu meminta jadwal.') : t('Your chosen coordinates are sent to Open-Meteo for forecasts and remain saved on this device.', 'Koordinat pilihan dikirim ke Open-Meteo untuk prakiraan dan tetap tersimpan di perangkat ini.')}</Text><form onSubmit={searchCity} className="weather-city-form"><TextInput label={t('Find a city', 'Cari kota')} value={cityQuery} onChange={event => setCityQuery(event.currentTarget.value)} maxLength={100} placeholder={t('City name', 'Nama kota')} /><Button type="submit" loading={loading} disabled={!cityQuery.trim()}>{t('Search', 'Cari')}</Button></form>{message && <Text size="sm" role="status">{message}</Text>}{cities.map(city => <Button key={`${city.latitude}:${city.longitude}`} variant="default" justify="space-between" onClick={() => chooseLocation(city)}>{city.name}</Button>)}{error && <Alert color="red" role="alert">{error}</Alert>}<Group justify="space-between"><Button variant="subtle" onClick={useNearby} loading={loading}>{t('Use my location', 'Gunakan lokasiku')}</Button>{location && <Button variant="subtle" color="gray" onClick={turnOff}>{t('Remove saved location', 'Hapus lokasi tersimpan')}</Button>}</Group></Stack>
+      <Stack><Text size="sm" c="dimmed">{settingsOnly ? t('Choose a city for prayer-time estimates. The city stays on this device and is used only when you request a schedule.', 'Pilih kota untuk perkiraan jadwal salat. Kota tersimpan di perangkat ini dan hanya digunakan saat kamu meminta jadwal.') : t('Your chosen coordinates are sent to Open-Meteo for forecasts and remain saved on this device.', 'Koordinat pilihan dikirim ke Open-Meteo untuk prakiraan dan tetap tersimpan di perangkat ini.')}</Text><form onSubmit={searchCity} className="weather-city-form"><TextInput label={t('Find a city', 'Cari kota')} value={cityQuery} onChange={event => setCityQuery(event.currentTarget.value)} maxLength={100} placeholder={t('City name', 'Nama kota')} /><Button type="submit" loading={loading} disabled={!cityQuery.trim()}>{t('Search', 'Cari')}</Button></form>{message && <Text size="sm" role="status">{message}</Text>}{cities.map(city => <Button key={`${city.latitude}:${city.longitude}`} variant="default" justify="space-between" onClick={() => chooseLocation(city)}>{city.name}</Button>)}{error && <Alert color="red" role="alert">{error}</Alert>}<Text size="xs" c="dimmed">{t('Your browser will ask before sharing location. Nearby coordinates are sent to Open-Meteo for the forecast and saved only on this device.', 'Browser akan meminta izin sebelum memakai lokasi. Koordinat lokasi sekitar dikirim ke Open-Meteo untuk prakiraan dan hanya disimpan di perangkat ini.')}</Text><Group justify="space-between"><Button variant="subtle" onClick={useNearby} loading={loading}>{t('Use my location', 'Gunakan lokasiku')}</Button>{location && <Button variant="subtle" color="gray" onClick={turnOff}>{t('Remove saved location', 'Hapus lokasi tersimpan')}</Button>}</Group></Stack>
     </Modal>
   </>;
 }

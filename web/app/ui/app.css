@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Sela Naskh";
+  src: url("./assets/NotoNaskhArabic[wght].ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
 @import "../../../tokens.css";
 
 html[data-app-appearance="dark"] {
@@ -734,7 +741,7 @@ button, input { font: inherit; }
 .faith-verse-meta { display: flex; align-items: center; gap: 8px; color: var(--color-muted); }
 .faith-verse-meta button { min-width: 40px; min-height: 28px; padding: 0 8px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper-raised); color: var(--color-accent); cursor: pointer; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .faith-verse-meta span { font-size: 8px; font-weight: 700; letter-spacing: .13em; }
-.faith-reader-arabic { margin: 19px 0 21px; color: var(--color-ink); font-family: "Noto Naskh Arabic", Amiri, "Traditional Arabic", serif; font-size: 34px; line-height: 2; text-align: right; }
+.faith-reader-arabic { margin: 19px 0 21px; color: var(--color-ink); font-family: "Sela Naskh", "Noto Naskh Arabic", Amiri, "Traditional Arabic", serif; font-size: 34px; line-height: 2; text-align: right; }
 .faith-reader-translation { color: var(--color-ink); font-size: 18px; line-height: 1.85; white-space: pre-wrap; }
 .faith-reader-footnote { margin-top: 10px; color: var(--color-muted); line-height: 1.6; white-space: pre-wrap; }
 .faith-reader-controls { position: sticky; z-index: 4; bottom: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-top: 20px; padding: 10px; border: 1px solid var(--color-glass-edge); border-radius: 17px; background: color-mix(in oklch, var(--color-glass) 92%, var(--color-paper-raised)); box-shadow: 0 8px 24px var(--color-shadow), inset 0 1px 0 var(--color-glass-highlight); backdrop-filter: blur(var(--glass-blur)) saturate(1.2); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2); }
@@ -1288,4 +1295,53 @@ button, input { font: inherit; }
     overflow-wrap: anywhere;
     white-space: normal;
   }
+}
+
+
+/* Compact controls and reading layouts tuned for small touch screens. */
+.topbar-flag { display: grid; width: 25px; height: 25px; place-items: center; overflow: hidden; border: 1px solid var(--color-rule); border-radius: 50%; background: var(--color-paper-soft); font-size: 15px; line-height: 1; }
+.topbar-menu { min-width: 190px; border-color: var(--color-rule); background: var(--color-paper-raised); color: var(--color-ink); box-shadow: 0 14px 36px var(--color-shadow); }
+.topbar-menu .mantine-Menu-item { color: var(--color-ink); }
+.topbar-menu .mantine-Menu-item:hover { background: var(--color-paper-soft); }
+.oled-menu-dot { width: 13px; height: 13px; border: 1px solid var(--color-rule); border-radius: 50%; background: #000; }
+.faith-reader-theme { justify-self: end; }
+.faith-quran-controls { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
+.faith-quran-controls > * { min-width: 0; }
+.faith-quran-sticky-tools { display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: end; gap: 8px; }
+.faith-quran-verse-nav { display: grid; grid-template-columns: 42px minmax(0,1fr) 42px; align-items: center; gap: 6px; }
+.faith-quran-controls .faith-jump-control { grid-column: auto; grid-row: auto; }
+.faith-story-picker { max-width: 460px; margin: 18px 0; }
+.notebook-empty { display: grid; grid-template-columns: 36px minmax(0,1fr); align-items: center; gap: 12px; max-width: 620px; border-color: var(--color-rule); background: var(--color-paper-raised); }
+.notebook-empty > span { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; background: var(--color-accent-soft); color: var(--color-accent); }
+.notebook-empty .mantine-Title-root { margin: 0 0 3px; font-size: 15px; }
+.notebook-empty .mantine-Text-root { color: var(--color-muted); font-size: 12px; line-height: 1.5; }
+.weather-widget { transition: background-color 180ms ease, border-color 180ms ease; }
+.weather-widget[data-weather="sunny"] { background: linear-gradient(145deg, color-mix(in oklch, #e2a545 25%, var(--color-paper-raised)), var(--color-paper-raised) 75%); }
+.weather-widget[data-weather="cloudy"], .weather-widget[data-weather="fog"] { background: linear-gradient(145deg, color-mix(in oklch, #7894ac 22%, var(--color-paper-raised)), var(--color-paper-raised) 78%); }
+.weather-widget[data-weather="rain"] { background: linear-gradient(145deg, color-mix(in oklch, #398cad 25%, var(--color-paper-raised)), var(--color-paper-raised) 78%); }
+.weather-widget[data-weather="storm"] { background: linear-gradient(145deg, color-mix(in oklch, #8264a9 27%, var(--color-paper-raised)), var(--color-paper-raised) 78%); }
+.weather-widget[data-weather="snow"] { background: linear-gradient(145deg, color-mix(in oklch, #75b8d6 25%, var(--color-paper-raised)), var(--color-paper-raised) 78%); }
+:root.sela-faith-focus .faith-reader-header, :root.sela-faith-focus .faith-reader-nav { display: none; }
+:root.sela-faith-focus .faith-reader-screen { height: 100dvh; }
+@media (max-width: 767px) {
+  .book-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .book-grid[data-density="1"], .book-grid[data-density="2"], .book-grid[data-density="3"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .book-grid-item .book-card, .book-carousel .book-card.is-compact { grid-template-columns: minmax(0,1fr); align-content: start; gap: 9px; padding: 10px; }
+  .book-grid-item .book-cover-button, .book-carousel .book-card.is-compact .book-cover-button { width: min(100%, 138px); margin-inline: auto; }
+  .book-grid-item .book-cover-button .book-cover, .book-carousel .book-card.is-compact .book-cover { width: 100%; min-height: 0; aspect-ratio: 2 / 3; object-fit: cover; }
+  .book-grid-item .jacket-placeholder { min-height: 160px; padding: 12px 10px 10px; }
+  .book-grid-item .jacket-title { display: -webkit-box; max-height: 4.5em; overflow: hidden; font-size: clamp(10px, 3vw, 13px); line-height: 1.12; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+  .book-grid-item .book-title-button { font-size: 12px; overflow-wrap: anywhere; }
+  .book-grid-item .book-author { white-space: normal; }
+  .book-card.is-compact .book-card-copy { min-width: 0; }
+  .faith-quran-sticky-tools { grid-template-columns: minmax(0,1fr) auto auto; gap: 4px; }
+  .faith-quran-sticky-tools .mantine-Button-root { min-width: 0; min-height: 38px; padding-inline: 7px; font-size: 10px; white-space: nowrap; }
+  .faith-quran-sticky-tools .mantine-Select-root { min-width: 0; }
+  .faith-quran-verse-nav { grid-template-columns: 40px minmax(0,1fr) 40px; gap: 3px; }
+  .faith-quran-verse-nav .faith-jump-control { min-width: 0; gap: 4px; }
+  .faith-quran-verse-nav .faith-jump-control .mantine-NumberInput-root { width: 52px; }
+}
+@media (max-width: 360px) {
+  .faith-quran-sticky-tools .mantine-Button-root { padding-inline: 4px; font-size: 9px; }
+  .book-grid-item .jacket-placeholder { min-height: 142px; }
 }

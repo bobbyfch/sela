@@ -14,12 +14,13 @@ Sela is a personal reading space for books, comics and documents. The name means
 
 - Read PDF, EPUB, CBZ, TXT, Markdown, HTML, FB2, DOCX and ODT. Optional DjVu support uses an external decoder.
 - Choose book, single-page, manga RTL or continuous webtoon reading.
-- Keep bookmarks, notes, highlights, reading progress and collections in a local-first library with backup and restore.
+- Keep bookmarks, notes, highlights, reading progress and collections in a local-first library with ZIP backup, restore, and AES-GCM encrypted transfer protected by a separate 12-digit PIN.
 - Discover with a source-first flow: choose a catalog, then one of its supported collections, then an optional topic. Sources include public-domain text, community transcriptions, open textbook links, reader rankings and personal OPDS catalogs. Comic discovery uses Open Library and attributed BookRank metadata; records without an open edition link out instead of pretending they can be downloaded. A lazy, on-device Orama index understands common Indonesian phrasing when searching your own shelf; that local search does not upload the query.
 - Fill Home with a quote collection, topic headlines, optional sourced scripture readings, and a localized “on this day” feed; Indonesian headlines fall back to ANTARA when the primary feed fails.
 - Track reading time and streaks locally, with a weekly, monthly, or yearly progress view; sessions pause when the reader is not visible.
 - Personalize Home with responsive companion artwork, weather-aware scenes, a reading calendar, sourced quotes and optional habit widgets. Islamic users can choose to request estimated prayer times using the saved weather location; coordinates are sent to the calculation provider only after tapping the request button.
-- Choose from eight distinct palettes: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja and Arunika. Light, dark and OLED appearance are separate.
+- Choose from eight distinct palettes: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja and Arunika. Light, dark and OLED appearance are separate, with quick controls inside both book and Quran readers.
+- Read Quran surahs with bundled Naskh Arabic typography, optional Arabic-only view, sticky surah and verse navigation, and an in-page fullscreen reading mode.
 - Navigate the web app through five areas: Home, Shelf, Discover, Progress and Settings.
 - Use Sela Books as an installable web app, or embed the framework-independent Viewer in HTML, React, Vue, Svelte, Astro, PHP and other sites.
 - Interface languages include English, Indonesian, Japanese, Spanish, French, German, Portuguese, Chinese and Korean.
