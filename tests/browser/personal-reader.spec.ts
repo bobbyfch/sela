@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 
 async function start(page){
  await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',theme:'vanilla',appearance:'light'})));
- await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await page.addStyleTag({content:'.sela-shell, .sela-shell * { transition: none !important; }'});
 }
 async function importText(page,name='alpha.txt',text='A quiet chapter with a special chrysanthemum.'){
  await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name,mimeType:'text/plain',buffer:Buffer.from(text)});
