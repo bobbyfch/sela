@@ -41,8 +41,8 @@ test('shelf cards, search and controls fit common phone, tablet and desktop widt
  await page.goto('/app/#/shelf');
  for(const width of [320,390,768,1024,1440]){
   await page.setViewportSize({width,height:850});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px document overflow`).toBe(true);
-  expect(await page.locator('.book-grid').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px shelf overflow`).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px document overflow`).toBe(true);
+  await expect.poll(()=>page.locator('.book-grid').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px shelf overflow`).toBe(true);
   await expect(page.getByRole('radiogroup',{name:'Shelf view'})).toBeVisible();
  }
 });
