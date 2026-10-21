@@ -19,6 +19,7 @@ import { changeCollection, getAsset, getFile, updateBook, writeBook } from '../.
 import { searchBooks, acquireBook } from '../../../app/library/book-sources.ts';
 import { exportLibrary, restoreLibrary } from '../../../app/library/backup.ts';
 import { editPersonal, readPersonal } from '../../../app/library/personal-store.ts';
+import { coverPixelsNeedFallback } from '../../../app/library/cover-analysis.ts';
 import { VERSION } from '../../../app/library/version.ts';
 import { defaultReadingMode, formatDuration, initials, readingStatus, type AppPreferences } from './state.ts';
 import { copy, useWorkspace } from './workspace.tsx';
@@ -35,7 +36,6 @@ const BookNewsWidget = lazy(() => import('./features/home/ActivityFeeds.tsx').th
 const OnThisDayWidget = lazy(() => import('./features/home/ActivityFeeds.tsx').then(module => ({ default: module.OnThisDayWidget })));
 const WaterTracker = lazy(() => import('./features/home/WaterTracker.tsx').then(module => ({ default: module.WaterTracker })));
 const FaithReadingWidget = lazy(() => import('./features/home/FaithReadingWidget.tsx').then(module => ({ default: module.FaithReadingWidget })));
-const QuranReaderPanel = lazy(() => import('./features/home/QuranReaderPanel.tsx').then(module => ({ default: module.QuranReaderPanel })));
 const WeatherWidget = lazy(() => import('./features/home/WeatherWidget.tsx').then(module => ({ default: module.WeatherWidget })));
 const PrayerTimesWidget = lazy(() => import('./features/home/PrayerTimesWidget.tsx').then(module => ({ default: module.PrayerTimesWidget })));
 const IslamicReadingShelf = lazy(() => import('./features/home/IslamicReadingShelf.tsx').then(module => ({ default: module.IslamicReadingShelf })));
@@ -69,8 +69,18 @@ function BookCover({ book, compact = false }: { book: LibraryBook; compact?: boo
     return () => URL.revokeObjectURL(url);
   }, [book.cover]);
   const palette = Math.abs([...book.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 6;
+  const useDesignedFallback = (image: HTMLImageElement) => {
+    if (image.naturalWidth < 2 || image.naturalHeight < 2) return true;
+    try {
+      const canvas = document.createElement('canvas'); canvas.width = 32; canvas.height = 45;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return false;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return coverPixelsNeedFallback(context.getImageData(0, 0, canvas.width, canvas.height).data);
+    } catch { return false; }
+  };
   return <div className={`book-cover${compact ? ' is-compact' : ''}${src ? ' has-image' : ''}`} data-jacket={palette}>
-    {src ? <img src={src} alt="" loading="lazy" /> : <div className="jacket-placeholder" aria-hidden="true">
+    {src ? <img src={src} alt="" loading="lazy" onError={() => setSrc('')} onLoad={event => { if (useDesignedFallback(event.currentTarget)) setSrc(''); }} /> : <div className="jacket-placeholder" aria-hidden="true">
       <span className="jacket-mark"><BookOpen size={compact ? 14 : 18} strokeWidth={1.3} /></span>
       <span className="jacket-title">{book.name}</span>
       {book.metadata?.author && <span className="jacket-author">{book.metadata.author}</span>}
@@ -196,7 +206,9 @@ export function HomeScreen() {
         <Button leftSection={<BookOpen size={17} />} onClick={() => openBook(navigate, current)}>{copy(lang, 'Continue reading', 'Lanjut membaca')}</Button>
       </div>
       <span className="continue-index" aria-hidden="true">01</span>
-    </Card> : <EmptyState title={copy(lang, 'Start with a book you love.', 'Mulai dari buku yang kamu suka.')} body={copy(lang, 'Add a book from your device. Sela keeps the file and your reading progress here.', 'Tambahkan buku dari perangkatmu. Sela menyimpan file dan progres bacamu di sini.')} action={<Button leftSection={<Plus size={17} />} onClick={() => document.querySelector<HTMLInputElement>('input[type=file][accept^=".pdf"]')?.click()}>{copy(lang, 'Add your first book', 'Tambahkan buku pertama')}</Button>} />}
+    </Card> : store.books.length > 0
+      ? <EmptyState title={copy(lang, 'Choose your next read.', 'Pilih bacaan berikutnya.')} body={copy(lang, 'Your books are ready on the shelf. Pick one whenever you feel like reading.', 'Buku-bukumu sudah ada di rak. Pilih yang ingin dibaca kapan saja.')} action={<Button leftSection={<BookOpen size={17} />} onClick={() => navigate('/shelf')}>{copy(lang, 'Choose a book', 'Pilih buku')}</Button>} />
+      : <EmptyState title={copy(lang, 'Start with a book you love.', 'Mulai dari buku yang kamu suka.')} body={copy(lang, 'Add a book from your device. Sela keeps the file and your reading progress here.', 'Tambahkan buku dari perangkatmu. Sela menyimpan file dan progres bacamu di sini.')} action={<Button leftSection={<Plus size={17} />} onClick={() => document.querySelector<HTMLInputElement>('input[type=file][accept^=".pdf"]')?.click()}>{copy(lang, 'Add your first book', 'Tambahkan buku pertama')}</Button>} />}
     <Suspense fallback={<Skeleton className="home-feature-fallback" height={190} radius="xl" />}><SelaSampleCard /></Suspense>
     {!personal.hidden.includes('timer') && <Suspense fallback={<Skeleton className="home-feature-fallback" height={240} radius="xl" />}><FocusTimerCard books={store.books} /></Suspense>}
 
@@ -220,6 +232,8 @@ export function HomeScreen() {
         {!personal.hidden.includes('rediscover') && <Suspense fallback={<Skeleton height={155} radius="xl" />}><RediscoverWidget books={store.books} onOpen={book => openBook(navigate, book)} /></Suspense>}
 
         {preferences.widgets.reflection && <Suspense fallback={<Skeleton height={210} radius="xl" />}><SourcedReflectionWidget /></Suspense>}
+        {preferences.widgets.faith && <Suspense fallback={<Skeleton height={180} radius="xl" />}><FaithReadingWidget /></Suspense>}
+        {preferences.widgets.faith && <Suspense fallback={<Skeleton height={180} radius="xl" />}><IslamicReadingShelf /></Suspense>}
       </div>
 
       <aside className="home-rail-side">
@@ -228,9 +242,6 @@ export function HomeScreen() {
         {preferences.widgets.history && <Suspense fallback={<Skeleton height={220} radius="xl" />}><OnThisDayWidget /></Suspense>}
         {preferences.widgets.news && <Suspense fallback={<Skeleton height={220} radius="xl" />}><BookNewsWidget /></Suspense>}
         {(preferences.widgets.faith || preferences.widgets.prayer) && <Suspense fallback={<Skeleton height={170} radius="xl" />}><FaithToolsPrompt /></Suspense>}
-        {preferences.widgets.faith && <Suspense fallback={<Skeleton height={210} radius="xl" />}><FaithReadingWidget /></Suspense>}
-        {preferences.widgets.faith && <Suspense fallback={<Skeleton height={180} radius="xl" />}><IslamicReadingShelf /></Suspense>}
-        {preferences.widgets.faith && <Suspense fallback={<Skeleton height={180} radius="xl" />}><QuranReaderPanel /></Suspense>}
         {preferences.widgets.prayer && <Suspense fallback={<Skeleton height={140} radius="xl" />}><PrayerTimesWidget /></Suspense>}
         {preferences.widgets.weather && <Suspense fallback={<Skeleton height={140} radius="xl" />}><WeatherWidget /></Suspense>}
         {!preferences.widgets.weather && preferences.widgets.prayer && personal.faith === 'islam' && <Suspense fallback={null}><WeatherWidget settingsOnly /></Suspense>}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Alert, Anchor, Button, Card, Group, Loader, Text, Title } from '@mantine/core';
+import { Alert, Button, Card, Group, Loader, Text, Title } from '@mantine/core';
+import { useNavigate } from 'react-router';
 import { localFaithReading } from '../../../../../app/library/local-faith-readings.ts';
 import { loadFaithReading, type FaithId, type FaithReading } from '../../../../../app/library/scripture-sources.ts';
 import { readPersonal } from '../../../../../app/library/personal-store.ts';
@@ -13,6 +14,7 @@ const faithLabels: Record<string, [string, string]> = {
 
 export function FaithReadingWidget() {
   const { lang } = useWorkspace();
+  const navigate = useNavigate();
   const [faith, setFaith] = useState(() => readPersonal().faith);
   const [reading, setReading] = useState<FaithReading | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,8 +43,8 @@ export function FaithReadingWidget() {
   };
   return <Card className="home-widget-card faith-reading-widget" withBorder radius="xl" padding="lg">
     <div><Text className="page-eyebrow">{t('A READING WITH A SOURCE', 'BACAAN DENGAN SUMBER')}</Text><Title order={3}>{t(...(faithLabels[faith] || ['Daily reading', 'Bacaan harian']))}</Title></div>
-    {reading ? <><blockquote lang={reading.language} dir={reading.direction || 'auto'}>{reading.text}</blockquote><div className="faith-reading-attribution"><strong>{reading.reference}</strong><span>{reading.attribution}{reading.license ? ` · ${reading.license}` : ''}</span>{reading.note && <Text size="xs">{reading.note}</Text>}<Anchor href={reading.sourceUrl} target="_blank" rel="noopener noreferrer" size="xs">{t('Open source', 'Buka sumber')}</Anchor></div></> : <Text size="sm" c="dimmed">{t('Load a passage from the selected source when you are ready.', 'Muat bacaan dari sumber pilihan saat kamu siap.')}</Text>}
+    {reading ? <><blockquote className="faith-reading-excerpt" lang={reading.language} dir={reading.direction || 'auto'}>{reading.text}</blockquote><div className="faith-reading-attribution"><strong>{reading.reference}</strong><span>{reading.attribution}{reading.license ? ` · ${reading.license}` : ''}</span></div></> : <Text size="sm" c="dimmed">{t('Load a passage from the selected source when you are ready.', 'Muat bacaan dari sumber pilihan saat kamu siap.')}</Text>}
     {error && <Alert color="yellow" role="status">{error}</Alert>}
-    <Group>{faith === 'islam' ? <Button variant="default" onClick={() => document.dispatchEvent(new Event('sela:quran-open'))}>{t('Browse the Quran', 'Jelajahi Al-Qur’an')}</Button> : <FaithLibraryBrowser faith={faith as FaithId} />}<Button variant="subtle" onClick={() => void load()} disabled={loading}>{loading ? <Loader size={15} /> : t(reading ? 'Load today’s source text' : 'Load a sourced reading', reading ? 'Muat teks bersumber hari ini' : 'Muat bacaan bersumber')}</Button></Group>
+    <Group className="faith-reading-actions">{faith === 'islam' ? <Button variant="default" onClick={() => navigate(`/faith/quran/${readPersonal().quranSurah || 1}`)}>{t('Open the Quran', 'Buka Al-Qur’an')}</Button> : <FaithLibraryBrowser faith={faith as FaithId} />}<Button variant="subtle" onClick={() => navigate('/faith/daily')}>{t('Read full passage', 'Baca selengkapnya')}</Button><Button variant="subtle" onClick={() => void load()} disabled={loading}>{loading ? <Loader size={15} /> : t('Refresh source', 'Muat sumber')}</Button></Group>
   </Card>;
 }

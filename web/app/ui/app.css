@@ -70,10 +70,10 @@ html[data-app-appearance="oled"] {
 }
 
 :root { font-family: var(--font-body); font-synthesis: none; text-rendering: optimizeLegibility; }
-html, body { min-width: 320px; min-height: 100%; margin: 0; overflow-x: clip; background: var(--color-paper); }
+html, body { min-width: 320px; margin: 0; overflow-x: clip; background: var(--color-paper); }
 body { color: var(--color-ink); }
 button, input { font: inherit; }
-#sela-root { min-height: 100svh; }
+#sela-root { min-height: 0; }
 .sela-app {
   --mantine-color-body: var(--color-paper);
   --mantine-color-text: var(--color-ink);
@@ -97,14 +97,14 @@ button, input { font: inherit; }
   --mantine-primary-color-light: var(--color-accent-soft);
   --mantine-primary-color-light-hover: color-mix(in oklch, var(--color-accent-soft) 84%, var(--color-paper));
   --mantine-primary-color-light-color: var(--color-accent);
-  min-height: 100svh;
+  min-height: 0;
   color: var(--color-ink);
   background: var(--color-paper-gradient);
   background-attachment: fixed;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
-.sela-shell, .mantine-AppShell-main { background: transparent; }
+.sela-shell, .mantine-AppShell-main { min-height: 0 !important; background: transparent; }
 .mantine-AppShell-navbar, .mantine-AppShell-header, .mantine-AppShell-footer { z-index: 20; }
 .glass-surface {
   background: var(--color-glass) !important;
@@ -149,15 +149,18 @@ button, input { font: inherit; }
 .glass-control:hover { background: var(--color-paper-raised); color: var(--color-accent); }
 .mobile-search { display: none; }
 .add-books-button.mantine-Button-root { min-height: 40px; border-radius: 13px; box-shadow: 0 4px 12px var(--color-shadow); font-weight: 600; }
-.app-content { min-width: 0; }
+.app-content { min-width: 0; min-height: 0 !important; }
 .global-error { display: flex; max-width: 1100px; align-items: center; justify-content: space-between; gap: 16px; margin: 18px auto 0; padding: 12px 16px; border: 1px solid var(--color-danger); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-danger); font-size: 13px; }
-.page-shell { width: min(100%, var(--content-width)); min-width: 0; margin: 0 auto; padding: clamp(24px, 4vw, 44px) var(--space-page) 64px; }
+.page-shell { width: min(100%, var(--content-width)); min-width: 0; margin: 0 auto; padding: clamp(24px, 4vw, 44px) var(--space-page) clamp(24px, 3vw, 40px); }
 .page-header { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 22px; margin-bottom: 30px; }
 .page-heading-copy { min-width: 0; }
 .page-title.mantine-Title-root { margin: 7px 0 0; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(34px, 4.1vw, 52px); font-weight: 450; letter-spacing: -.045em; line-height: 1.04; }
 .page-description { max-width: 620px; margin-top: 10px; color: var(--color-muted); font-size: 14px; line-height: 1.65; }
 .page-header-action { flex: 0 0 auto; }
-.home-screen { max-width: 1440px; }
+.home-screen { max-width: 1440px; padding-bottom: 40px; }
+.shelf-screen { max-width: 1480px; padding-bottom: 24px; }
+.progress-screen { max-width: 1120px; padding-bottom: 28px; }
+.settings-screen, .settings-detail { max-width: 1040px; padding-bottom: 28px; }
 .continue-card { position: relative; display: grid; min-height: 300px; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) auto; align-items: center; gap: clamp(20px, 4vw, 52px); overflow: hidden; padding: clamp(20px, 3.2vw, 38px); border-color: var(--color-rule); background: var(--color-paper-raised); box-shadow: var(--shadow-raised); }
 .continue-art { width: min(100%, 205px); margin: 0 auto; filter: drop-shadow(var(--shadow-cover)); }
 .continue-art .book-cover { width: 100%; }
@@ -325,16 +328,20 @@ button, input { font: inherit; }
 .room-book-index-row > button { flex: 1; min-width: 0; }
 .book-list-row.is-selecting { grid-template-columns: 26px 52px minmax(0,1fr) auto 54px auto; }
 @media (max-width: 767px) {
-  .sela-sample-card { grid-template-columns: minmax(95px, 31%) minmax(0, 1fr); gap: 14px; padding: 14px; }
-  .sela-sample-cover { width: 100%; padding: 11px; border-radius: 8px 13px 13px 8px; }
+  .empty-state { min-height: 220px; padding: 18px !important; }
+  .empty-state .mantine-Title-root { font-size: 22px; }
+  .empty-state > .mantine-Text-root { font-size: 11px; }
+  .sela-sample-card { grid-template-columns: minmax(78px, 24%) minmax(0, 1fr); align-items: start; gap: 10px; padding: 12px; }
+  .sela-sample-cover { width: 100%; padding: 8px; border-radius: 8px 13px 13px 8px; }
   .sela-sample-cover > span, .sela-sample-cover > small { font-size: 7px; letter-spacing: .08em; }
   .sela-sample-cover > strong { font-size: clamp(9px, 2.7vw, 12px); }
-  .sela-sample-copy { gap: 8px; }
-  .sela-sample-copy .mantine-Title-root { font-size: 23px; }
-  .sela-sample-copy > .mantine-Text-root:not(.page-eyebrow) { font-size: 11px; }
+  .sela-sample-copy { gap: 6px; }
+  .sela-sample-copy .mantine-Title-root { font-size: 21px; line-height: 1.08; }
+  .sela-sample-copy > .mantine-Text-root:not(.page-eyebrow) { display: -webkit-box; overflow: hidden; font-size: 10.5px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .sela-sample-copy > .mantine-Group-root:not(.sela-sample-actions) { gap: 5px; }
   .sela-sample-copy .mantine-Badge-root { font-size: 9px; }
-  .sela-sample-actions .mantine-Button-root { min-height: 36px; padding-inline: 10px; font-size: 11px; }
-  .sela-sample-actions { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+  .sela-sample-actions .mantine-Button-root { min-height: 34px; padding: 5px 8px; font-size: 10px; }
+  .sela-sample-actions { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 6px; }
   .sela-sample-actions .mantine-Button-root { width: 100%; }
   .reader-focus-timer { top: calc(126px + env(safe-area-inset-top, 0px)); right: 10px; gap: 4px; padding: 5px; }
   .reader-focus-timer strong { min-width: 34px; }
@@ -422,7 +429,7 @@ button, input { font: inherit; }
 .shelf-room-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
 .shelf-room-heading .mantine-Title-root { margin-top: 4px; color: var(--color-ink); font-family: var(--font-display); font-size: 28px; font-weight: 470; }
 .shelf-room-heading > .mantine-Text-root { color: var(--color-muted); font-size: 11px; text-align: right; }
-.shelf-room { position: relative; width: 100%; height: clamp(340px, 36vw, 440px); margin-top: 4px; background: radial-gradient(ellipse at 50% 57%, color-mix(in oklch, var(--color-paper-raised) 76%, transparent), transparent 64%), radial-gradient(ellipse at 50% 48%, color-mix(in oklch, var(--color-accent-soft) 34%, transparent), transparent 70%); }
+.shelf-room { position: relative; width: 100%; height: clamp(330px, 33vw, 410px); margin-top: 4px; background: radial-gradient(ellipse at 50% 57%, color-mix(in oklch, var(--color-paper-raised) 76%, transparent), transparent 64%), radial-gradient(ellipse at 50% 48%, color-mix(in oklch, var(--color-accent-soft) 34%, transparent), transparent 70%); }
 .shelf-room::after { position: absolute; z-index: 1; inset: auto 0 0; height: 14%; background: linear-gradient(180deg, transparent, var(--color-paper) 96%); content: ""; pointer-events: none; }
 .shelf-room canvas { position: relative; z-index: 0; }
 .shelf-room canvas { touch-action: pan-y; }
@@ -455,7 +462,7 @@ button, input { font: inherit; }
 .catalog-heading-row .page-description { max-width: 680px; }
 .catalog-count-badge { flex: 0 0 auto; margin-bottom: 7px; }
 .catalog-source-section { display: grid; gap: 13px; }
-.catalog-section-heading { align-items: center; }
+.catalog-section-heading { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
 .catalog-source-card { display: grid; min-width: 0; min-height: 132px; grid-template-columns: 31px minmax(0,1fr); align-content: start; align-items: center; gap: 9px; padding: 16px; border: 1px solid var(--color-rule); border-radius: 19px; background: var(--color-paper-raised); color: var(--color-ink); box-shadow: 0 5px 16px var(--color-shadow); cursor: pointer; text-align: left; transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
 .catalog-source-card:hover, .catalog-source-card:focus-visible { border-color: var(--color-glass-edge); box-shadow: var(--shadow-raised); outline: 2px solid var(--color-focus); outline-offset: 2px; transform: translateY(-1px); }
 .catalog-source-card[aria-pressed="true"] { border-color: var(--color-accent); background: color-mix(in oklch, var(--color-accent-soft) 45%, var(--color-paper-raised)); box-shadow: inset 0 0 0 1px var(--color-accent), 0 7px 18px var(--color-shadow); }
@@ -484,11 +491,13 @@ button, input { font: inherit; }
 .catalog-rights-note, .catalog-results-context { margin: 0; color: var(--color-muted); font-size: 10px; line-height: 1.55; }
 .catalog-results-section { display: grid; gap: 14px; }
 .catalog-results-context { margin-top: 5px; font-size: 11px; }
-.catalog-results-tools { display: flex; min-width: 0; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
-.catalog-cover-quality { display: flex; min-width: 0; align-items: center; gap: 8px; padding: 5px 7px 5px 10px; border: 1px solid var(--color-rule); border-radius: 13px; background: var(--color-paper-raised); box-shadow: 0 3px 10px var(--color-shadow); }
-.catalog-cover-quality-label { color: var(--color-muted); font-size: 9px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
-.catalog-cover-quality .mantine-SegmentedControl-root { flex: 0 0 auto; }
-.catalog-cover-quality .mantine-SegmentedControl-label { min-height: 27px; padding-inline: 10px; font-size: 10px; font-weight: 700; }
+.catalog-results-tools { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.catalog-cover-quality { display: inline-flex; min-height: 40px; flex: 0 0 auto; align-items: center; gap: 10px; padding: 4px 5px 4px 11px; border: 1px solid var(--color-rule); border-radius: 13px; background: var(--color-paper-raised); box-shadow: 0 3px 10px var(--color-shadow); }
+.catalog-cover-quality-label { color: var(--color-muted); font-size: 10px; font-weight: 600; line-height: 1.25; white-space: nowrap; }
+.catalog-cover-quality .mantine-SegmentedControl-root { height: 32px; flex: 0 0 auto; padding: 3px; }
+.catalog-cover-quality .mantine-SegmentedControl-controls { height: 100%; align-items: stretch; }
+.catalog-cover-quality .mantine-SegmentedControl-control { min-width: 38px; min-height: 24px; }
+.catalog-cover-quality .mantine-SegmentedControl-label { display: flex; min-height: 24px; align-items: center; justify-content: center; padding-inline: 10px; font-size: 11px; font-weight: 700; line-height: 1; }
 .catalog-attribution { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--color-muted); text-decoration-color: var(--color-rule); }
 .catalog-result-card { display: flex; min-width: 0; flex-direction: column; gap: 12px; border-color: var(--color-rule); background: var(--color-paper-raised); box-shadow: 0 4px 14px var(--color-shadow); }
 .catalog-result-open { display: grid; min-width: 0; gap: 11px; padding: 0; border: 0; background: transparent; color: var(--color-ink); cursor: pointer; text-align: left; }
@@ -655,10 +664,23 @@ button, input { font: inherit; }
 .prayer-times-grid span { overflow: hidden; color: var(--color-muted); font-size: 9px; text-overflow: ellipsis; }
 .prayer-times-grid strong { color: var(--color-ink); font-size: 11px; font-variant-numeric: tabular-nums; }
 .faith-reading-widget blockquote { margin: 0; padding: 16px 18px; border-left: 2px solid var(--color-accent); border-radius: 0 14px 14px 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.65; white-space: pre-wrap; }
+.faith-reading-widget .faith-reading-excerpt { display: -webkit-box; max-height: 7.2em; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+.faith-reading-actions { gap: 4px; }
+.faith-reading-actions .mantine-Button-root { min-height: 36px; }
 .faith-reading-attribution { display: grid; gap: 4px; }
 .faith-reading-attribution strong { color: var(--color-ink); font-size: 12px; }
 .faith-reading-attribution > span, .faith-reading-attribution .mantine-Text-root { color: var(--color-muted); font-size: 10px; line-height: 1.5; }
 .islamic-reading-shelf { display: grid; min-width: 0; gap: 12px; }
+.islamic-reading-shortcuts { display: grid; gap: 12px; border-color: var(--color-glass-edge); background: color-mix(in oklch, var(--color-paper-raised) 88%, var(--color-accent-soft)); box-shadow: var(--shadow-raised), inset 0 1px 0 var(--color-glass-highlight); }
+.islamic-reading-shortcuts .mantine-Title-root { margin: 3px 0 5px; color: var(--color-ink); font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -.025em; }
+.islamic-reading-shortcuts > div:first-child > .mantine-Text-root:not(.page-eyebrow) { max-width: 58ch; color: var(--color-muted); font-size: 11px; line-height: 1.55; }
+.faith-story-teaser { display: grid; min-width: 0; grid-template-columns: 34px minmax(0,1fr) 18px; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper); color: var(--color-ink); cursor: pointer; text-align: left; }
+.faith-story-teaser:hover, .faith-story-teaser:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.faith-story-teaser-icon { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--color-rule); border-radius: 11px; color: var(--color-accent); }
+.faith-story-teaser > span:nth-child(2) { display: grid; min-width: 0; gap: 3px; }
+.faith-story-teaser strong { overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.faith-story-teaser small { overflow: hidden; color: var(--color-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.faith-collection-shortcut { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 9px; }
 .prophet-story-card { display: grid; min-height: 250px; align-content: start; gap: 8px; padding: 16px; border: 1px solid var(--color-rule); border-radius: 18px; background: var(--color-paper); }
 .prophet-story-card .mantine-Title-root { margin: 0; color: var(--color-ink); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
 .prophet-story-index { color: var(--color-muted); font-size: 11px; }
@@ -680,6 +702,70 @@ button, input { font: inherit; }
 .quran-verse p[lang="ar"] { margin: 0; color: var(--color-ink); font-family: var(--font-display); line-height: 1.9; text-align: right; }
 .quran-verse > .mantine-Text-root { color: var(--color-ink); line-height: 1.7; white-space: pre-wrap; }
 .quran-more-verses { margin: 12px 0 20px; }
+.faith-reader-app { min-height: 0; overflow: hidden; }
+.faith-reader-screen { display: flex; width: 100%; height: 100%; min-height: 0; flex-direction: column; }
+.faith-reader-header { display: grid; min-height: 70px; flex: 0 0 auto; grid-template-columns: 42px minmax(0,1fr) 28px; align-items: center; gap: 13px; padding: 10px clamp(16px,3vw,34px); border-bottom: 1px solid var(--color-rule); background: color-mix(in oklch, var(--color-glass) 94%, transparent); box-shadow: 0 4px 18px var(--color-shadow); backdrop-filter: blur(var(--glass-blur)) saturate(1.2); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2); }
+.faith-reader-back.mantine-ActionIcon-root { width: 42px; height: 42px; border-color: var(--color-glass-edge); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-ink); box-shadow: inset 0 1px 0 var(--color-glass-highlight), 0 3px 10px var(--color-shadow); }
+.faith-reader-brand { display: grid; min-width: 0; gap: 2px; }
+.faith-reader-brand .page-eyebrow { font-size: 9px; }
+.faith-reader-brand .mantine-Title-root { overflow: hidden; color: var(--color-ink); font-family: var(--font-display); font-size: 21px; font-weight: 520; letter-spacing: -.03em; text-overflow: ellipsis; white-space: nowrap; }
+.faith-reader-mark { color: var(--color-accent); }
+.faith-reader-nav { display: flex; min-width: 0; flex: 0 0 auto; gap: 6px; overflow-x: auto; padding: 8px clamp(16px,3vw,34px); border-bottom: 1px solid var(--color-rule); scrollbar-width: none; }
+.faith-reader-nav button { min-height: 34px; flex: 0 0 auto; padding: 0 13px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--color-muted); cursor: pointer; font: inherit; font-size: 11px; font-weight: 620; }
+.faith-reader-nav button:hover, .faith-reader-nav button:focus-visible { border-color: var(--color-rule); color: var(--color-ink); outline: none; }
+.faith-reader-nav button[aria-current="page"] { border-color: var(--color-glass-edge); background: var(--color-paper-raised); box-shadow: 0 2px 8px var(--color-shadow), inset 0 1px 0 var(--color-glass-highlight); color: var(--color-ink); }
+.faith-reader-body { min-width: 0; min-height: 0; flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.faith-reader-content { width: min(100%,1160px); min-width: 0; margin-inline: auto; padding: clamp(18px,3vw,34px) clamp(16px,4vw,52px) calc(28px + env(safe-area-inset-bottom)); }
+.faith-quran-toolbar { display: grid; grid-template-columns: minmax(160px,1.05fr) minmax(150px,.8fr) minmax(220px,1.35fr) minmax(230px,1.25fr); align-items: end; gap: 10px; padding: 12px; border: 1px solid var(--color-rule); border-radius: 17px; background: var(--color-paper-raised); box-shadow: 0 5px 18px var(--color-shadow), inset 0 1px 0 var(--color-glass-highlight); }
+.faith-quran-toolbar > * { min-width: 0; }
+.faith-type-controls { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.faith-type-controls .mantine-NumberInput-input { min-width: 0; padding-inline: 9px; }
+.faith-quran-loading { max-width: 850px; margin: 34px auto; }
+.faith-quran-heading, .faith-passage-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 30px 0 12px; }
+.faith-quran-heading .mantine-Title-root, .faith-passage-heading .mantine-Title-root, .faith-reader-content > .mantine-Title-root { margin: 4px 0; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(29px,4vw,42px); font-weight: 470; letter-spacing: -.04em; line-height: 1.1; }
+.faith-quran-heading > div > .mantine-Text-root:not(.page-eyebrow) { color: var(--color-muted); }
+.faith-quran-source-note { margin: 12px 0 8px; color: var(--color-muted); font-size: 11px; line-height: 1.5; }
+.faith-quran-verses { width: min(100%,880px); margin: 0 auto; }
+.faith-quran-verse { padding: 24px 8px 28px; border-bottom: 1px solid var(--color-rule); scroll-margin-block: 28px; }
+.faith-verse-meta { display: flex; align-items: center; gap: 8px; color: var(--color-muted); }
+.faith-verse-meta button { min-width: 40px; min-height: 28px; padding: 0 8px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper-raised); color: var(--color-accent); cursor: pointer; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.faith-verse-meta span { font-size: 8px; font-weight: 700; letter-spacing: .13em; }
+.faith-reader-arabic { margin: 19px 0 21px; color: var(--color-ink); font-family: "Noto Naskh Arabic", Amiri, "Traditional Arabic", serif; font-size: 34px; line-height: 2; text-align: right; }
+.faith-reader-translation { color: var(--color-ink); font-size: 18px; line-height: 1.85; white-space: pre-wrap; }
+.faith-reader-footnote { margin-top: 10px; color: var(--color-muted); line-height: 1.6; white-space: pre-wrap; }
+.faith-reader-controls { position: sticky; z-index: 4; bottom: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-top: 20px; padding: 10px; border: 1px solid var(--color-glass-edge); border-radius: 17px; background: color-mix(in oklch, var(--color-glass) 92%, var(--color-paper-raised)); box-shadow: 0 8px 24px var(--color-shadow), inset 0 1px 0 var(--color-glass-highlight); backdrop-filter: blur(var(--glass-blur)) saturate(1.2); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2); }
+.faith-reader-controls > :first-child { justify-self: start; }
+.faith-reader-controls > :last-child { justify-self: end; }
+.faith-jump-control { display: flex; align-items: center; gap: 7px; }
+.faith-jump-control .mantine-NumberInput-root { width: 82px; }
+.faith-jump-control .mantine-Input-input { text-align: center; }
+.faith-jump-control > span { color: var(--color-muted); font-size: 10px; white-space: nowrap; }
+.faith-collection-content, .faith-story-content, .faith-daily-content, .faith-reader-home { max-width: 820px; }
+.faith-collection-toolbar { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(0,1.2fr); align-items: end; gap: 16px; }
+.faith-collection-source { color: var(--color-muted); font-size: 11px; line-height: 1.55; }
+.faith-passage-heading { margin-top: 34px; }
+.faith-passage-heading > .mantine-Text-root { color: var(--color-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.faith-passage { margin-top: 22px; padding: clamp(18px,4vw,32px); border: 1px solid var(--color-rule); border-radius: 20px; background: var(--color-paper-raised); box-shadow: var(--shadow-raised), inset 0 1px 0 var(--color-glass-highlight); }
+.faith-passage .faith-reader-arabic { text-align: center; }
+.faith-transliteration { margin: 0 0 16px; color: var(--color-muted); font-size: 14px; font-style: italic; line-height: 1.7; }
+.faith-passage-citation { display: grid; gap: 5px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--color-rule); color: var(--color-muted); font-size: 11px; line-height: 1.6; }
+.faith-passage-citation strong { color: var(--color-ink); }
+.faith-passage-citation p { margin: 0; }
+.faith-collection-content .faith-reader-controls { margin-top: 24px; }
+.faith-story-content > .mantine-Title-root { max-width: 22ch; margin-top: 14px; }
+.faith-story-reference { margin-top: 10px; color: var(--color-muted); font-size: 12px; }
+.faith-story-copy { margin: 30px 0; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(20px,2.4vw,27px); line-height: 1.7; }
+.faith-story-actions { display: flex; align-items: center; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--color-rule); color: var(--color-muted); font-size: 11px; }
+.faith-daily-content blockquote { margin: 24px 0; padding: 24px clamp(18px,4vw,34px); border-left: 2px solid var(--color-accent); border-radius: 0 16px 16px 0; background: var(--color-paper-raised); color: var(--color-ink); font-family: var(--font-display); font-size: clamp(20px,2.5vw,28px); line-height: 1.75; white-space: pre-wrap; }
+.faith-daily-actions { margin-top: 24px; }
+.faith-reader-home > .mantine-Title-root { margin-bottom: 22px; }
+.faith-reader-choices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+.faith-reader-choices button { display: grid; min-width: 0; min-height: 140px; grid-template-columns: 34px minmax(0,1fr) 20px; grid-template-rows: auto 1fr auto; gap: 7px 12px; padding: 18px; border: 1px solid var(--color-rule); border-radius: 18px; background: var(--color-paper-raised); color: var(--color-ink); box-shadow: 0 4px 14px var(--color-shadow); cursor: pointer; text-align: left; }
+.faith-reader-choices button:hover, .faith-reader-choices button:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.faith-reader-choices button > span { grid-row: 1 / span 2; color: var(--color-accent); font-size: 10px; font-variant-numeric: tabular-nums; }
+.faith-reader-choices strong { min-width: 0; font-family: var(--font-display); font-size: 19px; font-weight: 520; }
+.faith-reader-choices small { grid-column: 2; color: var(--color-muted); font-size: 11px; line-height: 1.5; }
+.faith-reader-choices svg { grid-column: 3; grid-row: 1 / span 2; align-self: center; color: var(--color-muted); }
 @media (max-width: 640px) { .smart-shelf-books { grid-template-columns: 1fr; } .quran-reader-controls, .quran-reader-type, .water-settings-fields { grid-template-columns: 1fr; } .quran-reader-controls > :first-child { grid-column: auto; } .prayer-times-grid { gap: 3px; } .prayer-times-grid > div { padding-inline: 2px; } }
 @media (max-width: 640px) {
   .catalog-explorer { gap: 20px; }
@@ -1035,4 +1121,61 @@ button, input { font: inherit; }
   .reader-preview-card { padding: 6px; border-radius: 12px; }
   .reader-preview-caption strong { font-size: 9px; }
   .reader-preview-footer { flex: 0 0 auto; align-items: start; flex-direction: column; }
+}
+
+@media (max-width: 767px) {
+  .catalog-section-heading { align-items: stretch; flex-direction: column; gap: 12px; }
+  .catalog-results-tools { width: 100%; justify-content: space-between; }
+  .catalog-cover-quality { min-height: 40px; }
+  .faith-reader-header { min-height: 66px; padding-top: calc(8px + env(safe-area-inset-top)); }
+  .faith-reader-brand .mantine-Title-root { font-size: 19px; }
+  .faith-reader-nav { padding-inline: 12px; }
+  .faith-reader-nav button { min-height: 38px; padding-inline: 11px; }
+  .faith-reader-content { padding-inline: 16px; }
+  .faith-quran-toolbar { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; padding: 10px; }
+  .faith-quran-toolbar > .mantine-Select-root:nth-of-type(3), .faith-type-controls { grid-column: 1 / -1; }
+  .faith-type-controls { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .faith-reader-controls { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; padding: 8px; border-radius: 15px; }
+  .faith-reader-controls > :first-child, .faith-reader-controls > :last-child { width: 100%; justify-self: stretch; }
+  .faith-reader-controls > :first-child .mantine-Button-label, .faith-reader-controls > :last-child .mantine-Button-label { white-space: nowrap; }
+  .faith-jump-control { grid-column: 1 / -1; grid-row: 1; justify-content: center; padding-bottom: 4px; }
+  .faith-reader-controls > :first-child { grid-column: 1; grid-row: 2; }
+  .faith-reader-controls > :last-child { grid-column: 2; grid-row: 2; }
+  .faith-collection-toolbar { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .faith-reader-choices { grid-template-columns: minmax(0,1fr); }
+  .faith-reader-choices button { min-height: 118px; }
+  .faith-collection-shortcut { grid-template-columns: minmax(0,1fr); }
+  .faith-collection-shortcut .mantine-Button-root { justify-self: start; }
+  .faith-quran-verse { padding: 21px 2px 24px; }
+  .faith-reader-arabic { font-size: 30px !important; line-height: 1.9; }
+  .faith-reader-translation { font-size: 17px !important; line-height: 1.75; }
+  .faith-daily-content blockquote { padding: 19px; }
+}
+@media (max-width: 420px) {
+  .faith-reader-header { grid-template-columns: 40px minmax(0,1fr) 22px; gap: 9px; padding-inline: 11px; }
+  .faith-reader-back.mantine-ActionIcon-root { width: 40px; height: 40px; }
+  .faith-reader-mark { width: 19px; }
+  .faith-quran-toolbar { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .faith-quran-toolbar > .mantine-Select-root:nth-of-type(3), .faith-type-controls { grid-column: 1 / -1; }
+  .faith-quran-heading { align-items: flex-start; flex-direction: column; gap: 5px; margin-top: 24px; }
+  .faith-quran-heading > a { font-size: 11px; }
+  .faith-reader-controls .mantine-Button-root { padding-inline: 8px; font-size: 11px; }
+  .faith-reader-controls .mantine-Button-section { margin-inline-end: 5px; margin-inline-start: 5px; }
+  .faith-story-actions { align-items: flex-start; flex-direction: column; }
+  .faith-reader-content > .mantine-Title-root { font-size: 31px; }
+}
+@media (max-width: 767px) {
+  .faith-quran-controls { grid-template-columns: 42px minmax(0,1fr) 42px; gap: 6px; padding: 6px; }
+  .faith-quran-controls > :first-child { grid-column: 1; grid-row: 1; }
+  .faith-quran-controls > :last-child { grid-column: 3; grid-row: 1; }
+  .faith-quran-controls .faith-quran-previous.mantine-Button-root,
+  .faith-quran-controls .faith-quran-next.mantine-Button-root { width: 40px; min-width: 40px; height: 40px; justify-self: center; padding: 0; }
+  .faith-quran-controls .faith-quran-previous .mantine-Button-label,
+  .faith-quran-controls .faith-quran-next .mantine-Button-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+  .faith-quran-controls .faith-quran-previous .mantine-Button-section,
+  .faith-quran-controls .faith-quran-next .mantine-Button-section { margin: 0; }
+  .faith-quran-controls .faith-jump-control { grid-column: 2; grid-row: 1; justify-content: center; gap: 5px; padding: 0; }
+  .faith-quran-controls .faith-jump-control .mantine-NumberInput-root { width: 56px; }
+  .faith-quran-controls .faith-jump-control .mantine-Button-root { min-width: 42px; padding-inline: 7px; }
+  .faith-quran-controls .faith-jump-control > span { font-size: 9px; }
 }

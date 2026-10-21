@@ -7,6 +7,7 @@ import type { LibraryBook } from '../../../app/library/models.ts';
 import { coverPixelsNeedFallback } from '../../../app/library/cover-analysis.ts';
 
 const jackets = ['--cover-one', '--cover-two', '--cover-three', '--cover-four', '--cover-five', '--cover-six'];
+const fallbackJackets = ['#c18a63', '#8aa27b', '#9181a3', '#718ea2', '#b77b70', '#b79b63'];
 const colorCanvas = document.createElement('canvas');
 colorCanvas.width = colorCanvas.height = 1;
 const colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
@@ -35,10 +36,10 @@ function threeColor(token: string, fallback: string) {
 
 function shelfRowMetrics(bookCount: number, compact: boolean) {
   const count = Math.max(1, bookCount);
-  const scale = compact ? count === 1 ? 1.5 : count === 2 ? 1.3 : count === 3 ? 1.15 : 1 : count === 1 ? 1.28 : count === 2 ? 1.15 : count === 3 ? 1.05 : 1;
-  const spacing = compact ? count <= 2 ? 1.4 : count === 3 ? 1.25 : count === 4 ? 0.98 : count === 5 ? 0.78 : count === 6 ? 0.7 : 0.65 : 1.02;
+  const scale = compact ? count === 1 ? 1.65 : count === 2 ? 1.42 : count === 3 ? 1.2 : count === 4 ? 1.1 : 1 : count === 1 ? 1.78 : count === 2 ? 1.52 : count === 3 ? 1.3 : count === 4 ? 1.16 : count === 5 ? 1.08 : 1;
+  const spacing = compact ? count <= 2 ? 1.75 : count === 3 ? 1.45 : count === 4 ? 1.18 : count === 5 ? 0.9 : count === 6 ? 0.76 : 0.68 : count <= 2 ? 1.95 : count === 3 ? 1.62 : count === 4 ? 1.34 : count === 5 ? 1.08 : count === 6 ? 0.92 : 0.82;
   const coverWidth = 1.46 * scale * 0.667;
-  const boardWidth = Math.max(compact ? 2.8 : 3.3, (count - 1) * spacing + coverWidth + 0.9);
+  const boardWidth = Math.max(compact ? count <= 2 ? 4.5 : 3.6 : count <= 2 ? 5.5 : 4.2, (count - 1) * spacing + coverWidth + 1.1);
   return { scale, spacing, boardWidth };
 }
 
@@ -46,10 +47,10 @@ function ResponsiveCamera({ booksInRow }: { booksInRow: number }) {
   const { camera, size } = useThree();
   useEffect(() => {
     const compact = size.width < 600;
-    const compactDistances = [6.8, 6.8, 7, 8.2, 8.8, 9, 9.4, 9.9];
+    const compactDistances = [5.2, 4.8, 6.2, 7.1, 7.2, 7.5, 7.9, 8];
     const distance = compact
       ? compactDistances[Math.min(7, Math.max(1, booksInRow))]
-      : booksInRow === 1 ? 6.8 : booksInRow === 2 ? 7.2 : booksInRow === 3 ? 7.6 : 7.8;
+      : booksInRow === 1 ? 4.4 : booksInRow === 2 ? 4.8 : booksInRow === 3 ? 5.2 : booksInRow === 4 ? 5.8 : booksInRow === 5 ? 6.2 : 6.8;
     const perspective = camera as PerspectiveCamera;
     perspective.position.set(0, 0.1, distance);
     perspective.lookAt(0, 0, 0);
@@ -204,7 +205,7 @@ function Spine({ book, index, position, scale, onOpen }: { book: LibraryBook; in
   const height = (1.34 + (index % 4) * 0.04) * scale;
   const width = height * 0.667;
   const depth = 0.2 * scale;
-  const color = threeColor(jackets[index % jackets.length], '#8e806c');
+  const color = threeColor(jackets[index % jackets.length], fallbackJackets[index % fallbackJackets.length]);
   const pages = threeColor('--color-paper-raised', '#eee8dc');
   return <group position={position} rotation={[0, (index % 2 ? 1 : -1) * 0.07, 0]} onClick={() => onOpen(book)}>
     <mesh castShadow receiveShadow>
@@ -219,7 +220,7 @@ function Spine({ book, index, position, scale, onOpen }: { book: LibraryBook; in
       <boxGeometry args={[width * 0.07, height * 0.94, 0.008]} />
       <meshStandardMaterial color={threeColor('--color-glass-highlight', '#ffffff')} transparent opacity={0.16} roughness={0.5} />
     </mesh>
-    <CoverArt book={book} width={width} height={height} depth={depth} scale={scale} index={index} jacketColor={color} />
+    <CoverArt book={book} width={width} height={height} depth={depth} scale={scale} index={index} jacketColor={fallbackJackets[index % fallbackJackets.length]} />
   </group>;
 }
 

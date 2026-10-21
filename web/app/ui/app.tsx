@@ -20,6 +20,7 @@ const ProgressScreen = lazy(() => import('./screens.tsx').then(module => ({ defa
 const SettingsScreen = lazy(() => import('./screens.tsx').then(module => ({ default: module.SettingsScreen })));
 const SettingsDetail = lazy(() => import('./screens.tsx').then(module => ({ default: module.SettingsDetail })));
 const ReaderScreen = lazy(() => import('./screens.tsx').then(module => ({ default: module.ReaderScreen })));
+const FaithReaderScreen = lazy(() => import('./features/faith/FaithReaderScreen.tsx'));
 
 const sections = [
   { to: '/', en: 'Today', id: 'Hari ini', icon: BookOpen, end: true },
@@ -49,6 +50,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const isReader = location.pathname.startsWith('/read/');
+  const isFaithReader = location.pathname.startsWith('/faith');
   const lang = workspace.lang;
 
   useEffect(() => {
@@ -84,9 +86,10 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
     setSearchOpen(false);
   };
 
-  if (isReader) return <div className="sela-app reader-app" data-theme={workspace.preferences.theme} data-appearance={workspace.preferences.appearance} data-importing={workspace.importing || undefined}>
-    <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, 'Opening your book…', 'Membuka bukumu…')}</div>}><Routes>
+  if (isReader || isFaithReader) return <div className={`sela-app reader-app${isFaithReader ? ' faith-reader-app' : ''}`} data-theme={workspace.preferences.theme} data-appearance={workspace.preferences.appearance} data-importing={workspace.importing || undefined}>
+    <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, isReader ? 'Opening your book…' : 'Opening your reading…', isReader ? 'Membuka bukumu…' : 'Membuka bacaan…')}</div>}><Routes>
       <Route path="/read/:bookId" element={<ReaderScreen />} />
+      <Route path="/faith/*" element={<FaithReaderScreen />} />
     </Routes></Suspense>
   </div>;
 
