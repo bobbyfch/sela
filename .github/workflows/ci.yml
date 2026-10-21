@@ -18,8 +18,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Tailwind can serialize the public stylesheet differently across operating systems; its contract is covered by the unit and browser suites.
-      - run: git diff --exit-code -- dist index.html library site app examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/public.css'
+      # CSS minification and dependent hashes vary by operating system; unit/browser suites validate these generated assets.
+      - run: git diff --exit-code -- dist index.html library site app examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)app/app.css' ':(exclude)app/sw.js' ':(exclude)dist/css/sela.app.css' ':(exclude)dist/css/sela.min.css' ':(exclude)dist/manifest.json' ':(exclude)site/public.css'
       - run: npm test
       - run: npm run test:types
       - run: npm run typecheck

@@ -31,7 +31,7 @@ jobs:
           CHECK_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           if git diff --quiet "$CHECK_SHA^" "$CHECK_SHA" -- \
-            .github/workflows/release.yml package.json package-lock.json CHANGELOG.md scripts/build.ts \
+            .github/workflows/release.yml .github/workflows/ci.yml package.json package-lock.json CHANGELOG.md scripts/build.ts \
             playwright.config.ts ui/app-materials.css ui/mobile-tailwind.css ui/app-redesign-utilities.css \
             app/library/discovery.ts app/library/reading-desk.ts site/mobile-app.css site/public.css mobile/sw.js \
             tests/browser/app-reader.spec.ts tests/browser/home-widgets.spec.ts tests/browser/personal-reader.spec.ts; then
