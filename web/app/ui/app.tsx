@@ -44,7 +44,7 @@ const bookDropAccept = {
 };
 const appPwaPath = ['./', 'pwa.js'].join('');
 
-type RouteFailureBoundaryProps = { children: ReactNode; lang: string; onBack: () => void };
+type RouteFailureBoundaryProps = { children: ReactNode; lang: WorkspaceValue['lang']; onBack: () => void };
 type RouteFailureBoundaryState = { failed: boolean };
 
 class RouteFailureBoundary extends Component<RouteFailureBoundaryProps, RouteFailureBoundaryState> {

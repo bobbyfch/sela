@@ -4,11 +4,11 @@ import { resolve } from 'node:path';
 
 async function waitForAppWorker(page: Page) {
   await expect.poll(() => page.evaluate(async () => {
-    const registration = await navigator.serviceWorker.getRegistration('/app/');
+    const registration = await navigator.serviceWorker.getRegistration('/sela/app/');
     return registration?.active?.state || '';
   })).toBe('activated');
   await page.reload();
-  await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL || '')).toContain('/app/sw.js');
+  await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL || '')).toContain('/sela/app/sw.js');
 }
 
 async function activeWorkerVersion(page: Page): Promise<string> {
@@ -51,7 +51,7 @@ test('a real service-worker update preserves local books and the new shell opens
   let workerChanged = false;
 
   try {
-    await page.goto('/app/');
+    await page.goto('/sela/app/');
     await expect(page.locator('.sela-app')).toBeVisible();
     await waitForAppWorker(page);
     expect(await activeWorkerVersion(page)).toBe(oldVersion);
@@ -66,7 +66,7 @@ test('a real service-worker update preserves local books and the new shell opens
     await writeFile(workerPath, updatedWorker, 'utf8');
     workerChanged = true;
     await page.evaluate(async () => {
-      const registration = await navigator.serviceWorker.getRegistration('/app/');
+      const registration = await navigator.serviceWorker.getRegistration('/sela/app/');
       if (!registration) throw new Error('Sela app service worker was not registered');
       await registration.update();
     });
@@ -90,7 +90,7 @@ test('a real service-worker update preserves local books and the new shell opens
     expect(cacheNames).not.toContain(oldCache);
 
     await context.setOffline(true);
-    await page.goto('/app/#/shelf');
+    await page.goto('/sela/app/#/shelf');
     await expect(page.locator('.book-card')).toHaveCount(1);
     await page.locator('.book-cover-button').click();
     await expect(page.locator('.reader-body')).toContainText('remains after the service worker update');

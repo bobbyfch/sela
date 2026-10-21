@@ -5,7 +5,11 @@ const root = resolve('.');
 const types = { '.js': 'application/javascript', '.mjs': 'application/javascript', '.css': 'text/css', '.html': 'text/html', '.pdf': 'application/pdf', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.wasm':'application/wasm', '.mp3': 'audio/mpeg', '.bcmap': 'application/octet-stream', '.pfb': 'application/octet-stream', '.ttf': 'font/ttf' };
 createServer(async (req, res) => {
   try {
-    const path = resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://localhost').pathname));
+    let pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    // Mirror the GitHub Pages project prefix locally so browser tests exercise /sela/ asset URLs.
+    if (pathname === '/sela') pathname = '/';
+    else if (pathname.startsWith('/sela/')) pathname = pathname.slice('/sela'.length);
+    const path = resolve(root, '.' + pathname);
     if (path !== root && !path.startsWith(root + sep)) { res.writeHead(403).end(); return; }
     const file = (await stat(path)).isDirectory() ? resolve(path, 'index.html') : path;
     const body = await readFile(file);
