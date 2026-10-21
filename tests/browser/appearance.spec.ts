@@ -32,7 +32,8 @@ test('all paper palettes remain selectable in light, dark and OLED app appearanc
    document.documentElement.dataset.appTheme=theme;document.documentElement.dataset.appAppearance=appearance;
    await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
    const style=getComputedStyle(app),probe=document.createElement('i');probe.style.backgroundColor='var(--color-paper)';app.append(probe);
-   rows.push({theme,appearance,paper:getComputedStyle(probe).backgroundColor,ink:style.getPropertyValue('--color-ink').trim(),accent:style.getPropertyValue('--color-accent-base').trim(),dark:style.colorScheme==='dark'});probe.remove();
+   const paper=getComputedStyle(probe).backgroundColor;probe.style.backgroundColor='var(--color-accent-base)';
+   rows.push({theme,appearance,paper,ink:style.getPropertyValue('--color-ink').trim(),accent:getComputedStyle(probe).backgroundColor,dark:style.colorScheme==='dark'});probe.remove();
   }
   return rows;
  },{themes,appearances});
