@@ -1,16 +1,31 @@
-# Sela Books 1.5
+# Sela Books and Viewer
 
-Two products: Reader is a private installable web app on desktop, tablet and phone. Viewer is a lightweight CDN/ESM plugin for websites/frameworks, inline or fullscreen. Browser-extension distribution is discontinued.
+Sela Books is a private, installable reading web app for desktop, tablet and phone. Viewer is a framework-independent CDN/ESM reader that can be embedded in an existing website. Browser-extension packages are discontinued.
 
-Reader has Home, Shelf, Explore and Settings; local IndexedDB books, collections, favorites, sorting, format/status filters, grid/list views and full ZIP backup. Bottom navigation on phones, side rail on wide screens. Theme/language in Settings; appearance also switches directly in the reader. Reader and Viewer use one responsive interface. Cloud backup is manual export/share/upload and restore. No account configuration is needed. Explore searches eight curated complete English-language classics with generated covers and opens them within Sela. Book downloads are opt-in from pinned GITenberg sources; original Gutenberg terms remain. Home has shelf summaries, cover-based recent reading, a focus timer and optional city-based Open-Meteo weather. No device location permission is requested. Sample books are saved explicitly; originals should be retained because browser storage can be evicted.
+## Sela Books
 
-PDF (lazy PDF.js), EPUB, CBZ, TXT/MD/sanitized HTML/text FB2. Optional external GPL DjVu decoder; CBR/MOBI/AZW/DOCX/DRM unsupported. Search, embedded outlines, browser TTS, notes, filters/brightness/dim; no PDF aligned text layer, EPUB CFI or OCR. Browser/OS voices vary; no voice-service key required.
+The app has Home, Shelf, Discover, Reading log (Progress) and Settings. It stores books and reading data in IndexedDB on the current browser origin. Books are not uploaded. There is no account requirement or automatic cloud sync. Export a full ZIP backup before clearing browser data or moving devices; restore imports it into the local shelf. Browser storage can be evicted.
 
-Main Viewer entry ~26.2 KiB gzip, excluding decoder, document and optional modules. No Bootstrap/jQuery or UI framework dependency. Web app installation depends on browser capabilities. Old browsers receive original PDF links; iPhone 4 cannot run the full offline app. Physical device validation remains outstanding.
+The app supports PDF, EPUB, CBZ, TXT, Markdown, sanitized HTML, FB2 text, DOCX and ODT text, plus optional DjVu through a separately supplied decoder. CBR/RAR, CB7, MOBI/AZW, legacy DOC, RTF and DRM-protected files are unsupported. EPUB is reflowable HTML, Office formats are text-only, and PDF does not include OCR or an aligned selectable text layer.
 
-Web app: https://bobbyfch.github.io/sela/mobile/
-Products: https://github.com/bobbyfch/sela/blob/main/docs/products.md
-App installation: https://github.com/bobbyfch/sela/blob/main/docs/pwa.md
-Viewer installation: https://github.com/bobbyfch/sela/blob/main/docs/install.md
-Pinned CDN: https://cdn.jsdelivr.net/gh/bobbyfch/sela@v1.7.1/dist/js/sela.min.js
-Cloud setup: https://github.com/bobbyfch/sela/blob/main/docs/cloud.md
+Discover uses a source-first flow: select a catalog, one of its available collections, then an optional topic. Sources include public-domain catalogs, community transcriptions, open textbooks, attributed ranking metadata and personal OPDS catalogs. Search stays within the selected source. An edition can be opened or saved when its source supports that action; metadata-only results link to the original source and do not promise a download. Rights and availability vary by title, source and region.
+
+Search across a personal shelf uses a lazy on-device Orama index with common Indonesian-language query expansion. It does not upload the search query. Reading time, history, notes, bookmarks, highlights, collections and progress stay on the device and can be included in backups. Home offers optional quotes, topic news, sourced scripture readings, an “on this day” feed, weather-aware artwork and reading widgets. Weather uses a manually selected city; no device-location permission is requested. Prayer-time estimates are fetched only after the user asks for them.
+
+## Viewer
+
+Viewer supports PDF, EPUB, CBZ, TXT/Markdown, sanitized HTML, FB2 text, DOCX/ODT text and optional external DjVu. It provides reading modes, contents, search where text is available, bookmarks, notes, highlights, narration through browser/OS voices and responsive inline or overlay display. Web Speech availability and voice quality depend on the browser and installed voices.
+
+The core Viewer has no React, Bootstrap, jQuery or Tailwind runtime dependency. Use the pinned release in the [installation guide](https://github.com/bobbyfch/sela/blob/main/docs/install.md); production sites should pin a version. The unversioned CDN URL may change without notice. Self-host the complete `dist/` directory when offline use or control of asset delivery is required.
+
+## Links
+
+- Project site: https://bobbyfch.github.io/sela/
+- Sela Books app: https://bobbyfch.github.io/sela/app/
+- Products: https://github.com/bobbyfch/sela/blob/main/docs/products.md
+- Install the app: https://github.com/bobbyfch/sela/blob/main/docs/pwa.md
+- Viewer installation: https://github.com/bobbyfch/sela/blob/main/docs/install.md
+- Formats and limits: https://github.com/bobbyfch/sela/blob/main/docs/formats.md
+- Manual backup and restore: https://github.com/bobbyfch/sela/blob/main/docs/backup.md
+- Source capabilities and rights: https://github.com/bobbyfch/sela/blob/main/docs/library-sources.md
+- Development and tests: https://github.com/bobbyfch/sela/blob/main/docs/development.md

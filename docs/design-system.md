@@ -7,7 +7,7 @@ The installed reading app has one React entry at `/app/`, built on Mantine 9.7. 
 | Area | Source and rule |
 | --- | --- |
 | Components | Mantine core components; app-specific composition in [`web/app/ui/screens.tsx`](../web/app/ui/screens.tsx) and [`web/app/ui/app.tsx`](../web/app/ui/app.tsx) |
-| Theme | [`web/app/ui/theme.tsx`](../web/app/ui/theme.tsx) maps Mantine state colors to Sela semantic tokens |
+| Theme | [`web/app/ui/theme.tsx`](../web/app/ui/theme.tsx) coordinates Mantine controls with the app’s light/dark appearance and Sela’s semantic tokens |
 | Tokens | [`tokens.css`](../tokens.css) defines paper, ink, glass, shadow, type, and spacing values |
 | App styling | [`web/app/ui/app.css`](../web/app/ui/app.css) owns responsive layouts and component skin |
 | Public and reader styles | Tailwind entrypoints under `ui/` build the public page and standalone reader outputs independently |
@@ -25,6 +25,6 @@ The installed reading app has one React entry at `/app/`, built on Mantine 9.7. 
 - Setting categories open as routes within the app shell; the back control returns to the settings index.
 - The bookshelf supports grid, list, and lazy 3D views; list and grid remain available when WebGL is unavailable.
 
-## Theme rules
+## Palette and appearance
 
-Vanilla, Olive, Cocoa, Mist, and OLED use the same semantic tokens. Components consume paper, ink, muted, rule, accent, glass, and shadow variables instead of hard-coded palette values. Cover art is never color-shifted to match the current theme.
+The app offers eight named palettes: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja and Arunika. Light, dark and OLED are appearance choices kept separate from the selected palette. Components consume semantic paper, ink, muted, rule, accent, glass and shadow tokens; book-cover art keeps its original colors.

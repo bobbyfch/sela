@@ -18,7 +18,7 @@ The new user-facing flows and screens live in `web/app/ui` and use React with Ma
 | Smart shelves, travel readiness, storage care and collection cards | Library tools screen with rule-based shelves, local file checks, optional persistent-storage request and PNG card export | Rebuilt in React |
 | Search inside local books | Worker-backed local search with result-to-book/page navigation | Rebuilt in React |
 | WebDAV sync and reading presets | Optional pull/merge/push settings and format-aware default reading modes | Rebuilt in React |
-| Online discovery | React Explore with nine public sources, topic and collection filters, Wikisource languages, pagination, and saved OPDS catalogs | Rebuilt in React; OPDS credentials remain in page memory and are only sent to the matching catalog origin |
+| Online discovery | React Discover with nine public sources, topic and collection filters, Wikisource languages, pagination, and saved OPDS catalogs | Rebuilt in React; OPDS credentials remain in page memory and are only sent to the matching catalog origin |
 | Reader controls and personal reader tools | React-owned header/footer controls, page and bookmark actions, a page-preview dialog with PDF thumbnails, and the Reader desk with settings, contents, search, notes/highlights, narration, profiles, audio, dictionary/translation, share cards, metadata and book information | React app panels and chrome rebuilt; SDK remains a headless parsing/rendering/service boundary |
 | Home reading widgets | Calendar with week/month views and sourced holiday dates, sourced reflection, water tracker, history, news, weather, manual prayer times, faith reading, Quran and Islamic reading shelf | Rebuilt in React; external sources need runtime checks |
 | Reading history and notebook | Progress metrics, 7/30/365-day charts, current/longest streak, best day, 30-session journal, weekly target and searchable notebook | Rebuilt in React |
@@ -70,3 +70,10 @@ This is the prior checkpoint snapshot. The newer cross-engine evidence and curre
 - Reader ResizeObserver fallback passed in Firefox. Reader mode changes, dialog focus return, prayer city setup with Weather disabled, Discover edition details, responsive Discover layout, palette combinations and topbar appearance/theme separation passed in the full engine runs or targeted reruns.
 - Browser coverage exercised responsive widths and local/mocked network flows; it does not establish behavior on physical devices or every live external provider response.
 - **Still not tested:** physical iOS/Android devices, screen-reader/assistive-technology behavior, genuine PWA installation and offline launch on installed browsers, and exhaustive shelf-camera/reorder behavior with multiple real cover files. These are not claimed as complete parity.
+
+## Pages deployment follow-up · 21 October 2026
+
+- Recovery changes are on `main` at `240aaba9072e653a50cbd6e55ee783a0440a2683`.
+- CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 jobs, including the React app, Chromium/Firefox/WebKit suites and the real service-worker update test.
+- Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) succeeded. Live smoke checks opened the public site, `/app/`, and the 50-page sample PDF.
+- The older checkpoint above remains historical. Physical devices, assistive technology, and full installed-PWA behavior remain unverified.

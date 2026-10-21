@@ -83,7 +83,6 @@ new Sela({ url: '/story.pdf', presentation: 'inline', container: '#reading-room'
 </script>
 ```
 
-
 For protected endpoints and framework integration, see [integrations](integrations.md).
 
 ## Responsive Viewer controls

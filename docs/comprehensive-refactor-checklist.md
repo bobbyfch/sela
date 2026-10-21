@@ -243,4 +243,12 @@ Status meanings: **DONE** = implemented or already present and verified for the 
 - [x] **DONE** — Cover-led Discover detail, responsive layouts, topbar appearance independent from paper color, and the Light/Dark/OLED palette matrix were exercised by the three-engine suite. The combined-run WebKit theme-control timeout passed when rerun alone.
 - [ ] **PARTIAL** — The aggregate three-engine command reported 3 timeouts although each browser's complete fresh-process suite passed. The cause has not been established; keep both results visible rather than assuming the combined-run failures are harmless.
 - [ ] **NOT TESTED** — Physical iOS/Android devices, screen-reader and other assistive-technology behavior, genuine installed-PWA launch/offline behavior, and exhaustive multi-book shelf reorder/camera behavior remain outside this run.
-- [x] **DONE** — Work stayed local; nothing was pushed or deployed.
+- [x] **DONE** — At this UAT checkpoint, work was still local. The later merge and Pages verification are recorded in section 26.
+
+## 26. Recovery deployment and documentation refresh (2026-10-21)
+
+- [x] **DONE** — Merged the Viewer recovery work to `main` as `240aaba9072e653a50cbd6e55ee783a0440a2683` (PR [#3](https://github.com/bobbyfch/sela/pull/3)).
+- [x] **DONE** — CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 required jobs, including the real PWA worker update/offline-reading regression.
+- [x] **DONE** — Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) succeeded; live smoke checks opened the public homepage, `/app/`, and the sample PDF through page 50.
+- [x] **DONE** — Audited repository Markdown links against the current tree; all relative file targets resolve. Corrected stale beta badges, retired `/mobile/` references, app-source paths, product descriptions, and deployment status notes while preserving legal notices, changelog history, and the sample story.
+- [ ] **NOT TESTED** — The optional framework matrix, physical iOS/Android devices, assistive technology, and exhaustive supported-format validation remain outside this deployment check.

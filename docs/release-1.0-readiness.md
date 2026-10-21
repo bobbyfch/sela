@@ -1,8 +1,11 @@
 # Sela 1.0 release readiness
 
-**Review date:** 19 October 2026
-**Current package version:** 0.9.0-beta.7
-**Release state:** Not ready to publish as 1.0 yet. This review records shipped work, verified behavior, and content or release gates that still need evidence.
+**Initial review:** 19 October 2026  
+**Latest update:** 21 October 2026  
+**Current package version:** 0.9.0-beta.8  
+**Release state:** Not ready to publish as 1.0 yet. Religious-content sign-off, physical-device and assistive-technology review, and broader format/source validation still need evidence.
+
+**Latest verification:** Recovery fix merged to `main` as `240aaba9072e653a50cbd6e55ee783a0440a2683`. CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 jobs; Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) deployed the commit. Live smoke checks opened the project home, `/app/`, and the 50-page sample PDF. This verifies the deployed route and sample flow, not every physical device or release gate.
 
 ## Product and stack decision
 
@@ -63,9 +66,9 @@ Radix fits the app shell because it provides accessible, unstyled React primitiv
 | System notifications | Not implemented. | Sela has no push-sending backend or dependable cross-browser daily scheduler. Keep reminders off until a user-controlled delivery design, permission flow, and delivery service are built and reviewed. |
 | Limaraya member portraits | The page now identifies the five members as fictional characters and lists their names and roles. It does not attach unrelated real artist photography to those characters. | Original individual character portraits are still a separate art task if wanted. |
 | Clone deterrence / watermark | The site has normal creator attribution and metadata; no hidden watermark or anti-copy mechanism is claimed. | Public static pages can be copied; attribution helps identify origin but cannot prevent copying. |
-| Free eBooks | All 8 configured direct Gutenberg/GITenberg text URLs passed a full GET: HTTP 200, `text/plain`, non-HTML content, and a matching title marker. | Google Books, Open Library, Gutendex, Wikisource, and OPDS are dynamic catalogues. Their results cannot all be prevalidated; availability, rights, and downloads vary by country/source and may change. |
+| Free eBooks | Sela Picks currently lists 227 curated classic catalog records; readable text is fetched from pinned GITenberg revisions only when opened, and copyright status depends on location. | At the 18 October direct-link check, all 8 then-configured Gutenberg/GITenberg text URLs returned HTTP 200 as non-HTML `text/plain` with a matching title marker. Dynamic catalog results vary by source, region, availability and rights; not every record is a downloadable edition. |
 | Smart search | Orama 3.1.18 and Indonesian/English stemmers are bundled into a 73 KB lazy-loaded browser module (24.5 KB gzip), included in the offline app shell. Indonesian intent expansion stays on-device. | Run a physical-device performance check on a large library; search remains local and does not promise semantic recommendations from remote catalogs. |
-| CDN “latest” option | Public setup playground generates both pinned and unversioned jsDelivr snippets; both were checked in Chromium. The version shown is 0.9.0-beta.7. | Pin a release for production. jsDelivr advises against unversioned production URLs because their contents can change without notice. |
+| CDN “latest” option | Public setup playground generates both pinned and unversioned jsDelivr snippets; both were checked in Chromium. The version shown is 0.9.0-beta.8. | Pin a release for production. jsDelivr advises against unversioned production URLs because their contents can change without notice. |
 | Home customization | Five Home sections have visible toggles and persist in local storage. | The current user choice is section visibility, not arbitrary drag-and-drop layout. Validate first-run, empty-shelf, returning-reader, and language-switch states. |
 | Astro migration | Astro is already used for the public site. | No framework migration is recommended. Measure actual build stages before considering structural changes. |
 | Prayer times | Optional estimates use AlAdhan’s KEMENAG RI method and are requested only after an explicit tap. A Jakarta sample request returned HTTP 200 with Asia/Jakarta timings on 17 October 2026; browser checks rendered five prayer times without console errors at 320, 768, and 1440 px. | The new 503/error-and-retry regression passes in Chromium, Firefox, and WebKit. Calculated times can differ from local mosque schedules; users should confirm locally. |
@@ -82,12 +85,12 @@ The current prophet rail is a cited reading aid, not a complete account or verif
 
 ## 1.0 release gates
 
-1. **Build and functional checks:** Latest verification on 18 October 2026: Sela production build and TypeScript checks pass; unit tests pass (85/85), including content-hash checks for the PWA artwork. The targeted local cross-browser set passed 15 tests with 3 expected project skips; the full Quran settings matrix passed in Chromium and Firefox, and the Quran passage/navigation smoke passed in WebKit. CI run `39082801499` passed checks, Chromium, Firefox, all eight WebKit shards, and the isolated Quran WebKit smoke. Framework-host coverage passed for Next.js, Nuxt, Svelte, Angular, CodeIgniter 3/4, and Laravel. Bobby’s Astro static build passes. Earlier production dependency audits for Sela and Bobby reported zero vulnerabilities. Pages run `39083315383` successfully deployed the validated artifact; a live check confirms the app and manifest load, all three PWA icons and the Apple touch icon return matching local bytes, and the icon responses are `image/png`. A cold-cache live sample-PDF reader smoke passes at 320, 393, 820, 1024, and 1440 px without page errors or horizontal overflow.
+1. **Build and functional checks:** The latest required CI run, `39624764621`, passed all 12 jobs on the recovery merge commit, including build/generated-artifact checks, unit and type checks, Chromium, Firefox, all eight WebKit shards, and the real service-worker update/offline-reading regression. The optional `npm run test:frameworks` matrix was not part of this recovery workflow; earlier successful framework-host checks are recorded in the dated history above.
 2. **Responsive and accessibility review:** 320 px reflow, keyboard-only navigation, visible focus, accessible icon names, 24 CSS px minimum targets or adequate spacing, contrast checks, reduced motion, and no horizontal overflow on representative screens.
 3. **Supported-format matrix:** PDF, EPUB, text/HTML, comic archive, DJVU, DOCX/ODT, malformed files, large files, password-protected inputs, backup/restore, and offline reopen.
 4. **Book catalogue review:** verify each fixed direct link and test at least one successful read/save flow per source; show country and rights caveats for dynamic/free API results.
 5. **Faith content sign-off:** edition provenance, reuse terms, versioning/update process, Indonesian Latin source coverage, tajwid scope, topic references, prophet narrative references, and an explicit decision about the unsourced/contested chronology gaps.
-6. **Deployment review:** the CI workflow runs Chromium, Firefox, and WebKit as parallel jobs while keeping one worker per runner; Pages deploys the validated artifact without a second build. Reader, prayer, catalog-failure, responsive-layout, and adaptive carousel regressions pass focused local browser checks. CI run `39082801499` and Pages deploy `39083315383` both succeeded on commit `22e8aa1be31a61240c330fbb1c57c9857182538d`. Live Home preload, sample-PDF reader flow, app/manifest, and icon byte/hash/cache-header checks passed; physical-device icon refresh and assistive-technology review remain required before promoting to 1.0.
+6. **Deployment review:** Pages run `39625890669` successfully deployed merge commit `240aaba9072e653a50cbd6e55ee783a0440a2683` without a second build. A live check opened the public homepage, `/app/`, and the sample PDF through page 50. The route and sample flow are verified; physical-device install/icon behavior and assistive-technology review remain 1.0 gates.
 
 ## Competitive feature gaps and order
 
@@ -115,7 +118,7 @@ Avoid adding a cloud account requirement, public social feed, or automatic machi
 - [Astro 7.4 release notes](https://astro.build/blog/astro-740/) — current release and `astro build --timings`.
 - [Playwright CI guidance](https://playwright.dev/docs/ci) — one worker per CI runner for stability and job sharding for larger suites; it notes that caching browser binaries often does not reduce install time.
 - [GitHub Actions dependency caching](https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching) — setup-node npm cache and cache-versus-artifact use.
-- [Google Books API filtering](https://developers.google.com/books/docs/v1/using) and [volume access fields](https://developers.google.com/books/docs/v1/reference/volumes) — free-ebook filter and region-specific availability/rights.
+- [Google Books API filtering](https://developers.google.com/books/docs/v1/using) and [volume access fields](https://developers.google.com/books/docs/v1/reference/volumes) — retained as reference material for regional rights checks; Google Books is not an active source.
 - [QuranEnc API and reuse terms](https://quranenc.com/en/home/api/) — translation endpoints, attribution, version, transcript, and no-modification requirements.
 - [Qur’an Kemenag API](https://quran-api.lpmqkemenag.id/) — the official landing page requests a formal access application to LPMQ.
 - [Kemenag Juz Amma tajwid/Latin guide](https://quran.kemenag.go.id/assets/files/Juz-Amma-Metode-Tilawah.pdf) — scope and official study material.
