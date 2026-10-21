@@ -115,7 +115,9 @@ button, input { font: inherit; }
 }
 .app-drop-overlay { background: color-mix(in oklch, var(--color-paper) 82%, transparent) !important; backdrop-filter: blur(18px) saturate(1.15); -webkit-backdrop-filter: blur(18px) saturate(1.15); }
 .app-drop-overlay .mantine-Dropzone-root { display: grid; width: min(640px, calc(100vw - 32px)); min-height: 210px; align-self: center; justify-self: center; place-items: center; padding: 24px; border: 1px dashed var(--color-glass-edge); border-radius: 28px; background: var(--color-glass); color: var(--color-ink); box-shadow: var(--shadow-raised), inset 0 1px 0 var(--color-glass-highlight); }
-.app-drop-prompt { max-width: 100%; padding: 18px; text-align: left; pointer-events: none; }
+.app-drop-prompt { max-width: 100%; min-width: 0; padding: 18px; text-align: left; pointer-events: none; }
+.app-drop-prompt > div { min-width: 0; overflow-wrap: anywhere; }
+.app-drop-prompt .mantine-Text-root { max-width: 100%; overflow-wrap: anywhere; }
 .app-sidebar { display: flex; flex-direction: column; gap: var(--space-sm); border-top: 0 !important; border-bottom: 0 !important; border-left: 0 !important; border-radius: 0; padding: 22px 18px !important; }
 .brand-lockup { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--color-ink); text-decoration: none; }
 .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--color-rule); border-radius: 12px; background: var(--color-paper-raised); color: var(--color-accent); box-shadow: 0 2px 8px var(--color-shadow); }
