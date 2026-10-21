@@ -1,11 +1,12 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 const android='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
 
 test('mobile appearance and backup share fallback use the current settings screens',async({browser})=>{
  const context=await browser.newContext({userAgent:android,viewport:{width:320,height:740},serviceWorkers:'block'});const page=await context.newPage();
  await page.addInitScript(()=>{localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'}));Object.defineProperty(navigator,'canShare',{value:()=>false,configurable:true});});
  await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
- await page.getByRole('button',{name:'Switch to dark mode'}).click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');
+ await setTopbarAppearance(page,'dark');await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');
  await page.goto('/app/#/settings/appearance');await expect(page.getByRole('combobox',{name:'Color theme'})).toBeVisible();
  await page.goto('/app/#/settings/data');const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Share backup',exact:true}).click();
  const download=await downloadPromise;expect(download.suggestedFilename()).toMatch(/^sela-library-.*\.zip$/);

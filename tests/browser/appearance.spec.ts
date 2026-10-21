@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 import {VERSION} from '../../app/library/version.ts';
 test('icon tabs, keyboard navigation and appearance API remain usable on mobile',async({page})=>{
  await page.setViewportSize({width:320,height:740});await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;window.r=new Sela({url:'/example/sela.html',language:'en',mode:'single'});await r.open();await r.showTools();});
@@ -23,14 +24,15 @@ test('all paper palettes remain selectable in light, dark and OLED app appearanc
  await page.goto('/app/#/settings/appearance');await expect(page.locator('.sela-app')).toBeVisible();
  const themes=['vanilla','olive','parchment','mist','stone','oat','cocoa','ivory'];
  const appearances=['light','dark','oled'];
- const values=await page.evaluate(({themes,appearances})=>{
+ const values=await page.evaluate(async({themes,appearances})=>{
   const app=document.querySelector<HTMLElement>('.sela-app')!;
   const rows:{theme:string;appearance:string;paper:string;ink:string;accent:string;dark:boolean}[]=[];
   for(const theme of themes)for(const appearance of appearances){
    app.dataset.theme=theme;app.dataset.appearance=appearance;
    document.documentElement.dataset.appTheme=theme;document.documentElement.dataset.appAppearance=appearance;
-   const style=getComputedStyle(app);
-   rows.push({theme,appearance,paper:style.getPropertyValue('--color-paper').trim(),ink:style.getPropertyValue('--color-ink').trim(),accent:style.getPropertyValue('--color-accent').trim(),dark:style.colorScheme==='dark'});
+   await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
+   const style=getComputedStyle(app),probe=document.createElement('i');probe.style.backgroundColor='var(--color-paper)';probe.style.color='var(--color-accent)';app.append(probe);
+   rows.push({theme,appearance,paper:getComputedStyle(probe).backgroundColor,ink:style.getPropertyValue('--color-ink').trim(),accent:getComputedStyle(probe).color,dark:style.colorScheme==='dark'});probe.remove();
   }
   return rows;
  },{themes,appearances});
@@ -41,7 +43,7 @@ test('all paper palettes remain selectable in light, dark and OLED app appearanc
   expect(new Set(rows.map(row=>row.accent)).size).toBeGreaterThanOrEqual(6);
   if(appearance==='light')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
   if(appearance==='dark')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
-  if(appearance==='oled')expect(rows.every(row=>row.paper==='#000')).toBe(true);
+  if(appearance==='oled')expect(rows.every(row=>row.paper==='rgb(0, 0, 0)')).toBe(true);
  }
 });
 
@@ -65,9 +67,9 @@ test('theme picker previews each tint and loading skeletons follow the active pa
   skeleton.remove();probe.remove();return {before,after,expected};
  });
  let shades=await readSkeleton();expect(shades.before).toBe(shades.expected);
- await page.getByRole('button',{name:'Switch to dark mode'}).click();await expect(app).toHaveAttribute('data-appearance','dark');
+ await setTopbarAppearance(page,'dark');await expect(app).toHaveAttribute('data-appearance','dark');
  shades=await readSkeleton();expect(shades.before).toBe(shades.expected);expect(shades.after).not.toBe(shades.before);
- await page.getByRole('button',{name:'Switch to light mode'}).click();await page.getByRole('button',{name:'Switch to dark mode'}).click();
+ await setTopbarAppearance(page,'light');await setTopbarAppearance(page,'dark');
  await page.getByRole('radiogroup',{name:'Appearance mode'}).getByText('OLED',{exact:true}).click();await expect(app).toHaveAttribute('data-appearance','oled');
  shades=await readSkeleton();expect(shades.before).toBe(shades.expected);expect(shades.after).not.toBe(shades.before);
  const oledSurface=await app.evaluate(element=>({image:getComputedStyle(element).backgroundImage,color:getComputedStyle(element).backgroundColor}));

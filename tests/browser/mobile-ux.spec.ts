@@ -21,8 +21,8 @@ test('reading calendar and backup actions stay inside their panels across widths
   const metrics=await calendar.evaluate(element=>{const card=element.getBoundingClientRect(),controls=element.querySelector('.app-calendar-controls')!.getBoundingClientRect();return {overflow:element.scrollWidth>element.clientWidth+1,controlsInside:controls.left>=card.left&&controls.right<=card.right+1,documentOverflow:document.documentElement.scrollWidth>innerWidth};});
   expect(metrics.overflow,`calendar overflow at ${width}px ${JSON.stringify(metrics)}`).toBe(false);expect(metrics.controlsInside).toBe(true);expect(metrics.documentOverflow).toBe(false);
  }
- await openSettingsCategory(page,'Backup & data');const panel=page.locator('.settings-panel').filter({has:page.getByRole('button',{name:'Restore a backup',exact:true})});
- const restore=page.getByRole('button',{name:'Restore a backup',exact:true});await expect(restore).toBeVisible();
+ await openSettingsCategory(page,'Backup & data');const panel=page.locator('.settings-panel').filter({has:page.getByRole('button',{name:'Restore backup or transfer',exact:true})});
+ const restore=page.getByRole('button',{name:'Restore backup or transfer',exact:true});await expect(restore).toBeVisible();
  for(const width of [320,360,393,768,1366]){
   await page.setViewportSize({width,height:900});await settleLayout(page);
   const metrics=await panel.evaluate(element=>({overflow:element.scrollWidth>element.clientWidth+1,buttonInside:(()=>{const panel=element.getBoundingClientRect(),button=element.querySelector('button')!.getBoundingClientRect();return button.left>=panel.left-1&&button.right<=panel.right+1;})()}));

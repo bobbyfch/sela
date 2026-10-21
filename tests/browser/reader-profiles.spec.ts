@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { setTopbarAppearance } from './topbar-helpers.ts';
 import { readFile } from 'node:fs/promises';
 import { createBackupArchive, readBackupArchive } from '../../dist/js/sela.archive.js';
 
@@ -130,10 +131,10 @@ test('topbar appearance changes do not replace the selected paper theme', async 
   await expect(page.locator('.sela-app')).toBeVisible();
   const app = page.locator('.sela-app');
   await expect(app).toHaveAttribute('data-theme', 'olive');
-  await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click();
+  await setTopbarAppearance(page, 'dark');
   await expect(app).toHaveAttribute('data-appearance', 'dark');
   await expect(app).toHaveAttribute('data-theme', 'olive');
-  await page.getByRole('button', { name: 'Switch to light mode', exact: true }).click();
+  await setTopbarAppearance(page, 'light');
   await expect(app).toHaveAttribute('data-appearance', 'light');
   await expect(app).toHaveAttribute('data-theme', 'olive');
 });

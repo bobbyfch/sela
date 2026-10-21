@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { setTopbarAppearance } from './topbar-helpers.ts';
 
 const setEnglish = () => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' }));
 
@@ -38,7 +39,7 @@ test('mobile focus timer remains reachable without covering the dock', async ({ 
     await timer.evaluate((element: HTMLElement) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
     for (const appearance of ['light', 'dark'] as const) {
       if (await app.getAttribute('data-appearance') !== appearance) {
-        await page.getByRole('button', { name: appearance === 'dark' ? 'Switch to dark mode' : 'Switch to light mode', exact: true }).click();
+        await setTopbarAppearance(page, appearance);
       }
       await expect(app).toHaveAttribute('data-appearance', appearance);
       const layout = await page.evaluate(() => {

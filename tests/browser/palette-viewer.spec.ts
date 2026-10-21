@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 
 
 const paletteKeys=['white','forest','sakura','ocean','lavender','citrus','senja','arunika','oled'];
@@ -55,13 +56,13 @@ test('topbar light/dark control preserves the selected paper theme',async({page}
  await expect(app).toBeVisible();
  await expect(app).toHaveAttribute('data-theme','vanilla');
  await expect(app).toHaveAttribute('data-appearance','light');
- await page.getByRole('button',{name:'Ganti ke mode gelap'}).click();
+ await setTopbarAppearance(page,'dark');
  await expect(app).toHaveAttribute('data-appearance','dark');
  await expect(app).toHaveAttribute('data-theme','vanilla');
  await page.getByRole('combobox',{name:'Tema warna'}).click();
  await page.getByRole('option',{name:'Zaitun'}).click();
  await expect(app).toHaveAttribute('data-theme','olive');
- await page.getByRole('button',{name:'Ganti ke mode terang'}).click();
+ await setTopbarAppearance(page,'light');
  await expect(app).toHaveAttribute('data-appearance','light');
  await expect(app).toHaveAttribute('data-theme','olive');
  const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('sela:app:preferences')||'{}'));

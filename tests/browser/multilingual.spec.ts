@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarLanguage} from './topbar-helpers.ts';
 
 test('React app language switch and public locale selector use their supported choices',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
@@ -6,11 +7,11 @@ test('React app language switch and public locale selector use their supported c
  await expect(page.locator('.sela-app')).toBeVisible();
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.getByRole('link',{name:'My shelf',exact:true})).toBeVisible();
- await page.getByRole('button',{name:'Switch language',exact:true}).click();
+ await setTopbarLanguage(page,'id');
  await expect(page.locator('html')).toHaveAttribute('lang','id');
  await expect(page.getByRole('link',{name:'Rak buku',exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela:app:preferences')||'{}').language)).toBe('id');
- await page.getByRole('button',{name:'Ganti bahasa',exact:true}).click();
+ await setTopbarLanguage(page,'en');
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await page.goto('/?geo=off');
  const publicLanguage=page.locator('#language');

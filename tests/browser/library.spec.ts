@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 import {readFile} from 'node:fs/promises';
 import {readBackupArchive} from '../../dist/js/sela.archive.js';
 
@@ -52,7 +53,7 @@ test('appearance mode and paper theme remain separate preferences',async({page})
  await page.goto('/app/#/settings/appearance');
  const app=page.locator('.sela-app');
  await expect(app).toHaveAttribute('data-theme','vanilla');
- await page.getByRole('button',{name:'Switch to dark mode'}).click();
+ await setTopbarAppearance(page,'dark');
  await expect(app).toHaveAttribute('data-appearance','dark');
  await expect(app).toHaveAttribute('data-theme','vanilla');
  await page.getByRole('combobox',{name:'Color theme'}).click();

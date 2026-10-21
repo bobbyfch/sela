@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 
 test('mobile dock stays in safe areas, routes by keyboard and follows appearance preferences',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
@@ -6,7 +7,7 @@ test('mobile dock stays in safe areas, routes by keyboard and follows appearance
   const dock=page.getByRole('navigation',{name:'App tabs'});await expect(dock).toBeVisible();
   const bounds=await dock.boundingBox();expect(bounds!.x).toBeGreaterThan(0);expect(bounds!.x+bounds!.width).toBeLessThan(393);expect(bounds!.y+bounds!.height).toBeLessThan(852);
   const shelf=dock.getByRole('link',{name:'My shelf',exact:true});await shelf.focus();await expect(shelf).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('.shelf-screen')).toBeVisible();
-  const appearance=page.getByRole('button',{name:'Switch to dark mode',exact:true});await appearance.click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');
+  await setTopbarAppearance(page,'dark');await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');
   await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(()=>dock.evaluate(element=>{const value=getComputedStyle(element).transitionDuration,amount=Number.parseFloat(value);return value.endsWith('ms')?amount:amount*1000;})).toBeLessThanOrEqual(0.01);
   await page.setViewportSize({width:1440,height:900});await expect(page.locator('.app-sidebar')).toBeVisible();await expect(dock).toBeHidden();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

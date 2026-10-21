@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import {setTopbarAppearance} from './topbar-helpers.ts';
 
 type WidgetFlags={calendar?:boolean;reflection?:boolean;water?:boolean;history?:boolean;news?:boolean;faith?:boolean;prayer?:boolean;weather?:boolean};
 
@@ -25,14 +26,13 @@ test('Home and its reading widgets fit from phone through desktop widths',async(
  }
 });
 
-test('topbar light and dark control changes appearance without changing the paper palette',async({page})=>{
+test('topbar display menu changes appearance without changing the paper palette',async({page})=>{
  await openHome(page,{theme:'olive',appearance:'light'});
- const light=page.getByRole('button',{name:'Switch to dark mode'});await expect(light).toBeVisible();
- const buttonBox=await light.boundingBox(),iconBox=await light.locator('svg').boundingBox();expect(buttonBox).toBeTruthy();expect(iconBox).toBeTruthy();expect(Math.abs((buttonBox!.x+buttonBox!.width/2)-(iconBox!.x+iconBox!.width/2))).toBeLessThan(1);
- await light.click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','olive');
- await expect(page.getByRole('button',{name:'Switch to light mode'})).toHaveAttribute('aria-pressed','true');
+ const app=page.locator('.sela-app');
+ await expect(page.getByRole('button',{name:'Display settings',exact:true})).toBeVisible();
+ await setTopbarAppearance(page,'dark');await expect(app).toHaveAttribute('data-appearance','dark');await expect(app).toHaveAttribute('data-theme','olive');
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela:app:preferences')||'{}'))).toMatchObject({appearance:'dark',theme:'olive'});
- await page.getByRole('button',{name:'Switch to light mode'}).click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','light');await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','olive');
+ await setTopbarAppearance(page,'light');await expect(app).toHaveAttribute('data-appearance','light');await expect(app).toHaveAttribute('data-theme','olive');
 });
 
 test('Islamic tools explain their preference gate and appear after the user selects Islam',async({page})=>{
