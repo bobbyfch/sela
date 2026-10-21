@@ -18,7 +18,11 @@ test('React app screens remain responsive from phone through desktop',async({pag
  const routes=[['/app/#/','.home-screen'],['/app/#/shelf','.shelf-screen'],['/app/#/discover','.catalog-explorer'],['/app/#/progress','.progress-screen'],['/app/#/settings','.settings-screen'],['/app/#/settings/library','.settings-detail']];
  for(const [url,selector] of routes){
   await page.goto(url);await expect(page.locator(selector)).toBeVisible();
-  for(const width of [320,393,600,768,1024,1366,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${url} overflows at ${width}px`).toBe(true);}
+  for(const width of [320,393,600,768,1024,1366,1440]){
+  await page.setViewportSize({width,height:900});
+  const metrics=await page.evaluate(()=>{const viewport=innerWidth,measure=(element:HTMLElement)=>{const rect=element.getBoundingClientRect(),style=getComputedStyle(element);return{tag:element.tagName,classes:String(element.className),text:(element.innerText||"").slice(0,70),scroll:element.scrollWidth,client:element.clientWidth,right:Math.round(rect.right),width:Math.round(rect.width),position:style.position,display:style.display,grid:style.gridTemplateColumns,flex:style.flexDirection,minWidth:style.minWidth,whiteSpace:style.whiteSpace};};const overflow=[...document.querySelectorAll<HTMLElement>("body *")].filter(element=>element.getClientRects().length&&(element.getBoundingClientRect().right>viewport+1||element.scrollWidth>element.clientWidth+1)).map(measure).sort((a,b)=>Math.max(b.scroll-b.client,b.right-viewport)-Math.max(a.scroll-a.client,a.right-viewport)).slice(0,20);return{viewport,documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,overflow};});
+  expect(metrics.documentWidth,`${url} overflows at ${width}px: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(metrics.viewport);
+}
  }
 });
 
