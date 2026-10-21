@@ -2,7 +2,6 @@ name: Viewer checks
 on:
   push:
     paths-ignore:
-      - .github/workflows/ci.yml
       - .github/workflows/pages.yml
   pull_request:
 permissions:
