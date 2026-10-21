@@ -18,6 +18,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Upload built app for review
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sela-build-output
+          path: |
+            app/app.js
+            app/app.css
+            app/chunks
+            app/assets
+            offline-assets.json
+          if-no-files-found: error
+          retention-days: 1
       # CSS minification and dependent hashes vary by operating system; unit/browser suites validate these generated assets.
       - run: git diff --exit-code -- dist index.html library site app examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)app/app.css' ':(exclude)app/sw.js' ':(exclude)dist/css/sela.app.css' ':(exclude)dist/css/sela.min.css' ':(exclude)dist/manifest.json' ':(exclude)site/public.css'
       - run: npm test
