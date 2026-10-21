@@ -790,8 +790,12 @@ export function ReaderScreen() {
         if (disposed) return;
         setLoadingPhase('engine');
         const engineMessage = copy(lang, 'The reader engine took too long to load. Try again or refresh the app.', 'Mesin pembaca terlalu lama dimuat. Coba lagi atau muat ulang aplikasi.');
+        const sdkPromise = waitForReader(loadReaderSdk(), abort.signal, engineMessage).catch(reason => {
+          if (abort.signal.aborted || (reason instanceof Error && reason.message === engineMessage)) throw reason;
+          throw new Error(copy(lang, 'The reader engine could not be loaded. Try again or refresh the app.', 'Mesin pembaca belum dapat dimuat. Coba lagi atau muat ulang aplikasi.'));
+        });
         const [sdk, tracker] = await Promise.all([
-          waitForReader(loadReaderSdk(), abort.signal, engineMessage),
+          sdkPromise,
           waitForReader(import('../../../app/library/reading-tracker.ts'), abort.signal, engineMessage),
         ]);
         if (disposed) return;

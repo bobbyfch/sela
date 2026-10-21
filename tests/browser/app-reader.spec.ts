@@ -82,6 +82,7 @@ test('reader chrome and reading desk follow the supported Indonesian app languag
 
 
 test('reader shows a recoverable error and retries a failed SDK request', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
   let requests = 0;
   await page.route('**/dist/js/sela.esm.js', async route => {
     requests += 1;
@@ -92,7 +93,7 @@ test('reader shows a recoverable error and retries a failed SDK request', async 
   await page.getByRole('button', { name: /^(?:Download & read sample|Read sample|Unduh & baca contoh|Baca contoh)$/ }).click();
   const error = page.locator('.reader-error');
   await expect(error).toBeVisible();
-  await expect(error).toContainText('The reader engine took too long to load');
+  await expect(error).toContainText('The reader engine could not be loaded');
   await expect(error.getByRole('button', { name: 'Try again', exact: true })).toBeVisible();
   expect(requests).toBeGreaterThan(0);
   await page.unroute('**/dist/js/sela.esm.js');

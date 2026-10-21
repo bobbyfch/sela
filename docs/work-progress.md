@@ -38,3 +38,8 @@
 ### PWA locale follow-up · 21 October 2026
 - Run 39593650404 reached the real update notice successfully. The app localized it to Indonesian from the browser's default preferences, while the test expected English. The PWA test now sets English explicitly before app startup so it checks one stable copy rather than depending on the CI locale.
 - The old-to-new cache replacement and offline reopen assertions still need a passing run.
+
+
+### Reader error follow-up · 21 October 2026
+- Failed dynamic imports now show a recoverable, non-technical reader-engine message; timeouts keep their separate timeout copy. The test fixes app language to English and verifies a failed SDK request can be retried successfully.
+- Production GitHub Pages remains untested because the available web inspection service cannot fetch the Pages domain.
