@@ -1,6 +1,7 @@
 name: Viewer checks
 on:
   push:
+    branches: [main]
     paths-ignore:
       - .github/workflows/pages.yml
   pull_request:
