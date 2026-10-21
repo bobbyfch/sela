@@ -2,6 +2,7 @@ const encoder = new TextEncoder();
 const magic = encoder.encode('SELA-TRANSFER-V1\n');
 const maxBytes = 128 * 1048576;
 const iterations = 600_000;
+type OwnedBytes = Uint8Array<ArrayBuffer>;
 
 export function createTransferPin(): string {
   const range = 1n << 48n;
@@ -19,7 +20,7 @@ function validatePin(pin: string): void {
   if (!/^\d{12}$/.test(pin)) throw new Error('Enter the 12-digit transfer PIN.');
 }
 
-async function deriveKey(pin: string, salt: Uint8Array, usage: KeyUsage[]): Promise<CryptoKey> {
+async function deriveKey(pin: string, salt: OwnedBytes, usage: KeyUsage[]): Promise<CryptoKey> {
   validatePin(pin);
   const material = await crypto.subtle.importKey('raw', encoder.encode(pin), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
@@ -36,7 +37,7 @@ export async function encryptBackupForTransfer(archive: Blob, pin: string): Prom
   if (archive.size > maxBytes) throw new Error('Encrypted transfer supports backups up to 128 MiB.');
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(pin, salt, ['encrypt']);
+  const key = await deriveKey(pin, salt as OwnedBytes, ['encrypt']);
   const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, await archive.arrayBuffer()));
   const output = new Uint8Array(magic.length + salt.length + iv.length + encrypted.length);
   output.set(magic, 0);
@@ -56,7 +57,7 @@ export async function decryptBackupForTransfer(file: File, pin: string): Promise
   const dataStart = ivStart + 12;
   const salt = bytes.slice(saltStart, ivStart);
   const iv = bytes.slice(ivStart, dataStart);
-  const key = await deriveKey(pin, salt, ['decrypt']);
+  const key = await deriveKey(pin, salt as OwnedBytes, ['decrypt']);
   try {
     const archive = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, bytes.slice(dataStart));
     return new File([archive], 'sela-library-restored.zip', { type: 'application/zip' });
