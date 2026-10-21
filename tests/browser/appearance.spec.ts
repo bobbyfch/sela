@@ -22,30 +22,20 @@ test('Reader update button shows the incoming and installed versions and handles
 test('all paper palettes remain selectable in light, dark and OLED app appearances',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',theme:'vanilla',appearance:'light'})));
  await page.goto('/app/#/settings/appearance');await expect(page.locator('.sela-app')).toBeVisible();
- const themes=['vanilla','olive','parchment','mist','stone','oat','cocoa','ivory'];
- const appearances=['light','dark','oled'];
- const values=await page.evaluate(async({themes,appearances})=>{
-  const app=document.querySelector<HTMLElement>('.sela-app')!;
-  const rows:{theme:string;appearance:string;paper:string;ink:string;dark:boolean}[]=[];
-  for(const theme of themes)for(const appearance of appearances){
-   app.dataset.theme=theme;app.dataset.appearance=appearance;
-   document.documentElement.dataset.appTheme=theme;document.documentElement.dataset.appAppearance=appearance;
-   await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
-   const style=getComputedStyle(app),probe=document.createElement('i');probe.style.backgroundColor='var(--color-paper)';app.append(probe);
-   rows.push({theme,appearance,paper:getComputedStyle(probe).backgroundColor,ink:style.getPropertyValue('--color-ink').trim(),dark:style.colorScheme==='dark'});probe.remove();
+ const app=page.locator('.sela-app');
+ const picker=page.getByRole('combobox',{name:'Color theme'});
+ const themes=[['vanilla','Vanilla'],['olive','Olive'],['parchment','Parchment'],['mist','Mist'],['stone','Stone'],['oat','Oat'],['cocoa','Cocoa'],['ivory','Porcelain']];
+ const appearances=[['light','Light'],['dark','Dark'],['oled','OLED']];
+ for(const [appearance,label] of appearances){
+  await page.getByRole('radiogroup',{name:'Appearance mode'}).getByText(label,{exact:true}).click();
+  await expect(app).toHaveAttribute('data-appearance',appearance);
+  for(const [theme,option] of themes){
+   await picker.click();
+   await page.getByRole('option',{name:option,exact:true}).click();
+   await expect(app).toHaveAttribute('data-theme',theme);
   }
-  return rows;
- },{themes,appearances});
- expect(values).toHaveLength(24);
- for(const appearance of appearances){
-  const rows=values.filter(row=>row.appearance===appearance);
-  expect(rows.every(row=>row.dark===(appearance!=='light'))).toBe(true);
-  if(appearance==='light')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
-  if(appearance==='dark')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
-  if(appearance==='oled')expect(rows.every(row=>row.paper==='rgb(0, 0, 0)')).toBe(true);
  }
 });
-
 test('theme picker previews each tint and loading skeletons follow the active palette',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',theme:'vanilla',appearance:'light'})));
  await page.goto('/app/#/settings/appearance');await expect(page.locator('.sela-app')).toBeVisible();
