@@ -1,6 +1,6 @@
 # Reader deployment regression
 
-## Verified baseline
+## Historical baseline before recovery
 
 - Repository: bobbyfch/sela
 - Main HEAD checked: 14f7889bfb950775abbf72875863bacf1452c990
@@ -21,6 +21,11 @@ The app now bounds IndexedDB file reads, byte preparation, and engine imports to
 - tests/browser/pwa-update.spec.ts: separate Chromium project that activates a newer worker on the existing app scope, verifies cache replacement, then opens a locally stored book offline.
 - Regular browser projects remain service-worker-blocked.
 
-## Release verification
+## Release verification · 21 October 2026
 
-This branch must pass its complete Viewer checks, including the real PWA update browser job, before deployment is considered. Production URL, SDK, lazy chunks, and PDF worker checks are not claimed until measured against a live deployment. A successful build alone is not release evidence.
+- Recovery fix merged to `main` as `240aaba9072e653a50cbd6e55ee783a0440a2683`.
+- CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 required jobs, including build/generated-artifact, unit, type, Chromium, Firefox, eight WebKit shards, and the enabled-service-worker update/offline-reading check.
+- Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) deployed the merge commit successfully.
+- Live smoke checks opened the project homepage, `/app/`, and the “Yang Tidak Ikut Pulang” sample PDF; all 50 pages rendered.
+
+These checks confirm the deployed app route and sample PDF path. Physical-device installation and the full supported-format matrix still need their own release review.

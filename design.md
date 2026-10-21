@@ -1,6 +1,6 @@
 # Sela Books — A quiet reading library
 
-**Status:** Fresh application system using Mantine, 2026-10-19  
+**Status:** Product design reference, checked 2026-10-21  
 **Scope:** One responsive installed reading app at `/app/`. Public marketing pages keep their own presentation.
 
 ## Product stance
@@ -20,7 +20,7 @@ Audience: people reading their own books, comics, and documents across desktop a
 
 ## Component framework
 
-The installed reader uses **Mantine 9.7** as its React UI framework for the app shell, navigation, inputs, dialogs, selectors, calendar, notifications, carousel, drag-and-drop book import, and keyboard-driven Spotlight search. A shared Mantine theme keeps component focus, spacing, and control behavior consistent. Sela-specific CSS defines page composition, five paper themes, book jackets, and restrained glass on navigation and controls. The public marketing site remains separate.
+The installed reader uses **Mantine 9.7** as its React UI framework for the app shell, navigation, inputs, dialogs, selectors, calendar, notifications, carousel, drag-and-drop book import, and keyboard-driven Spotlight search. A shared Mantine theme keeps component focus, spacing, and control behavior consistent. Sela-specific CSS defines page composition, eight named palettes, book jackets, and restrained glass on navigation and controls. Light, dark and OLED appearance remain separate from the selected palette. The public marketing site remains separate.
 
 React 19.3, TypeScript 7, Vite 8, and React Router stay in place. Hash-based routes keep nested pages available on static hosting. React Three Fiber 9 with Drei loads only when the 3D shelf view is opened; it renders on demand and has a keyboard-accessible book index alongside its canvas.
 
@@ -28,7 +28,7 @@ React 19.3, TypeScript 7, Vite 8, and React Router stay in place. Hash-based rou
 
 Theme: **Quill & Glass**. Use local Newsreader for display type and local DM Sans for interface text. A four-pixel spacing scale governs layout. Named tokens are the source of colors, theme values, and font declarations.
 
-Themes are Vanilla, Olive, Cocoa, Mist, and OLED. Each is a warm or green-tinted neutral rather than generic grayscale. Color stays available in book artwork. Controls and navigation use restrained Liquid Glass with a fine edge and soft shadow. Content canvases, cards, reader pages, and book covers stay opaque and matte. Do not stack glass surfaces.
+The named palettes are Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja and Arunika. Light, dark and OLED are separate appearance choices. Each palette keeps text, controls and surfaces readable while book artwork retains its original colors. Controls and navigation use restrained Liquid Glass with a fine edge and soft shadow. Content canvases, cards, reader pages, and book covers stay opaque and matte. Do not stack glass surfaces.
 
 Icons come from one line-icon family, Lucide. Shadows give navigation and elevated actions depth without making every surface float.
 
