@@ -1124,8 +1124,27 @@ button, input { font: inherit; }
 }
 
 @media (max-width: 767px) {
-  .catalog-section-heading { align-items: stretch; flex-direction: column; gap: 12px; }
-  .catalog-results-tools { width: 100%; justify-content: space-between; }
+  .catalog-section-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 12px;
+  }
+  .catalog-section-heading > * { min-width: 0; max-width: 100%; }
+  .catalog-section-heading > div:not(.catalog-results-tools) { width: 100%; }
+  .catalog-results-tools {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    justify-content: space-between;
+  }
+  .catalog-result-author,
+  .catalog-result-genre {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
   .catalog-cover-quality { min-height: 40px; }
   .faith-reader-header { min-height: 66px; padding-top: calc(8px + env(safe-area-inset-top)); }
   .faith-reader-brand .mantine-Title-root { font-size: 19px; }
