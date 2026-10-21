@@ -174,6 +174,7 @@ export function CatalogExplorer() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const abortRef = useRef<AbortController | null>(null);
+  const searchTimerRef = useRef<number | undefined>(undefined);
   const t = (en: string, id: string) => copy(lang, en, id);
   const provider = providers.find(item => item.id === providerId) || providers[0];
   const source = sourceFor(provider, collection, wikiLanguage);
@@ -232,8 +233,16 @@ export function CatalogExplorer() {
   };
 
   useEffect(() => {
-    const timer = window.setTimeout(() => { void load(false); }, 240);
-    return () => { window.clearTimeout(timer); abortRef.current?.abort(); };
+    const timer = window.setTimeout(() => {
+      if (searchTimerRef.current === timer) searchTimerRef.current = undefined;
+      void load(false);
+    }, 240);
+    searchTimerRef.current = timer;
+    return () => {
+      window.clearTimeout(timer);
+      if (searchTimerRef.current === timer) searchTimerRef.current = undefined;
+      abortRef.current?.abort();
+    };
     // Catalog changes and typed searches intentionally share the same debounced request.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerId, collection, topic, wikiLanguage, query, opdsUrl]);
@@ -241,7 +250,14 @@ export function CatalogExplorer() {
   const chooseProvider = (item: Provider) => { setProviderId(item.id); setCollection(item.collections[0]); setTopic(''); setPage(1); };
   const chooseCollection = (value: string) => { setCollection(value); setTopic(''); setPage(1); };
   const chooseTopic = (value: string) => { setTopic(current => current === value ? '' : value); setPage(1); };
-  const submit = (event: FormEvent) => { event.preventDefault(); void load(false); };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (searchTimerRef.current !== undefined) {
+      window.clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = undefined;
+    }
+    void load(false);
+  };
   const surprise = () => {
     const choices = [...provider.collections.filter(value => value !== collection), ...provider.topics.filter(value => value !== topic)];
     if (!choices.length) return;
