@@ -33,3 +33,8 @@
 - Run 39593295854: the WebKit layout suite exposed remaining 320px Discover internal overflow (488px scroll width inside a 320px container). The first fix did not remove the underlying overflowing descendant; the next regression run adds the descendant measurements needed to target it.
 - The new SDK failure test's sample button matcher also needed the app's Indonesian labels for WebKit's default locale. That matcher now covers both English and Indonesian.
 - The separate PWA rerun is in progress; Viewer/PWA release gates remain open.
+
+
+### PWA locale follow-up · 21 October 2026
+- Run 39593650404 reached the real update notice successfully. The app localized it to Indonesian from the browser's default preferences, while the test expected English. The PWA test now sets English explicitly before app startup so it checks one stable copy rather than depending on the CI locale.
+- The old-to-new cache replacement and offline reopen assertions still need a passing run.

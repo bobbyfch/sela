@@ -31,6 +31,7 @@ async function activeWorkerVersion(page: Page): Promise<string> {
 
 test('a real service-worker update preserves local books and the new shell opens offline', async ({ page, context }) => {
   test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   const workerPath = resolve('app/sw.js');
