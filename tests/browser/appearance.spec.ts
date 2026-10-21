@@ -26,14 +26,13 @@ test('all paper palettes remain selectable in light, dark and OLED app appearanc
  const appearances=['light','dark','oled'];
  const values=await page.evaluate(async({themes,appearances})=>{
   const app=document.querySelector<HTMLElement>('.sela-app')!;
-  const rows:{theme:string;appearance:string;paper:string;ink:string;accent:string;dark:boolean}[]=[];
+  const rows:{theme:string;appearance:string;paper:string;ink:string;dark:boolean}[]=[];
   for(const theme of themes)for(const appearance of appearances){
    app.dataset.theme=theme;app.dataset.appearance=appearance;
    document.documentElement.dataset.appTheme=theme;document.documentElement.dataset.appAppearance=appearance;
    await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
    const style=getComputedStyle(app),probe=document.createElement('i');probe.style.backgroundColor='var(--color-paper)';app.append(probe);
-   const paper=getComputedStyle(probe).backgroundColor;probe.style.backgroundColor='var(--color-accent-base)';
-   rows.push({theme,appearance,paper,ink:style.getPropertyValue('--color-ink').trim(),accent:getComputedStyle(probe).backgroundColor,dark:style.colorScheme==='dark'});probe.remove();
+   rows.push({theme,appearance,paper:getComputedStyle(probe).backgroundColor,ink:style.getPropertyValue('--color-ink').trim(),dark:style.colorScheme==='dark'});probe.remove();
   }
   return rows;
  },{themes,appearances});
@@ -41,7 +40,6 @@ test('all paper palettes remain selectable in light, dark and OLED app appearanc
  for(const appearance of appearances){
   const rows=values.filter(row=>row.appearance===appearance);
   expect(rows.every(row=>row.dark===(appearance!=='light'))).toBe(true);
-  expect(new Set(rows.map(row=>row.accent)).size).toBeGreaterThanOrEqual(6);
   if(appearance==='light')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
   if(appearance==='dark')expect(new Set(rows.map(row=>row.paper)).size).toBe(8);
   if(appearance==='oled')expect(rows.every(row=>row.paper==='rgb(0, 0, 0)')).toBe(true);

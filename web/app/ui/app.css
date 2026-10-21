@@ -1324,7 +1324,7 @@ button, input { font: inherit; }
 :root.sela-faith-focus .faith-reader-header, :root.sela-faith-focus .faith-reader-nav { display: none; }
 :root.sela-faith-focus .faith-reader-screen { height: 100dvh; }
 @media (max-width: 767px) {
-  .sela-shell { --app-shell-navbar-offset: 0rem !important; }
+  .sela-shell .mantine-AppShell-main { --app-shell-navbar-offset: 0rem !important; margin-inline-start: 0 !important; padding-inline-start: 0 !important; }
   .book-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
   .book-grid[data-density="1"], .book-grid[data-density="2"], .book-grid[data-density="3"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .book-grid-item .book-card, .book-carousel .book-card.is-compact { grid-template-columns: minmax(0,1fr); align-content: start; gap: 9px; padding: 10px; }
