@@ -25,10 +25,10 @@ Use `npm run serve` to open the public site and Reader locally. `npm run screens
 ## Source and generated files
 
 - `src/` contains the shared reader and public SDK.
-- `app/` contains the Reader application, storage, and workers.
-- `ui/` contains page templates and Tailwind v4 entrypoints and reusable component utilities. Public pages compile to `site/public.css`, the app to `site/mobile-app.css`, and the app's embedded reader to `dist/css/sela.app.css`.
+- `app/library/` contains local-first book storage, catalogs, backups, and reader integration modules.
+- `web/app/ui/` is the Mantine 9.7 React application and builds only to `/app/`. The public page compiles to `site/public.css`; the embeddable reader remains at `dist/css/sela.app.css`.
 - The standalone CDN viewer is compiled through `ui/viewer-tailwind.css` into `dist/css/sela.min.css`. It ships plain compiled CSS, scoped viewer utilities, and no Tailwind runtime or host-framework dependency, so React, Vue, PHP, static HTML, and other hosts can embed it without adopting Sela's build stack.
-- `site/`, `mobile/`, `library/`, and `dist/` contain browser-ready assets and release output.
+- `app/`, `site/`, `library/`, and `dist/` contain browser-ready assets and release output. The installed React application is emitted only under `app/`.
 - `scripts/` and `tests/` contain build tools and verification.
 
 Run `npm run build` after editing source. It updates generated runtime versions, public page HTML, distribution bundles, manifests, and cache identities. Keep the CDN paths stable and check the generated files into release changes. `package.json` is the single release-version authority; published tags and release assets are immutable.

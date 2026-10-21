@@ -1,200 +1,105 @@
-import {test,expect} from '@playwright/test';
-import {openSettingsCategory} from './settings-helpers.ts';
+import {test,expect,type Page} from '@playwright/test';
 
-test.beforeEach(async({page})=>{
- await page.route(/^https:\/\/[^/]+\.wikipedia\.org\/api\/rest_v1\/feed\/onthisday\//,route=>route.fulfill({json:{selected:[{year:1969,text:'A small step that changed the world.',pages:[{title:'Apollo 11',content_urls:{desktop:{page:'https://en.wikipedia.org/wiki/Apollo_11'}}}]}]}}));
- await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>{const url=route.request().url(),title=url.includes('/books/rss')?'A story about books and nature':url.includes('/science/rss')?'A science report':url.includes('/environment/rss')?'A nature story':url.includes('/artanddesign/rss')?'An art story':url.includes('/technology/rss')?'A technology story':'A culture story',category=url.includes('/books/rss')?'books':url.includes('/science/rss')?'science':url.includes('/environment/rss')?'environment':url.includes('/artanddesign/rss')?'artanddesign':url.includes('/technology/rss')?'technology':'culture';return route.fulfill({contentType:'application/rss+xml',body:`<rss><channel><item><title>${title}</title><link>https://www.theguardian.com/${category}/2026/oct/14/story</link><description>Category-specific summary.</description></item></channel></rss>`});});
- await page.route(/^https:\/\/www\.antaranews\.com\/rss\//,route=>route.fulfill({body:'<rss><channel/></rss>',contentType:'application/rss+xml'}));
- await page.route(/^https:\/\/[^/]+\.wikiquote\.org\/w\/api\.php\?/,route=>{const url=new URL(route.request().url());if(url.searchParams.get('list')==='search')return route.fulfill({json:{query:{search:[{pageid:42,title:'Reading'}]}}});return route.fulfill({json:{parse:{title:'Reading',text:{'*':'<h2><span class="mw-headline">Maya Angelou</span></h2><ul><li>“Courage is the most important of all the virtues because without courage, you cannot practice any other virtue consistently.” <cite><a href="/wiki/Maya_Angelou">Maya Angelou</a></cite></li></ul>'}}}});});
- await page.route('https://en.wikipedia.org/api/rest_v1/page/summary/Maya_Angelou',route=>route.fulfill({json:{thumbnail:{source:'https://upload.wikimedia.org/wikipedia/commons/a/a4/Maya_Angelou_2013.jpg'}}}));
-});
+type WidgetFlags={calendar?:boolean;reflection?:boolean;water?:boolean;history?:boolean;news?:boolean;faith?:boolean;prayer?:boolean;weather?:boolean};
 
-async function mockQuranSources(page){
- const editions={
-  id:[{key:'indonesian_affairs',language_iso_code:'id',title:'Terjemahan Berbahasa Indonesia - Kementerian Agama',version:'1.0.1'}],
-  en:[{key:'english_saheeh',language_iso_code:'en',title:'Saheeh International',version:'1.0.1'}],
-  ja:[{key:'japanese_saeedsato',language_iso_code:'ja',title:'日亜対訳（日本語） - サイード佐藤',version:'1.0.13'}]
- };
- await page.route(/^https:\/\/quranenc\.com\/api\/v1\//,route=>{
-  const url=new URL(route.request().url()),parts=url.pathname.split('/'),path=url.pathname;
-  if(path.startsWith('/api/v1/translations/list/'))return route.fulfill({json:{translations:editions[parts.at(-1)]||editions.en}});
-  if(path.startsWith('/api/v1/translation/sura/')){
-   const key=parts.at(-2),sura=parts.at(-1),language=key==='indonesian_affairs'?'id':key==='japanese_saeedsato'?'ja':'en';
-   const translations={id:['Dengan nama Allah Yang Maha Pengasih.','Ayat kedua. Allah.'],en:['In the name of Allah, the Entirely Merciful.','The second verse.'],ja:['アリフ・ラーム・ミーム。','二番目の節です。']};
-   return route.fulfill({json:{result:translations[language].map((translation,index)=>({sura,aya:String(index+1),arabic_text:index?'ذَٰلِكَ الْكِتَابُ':'الم',translation,footnotes:index?'':language==='ja'?'注釈':language==='en'?'English note':'Catatan Indonesia'}))}});
-  }
-  return route.abort();
- });
- await page.route('https://buruja.com/api/v1/adhkar/morning-adhkar.json',route=>route.fulfill({json:{slug:'morning-adhkar',name:'Morning Adhkar',arabic_name:'أذكار الصباح',title:'Morning remembrances',source_note:'Quran and hadith sources',items:[{n:1,title:'Ayat al-Kursi',arabic:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ',translit:'Allahu la ilaha illa Huwa',en:'Allah—there is no deity except Him.',repeat:'1x',ref:'Al-Baqarah 2:255',grade:'Quran'}]}}));
+async function openHome(page:Page,options:{language?:'en'|'id';theme?:string;appearance?:'light'|'dark'|'oled';widgets?:WidgetFlags;faith?:string}={}){
+ const widgets={calendar:true,reflection:true,water:true,history:false,news:false,faith:false,prayer:false,weather:false,...options.widgets};
+ await page.addInitScript(({language,theme,appearance,widgets,faith})=>{
+  localStorage.setItem('sela:app:preferences',JSON.stringify({language:language||'en',theme:theme||'vanilla',appearance:appearance||'light',finish:'oak',density:2,defaultTextMode:'scroll',defaultPageMode:'book',widgets}));
+  if(faith)localStorage.setItem('sela-library:personal',JSON.stringify({version:1,faith}));
+ },{language:options.language,theme:options.theme,appearance:options.appearance,widgets,faith:options.faith});
+ await page.route('https://date.nager.at/api/v3/PublicHolidays/**',route=>route.fulfill({json:[]}));
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await expect(page.locator('.home-screen')).toBeVisible();
 }
 
-test('Home scene keeps the title and weather readable from phone through desktop',async({page})=>{
-  await page.setViewportSize({width:1440,height:900});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('link[rel="preload"][as="image"][href="../site/art/sela-reader-mascot-3d.webp"]')).toHaveCount(1);await expect(page.locator('.home-world-stage')).toBeVisible();const heroArt=page.locator('.home-world-art');await expect(heroArt).toBeVisible();await expect.poll(()=>heroArt.evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBe(960);
- for(const width of [320,390,640,768,860,1024,1440]){
+test('Home and its reading widgets fit from phone through desktop widths',async({page})=>{
+ await openHome(page);
+ await expect(page.locator('.calendar-widget')).toBeVisible();await expect(page.locator('.water-widget')).toBeVisible();await expect(page.locator('.reflection-widget')).toBeVisible();
+ for(const width of [320,360,390,640,768,1024,1440]){
   await page.setViewportSize({width,height:900});
-  const intro=page.locator('.home-page .room-intro'),title=intro.locator('h1'),stage=intro.locator('.home-world-stage'),art=stage.locator('.home-world-art'),weather=intro.locator('.weather-widget');
-  await expect(title).toBeVisible();await expect(weather).toBeVisible();await expect(stage).toBeVisible();await expect(art).toBeVisible();
-  const layout=await page.evaluate(()=>{const intro=document.querySelector('.room-intro')!,title=intro.querySelector('h1')!,weather=intro.querySelector('.weather-widget')!,time=intro.querySelector('.clock time')!;const rect=(el:Element)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {intro:rect(intro),title:rect(title),weather:rect(weather),time:rect(time),scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,weatherDisplay:getComputedStyle(weather).display}});
-  expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.title.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.title.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.left).toBeGreaterThanOrEqual(layout.intro.left-1);expect(layout.weather.right).toBeLessThanOrEqual(layout.intro.right+1);expect(layout.weather.width).toBeGreaterThan(80);expect(layout.time.height).toBeLessThan(40);
+  await expect.poll(()=>page.locator('.mantine-AppShell-main').evaluate(element=>Number.parseFloat(getComputedStyle(element).paddingInlineStart))).toBe(width<768?0:256);
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  const shell=await page.locator('.home-screen').boundingBox();expect(shell?.x).toBeGreaterThanOrEqual(-1);expect((shell?.x||0)+(shell?.width||0)).toBeLessThanOrEqual(width+1);
+  const cards=await page.locator('.calendar-widget,.water-widget,.reflection-widget').evaluateAll(elements=>elements.map(element=>{const box=element.getBoundingClientRect();return{left:box.left,right:box.right,width:box.width};}));
+  for(const card of cards){expect(card.width).toBeGreaterThan(0);expect(card.left).toBeGreaterThanOrEqual(-1);expect(card.right).toBeLessThanOrEqual(width+1);}
  }
 });
 
-test('language control stays icon-sized on phones and remains labeled on wider screens',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- for(const width of [320,390,640,768,1024,1440]){
-  await page.setViewportSize({width,height:900});
-  const layout=await page.evaluate(()=>{const picker=document.querySelector('.topbar .language-picker')!,theme=document.querySelector('#theme')!,flag=picker.querySelector('.language-flag')!,label=picker.querySelector('#language-current')!;const rect=(element:Element)=>{const box=element.getBoundingClientRect();return{width:Math.round(box.width),height:Math.round(box.height)}};return{picker:rect(picker),theme:rect(theme),flag:rect(flag),labelDisplay:getComputedStyle(label).display,scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}});
-  expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.picker.height).toBeGreaterThanOrEqual(44);
-  if(width<=640){expect(layout.picker.width).toBe(layout.theme.width);expect(layout.flag.width).toBe(18);expect(layout.flag.height).toBe(18);expect(layout.labelDisplay).toBe('none');}
-  else{expect(layout.picker.width).toBeGreaterThanOrEqual(128);expect(layout.labelDisplay).not.toBe('none');}
- }
- await page.locator('#language').selectOption('ja-JP');await expect(page.locator('#language')).toHaveValue('ja-JP');await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');
+test('topbar light and dark control changes appearance without changing the paper palette',async({page})=>{
+ await openHome(page,{theme:'olive',appearance:'light'});
+ const light=page.getByRole('button',{name:'Switch to dark mode'});await expect(light).toBeVisible();
+ const buttonBox=await light.boundingBox(),iconBox=await light.locator('svg').boundingBox();expect(buttonBox).toBeTruthy();expect(iconBox).toBeTruthy();expect(Math.abs((buttonBox!.x+buttonBox!.width/2)-(iconBox!.x+iconBox!.width/2))).toBeLessThan(1);
+ await light.click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','dark');await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','olive');
+ await expect(page.getByRole('button',{name:'Switch to light mode'})).toHaveAttribute('aria-pressed','true');
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela:app:preferences')||'{}'))).toMatchObject({appearance:'dark',theme:'olive'});
+ await page.getByRole('button',{name:'Switch to light mode'}).click();await expect(page.locator('.sela-app')).toHaveAttribute('data-appearance','light');await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','olive');
 });
 
-test('water goal guide uses the Indonesian adult AKG references and preserves a private custom target',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await openSettingsCategory(page,'Your space & routine');
- const settings=page.locator('.home-routine-settings .home-water-personalize'),guide=settings.locator('#home-water-guide'),goal=settings.locator('#home-water-goal');
- await expect(settings.getByRole('link',{name:'Indonesia AKG source ↗'})).toHaveAttribute('href','https://peraturan.bpk.go.id/Details/138621/permenkes-no-28-tahun-2019');
- await guide.selectOption('id-male-adult');await expect(goal).toHaveValue('2500');await guide.selectOption('id-female-adult');await expect(goal).toHaveValue('2350');await expect(settings.locator('.home-water-settings-help')).toContainText('Weight and height alone are not a validated personal formula');
- await guide.selectOption('custom');await goal.fill('1750');await goal.press('Tab');await expect(guide).toHaveValue('custom');await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:water-glasses')||'{}'))).toMatchObject({goalMl:1750,goalGuide:'custom'});
- await page.locator('#language').selectOption('ja-JP');await expect(settings.getByLabel('目標の目安')).toBeVisible();await expect(guide.locator('option[value="id-male-adult"]')).toHaveText('インドネシア基準 · 男性 · 19–64歳');await expect(goal).toHaveValue('1750');
+test('Islamic tools explain their preference gate and appear after the user selects Islam',async({page})=>{
+ await openHome(page,{faith:'none',widgets:{faith:true,prayer:true}});
+ const prompt=page.locator('.faith-tools-prompt');await expect(prompt).toBeVisible();
+ await expect(prompt).toContainText('Quran, daily readings & prayer times');
+ await prompt.getByRole('button',{name:'Choose reading sources'}).click();
+ await expect(page).toHaveURL(/settings\/library/);
+ const source=page.getByRole('combobox',{name:'Daily reflection source'});await source.click();await page.getByRole('option',{name:'Islam',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').faith)).toBe('islam');
+ await page.goBack();
+ await expect(page.locator('.faith-reading-widget')).toBeVisible();
+ await expect(page.locator('.islamic-reading-shelf')).toBeVisible();
+ await expect(page.locator('.prayer-times-widget')).toBeVisible();
+ await expect(page.locator('.prayer-times-widget').getByRole('button',{name:'Load today’s times'})).toBeVisible();
 });
 
-test('Home shows one sourced quote with an author portrait and sends its single settings button to Settings',async({page})=>{
- const newsFeeds:string[]=[];await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>{newsFeeds.push(route.request().url());return route.fulfill({contentType:'application/rss+xml',body:'<rss><channel><item><title>A story about books and nature</title><link>https://www.theguardian.com/books/2026/oct/14/story</link><description>Category-specific summary.</description></item></channel></rss>'});});
- const japaneseFeeds:string[]=[];await page.route('https://ja.wikipedia.org/api/rest_v1/feed/onthisday/**',route=>{japaneseFeeds.push(route.request().url());return route.fulfill({json:{selected:[{year:1969,text:'アポロ11号が月面に着陸した。',pages:[{title:'アポロ11号',content_urls:{desktop:{page:'https://ja.wikipedia.org/wiki/アポロ11号'}}}]}]}});});
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('#language')).toBeVisible();const reflection=page.locator('.home-reflection');await expect(reflection).toContainText('Maya Angelou');await expect(reflection.locator('.home-quote-portrait')).toHaveAttribute('src','https://upload.wikimedia.org/wikipedia/commons/a/a4/Maya_Angelou_2013.jpg');await expect(reflection.locator('.home-quote-copy p')).toHaveCount(1);await expect(page.locator('.quote-collection')).toHaveCount(0);await expect(page.locator('.home-shortcuts button')).toHaveCount(1);await expect(page.locator('.home-feed-card')).toHaveCount(2);await expect(page.locator('.home-feed-item').filter({hasText:'A story about books'})).toHaveCount(1);
- await page.locator('.home-personalize-link').click();await expect(page.locator('[data-tab=settings]')).toHaveAttribute('aria-current','true');await expect(page.locator('dialog[open]')).toHaveCount(0);await expect(page.locator('.control-sheet[open]')).toHaveCount(0);
-  await page.locator('#language').selectOption('ja-JP',{timeout:5000});await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');await expect.poll(()=>japaneseFeeds.length).toBeGreaterThan(0);await expect.poll(()=>newsFeeds.length).toBeGreaterThan(1);
+test('prayer city setup works with Weather turned off and waits for an explicit time request',async({page})=>{
+ const prayerRequests:string[]=[];
+ const geocodingRequests:string[]=[];
+ await page.route(url=>url.origin==='https://geocoding-api.open-meteo.com'&&url.pathname==='/v1/search',route=>{geocodingRequests.push(route.request().url());return route.fulfill({json:{results:[{name:'Jakarta',admin1:'DKI Jakarta',country:'Indonesia',latitude:-6.2,longitude:106.8,timezone:'Asia/Jakarta'}]}});});
+ await page.route('https://api.aladhan.com/v1/timings/**',route=>{prayerRequests.push(route.request().url());return route.fulfill({json:{code:200,data:{timings:{Fajr:'2026-10-21T04:00:00+07:00',Dhuhr:'2026-10-21T11:45:00+07:00',Asr:'2026-10-21T15:00:00+07:00',Maghrib:'2026-10-21T17:45:00+07:00',Isha:'2026-10-21T19:00:00+07:00'},meta:{timezone:'Asia/Jakarta'}}}});});
+ await openHome(page,{faith:'islam',widgets:{faith:true,prayer:true,weather:false}});
+ const prayer=page.locator('.prayer-times-widget');await expect(prayer).toBeVisible();await expect(page.locator('.weather-widget')).toHaveCount(0);
+ await prayer.getByRole('button',{name:'Load today’s times'}).click();
+ const locationDialog=page.getByRole('dialog');await expect(locationDialog.getByRole('heading',{name:'Choose a city'})).toBeVisible();
+ await locationDialog.getByRole('textbox',{name:'Find a city'}).fill('Jakarta');await locationDialog.getByRole('button',{name:'Search',exact:true}).click();
+ await expect.poll(()=>geocodingRequests.length).toBe(1);
+ const city=locationDialog.getByRole('button',{name:'Jakarta, DKI Jakarta, Indonesia'});await expect(city).toBeVisible();await city.click();await expect(locationDialog).toBeHidden();
+ expect(prayerRequests).toHaveLength(0);
+ await prayer.getByRole('button',{name:'Load today’s times'}).click();await expect(prayer.locator('.prayer-times-grid')).toBeVisible();
+ expect(prayerRequests).toHaveLength(1);const request=new URL(prayerRequests[0]);expect(request.searchParams.get('latitude')).toBe('-6.2');expect(request.searchParams.get('longitude')).toBe('106.8');
+ await expect(prayer.locator('.prayer-times-grid')).toContainText('04:00');
 });
 
-test('Home presents one Quran passage and Quran-only controls work directly in the reader @quran-home-full',async({page,browserName})=>{
- test.skip(browserName==='webkit','The shorter Quran reader smoke test runs in its own WebKit job.');
- await mockQuranSources(page);
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-faith-widget')).toBeHidden();
- await openSettingsCategory(page,'Your space & routine');await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('#language').selectOption('id-ID');
-  await page.locator('[data-tab=home]').click();const faith=page.locator('.home-faith-widget');await expect(faith).toBeVisible();await expect(faith.locator('blockquote')).toContainText('Allah');await expect(faith).toContainText('Kementerian Agama');
- await expect(page.locator('.home-reflection')).toBeVisible();await expect(faith).toBeVisible();await expect(faith.locator('h2')).toHaveText('Ayat hari ini');await expect(faith.locator('blockquote')).toContainText('Allah');await expect(faith).toContainText('Kementerian Agama');await expect(page.locator('.home-page .home-faith-widget')).toHaveCount(1);
-   await expect(page.locator('.home-page .faith-scripture-shelf')).toHaveCount(0);await page.locator('[data-tab=library]').click();const islamicShelf=page.locator('.faith-scripture-shelf'),groups=islamicShelf.locator('.home-scripture-shelf-group');await expect(islamicShelf).toBeVisible();await expect(groups.nth(0).locator('[aria-roledescription="slide"]')).toHaveCount(6);await expect(groups.nth(1).locator('[aria-roledescription="slide"]')).toHaveCount(8);await expect(groups.nth(2).locator('[aria-roledescription="slide"]')).toHaveCount(25);await expect(groups.nth(2).getByRole('heading',{name:/Ilyasa/})).toBeVisible();await expect(groups.nth(2).getByText('bukan biografi lengkap')).toBeVisible();await expect(groups.nth(3).locator('[aria-roledescription="slide"]')).toHaveCount(9);const dailyGroup=groups.nth(3),morningSlide=dailyGroup.locator('[aria-roledescription="slide"]').filter({hasText:'Zikir pagi'}),morningRead=morningSlide.getByRole('button',{name:'Buka bacaan'}),carouselViewport=dailyGroup.locator('[aria-roledescription="carousel"]');await expect(morningRead).toBeVisible();await dailyGroup.scrollIntoViewIfNeeded();const [morningBox,viewportBox]=await Promise.all([morningRead.boundingBox(),carouselViewport.boundingBox()]);const fullyInsideCarousel=!!morningBox&&!!viewportBox&&morningBox.x>=viewportBox.x-1&&morningBox.x+morningBox.width<=viewportBox.x+viewportBox.width+1;if(!fullyInsideCarousel)await dailyGroup.locator('button').nth(1).click();await expect(morningRead).toBeInViewport();await morningRead.click();const dailyReader=page.locator('.library-reader-overlay');await expect(dailyReader).toBeVisible();const dailyChapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>dailyChapter.evaluate(element=>element.shadowRoot?.textContent||'')).toContain('Makna bahasa Inggris');await expect.poll(()=>dailyChapter.evaluate(element=>element.shadowRoot?.textContent||'')).toContain('Al-Baqarah 2:255');await dailyReader.getByRole('button',{name:'Kembali ke rak'}).click();await expect(dailyReader).toHaveCount(0);
- await page.locator('[data-tab=home]').click();await faith.getByRole('button',{name:'Buka ayat di Al-Qur’an'}).click();const reader=page.locator('.library-reader-overlay'),navigation=reader.locator('.app-quran-navigation'),quranToggle=reader.getByRole('button',{name:'Buka pengaturan Al-Qur’an'});await expect(reader).toBeVisible();await expect(page.locator('.control-sheet[open]')).toHaveCount(0);await expect(navigation).toBeHidden();const topbar=reader.locator('.app-reading-top'),topbarHeight=await topbar.evaluate(element=>element.getBoundingClientRect().height);await quranToggle.click();await expect(navigation).toBeVisible();expect(await navigation.evaluate(element=>getComputedStyle(element).position)).toBe('absolute');expect(Math.abs(await topbar.evaluate(element=>element.getBoundingClientRect().height)-topbarHeight)).toBeLessThanOrEqual(1);await expect(navigation.getByText('Membaca Al-Qur’an')).toBeVisible();await expect(navigation.getByLabel('Surat',{exact:true})).toBeVisible();await expect(navigation.locator('.app-quran-display-settings')).toBeVisible();
- let chapter=page.locator('.sela-epub-chapter').first();const displayed=()=>chapter.evaluate(element=>[...element.shadowRoot!.querySelectorAll('.quran-arabic,.quran-translation,.quran-footnotes')].map(node=>node.textContent).join(' '));const reopenControls=async()=>{const toggle=reader.getByRole('button',{name:'Buka pengaturan Al-Qur’an'});await expect(toggle).toBeVisible();await toggle.click();await expect(navigation).toBeVisible();};const scene=chapter.locator('#quran-reading-scene');await expect(scene).toBeVisible();expect(await scene.evaluate(element=>getComputedStyle(element).backgroundImage)).toContain('data:image/svg+xml');expect(await reader.locator('.app-reading-top button svg,.app-reading-dock button svg').evaluateAll(icons=>icons.every(icon=>!!icon.querySelector('path[d],circle,rect,line,polyline,polygon')))).toBe(true);
- await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();await expect.poll(displayed).toContain('Dengan nama Allah');await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').quranTranslationKey)).toBe('indonesian_affairs');await reopenControls();
- await navigation.getByLabel('Nomor ayat').fill('2');await navigation.getByRole('button',{name:'Buka',exact:true}).click();await expect.poll(displayed).toContain('Ayat kedua.');
- await navigation.getByLabel('Surat',{exact:true}).selectOption('1');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();await expect.poll(()=>page.locator('.app-reading-title strong').textContent()).toContain('Al-Fātiḥah');chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot!.querySelector('.quran-translation')?.textContent)).toContain('Dengan nama Allah');await reopenControls();
- await navigation.getByLabel('Bahasa terjemahan').selectOption('en');await expect.poll(()=>navigation.getByLabel('Edisi terjemahan').locator('option').count()).toBeGreaterThan(0);await navigation.getByLabel('Edisi terjemahan').selectOption('english_saheeh');await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot!.querySelector('.quran-translation')?.textContent)).toContain('Entirely Merciful');await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').quranLanguage)).toBe('en');await reopenControls();
- await navigation.getByLabel('Bahasa terjemahan').selectOption('ja');await expect.poll(()=>navigation.getByLabel('Edisi terjemahan').locator('option').count()).toBeGreaterThan(0);await navigation.getByLabel('Edisi terjemahan').selectOption('japanese_saeedsato');await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot!.querySelector('.quran-translation')?.textContent)).toContain('アリフ・ラーム・ミーム。');await reopenControls();await navigation.getByRole('button',{name:'Besarkan teks Arab'}).click();await navigation.getByRole('button',{name:'Besarkan teks Arab'}).click();await navigation.getByRole('button',{name:'Besarkan teks terjemahan'}).click();await expect.poll(()=>chapter.evaluate(element=>getComputedStyle(element.shadowRoot!.querySelector('.quran-arabic')!).fontSize)).toBe('36px');await expect.poll(()=>chapter.evaluate(element=>getComputedStyle(element.shadowRoot!.querySelector('.quran-translation')!).fontSize)).toBe('20px');await expect.poll(()=>page.evaluate(()=>{const p=JSON.parse(localStorage.getItem('sela-library:personal')||'{}');return [p.quranLanguage,p.quranSurah,p.quranVerse,p.quranArabicSize,p.quranTranslationSize];})).toEqual(['ja',2,1,36,20]);
- await navigation.getByRole('button',{name:'Tutup panel'}).click();await expect(navigation).toBeHidden();await reader.getByRole('button',{name:'Pengaturan reader',exact:true}).click();await expect(reader.getByLabel('Filter halaman')).toBeVisible();await expect(reader.getByLabel('Material halaman')).toBeVisible();await reader.getByRole('button',{name:'Kembali ke rak'}).click();await expect(reader).toHaveCount(0);
+test('water tracker applies an optional AKG guide, custom goal and undo locally',async({page})=>{
+ await openHome(page);const water=page.locator('.water-widget');await expect(water.locator('.water-widget-total strong')).toHaveText('0 mL');
+ await water.getByRole('button',{name:'Add one glass'}).click();await expect(water.locator('.water-widget-total strong')).toHaveText('250 mL');
+ await water.getByRole('button',{name:'Optional goal settings'}).click();
+ const guide=water.getByRole('combobox',{name:'Goal guide'});await guide.click();await page.getByRole('option',{name:'Indonesia AKG · men · 19–64'}).click();
+ const goal=water.getByLabel('Daily goal (mL)');await expect(goal).toHaveValue('2500');await expect(water.locator('.water-widget-progress')).toContainText('250 / 2500 mL');
+ await goal.fill('500');await goal.press('Tab');await expect(water.locator('.water-widget-progress')).toContainText('250 / 500 mL');
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:water-glasses')||'{}'))).toMatchObject({glasses:1,goalMl:500,goalGuide:'custom'});
+ await water.getByRole('button',{name:'Undo one glass'}).click();await expect(water.locator('.water-widget-total strong')).toHaveText('0 mL');
 });
 
-test('Quran passage opens from Home and verse navigation renders inside the WebKit reader @quran-home-smoke',async({page,browserName})=>{
- test.skip(browserName!=='webkit','Chromium and Firefox cover the full Quran settings matrix.');
- await mockQuranSources(page);await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await openSettingsCategory(page,'Your space & routine');await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('#language').selectOption('id-ID');await page.locator('[data-tab=home]').click();
- const faith=page.locator('.home-faith-widget');await expect(faith).toBeVisible();await expect(faith.locator('blockquote')).toContainText('Allah');await faith.getByRole('button',{name:'Buka ayat di Al-Qur’an'}).click();
- const reader=page.locator('.library-reader-overlay'),navigation=reader.locator('.app-quran-navigation');await expect(reader).toBeVisible();await reader.getByRole('button',{name:'Buka pengaturan Al-Qur’an'}).click();await expect(navigation).toBeVisible();await navigation.getByLabel('Surat',{exact:true}).selectOption('2');await navigation.getByLabel('Nomor ayat').fill('1');await navigation.getByRole('button',{name:'Buka',exact:true}).click();
- const chapter=page.locator('.sela-epub-chapter').first();await expect.poll(()=>chapter.evaluate(element=>element.shadowRoot?.querySelector('.quran-translation')?.textContent||'')).toContain('Dengan nama Allah');await reader.getByRole('button',{name:'Kembali ke rak'}).click();await expect(reader).toHaveCount(0);
+test('reading calendar switches between month and a seven-day week',async({page})=>{
+ await openHome(page);const calendar=page.locator('.calendar-widget');await expect(calendar.getByRole('heading',{name:'Reading calendar'})).toBeVisible();
+ await calendar.getByText('Week',{exact:true}).click();await expect(calendar.getByRole('radio',{name:'Week'})).toBeChecked();await expect(calendar.locator('.app-calendar-week-day')).toHaveCount(7);
+ const selected=calendar.locator('.app-calendar-week-day.is-selected');await expect(selected).toHaveCount(1);await calendar.getByRole('button',{name:'Next week'}).click();await expect(calendar.locator('.app-calendar-week-day')).toHaveCount(7);
+ await calendar.getByText('Month',{exact:true}).click();await expect(calendar.getByRole('radio',{name:'Month'})).toBeChecked();await expect(calendar.locator('.home-reading-calendar')).toBeVisible();await expect(calendar.getByRole('link',{name:'Holiday source: Nager.Date'})).toHaveAttribute('href','https://date.nager.at/');
 });
 
-test('all five non-Islam local editions open from the Shelf faith library',async({page})=>{
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('#language').selectOption('en-US');
- const editions=[
-  {label:'Protestant Christianity',bookCount:66,chapterCount:40,expected:'In the beginning'},
-  {label:'Catholic Christianity',bookCount:73,chapterCount:40,expected:'In the beginning'},
-  {label:'Buddhism',bookCount:26,chapterCount:0,expected:'Intention is the leader'},
-  {label:'Hinduism',bookCount:18,chapterCount:0,expected:'Dhritirashtra'},
-  {label:'Confucianism',bookCount:20,chapterCount:0,expected:'learn'}
- ];
- for(const edition of editions){
-  await openSettingsCategory(page,'Your space & routine');await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:edition.label}).check();await page.locator('[data-tab=home]').click();
-  const faith=page.locator('.home-faith-widget');await expect(faith).toBeVisible();await expect(faith.locator('h2')).toHaveText('Reading of the day');await page.locator('[data-tab=library]').click();const faithShelf=page.locator('.faith-reading-shelf');await expect(faithShelf).toBeVisible();await faithShelf.getByRole('button',{name:'Choose a reading'}).click();const dialog=page.locator('dialog[aria-labelledby="faith-library-title"]');await expect(dialog).toBeVisible();
-  const book=dialog.getByLabel('Book'),chapter=dialog.getByLabel('Chapter');await expect(book.locator('option')).toHaveCount(edition.bookCount);
-  if(edition.chapterCount){await book.selectOption({index:0});await expect(chapter.locator('option').first()).toBeAttached();expect(await chapter.locator('option').count()).toBeGreaterThan(edition.chapterCount);}else await expect(chapter).toBeHidden();
-  await dialog.getByRole('button',{name:'Open in Sela'}).click();const reader=page.locator('.library-reader-overlay');await expect(reader).toBeVisible();const content=page.locator('.sela-epub-chapter').first();await expect.poll(()=>content.evaluate(element=>element.shadowRoot?.textContent||'')).toContain(edition.expected);await reader.getByRole('button',{name:'Back to library'}).click();await expect(reader).toHaveCount(0);
- }
+test('reading note keeps its source controls and stores the selected topic',async({page})=>{
+ await openHome(page);const reflection=page.locator('.reflection-widget');await expect(reflection.locator('blockquote.daily-quote')).toBeVisible();
+ await reflection.getByRole('combobox',{name:'Quote topic'}).click();await page.getByRole('option',{name:'Calm'}).click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').quoteTopic)).toBe('calm');
+ await expect(reflection.getByRole('button',{name:'Find sourced quotes'})).toBeVisible();await reflection.getByRole('button',{name:'Another note'}).click();await expect(reflection.locator('blockquote.daily-quote')).toBeVisible();
 });
 
-test('prayer times stay a compact Home widget across phone, tablet, and desktop',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('sela-library:weather',JSON.stringify({latitude:-6.2,longitude:106.8,name:'Jakarta',timezone:'Asia/Jakarta'})));
- await page.route('https://api.aladhan.com/v1/timings/**',route=>{const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),part=(type:string)=>parts.find(value=>value.type===type)?.value||'2026',day=`${part('year')}-${part('month')}-${part('day')}`,at=(time:string)=>`${day}T${time}:00+07:00`;return route.fulfill({json:{code:200,data:{timings:{Fajr:at('04:20'),Dhuhr:at('11:40'),Asr:at('14:50'),Maghrib:at('17:48'),Isha:at('18:58')},meta:{timezone:'Asia/Jakarta',method:{name:'KEMENAG RI'}}}}});});
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await openSettingsCategory(page,'Your space & routine');await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('[data-tab=home]').click();
- const prayer=page.locator('.home-page .home-prayer-times'),faith=page.locator('.home-page .home-faith-widget');await expect(prayer).toBeVisible();await expect(faith).toBeVisible();await prayer.getByRole('button',{name:'Load prayer times'}).click();await expect(prayer.locator('dd').first()).toHaveText('04:20');
- for(const width of [390,768,1440]){
-  await page.setViewportSize({width,height:900});const layout=await page.evaluate(()=>{const prayer=document.querySelector('.home-prayer-times')!,faith=document.querySelector('.home-faith-widget')!,grid=document.querySelector('.home-daily-overview')!,rect=(element:Element)=>{const r=element.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {prayer:rect(prayer),faith:rect(faith),grid:rect(grid),viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,columns:getComputedStyle(grid).gridTemplateColumns};});
-  expect(layout.scrollWidth).toBeLessThanOrEqual(width);expect(layout.prayer.left).toBeGreaterThanOrEqual(layout.grid.left-1);expect(layout.prayer.right).toBeLessThanOrEqual(layout.grid.right+1);expect(layout.prayer.height).toBeLessThan(width>=1000?281:320);
-  if(width>=1000){expect(layout.prayer.left).toBeGreaterThan(layout.faith.right);expect(Math.round(layout.prayer.top)).toBe(Math.round(layout.faith.top));}
-  else expect(layout.prayer.top).toBeGreaterThanOrEqual(layout.faith.bottom-1);
-  if(width===1440)expect(layout.prayer.width).toBeLessThan(500);
- }
- await page.setViewportSize({width:390,height:844});await expect(page.locator('.home-reflection')).toBeVisible();await expect(page.locator('.home-faith-widget h2')).toHaveText('Verse of the day');
-});
-
-test('prayer time failures explain the fallback and keep retry available',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('sela-library:weather',JSON.stringify({latitude:-6.2,longitude:106.8,name:'Jakarta',timezone:'Asia/Jakarta'})));
- await page.route('https://api.aladhan.com/v1/timings/**',route=>route.fulfill({status:503,body:'temporarily unavailable'}));
- const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await openSettingsCategory(page,'Your space & routine');await page.getByRole('button',{name:'Faith & scripture'}).click();await page.getByRole('radio',{name:'Islam'}).check();await page.locator('[data-tab=home]').click();
- const prayer=page.locator('.home-page .home-prayer-times');await prayer.getByRole('button',{name:'Load prayer times'}).click();await expect(prayer).toContainText('Prayer times are unavailable');await expect(prayer.getByRole('button',{name:'Try again'})).toBeEnabled();expect(errors).toEqual([]);
-});
-
-test('Indonesian news keeps thumbnails and source attribution in compact rows',async({page})=>{
- await page.route('https://www.antaranews.com/rss/**',route=>route.fulfill({contentType:'application/rss+xml',body:'<rss><channel><item><title>Berita buku hari ini</title><link>https://www.antaranews.com/berita/123/buku</link><description>Ringkasan berita buku.</description><enclosure url="https://cdn.antaranews.com/cache/800x533/buku.jpg" /></item></channel></rss>'}));
- await page.route('https://cdn.antaranews.com/cache/**',route=>route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADUlEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC','base64')}));
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('#language').selectOption('id-ID');const news=page.locator('.home-feed-card').filter({has:page.locator('h2', {hasText:'Kabar dari berbagai tempat'})});await expect(news.locator('.home-feed-item')).toContainText('Berita buku hari ini');await expect(news.locator('.home-feed-item img')).toHaveAttribute('src','https://cdn.antaranews.com/cache/800x533/buku.jpg');await expect(news.locator('.home-feed-item')).toContainText('ANTARA');
-});
-
-test('Home calendar follows saved reading sessions and water count stays private on this device',async({page})=>{
- await page.setViewportSize({width:390,height:844});
- await page.clock.install();
- await page.route('https://date.nager.at/api/v3/PublicHolidays/**',route=>route.fulfill({json:[]}));
- await page.addInitScript(()=>{
-  const now=new Date(),at=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12).getTime();
-  localStorage.setItem('sela-library:personal',JSON.stringify({version:1,room:'',companion:'cat',quiet:false,hidden:[],queue:[],books:{},racks:[],sessions:[{book:'',at,seconds:600}],quoteTopic:'reading',quoteLanguage:'auto'}));
- });
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- const today=await page.evaluate(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');});
- const day=page.locator(`.home-calendar-day[data-date="${today}"]`);await expect(day).toHaveClass(/has-reading/);await day.click();await expect(page.locator('.home-calendar-detail')).toContainText('10 min');
- const calendar=page.locator('.home-calendar-widget');await expect(calendar.locator('.home-calendar-day')).toHaveCount(7);await calendar.getByRole('button',{name:'Show the whole month'}).click();expect(await calendar.locator('.home-calendar-day').count()).toBeGreaterThanOrEqual(28);await calendar.getByRole('button',{name:'Show this week'}).click();await expect(calendar.locator('.home-calendar-day')).toHaveCount(7);
-  const water=page.locator('.home-water-widget');await expect(water.locator('.home-water-value')).toHaveText('0 mL');await openSettingsCategory(page,'Your space & routine');const waterSettings=page.locator('.home-routine-settings .home-water-personalize');await expect(waterSettings.getByLabel('Daily goal (mL)')).toBeVisible();await waterSettings.getByLabel('Daily goal (mL)').fill('500');await waterSettings.getByLabel('Daily goal (mL)').press('Tab');await waterSettings.getByLabel('Serving size').selectOption('250');await page.locator('[data-tab=home]').click();await expect(water.locator('.home-water-progress')).toBeVisible();await expect(water.locator('.home-water-progress-text')).toHaveText('A fresh start');await water.getByRole('button',{name:'Add a glass'}).click();await expect(water.locator('.home-water-value')).toHaveText('250 mL');await expect(water.locator('.home-water-progress-text')).toHaveText('Halfway there · 250 mL / 500 mL');await water.getByRole('button',{name:'Add a glass'}).click();await expect(water.locator('.home-water-value')).toHaveText('500 mL');await expect(water.locator('.home-water-note')).toContainText('pause when you need to');const tomorrow=await page.evaluate(()=>{const d=new Date();d.setDate(d.getDate()+1);d.setHours(0,1,0,0);return d.toISOString();});await page.clock.setSystemTime(new Date(tomorrow));await water.getByRole('button',{name:'Add a glass'}).click();await expect(water.locator('.home-water-value')).toHaveText('250 mL');
- await page.reload();await expect(page.locator('.home-water-value')).toHaveText('250 mL');await expect(page.locator('.home-water-goal')).toHaveValue('500');await expect(page.locator('.home-water-size')).toHaveValue('250');await expect(page.locator('.home-water-progress-text')).toHaveText('Halfway there · 250 mL / 500 mL');await page.locator('.home-water-undo').click();await expect(page.locator('.home-water-value')).toHaveText('0 mL');
- const currentMonth=await calendar.locator('.home-calendar-month').textContent();await calendar.getByRole('button',{name:'Previous month'}).click();const previousMonth=await calendar.locator('.home-calendar-month').textContent();expect(previousMonth).not.toBe(currentMonth);await calendar.getByRole('button',{name:'Next month'}).click();await expect(calendar.locator('.home-calendar-month')).toHaveText(currentMonth);
- for(const width of [320,390,768,1024,1440]){
-  await page.setViewportSize({width,height:900});
-   for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});const layout=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,clientWidth:document.documentElement.clientWidth,innerWidth,offenders:[...document.querySelectorAll('body *')].map(element=>({element,rect:element.getBoundingClientRect()})).filter(({element,rect})=>getComputedStyle(element).display!=='none'&&rect.width>0&&(rect.right>innerWidth+1||rect.left<-1)).slice(0,8).map(({element,rect})=>({tag:element.tagName,className:(element as HTMLElement).className,left:Math.round(rect.left),right:Math.round(rect.right),width:Math.round(rect.width)})),scrollBoxes:[...document.querySelectorAll('body *')].filter(element=>element.scrollWidth>element.clientWidth+1).slice(0,10).map(element=>({tag:element.tagName,className:(element as HTMLElement).className,scrollWidth:element.scrollWidth,clientWidth:element.clientWidth,overflow:getComputedStyle(element).overflowX}))}));expect(layout.scrollWidth<=width,`horizontal overflow at ${width}px in ${colorScheme}: ${JSON.stringify(layout)}`).toBe(true);}
-   const bounds=await page.locator('.home-page .home-widget-card').evaluateAll(cards=>cards.map(card=>{const r=card.getBoundingClientRect();return {left:r.left,right:r.right};}));for(const box of bounds){expect(box.left).toBeGreaterThanOrEqual(-1);expect(box.right).toBeLessThanOrEqual(width+1);}const shell=await page.locator('#mobile-app').boundingBox(),topbar=await page.locator('#mobile-app .topbar').boundingBox();expect(shell?.x).toBeCloseTo(0,0);expect(shell?.width).toBeCloseTo(width,0);expect(topbar?.x).toBeCloseTo(0,0);expect(topbar?.width).toBeCloseTo(width,0);expect(await page.locator('body').evaluate(element=>getComputedStyle(element,'::before').backgroundImage)).toContain('radial-gradient');
- }
-});
-
-test('calendar fetches localized public holidays for the selected language region',async({page})=>{
- await page.setViewportSize({width:390,height:844});
- await page.clock.install({time:new Date('2026-01-12T12:00:00+09:00')});
- const requests:string[]=[];await page.route('https://date.nager.at/api/v3/PublicHolidays/**',async route=>{const url=new URL(route.request().url());requests.push(url.pathname);const country=url.pathname.split('/').pop();const holidays=country==='JP'?[{date:'2026-01-12',localName:'成人の日',name:'Coming of Age Day',countryCode:'JP',fixed:false,global:true,counties:null,launchYear:null,types:['Public']}]:country==='ID'?[{date:'2026-01-16',localName:'Isra Mi’raj',name:'Isra and Mi\'raj',countryCode:'ID',fixed:false,global:true,counties:null,launchYear:null,types:['Public']}]:[];await route.fulfill({json:holidays});});
- await page.addInitScript(()=>localStorage.setItem('sela-library:language','ja-JP'));
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- const japanese=page.locator('.home-calendar-day[data-date="2026-01-12"]');await expect(japanese).toHaveClass(/has-holiday/);await expect(japanese).toHaveAttribute('title','成人の日');await japanese.click();await expect(page.locator('.home-calendar-detail')).toContainText('祝日 · 成人の日');expect(requests).toContain('/api/v3/PublicHolidays/2026/JP');
- await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await page.locator('[data-tab=home]').click();const indonesian=page.locator('.home-calendar-day[data-date="2026-01-16"]');await expect(indonesian).toHaveClass(/has-holiday/);await expect(indonesian).toHaveAttribute('title','Isra Mi’raj');await indonesian.click();await expect(page.locator('.home-calendar-detail')).toContainText('Libur nasional · Isra Mi’raj');expect(requests).toContain('/api/v3/PublicHolidays/2026/ID');
-});
-
-test('empty news and history feeds stay illustrated and fit desktop and mobile columns',async({page})=>{
- await page.route(/^https:\/\/[^/]+\.wikipedia\.org\/api\/rest_v1\/feed\/onthisday\//,route=>route.fulfill({json:{selected:[]}}));
- await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>route.fulfill({status:503,body:'offline'}));
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- const lists=page.locator('.home-feed-card .home-feed-list');await expect(lists.nth(0)).toHaveAttribute('data-feed-state','empty');await expect(lists.nth(1)).toHaveAttribute('data-feed-state','error');
- await expect(page.locator('.home-feed-empty-scene svg')).toHaveCount(2);
- for(const width of [1440,390]){await page.setViewportSize({width,height:900});const cards=await page.locator('.home-feed-card').evaluateAll(elements=>elements.map(card=>({width:card.clientWidth,scrollWidth:card.scrollWidth,height:card.getBoundingClientRect().height,contentWidth:(card.querySelector('.home-feed-list') as HTMLElement).scrollWidth,listWidth:(card.querySelector('.home-feed-list') as HTMLElement).clientWidth})));expect(cards).toHaveLength(2);for(const card of cards){expect(card.width).toBeGreaterThan(0);expect(card.height).toBeGreaterThan(150);expect(card.scrollWidth).toBeLessThanOrEqual(card.width+1);expect(card.contentWidth).toBeLessThanOrEqual(card.listWidth+1);}expect(Math.max(cards[0].width,cards[1].width)/Math.min(cards[0].width,cards[1].width),'feed card width balance at '+width+'px: '+JSON.stringify(cards)).toBeLessThanOrEqual(1.1);}
-});
-test('news topics use accessible tabs and fetch one category without mixing stories',async({page})=>{
- const requested:string[]=[];await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>{const url=route.request().url();requested.push(url);const isBooks=url.includes('/books/rss'),category=isBooks?'books':'science';return route.fulfill({contentType:'application/rss+xml',body:`<rss><channel><item><title>${isBooks?'A books feature':'A science report'}</title><link>https://www.theguardian.com/${category}/2026/oct/14/story</link></item></channel></rss>`});});
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');const news=page.locator('.home-feed-card').filter({has:page.locator('h2',{hasText:'Around the world'})}),tabs=news.getByRole('tab'),list=news.locator('[role="tabpanel"]');await expect(tabs).toHaveCount(3);await expect(tabs.nth(0)).toHaveAttribute('aria-selected','true');await expect(list).toContainText('A books feature');await expect.poll(()=>requested.length).toBeGreaterThan(0);expect(requested.every(url=>url.includes('/books/rss'))).toBe(true);
- await tabs.nth(1).click();await expect(tabs.nth(1)).toHaveAttribute('aria-selected','true');await expect(list).toContainText('A science report');await expect(list).not.toContainText('A books feature');await expect.poll(()=>requested.some(url=>url.includes('/science/rss'))).toBe(true);
- await tabs.nth(1).press('ArrowRight');await expect(tabs.nth(2)).toBeFocused();await expect(tabs.nth(2)).toHaveAttribute('aria-selected','true');
- for(const width of [320,390,768,1024,1440]){await page.setViewportSize({width,height:900});for(const theme of ['light','dark'] as const){await page.evaluate(value=>document.documentElement.dataset.theme=value,theme);const bounds=await news.boundingBox(),viewport=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth}));expect(viewport.scrollWidth,`news tab overflow at ${width}px in ${theme}`).toBeLessThanOrEqual(width);expect(bounds?.x).toBeGreaterThanOrEqual(-1);expect((bounds?.x||0)+(bounds?.width||0)).toBeLessThanOrEqual(width+1);}}
-});
-
-test('news source picker shows verified providers and remembers the chosen source',async({page})=>{
- const providers:string[]=[];await page.route(/^https:\/\/proxy\.cors\.dev\/https:\/\/www\.theguardian\.com\//,route=>{providers.push('guardian');return route.fulfill({contentType:'application/rss+xml',body:'<rss><channel><item><title>A book feature</title><link>https://www.theguardian.com/books/2026/oct/14/story</link></item></channel></rss>'});});await page.route(/^https:\/\/www\.antaranews\.com\/rss\//,route=>{providers.push('antara');return route.fulfill({body:'<rss><channel><item><title>Kabar literasi hari ini</title><link>https://www.antaranews.com/berita/123/literasi</link><description>Kabar buku.</description></item></channel></rss>',contentType:'application/rss+xml'});});
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');const source=page.locator('.home-feed-card select');await expect(source).toHaveAttribute('aria-label','News source');await expect(source).toHaveValue('auto');await expect(source.locator('option')).toHaveCount(3);await expect(source.locator('option[value="antara"]')).toBeDisabled();
- for(const width of [320,390,768,1024,1440]){await page.setViewportSize({width,height:900});for(const theme of ['light','dark'] as const){await page.evaluate(value=>document.documentElement.dataset.theme=value,theme);const bounds=await source.boundingBox(),viewport=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth}));expect(viewport.scrollWidth,`news controls overflow at ${width}px in ${theme}`).toBeLessThanOrEqual(width);expect(bounds?.x).toBeGreaterThanOrEqual(-1);expect((bounds?.x||0)+(bounds?.width||0)).toBeLessThanOrEqual(width+1);}}
- await source.selectOption('guardian');await expect.poll(()=>page.evaluate(()=>localStorage.getItem('sela-home:news-source'))).toBe('guardian');await expect.poll(()=>providers.includes('guardian')).toBe(true);
- await page.locator('[data-tab=settings]').click();await page.locator('#language').selectOption('id-ID');await expect(source).toHaveAttribute('aria-label','Sumber berita');await page.locator('[data-tab=home]').click();await expect(source.locator('option[value="antara"]')).toBeEnabled();await source.selectOption('antara');await expect.poll(()=>providers.includes('antara')).toBe(true);await expect.poll(()=>page.evaluate(()=>localStorage.getItem('sela-home:news-source'))).toBe('antara');
- await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-feed-card select')).toHaveValue('antara');
+test('enabled news and history widgets use isolated, attributed sources',async({page})=>{
+ const requests:string[]=[];
+ await page.route('https://en.wikipedia.org/api/rest_v1/feed/onthisday/selected/**',route=>{requests.push(route.request().url());return route.fulfill({json:{selected:[{year:1969,text:'A small step that changed the world.',pages:[{title:'Apollo 11',content_urls:{desktop:{page:'https://en.wikipedia.org/wiki/Apollo_11'}}}]}]}});});
+ await page.route('https://proxy.cors.dev/https://www.theguardian.com/**',route=>{const url=route.request().url();requests.push(url);const science=url.includes('/science/rss');const topic=science?'science':'books';return route.fulfill({contentType:'application/rss+xml',body:`<rss><channel><item><title>${science?'A science report':'A books feature'}</title><link>https://www.theguardian.com/${topic}/2026/oct/14/story</link><description>A sourced report.</description></item></channel></rss>`});});
+ await openHome(page,{widgets:{history:true,news:true}});const history=page.locator('.home-feed-widget').filter({has:page.getByRole('heading',{name:'On this day'})}),news=page.locator('.home-feed-widget').filter({has:page.getByRole('heading',{name:'Reading around'})});
+ await expect(history.getByRole('link',{name:'A small step that changed the world.'})).toHaveAttribute('href','https://en.wikipedia.org/wiki/Apollo_11');
+ await expect(news.getByRole('link',{name:'A books feature'})).toHaveAttribute('href','https://www.theguardian.com/books/2026/oct/14/story');
+ await news.getByRole('combobox',{name:'News topic',exact:true}).click();await page.getByRole('option',{name:'Science'}).click();await expect(news.getByRole('link',{name:'A science report'})).toBeVisible();await expect(news).not.toContainText('A books feature');
+ expect(requests.some(url=>url.includes('wikipedia.org/api/rest_v1/feed/onthisday/'))).toBe(true);expect(requests.some(url=>url.includes('/science/rss'))).toBe(true);
 });

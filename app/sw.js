@@ -1,6 +1,6 @@
-// Generated from app/mobile/sw.ts by npm run build. Do not edit.
+// Generated from web/app/platform/sw.ts by npm run build. Do not edit.
 const worker = self;
-const CACHE="sela-bookshelf-0.9.0-beta.7-8f5a62424a472df8", APP_VERSION = "0.9.0-beta.7", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
+const CACHE="sela-bookshelf-0.9.0-beta.8-434d687c502f84ed", APP_VERSION = "0.9.0-beta.8", ROOT = new URL("../", worker.location.href), APP_PATH = new URL("./", worker.location.href).pathname.slice(ROOT.pathname.length);
 const url = (p) => new URL(p, ROOT).href;
 let allowed;
 const incomingDB = () => new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ worker.addEventListener("install", (e) => e.waitUntil((async () => {
   const r = await fetch(url("offline-assets.json"), { cache: "no-store" });
   if (!r.ok) throw Error("Assets unavailable");
   const assets = await r.clone().json(), cache = await caches.open(CACHE);
-  await cache.addAll(assets.mobileShell.map((path) => new Request(url(path), { cache: "reload" })));
+  await cache.addAll(assets.appShell.map((path) => new Request(url(path), { cache: "reload" })));
   await cache.put(url("offline-assets.json"), r);
 })()));
 worker.addEventListener("activate", (e) => e.waitUntil((async () => {

@@ -64,7 +64,8 @@ export function mountAudio(reader: any, parent: HTMLElement, t: (en: string, id:
   audio.preload = 'metadata';
   audio.setAttribute('aria-label', t('Audiobook controls', 'Kontrol audio buku'));
   const fileRow = node('div', 'tw:flex tw:flex-wrap tw:items-center tw:gap-2', audioSection);
-  const input = node('input', 'tw:sr-only', fileRow) as HTMLInputElement;
+  // This is a custom utility declared without Tailwind's `tw:` prefix.
+  const input = node('input', 'sr-only', fileRow) as HTMLInputElement;
   input.type = 'file';
   input.accept = 'audio/*,.mp3,.m4a,.ogg,.opus,.wav,.flac,.aac';
   input.setAttribute('aria-label', t('Choose an audio file', 'Pilih berkas audio'));
@@ -214,7 +215,7 @@ export function mountAudio(reader: any, parent: HTMLElement, t: (en: string, id:
       }
     }
     if (clips.length) {
-      const play = node('button', 'tw:mt-2 tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-3 tw:text-xs tw:font-semibold tw:text-white tw:transition hover:tw:brightness-105 focus-visible:tw:outline-2 focus-visible:tw:outline-offset-2 focus-visible:tw:outline-sela-accent', audioSection) as HTMLButtonElement;
+      const play = node('button', 'tw:mt-2 tw:inline-flex tw:min-h-10 tw:items-center tw:gap-2 tw:rounded-full tw:bg-sela-accent tw:px-3 tw:text-xs tw:font-semibold tw:text-primary-foreground tw:transition hover:tw:brightness-105 focus-visible:tw:outline-2 focus-visible:tw:outline-offset-2 focus-visible:tw:outline-sela-accent', audioSection) as HTMLButtonElement;
       play.type = 'button';
       play.textContent = t('Read along · EPUB narration', 'Baca bersama · narasi EPUB');
       let index = -1, activeURL = '', advancing = false;

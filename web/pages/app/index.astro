@@ -1,12 +1,21 @@
 ---
-import { ReaderHead, ReaderBody } from '../../../ui/pages/reader.tsx';
 ---
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="id">
   <head>
-    <ReaderHead />
-    <link is:inline rel="preload" as="image" href="../site/art/sela-reader-mascot-3d.webp" fetchpriority="high" />
-    <link is:inline rel="stylesheet" href="../site/mobile-app.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#eee8dc" />
+    <meta name="description" content="Sela Books — a private, local-first reading library." />
+    <title>Sela Books — Your reading room</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="../site/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./app.css" />
   </head>
-  <body data-product="mobile"><ReaderBody /></body>
+  <body>
+    <div id="sela-root"></div>
+    <noscript>Sela Books needs JavaScript to open your local library.</noscript>
+    <script is:inline type="module" src="./app.js"></script>
+  </body>
 </html>

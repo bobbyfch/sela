@@ -13,7 +13,7 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     try: "Coba pembacanya \u2193",
     original: "NOVELET INDONESIA ORISINAL",
     storySub: "50 halaman \xB7 12 bab \xB7 ingatan yang menyisakan sesuatu",
-    demoEyebrow: "NYAMANKAN DIRIMU",
+    demoEyebrow: "BACA DENGAN RITMEMU",
     demoHeading: "Empat cara membaca.",
     lazy: "Mesin PDF dimuat hanya saat membaca.",
     bookTitle: "Balik halamannya.",
@@ -49,7 +49,7 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     cdnLabel: "Versi CDN",
     cdnPinned: "Rilis tetap \xB7 disarankan",
     cdnLatest: "Terbaru \xB7 tanpa versi",
-    cdnNote: 'Untuk produksi, gunakan rilis tetap. URL tanpa versi mengikuti berkas GitHub terbaru dan bisa berubah tanpa pemberitahuan; <a class="tw:underline tw:underline-offset-2" href="https://www.jsdelivr.com/?docs=gh" target="_blank" rel="noopener noreferrer">jsDelivr tidak menyarankannya untuk produksi.</a>',
+    cdnNote: 'Untuk produksi, gunakan rilis tetap. URL tanpa versi mengikuti berkas GitHub terbaru dan bisa berubah tanpa pemberitahuan; <a class="policy-link" href="https://www.jsdelivr.com/?docs=gh" target="_blank" rel="noopener noreferrer">jsDelivr tidak menyarankannya untuk produksi.</a>',
     installTitle: "Pasang viewer di website.",
     installText: "CI3, Laravel, Vue, React, Svelte, Astro, atau HTML biasa. Bootstrap dan Tailwind boleh dipakai, keduanya tidak wajib.",
     docs: "Panduan pemasangan & integrasi \u2197",
@@ -186,8 +186,6 @@ import { localeBase, localeForCountry, normalizeLocale, translate } from "../dis
     selectedUrl = file ? URL.createObjectURL(file) : null;
     var selection = document.querySelector(".file-selection");
     selection.hidden = !file;
-    selection.classList.toggle("tw:hidden", !file);
-    selection.classList.toggle("tw:flex", !!file);
     document.querySelector("#file-name").textContent = file ? file.name + " \xB7 " + (file.size / 1024 / 1024).toFixed(2) + " MiB" : "";
     status.textContent = "";
     showCode();

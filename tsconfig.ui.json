@@ -3,12 +3,16 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "include": [
     "ui/**/*.ts",
     "ui/**/*.tsx",
-    "app/mobile/**/*.tsx",
+    "web/app/ui/**/*.ts",
+    "web/app/ui/**/*.tsx",
+    "web/app/platform/pwa.ts",
+    "app/library/generated-modules.d.ts",
     "src/host-globals.d.ts",
     "src/platform.d.ts"
   ]

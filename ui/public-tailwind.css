@@ -1,12 +1,7 @@
 @import "tailwindcss" prefix(tw);
 @import "./design-system.css";
 @import "@phosphor-icons/web/fill";
-@import "tw-animate-css";
-
-@source "./pages/public.tsx";
-@source "./icons.tsx";
-@source "./components/**/*.tsx";
-@source "../app/site/**/*.ts";
+@import "./public-site.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -63,7 +58,6 @@
   }
 
   body {
-    min-width: 320px;
     margin: 0;
     background-color: var(--bg);
     color: var(--fg);

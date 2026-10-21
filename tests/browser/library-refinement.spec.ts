@@ -1,53 +1,131 @@
 import {test,expect} from '@playwright/test';
-import {readFile} from 'node:fs/promises';
-import {openSettingsCategory} from './settings-helpers.ts';
 
-async function shelf(page){await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.getByRole('button',{name:'Shelf',exact:true}).click();}
-async function books(page){await page.locator('#books').setInputFiles([{name:'Alpha.txt',mimeType:'text/plain',buffer:Buffer.from('Alpha original bytes')},{name:'Beta.txt',mimeType:'text/plain',buffer:Buffer.from('Beta original bytes')}]);await expect(page.locator('.book')).toHaveCount(2);await expect(page.locator('#books')).toBeEnabled();}
+async function start(page){
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
+ await page.goto('/app/');
+ await expect(page.locator('.sela-app')).toBeVisible();
+}
 
-test('mobile shelf groups filters and preserves compact list and cover-only wooden views',async({page})=>{
- await page.setViewportSize({width:320,height:740});await shelf(page);await books(page);
- await expect(page.locator('#sort')).toBeHidden();await page.locator('.shelf-refine-toggle').click();await expect(page.locator('#sort')).toBeVisible();await page.locator('#sort').selectOption('name');await expect(page.locator('.shelf-refine')).not.toHaveAttribute('open','');
- await page.locator('#shelf-view').click();await expect(page.locator('body')).toHaveAttribute('data-shelf-view','list');expect((await page.locator('.cover').first().boundingBox()).height).toBeLessThan(90);
- await page.locator('#shelf-view').click();await expect(page.locator('body')).toHaveAttribute('data-shelf-view','shelf');await expect(page.locator('.book-title').first()).toBeHidden();await expect(page.locator('.book-meta').first()).toBeHidden();
- await page.locator('#shelf-view').click();await page.locator('.book-menu').first().click();await expect(page.getByRole('button',{name:'Edit collections',exact:true})).toBeVisible();
- for(const scheme of ['light','dark'] as const){await page.emulateMedia({colorScheme:scheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+async function importBooks(page){
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles([
+  {name:'Alpha.txt',mimeType:'text/plain',buffer:Buffer.from('Alpha original bytes for reading and selection.')},
+  {name:'Beta.txt',mimeType:'text/plain',buffer:Buffer.from('Beta original bytes for the second shelf entry.')},
+ ]);
+ await expect(page.locator('.book-card')).toHaveCount(2);
+}
+
+test('shelf filters, grid/list/room views and responsive widths use the React shelf',async({page})=>{
+ await start(page);await importBooks(page);await page.goto('/app/#/shelf');
+ const search=page.getByRole('textbox',{name:'Search your shelf'});
+ await search.fill('Beta');await expect(page.locator('.book-card')).toHaveCount(1);await search.fill('');
+ const alpha=page.locator('.book-card').filter({has:page.getByRole('button',{name:'Open Alpha',exact:true})});
+ await alpha.getByRole('button',{name:'Book actions',exact:true}).click();await page.getByRole('menuitem',{name:'Mark as finished',exact:true}).click();
+ await page.getByRole('combobox',{name:'Filter by reading status'}).click();await page.getByRole('option',{name:'Finished',exact:true}).click();
+ await expect(page.locator('.book-card')).toHaveCount(1);await page.getByRole('combobox',{name:'Filter by reading status'}).click();await page.getByRole('option',{name:'All books',exact:true}).click();
+ const modes=page.getByRole('radiogroup',{name:'Shelf view'}),labels=page.locator('.shelf-view-toggle label');
+ const iconCenters=await labels.evaluateAll(nodes=>nodes.map(label=>{const icon=label.querySelector('svg')!,outer=label.getBoundingClientRect(),inner=icon.getBoundingClientRect();return {x:Math.abs((outer.left+outer.width/2)-(inner.left+inner.width/2)),y:Math.abs((outer.top+outer.height/2)-(inner.top+inner.height/2))};}));
+ expect(iconCenters.every(center=>center.x<=1&&center.y<=1)).toBe(true);
+  const controlMetrics=await page.locator('.shelf-view-toggle').evaluate(root=>{const box=root.getBoundingClientRect();const items=[...root.querySelectorAll('label')].map(label=>{const rect=label.getBoundingClientRect();return {width:rect.width,height:rect.height};});return {width:box.width,height:box.height,items};});
+  expect(controlMetrics.width).toBeCloseTo(140,0);expect(controlMetrics.height).toBeCloseTo(48,0);
+  expect(controlMetrics.items).toHaveLength(3);expect(controlMetrics.items.every(item=>item.width>=40&&item.height>=38)).toBe(true);
+ await labels.nth(2).click();await expect(page.locator('.book-list')).toBeVisible();
+ await labels.nth(1).click();await expect(page.locator('.shelf-room-stage')).toBeVisible();
+ await labels.nth(0).click();await expect(page.locator('.book-grid')).toBeVisible();await expect(modes).toBeVisible();
+ for(const width of [320,390,768,1024,1440]){
+  await page.setViewportSize({width,height:820});
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px document overflow`).toBe(true);
+  expect(await page.locator('.book-grid').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px shelf overflow`).toBe(true);
+ }
 });
 
-test('collection manager creates empty collections and renames or deletes without losing books',async({page})=>{
- await shelf(page);await books(page);await page.locator('.shelf-refine-toggle').click();await page.getByRole('button',{name:'Collections',exact:true}).click();const modal=page.getByRole('dialog',{name:'Collections',exact:true});
- await modal.getByLabel('Collection name',{exact:true}).fill('Quiet evenings');await modal.getByRole('button',{name:'Create collection',exact:true}).click();await expect(modal.locator('.collection-row')).toContainText('Quiet evenings');await expect(modal.locator('.collection-row')).toContainText('0 books');
- await modal.getByRole('button',{name:'Rename collection',exact:true}).click();await modal.getByLabel('New collection name').fill('Weekends');await modal.getByRole('button',{name:'Save name',exact:true}).click();await expect(modal.locator('.collection-row h3')).toHaveText('Weekends');await page.getByRole('button',{name:'Close collections',exact:true}).click();
- const result=await page.evaluate(async()=>{const s=await import('/library/storage.js');const all=await s.listBooks();await s.changeCollection({action:'add',name:'Weekends',ids:all.map(b=>b.id)});await s.changeCollection({action:'add',name:'Favorites',ids:[all[0].id]});await s.changeCollection({action:'move',from:'Weekends',name:'Later',ids:[all[0].id]});let duplicate;try{await s.changeCollection({action:'rename',name:'Later',next:'Favorites'});}catch(e){duplicate=e.message;}const before=await s.listBooks();await s.changeCollection({action:'delete',name:'Later'});return {duplicate,before,after:await s.listBooks(),files:await Promise.all(all.map(async b=>(await s.getFile(b.id)).text()))};});
- expect(result.duplicate).toContain('already exists');expect(result.before[0].tags).toEqual(expect.arrayContaining(['Favorites','Later']));expect(result.after[0].tags).toEqual(['Favorites']);expect(result.after).toHaveLength(2);expect(result.files.sort()).toEqual(['Alpha original bytes','Beta original bytes']);
- await page.reload();await page.getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('.shelf-refine-toggle').click();await page.getByRole('button',{name:'Collections',exact:true}).click();const row=page.locator('.collection-row').filter({has:page.getByRole('heading',{name:'Weekends',exact:true})});await row.getByRole('button',{name:'Delete collection',exact:true}).click();await row.getByRole('button',{name:'Delete collection only',exact:true}).click();await expect(page.locator('.collection-row h3')).not.toContainText(['Weekends']);await page.getByRole('button',{name:'Close collections',exact:true}).click();await expect(page.locator('.book')).toHaveCount(2);
+test('Home book cards keep cover proportions and readable room across desktop and mobile',async({page})=>{
+ await start(page);
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'A recently added book with a long title.txt',mimeType:'text/plain',buffer:Buffer.from('A short book file used to check the new home shelf layout.')});
+ await expect(page.locator('.home-screen')).toBeVisible();
+ await expect(page.locator('.topbar-context')).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Download & read sample',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Download & add to shelf',exact:true}).first()).toBeVisible();
+ const recent=page.locator('.book-carousel .book-card.is-compact').first();await expect(recent).toBeVisible();
+ const sampleCover=page.locator('.sela-sample-cover');
+ for(const width of [320,390,768,1024,1440]){
+  await page.setViewportSize({width,height:900});
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px Home overflow`).toBe(true);
+  expect(await page.locator('.sela-sample-card').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px sample card overflow`).toBe(true);
+  const dimensions=await recent.locator('.book-cover').evaluate(element=>{const rect=element.getBoundingClientRect();return {width:rect.width,height:rect.height,aspect:getComputedStyle(element).aspectRatio};});
+  expect(dimensions.width/dimensions.height).toBeCloseTo(.71,1);
+  const sampleDimensions=await sampleCover.evaluate(element=>{const rect=element.getBoundingClientRect();return {width:rect.width,height:rect.height};});
+  expect(sampleDimensions.width/sampleDimensions.height).toBeCloseTo(.71,1);
+  expect(await sampleCover.locator('strong').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px sample cover title overflow`).toBe(true);
+  if(width>=768)expect((await recent.boundingBox())!.width,`${width}px Recently added card width`).toBeGreaterThan(280);
+ }
+ const copyWidth=await recent.locator('.book-card-copy').evaluate(element=>element.getBoundingClientRect().width);
+ expect(copyWidth).toBeGreaterThan(100);
 });
 
-test('collections and membership survive backup restore, and invalid operations are atomic',async({page,browser})=>{
- await shelf(page);await books(page);
- await page.evaluate(async()=>{const s=await import('/library/storage.js');const books=await s.listBooks();await s.changeCollection({action:'create',name:'Empty shelf'});await s.changeCollection({action:'add',name:'Reading',ids:[books[0].id]});localStorage.setItem('sela-library:'+books[0].id+':notes',JSON.stringify({'1':'Keep this note'}));});
- const atomic=await page.evaluate(async()=>{const s=await import('/library/storage.js');const all=await s.listBooks();try{await s.changeCollection({action:'add',name:'Should not exist',ids:[all[0].id,'missing']});}catch{}return {names:await s.listCollections(),all:await s.listBooks()};});expect(atomic.names).not.toContain('Should not exist');expect(atomic.all[0].tags).toEqual(['Reading']);await page.evaluate(async()=>{const s=await import('/library/storage.js');const books=await s.listBooks();await s.updateBook(books[0].id,{progress:7,total:20});});const refreshed=await page.evaluate(async()=>(await(await import('/library/storage.js')).listBooks())[0]);expect(refreshed.tags).toEqual(['Reading']);expect(refreshed.progress).toBe(7);
- await openSettingsCategory(page,'Your library & data');const downloaded=page.waitForEvent('download');await page.locator('#export-library').click();const buffer=await readFile(await(await downloaded).path());
- const context=await browser.newContext();try{const restored=await context.newPage();await shelf(restored);await openSettingsCategory(restored,'Your library & data');await restored.locator('#restore-library').setInputFiles({name:'backup.zip',mimeType:'application/zip',buffer});await expect(restored.locator('#status')).toContainText('2 books restored');const data=await restored.evaluate(async()=>{const s=await import('/library/storage.js');const all=await s.listBooks();return {names:await s.listCollections(),tags:all[0].tags,note:localStorage.getItem('sela-library:'+all[0].id+':notes'),files:await Promise.all(all.map(async b=>(await s.getFile(b.id)).text()))};});expect(data.names).toEqual(['Empty shelf','Reading']);expect(data.tags).toEqual(['Reading']);expect(data.note).toContain('Keep this note');expect(data.files.sort()).toEqual(['Alpha original bytes','Beta original bytes']);}finally{await context.close();}
+test('collections can be created, assigned in bulk and used to filter the shelf',async({page})=>{
+ await start(page);await importBooks(page);await page.goto('/app/#/shelf');
+ await page.getByRole('button',{name:'New collection',exact:true}).click();
+ const create=page.getByRole('dialog',{name:'Create a collection',exact:true});
+ await create.getByRole('textbox',{name:'Collection name'}).fill('Quiet evenings');await create.getByRole('button',{name:'Create collection',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Quiet evenings',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Select books',exact:true}).click();
+ const bulk=page.locator('.bulk-selection-panel');await bulk.getByRole('button',{name:'Select all shown',exact:true}).click();
+ await bulk.getByRole('button',{name:'Collection',exact:true}).click();
+ const assign=page.getByRole('dialog',{name:'Add selected books to a collection',exact:true});
+ await assign.getByRole('combobox',{name:'Collection name'}).fill('Quiet evenings');await assign.getByRole('button',{name:'Add books',exact:true}).click();
+ await page.getByRole('button',{name:'Quiet evenings',exact:true}).click();await expect(page).toHaveURL(/collection=Quiet%20evenings/);await expect(page.locator('.book-card')).toHaveCount(2);
 });
 
-test('database upgrade preserves v1 files and legacy collection tags',async({page})=>{
- await page.goto('/example/sela.html');await page.evaluate(async()=>{await new Promise<void>((resolve,reject)=>{const r=indexedDB.open('sela-private-library',1);r.onupgradeneeded=()=>{r.result.createObjectStore('books',{keyPath:'id'});r.result.createObjectStore('files',{keyPath:'id'});};r.onsuccess=()=>{const db=r.result,tx=db.transaction(['books','files'],'readwrite');tx.objectStore('books').put({id:'old',name:'Old book',format:'txt',tags:['Legacy']});tx.objectStore('files').put({id:'old',bytes:new TextEncoder().encode('Preserved original').buffer,type:'text/plain'});tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>reject(tx.error);};r.onerror=()=>reject(r.error);});});
- const result=await page.evaluate(async()=>{const s=await import('/library/storage.js');await s.changeCollection({action:'rename',name:'Legacy',next:'Migrated'});return {all:await s.listBooks(),names:await s.listCollections(),text:await(await s.getFile('old')).text()};});expect(result.all[0].tags).toEqual(['Migrated']);expect(result.names).toEqual(['Migrated']);expect(result.text).toBe('Preserved original');
+test('batch removal can be undone without losing original book files',async({page})=>{
+ await start(page);await importBooks(page);await page.goto('/app/#/shelf');
+ await page.getByRole('button',{name:'Select books',exact:true}).click();const bulk=page.locator('.bulk-selection-panel');
+ await bulk.getByRole('button',{name:'Select all shown',exact:true}).click();await bulk.getByRole('button',{name:'Remove selected',exact:true}).click();
+ const confirm=page.getByRole('dialog',{name:'Remove selected books?',exact:true});await confirm.getByRole('button',{name:'Remove selected',exact:true}).click();
+ await expect(page.locator('.book-card')).toHaveCount(0);await page.getByRole('button',{name:'Undo batch removal',exact:true}).click();await expect(page.locator('.book-card')).toHaveCount(2);
+ await page.locator('.book-card').getByRole('button',{name:'Open Alpha',exact:true}).click();await expect(page.locator('.reader-body')).toContainText('Alpha original bytes');
 });
 
-test('book membership controls work without prompts and renaming an active filter stays consistent',async({page})=>{
- await shelf(page);await books(page);await page.evaluate(async()=>{const s=await import('/library/storage.js');await s.changeCollection({action:'create',name:'Quiet'});await s.changeCollection({action:'create',name:'Later'});});await page.reload();await page.getByRole('button',{name:'Shelf',exact:true}).click();
- await page.getByRole('button',{name:'Book options: Alpha',exact:true}).click();await page.getByRole('button',{name:'Edit collections',exact:true}).click();const modal=page.getByRole('dialog',{name:'Collections',exact:true});const quiet=modal.locator('.collection-row').filter({has:page.getByRole('heading',{name:'Quiet',exact:true})});await quiet.getByRole('button',{name:'Add selected',exact:true}).click();await expect(quiet).toContainText('1 / 1');await quiet.getByLabel('Move from Quiet').selectOption('Later');await quiet.getByRole('button',{name:'Move selected',exact:true}).click();await expect(quiet).toContainText('0 / 1');await page.getByRole('button',{name:'Close collections',exact:true}).click();
- await page.locator('.shelf-refine-toggle').click();await page.locator('#tag-filter').selectOption('Later');await expect(page.locator('.book')).toHaveCount(1);await page.locator('.shelf-refine-toggle').click();await page.getByRole('button',{name:'Collections',exact:true}).click();const later=page.locator('.collection-row').filter({has:page.getByRole('heading',{name:'Later',exact:true})});await later.getByRole('button',{name:'Rename collection',exact:true}).click();await later.getByLabel('New collection name').fill('Weekends');await later.getByRole('button',{name:'Save name',exact:true}).click();await expect(page.locator('.collection-row h3')).toContainText(['Weekends']);await page.getByRole('button',{name:'Close collections',exact:true}).click();await expect(page.locator('.book')).toHaveCount(2);await expect(page.locator('#tag-filter')).toHaveValue('');await expect(page.locator('.shelf-refine-toggle')).toBeFocused();
+test('database upgrades preserve v1 book files and collection tags',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
+ await page.goto('/');
+ await page.evaluate(async()=>{
+  await new Promise<void>((resolve,reject)=>{
+   const request=indexedDB.open('sela-private-library',1);
+   request.onupgradeneeded=()=>{request.result.createObjectStore('books',{keyPath:'id'});request.result.createObjectStore('files',{keyPath:'id'});};
+   request.onsuccess=()=>{const db=request.result,tx=db.transaction(['books','files'],'readwrite');
+    tx.objectStore('books').put({id:'legacy-book',name:'Old book',filename:'Old book.txt',format:'txt',size:18,saved:1,opened:0,tags:['Legacy']});
+    tx.objectStore('files').put({id:'legacy-book',bytes:new TextEncoder().encode('Preserved original').buffer,type:'text/plain'});
+    tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>reject(tx.error);
+   };request.onerror=()=>reject(request.error);
+  });
+ });
+ await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);
+ await page.getByRole('button',{name:'Legacy',exact:true}).click();await expect(page.getByRole('button',{name:'Open Old book',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Open Old book',exact:true}).click();await expect(page.locator('.reader-layout main article')).toContainText('Preserved original');
 });
 
 test('pinch batches raster work and cancellation or disposal cannot leave an active gesture',async({page})=>{
- await page.goto('/example/sela.html');const result=await page.evaluate(async()=>{const {bindZoomGestures}=await import('/dist/source/src/gestures.js');const node=document.createElement('div');document.body.append(node);const calls=[];let begun=0,ended=0;const owner={zoom:1,beginGesture(){begun++;},endGesture(){ended++;},setZoom(z,point){this.zoom=z;calls.push({z,point});},panBy(x,y){calls.push({x,y});}};const cleanup=bindZoomGestures(node,owner,{});function event(type,id,x,y=100){node.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true}));}
- event('pointerdown',1,100);event('pointerdown',2,200);for(let x=210;x<=300;x+=10)event('pointermove',2,x);await new Promise(requestAnimationFrame);const first=calls.slice();event('pointermove',2,330);event('pointercancel',1,100);await new Promise(requestAnimationFrame);const afterCancel=calls.length;event('pointermove',2,400);await new Promise(requestAnimationFrame);const afterOrphan=calls.length;event('pointerdown',3,100);event('pointerdown',4,200);cleanup();event('pointermove',4,400);await new Promise(requestAnimationFrame);return {first,begun,ended,afterCancel,afterOrphan,final:calls.length};});expect(result.first).toHaveLength(1);expect(result.first[0]).toEqual({z:2,point:{x:200,y:100}});expect(result.afterCancel).toBe(result.afterOrphan);expect(result.final).toBe(result.afterOrphan);expect(result.begun).toBe(result.ended);
+ await page.goto('/example/sela.html');
+ const result=await page.evaluate(async()=>{
+  const {bindZoomGestures}=await import('/dist/source/src/gestures.js'),node=document.createElement('div');document.body.append(node);
+  const calls=[];let begun=0,ended=0;const owner={zoom:1,beginGesture(){begun++;},endGesture(){ended++;},setZoom(z,point){this.zoom=z;calls.push({z,point});},panBy(x,y){calls.push({x,y});}};
+  const cleanup=bindZoomGestures(node,owner,{});function event(type,id,x,y=100){node.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true}));}
+  event('pointerdown',1,100);event('pointerdown',2,200);for(let x=210;x<=300;x+=10)event('pointermove',2,x);await new Promise(requestAnimationFrame);const first=calls.slice();
+  event('pointermove',2,330);event('pointercancel',1,100);await new Promise(requestAnimationFrame);const afterCancel=calls.length;event('pointermove',2,400);await new Promise(requestAnimationFrame);const afterOrphan=calls.length;
+  event('pointerdown',3,100);event('pointerdown',4,200);cleanup();event('pointermove',4,400);await new Promise(requestAnimationFrame);return {first,begun,ended,afterCancel,afterOrphan,final:calls.length};
+ });
+ expect(result.first).toHaveLength(1);expect(result.first[0]).toEqual({z:2,point:{x:200,y:100}});expect(result.afterCancel).toBe(result.afterOrphan);expect(result.final).toBe(result.afterOrphan);expect(result.begun).toBe(result.ended);
 });
 
-test('text actions appear only for an actual selection and keep quote notes',async({page})=>{
- await shelf(page);await books(page);await page.getByRole('button',{name:'Book information: Alpha',exact:true}).first().click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await page.getByRole('button',{name:'Reader settings',exact:true}).click();await page.getByRole('button',{name:'All reading tools',exact:true}).click();await page.getByRole('tab',{name:'Document text',exact:true}).click();await expect(page.locator('.sela-selection-actions')).toBeHidden();
- await page.locator('.sela-transcript').evaluate(el=>{const range=document.createRange();range.selectNodeContents(el);getSelection().removeAllRanges();getSelection().addRange(range);el.dispatchEvent(new PointerEvent('pointerup'));});await expect(page.locator('.sela-selection-actions')).toBeVisible();await page.getByRole('button',{name:'Save selected quote to notes',exact:true}).click();await expect(page.locator('.sela-tools-status')).toContainText('Quote saved');await page.getByRole('button',{name:'Clear selection',exact:true}).click();await expect(page.locator('.sela-selection-actions')).toBeHidden();const notes=await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.endsWith(':notes')).map(k=>localStorage.getItem(k)));expect(notes.join('')).toContain('Alpha original bytes');await page.locator('.sela-transcript').evaluate(el=>{const range=document.createRange();range.selectNodeContents(el);getSelection().removeAllRanges();getSelection().addRange(range);el.dispatchEvent(new PointerEvent('pointerup'));});await page.getByRole('button',{name:'Share selected quote',exact:true}).click();await expect(page.getByLabel('Quote text')).toHaveValue('Alpha original bytes');await page.getByRole('button',{name:'Create preview',exact:true}).click();await expect(page.locator('.app-share-panel img')).toBeVisible();
+test('React reading desk saves a selected passage as a local note',async({page})=>{
+ await start(page);await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'Passage.txt',mimeType:'text/plain',buffer:Buffer.from('A passage worth keeping in my reading notes.')});
+ await page.goto('/app/#/shelf');await page.getByRole('button',{name:'Open Passage',exact:true}).click();const reader=page.locator('.reader-layout');await expect(reader).toBeVisible();
+ const text=reader.locator('main article');await expect(text).toContainText('A passage worth keeping');await expect.poll(()=>text.evaluate(element=>element.getRootNode()===document)).toBe(true);
+ const textPosition=await reader.locator('.reader-mount').evaluate(async node=>{const {captureTextPosition,restoreTextPosition}=await import('/dist/source/src/preferences.js');const position=captureTextPosition(node as HTMLElement);restoreTextPosition(node as HTMLElement,position);return position;});expect(textPosition.block).toBe(0);
+ const contentSelectors=await reader.locator('.sela-epub-chapter > style').evaluate(element=>Array.from((element as HTMLStyleElement).sheet!.cssRules).flatMap(rule=>(rule as CSSStyleRule).selectorText.split(',').map(selector=>selector.trim())));expect(contentSelectors).toContain('.sela-epub-chapter > article h2');expect(contentSelectors).not.toContain('h2');
+ await text.evaluate(element=>{const range=document.createRange();range.selectNodeContents(element);const selection=window.getSelection();selection?.removeAllRanges();selection?.addRange(range);});await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString()||'')).toContain('A passage worth keeping');
+ await reader.getByRole('button',{name:'Reading desk',exact:true}).click();const desk=page.getByRole('dialog',{name:'Reading desk',exact:true});await desk.getByRole('tab',{name:'Notes',exact:true}).click();
+ const addQuote=desk.getByRole('button',{name:'Add selected quote',exact:true});await expect(addQuote).toBeVisible();await addQuote.click();await expect(desk.getByLabel('Note for this page')).toHaveValue(/A passage worth keeping/);await expect(desk.getByRole('status')).toContainText('Saved on this device.');
 });

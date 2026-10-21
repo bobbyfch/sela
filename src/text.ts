@@ -81,9 +81,19 @@ export class TextBook {
       const section = document.createElement('section'); section.className = 'sela-epub-chapter';section.dataset.page='1';
       if(quranArabicSize)section.style.setProperty('--quran-arabic-size',`${quranArabicSize}px`);
       if(quranTranslationSize)section.style.setProperty('--quran-translation-size',`${quranTranslationSize}px`);
-      const shadow = section.attachShadow({ mode: 'open' }); const style = document.createElement('style');
-      style.textContent = 'article{font-size:var(--sela-text-size,19px);line-height:var(--sela-line-height,1.8);font-family:var(--sela-text-font,Georgia,serif);text-align:var(--sela-text-align,start);color:var(--sela-fg);overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}pre{white-space:pre-wrap}p{white-space:pre-wrap}table{max-width:100%}a{color:inherit}.quran-source{font:400 .8em/1.6 system-ui,sans-serif;opacity:.72;margin:0 0 2em}.quran-verse{padding:1.5em 0;border-bottom:1px solid currentColor}.quran-verse h2{font:600 .8em/1.4 system-ui,sans-serif;opacity:.65}.quran-arabic{font-family:"Noto Naskh Arabic","Amiri",serif;font-size:var(--quran-arabic-size,32px);line-height:2.1;text-align:center;margin:1em 0 1.5em}.quran-translation{font-family:system-ui,sans-serif;font-size:var(--quran-translation-size,18px);line-height:1.8;white-space:pre-wrap}.quran-footnotes{display:block;font:400 .8em/1.6 system-ui,sans-serif;opacity:.68;margin-top:.75em}';
-      shadow.append(style, this.article); this.container.append(section); this.numPages = 1;
+      const articleSelector = this.opts.appContext ? '.sela-epub-chapter > article' : 'article';
+      const withinArticle = (selector: string) => selector.split(',').map(rule => `${articleSelector} ${rule.trim()}`).join(',');
+      const textStyles = `${articleSelector}{font-size:var(--sela-text-size,19px);line-height:var(--sela-line-height,1.8);font-family:var(--sela-text-font,Georgia,serif);text-align:var(--sela-text-align,start);color:var(--sela-fg);overflow-wrap:anywhere}${withinArticle('h1,h2,h3')}{line-height:1.3}${withinArticle('pre')}{white-space:pre-wrap}${withinArticle('p')}{white-space:pre-wrap}${withinArticle('table')}{max-width:100%}${withinArticle('a')}{color:inherit}${withinArticle('.quran-source')}{font:400 .8em/1.6 system-ui,sans-serif;opacity:.72;margin:0 0 2em}${withinArticle('.quran-verse')}{padding:1.5em 0;border-bottom:1px solid currentColor}${withinArticle('.quran-verse h2')}{font:600 .8em/1.4 system-ui,sans-serif;opacity:.65}${withinArticle('.quran-arabic')}{font-family:"Noto Naskh Arabic","Amiri",serif;font-size:var(--quran-arabic-size,32px);line-height:2.1;text-align:center;margin:1em 0 1.5em}${withinArticle('.quran-translation')}{font-family:system-ui,sans-serif;font-size:var(--quran-translation-size,18px);line-height:1.8;white-space:pre-wrap}${withinArticle('.quran-footnotes')}{display:block;font:400 .8em/1.6 system-ui,sans-serif;opacity:.68;margin-top:.75em}`;
+      const style = document.createElement('style');
+      if (this.opts.appContext) {
+        style.textContent = textStyles;
+        section.append(style, this.article);
+      } else {
+        const shadow = section.attachShadow({ mode: 'open' });
+        style.textContent = textStyles;
+        shadow.append(style, this.article);
+      }
+      this.container.append(section); this.numPages = 1;
       this.emit('ready', { pages: 1 });
     } catch (error) { if (!this.destroyed) this.emit('error', { error }); }
   }

@@ -10,16 +10,16 @@ async function database() {
     req.onsuccess = () => {
       req.result.onversionchange = () => {
         req.result.close();
-        pending = null;
+        pending = void 0;
       };
       resolve(req.result);
     };
     req.onerror = () => {
-      pending = null;
+      pending = void 0;
       reject(req.error);
     };
     req.onblocked = () => {
-      pending = null;
+      pending = void 0;
       reject(new Error("Close other Sela tabs, then try again."));
     };
   });
@@ -77,7 +77,7 @@ export async function updateBook(id, values) {
       const { id: ignored, ...patch } = values;
       store.put({ ...request.result, ...patch });
     };
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => resolve();
     tx.onerror = tx.onabort = () => reject(failure || tx.error);
   });
 }
@@ -99,7 +99,7 @@ export async function writeBook(book, blob, remove = false, bytes) {
       tx.objectStore("books").put(stored);
       if (file) tx.objectStore("files").put(file);
     }
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => resolve();
     tx.onerror = tx.onabort = () => reject(tx.error || new Error("Local storage failed. Export books or free browser storage."));
   });
 }
@@ -141,12 +141,12 @@ export async function listCollections() {
     tx.onerror = tx.onabort = () => reject(tx.error);
   });
 }
-export async function changeCollection({ action, name, next, ids = [], from } = {}) {
+export async function changeCollection({ action, name, next, ids = [], from }) {
   if (!["create", "rename", "delete", "add", "remove", "move", "replace"].includes(action)) throw Error("Invalid collection operation");
-  if (action !== "replace") name = collectionName(name);
-  if (action === "rename") next = collectionName(next);
-  if (action === "move") from = collectionName(from);
-  const replacements = action === "replace" ? [...new Set((next || []).map(collectionName))] : [];
+  const targetName = action === "replace" ? void 0 : collectionName(name);
+  const nextName = action === "rename" ? collectionName(typeof next === "string" ? next : void 0) : void 0;
+  const sourceName = action === "move" ? collectionName(from) : void 0;
+  const replacements = action === "replace" ? [...new Set((Array.isArray(next) ? next : []).map(collectionName))] : [];
   if (replacements.length > 30) throw Error("Choose up to 30 collections per book.");
   const db = await database();
   return new Promise((resolve, reject) => {
@@ -158,20 +158,20 @@ export async function changeCollection({ action, name, next, ids = [], from } = 
       if (++ready !== 2) return;
       try {
         const names = /* @__PURE__ */ new Set([...known.result.map((n) => n.name), ...all.result.flatMap((b) => b.tags || [])]);
-        if (action === "create" && names.has(name) || action === "rename" && name !== next && names.has(next)) throw Error("A collection with that name already exists.");
-        if (["rename", "delete"].includes(action) && !names.has(name)) throw Error("Collection no longer exists.");
-        const added = ["create", "add", "move"].includes(action) ? [name] : replacements;
+        if (action === "create" && names.has(targetName) || action === "rename" && targetName !== nextName && names.has(nextName)) throw Error("A collection with that name already exists.");
+        if (["rename", "delete"].includes(action) && !names.has(targetName)) throw Error("Collection no longer exists.");
+        const added = ["create", "add", "move"].includes(action) ? [targetName] : replacements;
         if (names.size <= 200 && (/* @__PURE__ */ new Set([...names, ...added])).size > 200) throw Error("Up to 200 collections are supported.");
         const chosen = new Set(ids);
         if (ids.length && ids.some((id) => !all.result.some((b) => b.id === id))) throw Error("A selected book is no longer on this shelf.");
         for (const book of all.result) {
           const tags = new Set(book.tags || []);
           let changed = false;
-          if (action === "rename" && tags.delete(name)) {
-            tags.add(next);
+          if (action === "rename" && tags.delete(targetName)) {
+            tags.add(nextName);
             changed = true;
           }
-          if (action === "delete" && tags.delete(name)) changed = true;
+          if (action === "delete" && tags.delete(targetName)) changed = true;
           if (chosen.has(book.id)) {
             if (action === "replace") {
               tags.clear();
@@ -179,25 +179,25 @@ export async function changeCollection({ action, name, next, ids = [], from } = 
               changed = true;
             }
             if (action === "add") {
-              tags.add(name);
+              tags.add(targetName);
               changed = true;
             }
-            if (action === "remove") changed = tags.delete(name);
-            if (action === "move" && tags.delete(from)) {
-              tags.add(name);
+            if (action === "remove") changed = tags.delete(targetName);
+            if (action === "move" && tags.delete(sourceName)) {
+              tags.add(targetName);
               changed = true;
             }
           }
           if (tags.size > 30) throw Error("Choose up to 30 collections per book.");
           if (changed) books.put({ ...book, tags: [...tags] });
         }
-        if (["create", "add", "move"].includes(action)) registry.put({ name });
+        if (["create", "add", "move"].includes(action)) registry.put({ name: targetName });
         if (action === "replace") replacements.forEach((name2) => registry.put({ name: name2 }));
         if (action === "rename") {
-          registry.delete(name);
-          registry.put({ name: next });
+          registry.delete(targetName);
+          registry.put({ name: nextName });
         }
-        if (action === "delete") registry.delete(name);
+        if (action === "delete") registry.delete(targetName);
       } catch (e) {
         failure = e;
         tx.abort();
@@ -205,7 +205,7 @@ export async function changeCollection({ action, name, next, ids = [], from } = 
     }
     all.onsuccess = update;
     known.onsuccess = update;
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => resolve();
     tx.onerror = tx.onabort = () => reject(failure || tx.error || Error("Collection could not be saved."));
   });
 }

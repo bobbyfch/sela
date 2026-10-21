@@ -11,8 +11,22 @@ import {appCacheIdentity} from './cache-identity.ts';
 import postcss from 'postcss';
 
 const {version: VERSION} = JSON.parse(await readFile('package.json','utf8'));
-async function writeAtomic(path:string,data:string|Uint8Array){const temp=path+'.'+process.pid+'.tmp';await writeFileRaw(temp,data);try{await rename(temp,path);}catch(error){await unlink(temp).catch(()=>{});throw error;}}
+async function writeAtomic(path:string,data:string|Uint8Array){
+ const temp=path+'.'+process.pid+'.tmp';await writeFileRaw(temp,data);let lastError:unknown;
+ for(let attempt=0;attempt<4;attempt++){
+  try{await rename(temp,path);return;}
+  catch(error){lastError=error;if((error as {code?:string})?.code!=='EPERM'||attempt===3)break;await new Promise(resolve=>setTimeout(resolve,50*(attempt+1)));}
+ }
+ if(['EPERM','EACCES'].includes((lastError as {code?:string})?.code||'')){
+  try{await writeFileRaw(path,data);await unlink(temp).catch(()=>{});return;}catch{}
+ }
+ await unlink(temp).catch(()=>{});throw lastError;
+}
 const writeFile=writeAtomic;
+// The web app has one canonical output location. Retire the previous duplicate
+// app tree and clear only Vite-generated files before writing the new bundle.
+await rm('mobile',{recursive:true,force:true});
+await Promise.all(['app/chunks','app/assets','app/gate.js'].map(path=>rm(path,{recursive:true,force:true})));
 const iconFiles=['site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png'];
 const iconRevisions=new Map<string,string>();
 for(const path of iconFiles)iconRevisions.set(posix.basename(path),createHash('sha256').update(await readFile(path)).digest('hex').slice(0,12));
@@ -110,12 +124,11 @@ async function buildTailwindStyles(entry: string, destination: string, outputDir
  await writeFile(destination,options.banner?`${options.banner}\n${compiled}`:compiled);
  await rm(outputDir,{recursive:true,force:true});
 }
-await buildTailwindStyles('ui/public-tailwind-entry.ts','site/public.css','.build/tailwind-public',{allowPreflight:true,assetDirectory:'site'});
-await buildTailwindStyles('ui/mobile-tailwind-entry.ts','site/mobile-app.css','.build/tailwind-mobile',{utilitySource:['ui/app-tailwind-utilities.css','ui/home-responsive-utilities.css','ui/app-redesign-utilities.css'],scopeSelector:'body[data-product=mobile]',rootClass:'library-reader-overlay',scopeUtilitySource:['ui/app-reader-utilities.css','ui/app-redesign-utilities.css'],scopeUtilityPattern:/^(?:app-redesign$|library-reader-|app-reading-|app-quran-|app-reader-|fb-(?:counter|nav|tool)$|sela-(?:credit|debug-panel|selection-actions|tool-tabs|tools|webtoon-tools)$|reader-audio$|reading-summary$)/});
-await buildTailwindStyles('ui/app-reader-tailwind-entry.ts','dist/css/sela.app.css','.build/tailwind-app-reader',{utilitySource:'ui/app-reader-utilities.css',scopeSelector:'[data-product-reader="app"]',stripLayers:['base']});
+await buildTailwindStyles('ui/public-tailwind-entry.ts','site/public.css','.build/tailwind-public',{allowPreflight:true,assetDirectory:'site',utilityCheck:false});
+await buildTailwindStyles('ui/app-reader-tailwind-entry.ts','dist/css/sela.app.css','.build/tailwind-app-reader',{assetDirectory:'dist/css',utilityCheck:false,utilitySource:'ui/app-reader-utilities.css',scopeSelector:'[data-product-reader="app"]',stripLayers:['base']});
 await buildTailwindStyles('ui/viewer-tailwind-entry.ts','dist/css/sela.min.css','.build/tailwind-viewer',{utilityCheck:false,banner,utilitySource:'ui/viewer-tailwind-utilities.css',scopeSelector:'.library-reader-overlay',stripLayers:['base','theme','properties']});
 // These old copied stylesheets duplicated the Tailwind bundles and are no longer runtime assets.
-await Promise.all(['site/app-materials.css','site/tokens.css'].map(path=>rm(path,{force:true})));
+await Promise.all(['site/app-materials.css','site/tokens.css','site/mobile-app.css'].map(path=>rm(path,{force:true})));
 for (const dir of ['dist/js', 'dist/css', 'dist/types', 'dist/vendor/pdfjs/build', 'dist/vendor/pdfjs/legacy/build']) await mkdir(dir, { recursive: true });
 // Vite library builds keep the universal SDK free of React/framework runtimes.
 async function bundle(entry: string, file: string, format: 'es' | 'iife' = 'es') {
@@ -134,6 +147,7 @@ await bundle('src/module.ts','sela.esm.js');
 for (const [name,entry] of [['archive-worker','src/archive-worker.ts'],['archive','src/archive.ts'],['djvu','src/djvu.ts'],['host','src/host-integration.ts'],['scriptures','src/scriptures.ts'],['profiles','app/library/reader-profiles.ts'],['office','src/office.ts'],['metadata','src/book-metadata.ts'],['app','app/library/reader-shell.ts'],['tools','src/reading-tools.ts'],['text','src/text.ts'],['locales','src/locale-translations.ts']]) await bundle(entry,'sela.'+name+'.js');
 await copyFile('node_modules/fflate/LICENSE','dist/fflate-LICENSE.txt');
 await copyFile('node_modules/three/LICENSE','dist/three-LICENSE.txt');
+await copyFile('node_modules/@fontsource/opendyslexic/LICENSE','dist/opendyslexic-LICENSE.txt');
 await copyFile('node_modules/@orama/orama/LICENSE.md','dist/orama-LICENSE.md');
 await copyFile('node_modules/@orama/stemmers/LICENSE.md','dist/orama-stemmers-LICENSE.md');
 await rm('dist/materials',{recursive:true,force:true});
@@ -158,26 +172,32 @@ for (const [folder,entry] of [['dist/types','index'],['dist/js','sela.esm']]) {
 // Astro generates the public/reader HTML; the public page has no hydration.
 await astroBuild({configFile:'./astro.config.ts',logLevel:'warn'});
 await writeFile('index.html',render(await readFile('.build/site/index.html','utf8')));
-await writeFile('mobile/index.html',render(await readFile('.build/site/mobile/index.html','utf8')));
 await mkdir('app',{recursive:true});
 await writeFile('app/index.html',render(await readFile('.build/site/app/index.html','utf8')));
 await viteBuild({configFile:'./vite.config.ts',logLevel:'warn'});
-for(const file of await readdir('.build/app')) {
- await copyFile('.build/app/'+file,'mobile/'+file);
- await copyFile('.build/app/'+file,'app/'+file);
+await cp('.build/app','app',{recursive:true,force:true});
+async function bundlePaths(folder:string,base=folder):Promise<string[]> {
+ const paths:string[]=[];
+ for(const entry of await readdir(folder,{withFileTypes:true})){
+  const path=folder+'/'+entry.name;
+  if(entry.isDirectory())paths.push(...await bundlePaths(path,base));
+  else paths.push(posix.relative(base,path));
+ }
+ return paths;
 }
-const appOutput=await transform(render(await readFile('mobile/app.js','utf8')),{minify:true,target:'es2022',legalComments:'none'});
-await writeFile('mobile/app.js',generatedBanner('app/mobile/react-app.tsx')+'/*! React and React DOM | MIT | see react-LICENSE.txt and react-dom-LICENSE.txt */\n'+appOutput.code);
-await writeFile('app/app.js',generatedBanner('app/mobile/react-app.tsx')+'/*! React and React DOM | MIT | see react-LICENSE.txt and react-dom-LICENSE.txt */\n'+appOutput.code);
-await copyFile('node_modules/react/LICENSE','mobile/react-LICENSE.txt');
-await copyFile('node_modules/react-dom/LICENSE','mobile/react-dom-LICENSE.txt');
+const appBundlePaths=await bundlePaths('.build/app');
+const appOutput=await transform(render(await readFile('app/app.js','utf8')),{minify:true,target:'es2022',legalComments:'none'});
+await writeFile('app/app.js',generatedBanner('web/app/ui/main.tsx')+'/*! React and React DOM | MIT | see react-LICENSE.txt and react-dom-LICENSE.txt */\n'+appOutput.code.replace(/^[\t ]+$/gm,''));
 await copyFile('node_modules/react/LICENSE','app/react-LICENSE.txt');
 await copyFile('node_modules/react-dom/LICENSE','app/react-dom-LICENSE.txt');
-const mobileManifest=JSON.parse(await readFile('mobile/manifest.webmanifest','utf8'));
-for(const icon of mobileManifest.icons||[])icon.src=versionBrandUrl(icon.src);
-await writeFile('mobile/manifest.webmanifest',JSON.stringify(mobileManifest,null,2)+'\n');
-const appManifest=structuredClone(mobileManifest);
-appManifest.id='./';appManifest.start_url='./?installed=1';appManifest.scope='./';appManifest.share_target.action='./share';
+await copyFile('node_modules/@mantine/core/LICENSE','app/mantine-LICENSE.txt');
+await copyFile('node_modules/@mantine/dropzone/LICENSE','app/mantine-dropzone-LICENSE.txt');
+await copyFile('node_modules/react-dropzone/LICENSE','app/react-dropzone-LICENSE.txt');
+const appManifest=JSON.parse(await readFile('manifest.webmanifest','utf8'));
+appManifest.id='./';appManifest.start_url='./?installed=1';appManifest.scope='./';
+appManifest.share_target={action:'./share',method:'POST',enctype:'multipart/form-data',params:{files:[{name:'books',accept:['application/pdf','application/epub+zip','application/zip','application/vnd.comicbook+zip','text/plain','text/markdown','text/html','application/x-fictionbook+xml','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.oasis.opendocument.text','.pdf','.epub','.cbz','.txt','.md','.html','.htm','.fb2','.docx','.odt']}]}};
+appManifest.file_handlers=[{action:'./',accept:{'application/pdf':['.pdf'],'application/epub+zip':['.epub'],'application/zip':['.epub','.cbz','.docx','.odt'],'text/plain':['.txt','.md'],'text/html':['.html','.htm'],'application/x-fictionbook+xml':['.fb2'],'application/vnd.openxmlformats-officedocument.wordprocessingml.document':['.docx'],'application/vnd.oasis.opendocument.text':['.odt']}}];
+for(const icon of appManifest.icons||[])icon.src='../'+versionBrandUrl(icon.src);
 for(const handler of appManifest.file_handlers||[])handler.action='./';
 await writeFile('app/manifest.webmanifest',JSON.stringify(appManifest,null,2)+'\n');
 const publicManifest=JSON.parse(await readFile('manifest.webmanifest','utf8'));
@@ -203,15 +223,16 @@ async function typeScriptSources(folder: string): Promise<string[]> {
  }
  return result;
 }
-const sharedUtilities=['src/gestures.ts','src/preferences.ts','src/appearance.ts','src/locale.ts','src/i18n.ts'];
-const sources=[...sharedUtilities,...(await typeScriptSources('app')).filter(path=>path!=='app/site/viewer-sw.ts'&&path!=='app/library/home-world.ts'),'examples/web-component.ts'];
+const sharedUtilities=['src/gestures.ts','src/preferences.ts','src/appearance.ts','src/locale.ts','src/i18n.ts','src/archive-codec.ts','src/archive-client.ts'];
+const platformSources=await typeScriptSources('web/app/platform');
+const sources=[...sharedUtilities,...(await typeScriptSources('app')).filter(path=>path!=='app/site/viewer-sw.ts'),...platformSources,'examples/web-component.ts'];
 // Remove only obsolete files generated by this build, preserving unrelated assets.
 await mkdir('dist/source/src',{recursive:true});
 for(const file of await readdir('dist/source/src')){
  const path='dist/source/src/'+file;
  if(file.endsWith('.js')&&!sharedUtilities.includes('src/'+file.replace(/\.js$/,'.ts'))&&(await readFile(path,'utf8')).startsWith('// Generated from src/'))await unlink(path);
 }
-const runtimePath = (source: string) => source.startsWith('app/') ? source.slice(4).replace(/\.ts$/,'.js') : source.startsWith('src/') ? 'dist/source/'+source.replace(/\.ts$/,'.js') : source.replace(/\.ts$/,'.js');
+const runtimePath = (source: string) => source.startsWith('web/app/platform/') ? 'app/'+posix.basename(source).replace(/\.ts$/,'.js') : source.startsWith('app/') ? source.slice(4).replace(/\.ts$/,'.js') : source.startsWith('src/') ? 'dist/source/'+source.replace(/\.ts$/,'.js') : source.replace(/\.ts$/,'.js');
 for(const source of sources) {
  const target=runtimePath(source);
  let code=await readFile(source,'utf8');
@@ -223,11 +244,13 @@ for(const source of sources) {
   return prefix+relative+quote;
  });
  code=render(code);
- const output=await transform(code,{loader:'ts',target:source==='app/site/platform.ts'?'es5':source.startsWith('app/')?'es2022':'es2020',legalComments:'inline',tsconfigRaw:{compilerOptions:{useDefineForClassFields:false}}});
+ const output=await transform(code,{loader:'ts',target:source==='app/site/platform.ts'?'es5':source.startsWith('app/')||source.startsWith('web/app/platform/')?'es2022':'es2020',legalComments:'inline',tsconfigRaw:{compilerOptions:{useDefineForClassFields:false}}});
  await mkdir(posix.dirname(target),{recursive:true});
- const browserCode=source==='app/library/home-widgets.ts'?output.code.replace(/from\s+(["'])embla-carousel\1/g,'from "./vendor/embla-carousel.js"'):output.code;
- await writeFile(target,generatedBanner(source)+browserCode);
+ await writeFile(target,generatedBanner(source)+output.code);
 }
+// Remove browser bundles that belonged only to the retired DOM-built app screens.
+const retiredLibraryBundles=['library/advanced.js','library/collections.js','library/home-atmosphere.js','library/home-world.js','library/home-widgets.js','library/library-experience.js','library/library.js','library/personal.js','library/prayer-times.js','library/reading-desk.js','library/reading-progress.js','library/weather.js'];
+for(const path of retiredLibraryBundles)await rm(path,{force:true});
 // Orama and its stemmers are lazy-loaded by the standalone browser app too.
 // Bundle their npm imports so the framework-free shell needs no import map.
 await mkdir('.build/smart-search',{recursive:true});
@@ -236,10 +259,6 @@ await writeFile('library/smart-search.js',generatedBanner('app/library/smart-sea
 await mkdir('library/vendor',{recursive:true});
 await esbuildBuild({entryPoints:['node_modules/embla-carousel/esm/embla-carousel.esm.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,legalComments:'inline',outfile:'.build/embla-carousel.js'});
 await writeFile('library/vendor/embla-carousel.js',generatedBanner('npm dependency embla-carousel@'+lock.packages['node_modules/embla-carousel'].version)+'/*! Embla Carousel | MIT | https://www.embla-carousel.com */\n'+await readFile('.build/embla-carousel.js','utf8'));
-for(const file of await readdir('mobile'))if(file.endsWith('.js'))await copyFile('mobile/'+file,'app/'+file);
-// Bundle the optional Three.js room as one local, lazy-loaded module.
-await viteBuild({configFile:false,logLevel:'warn',build:{target:'es2022',outDir:'.build/home-world',emptyOutDir:true,minify:true,lib:{entry:'app/library/home-world.ts',formats:['es'],fileName:()=> 'home-world.js'}}});
-await writeFile('library/home-world.js',generatedBanner('app/library/home-world.ts')+'/*! Three.js | MIT | see dist/three-LICENSE.txt */\n'+await readFile('.build/home-world/home-world.js','utf8'));
 await mkdir('library/assets',{recursive:true});
 const sourceArtwork=new Set(await readdir('app/library/assets'));
 for(const file of await readdir('library/assets'))if(!sourceArtwork.has(file))await unlink('library/assets/'+file);
@@ -254,32 +273,31 @@ for (const path of ['dist/js/sela.min.js', 'dist/js/sela.esm.js', 'dist/js/sela.
   const data = await readFile(path);
   manifest.assets[path] = { bytes: (await stat(path)).size, gzip: gzipSync(data).length, sha256: createHash('sha256').update(data).digest('hex') };
 }
-await writeAtomic('dist/manifest.json',JSON.stringify(manifest,null,2)+'\n');
+await writeFile('dist/manifest.json',JSON.stringify(manifest,null,2)+'\n');
 console.log(JSON.stringify(manifest, null, 2));
-const shell=['index.html','site/screenshots/app-desktop.webp','site/screenshots/app-mobile.webp','site/art/sela-reader-mascot-3d.webp','library/assets/sela-companions-3d.webp','site/Phosphor-Fill.woff2','site/public.css','site/demo.js','site/motion.js','site/pwa.js','site/platform.js','site/products.js','site/product-language.js','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','logo.svg','favicon.svg','favicon.png','manifest.webmanifest','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','dist/js/sela.compat.js','dist/js/sela.min.js','dist/css/sela.min.css','dist/js/sela.tools.js','dist/js/sela.text.js'];
+const shell=['index.html','site/screenshots/app-desktop.webp','site/screenshots/app-mobile.webp','site/art/selabooks-paper-still-life.webp','site/Phosphor-Fill.woff2','site/public.css','site/demo.js','site/motion.js','site/pwa.js','site/platform.js','site/products.js','site/product-language.js','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','logo.svg','favicon.svg','favicon.png','manifest.webmanifest','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','dist/js/sela.compat.js','dist/js/sela.min.js','dist/css/sela.min.css','dist/js/sela.tools.js','dist/js/sela.text.js'];
 const allowed=[...shell,'example/story/cover.jpg'];
 for (let i=0;i<shell.length;i++) {const path=shell[i].split('?')[0];if (/^(site\/.*\.(js|css)|dist\/js\/sela\.compat\.js)$/.test(path)||isBrandAsset(path)) shell[i]=versionedUrl(path);}
 async function offlinePaths(folder){for(const file of await readdir(folder,{withFileTypes:true})){const path=folder+'/'+file.name;if(file.isDirectory())await offlinePaths(path);else if(!/\.tsx?$/.test(path)&&path!=='site/illustrations/book-garden.webp')allowed.push(path);}}
-await offlinePaths('dist');await offlinePaths('site');await offlinePaths('mobile');await offlinePaths('app');await offlinePaths('library');
-await writeAtomic('offline-assets.json',JSON.stringify({version:manifest.version,shell,mobileShell:['library/advanced.js','library/dictionary.js','library/search-worker.js','library/audio.js','library/external-catalogs.js','library/personal.js','library/personal-store.js','library/home-world.js','library/home-widgets.js','library/holiday-calendar.js','dist/source/src/i18n.js','dist/js/sela.locales.js','library/assets/sela-companions-3d.webp','library/controls.js','library/reader-history.js','library/glass-navigation.js','library/cover-transition.js','example/story/cover.jpg','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/manifest.webmanifest','site/platform.js','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/library.js','library/version.js','library/library-experience.js','library/book-info.js','library/share-card.js','dist/js/sela.metadata.js','library/themes.js','library/catalog.js','library/backup.js','dist/js/sela.archive.js','dist/js/sela.archive-worker.js','dist/js/sela.profiles.js','library/weather.js','library/reading-desk.js','library/public-books.json','library/indonesia-tech-books.json','library/network.js','library/open-catalog.js','library/storage.js','library/collections.js','library/file-format.js','library/shelf-interactions.js','library/home-atmosphere.js','dist/js/sela.office.js','library/discovery.js','library/book-sources.js','library/opds.js','library/updates.js','logo.svg','favicon.svg','dist/js/sela.esm.js','dist/js/sela.app.js','dist/css/sela.app.css','dist/js/sela.tools.js','dist/js/sela.text.js','dist/css/sela.min.css'],allowed:[...new Set(allowed)].sort()},null,2)+'\n');
+await offlinePaths('dist');await offlinePaths('site');await offlinePaths('library');
+for(const path of ['app/index.html','app/manifest.webmanifest','app/pwa.js','app/sw.js',...appBundlePaths.map(path=>'app/'+path)])allowed.push(path);
+const appShell=['library/dictionary.js','library/search-worker.js','library/audio.js','library/external-catalogs.js','library/personal-store.js','library/holiday-calendar.js','dist/source/src/i18n.js','dist/source/src/archive-codec.js','dist/source/src/archive-client.js','dist/js/sela.locales.js','site/art/selabooks-paper-still-life.webp','library/controls.js','library/reader-history.js','library/glass-navigation.js','library/cover-transition.js','example/story/cover.jpg','app/index.html','app/app.js','app/app.css','app/pwa.js','app/sw.js','app/manifest.webmanifest','site/platform.js','site/icon-192.png','site/icon-512.png','site/icon-maskable-512.png','site/apple-touch-icon.png','site/flag-en.svg','site/flag-id.svg','site/flag-jp.svg','library/version.js','library/book-info.js','library/share-card.js','dist/js/sela.metadata.js','library/themes.js','library/catalog.js','library/backup.js','dist/js/sela.archive.js','dist/js/sela.archive-worker.js','dist/js/sela.profiles.js','library/public-books.json','library/indonesia-tech-books.json','library/network.js','library/open-catalog.js','library/storage.js','library/file-format.js','library/shelf-interactions.js','dist/js/sela.office.js','library/discovery.js','library/book-sources.js','library/opds.js','library/updates.js','logo.svg','favicon.svg','dist/js/sela.esm.js','dist/js/sela.app.js','dist/css/sela.app.css','dist/js/sela.tools.js','dist/js/sela.text.js','dist/css/sela.min.css'];
+await writeAtomic('offline-assets.json',JSON.stringify({version:manifest.version,shell,appShell:[...new Set(appShell)],allowed:[...new Set(allowed)].sort()},null,2)+'\n');
 const offlineManifest=JSON.parse(await readFile('offline-assets.json','utf8'));
-offlineManifest.mobileShell=offlineManifest.mobileShell.map(versionBrandUrl);
-offlineManifest.mobileShell.push('app/index.html','app/gate.js','app/app.js','app/pwa.js','app/sw.js','app/manifest.webmanifest','mobile/index.html','mobile/gate.js','mobile/app.js','mobile/pwa.js','mobile/sw.js','mobile/manifest.webmanifest','library/scripture-sources.js','library/smart-search.js','library/assets/sela-companions-3d.webp','site/art/sela-reader-mascot-3d.webp');
-offlineManifest.mobileShell.push('library/vendor/embla-carousel.js');
-offlineManifest.mobileShell=[...new Set(offlineManifest.mobileShell)];
-
-offlineManifest.mobileShell.push('site/mobile-app.css');
-offlineManifest.mobileShell=[...new Set(offlineManifest.mobileShell)].sort();
+offlineManifest.appShell=offlineManifest.appShell.map(versionBrandUrl);
+offlineManifest.appShell.push('library/scripture-sources.js','library/smart-search.js','site/art/selabooks-paper-still-life.webp');
+for(const path of appBundlePaths)offlineManifest.appShell.push('app/'+path);
+offlineManifest.appShell.push('library/vendor/embla-carousel.js');
+offlineManifest.appShell=[...new Set(offlineManifest.appShell)].sort();
 await writeAtomic('offline-assets.json',JSON.stringify(offlineManifest,null,2)+'\n');
 // Public artwork and CSS must also invalidate caches without a version bump.
 const viewerIdentity=appCacheIdentity(manifest.version,[...await Promise.all(shell.map(async path=>[path,await readFile(path.split('?')[0])] as const)),['offline-assets.json',await readFile('offline-assets.json')],['worker-source.js',Buffer.from(viewerWorker.code)]]);
 await writeAtomic('sela-sw.js',generatedBanner('app/site/viewer-sw.ts')+viewerWorker.code.replaceAll('{{SELA_PUBLIC_CACHE}}',viewerIdentity));
-const cachedShell=JSON.parse(await readFile('offline-assets.json','utf8')).mobileShell;
-const worker=await readFile('mobile/sw.js','utf8');
+const cachedShell=JSON.parse(await readFile('offline-assets.json','utf8')).appShell;
+const worker=await readFile('app/sw.js','utf8');
 const normalizeWorkerCache=(content:Uint8Array)=>Buffer.from(Buffer.from(content).toString('utf8').replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'));
-const identity=appCacheIdentity(manifest.version,[...await Promise.all(cachedShell.map(async path=>{const content=await readFile(path.split('?')[0]);return [path,path==='app/sw.js'||path==='mobile/sw.js'?normalizeWorkerCache(content):content] as const;})),['dist-integrity',Buffer.from(JSON.stringify(manifest.assets))],['worker-source.js',Buffer.from(worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'))]]);
+const identity=appCacheIdentity(manifest.version,[...await Promise.all(cachedShell.map(async path=>{const content=await readFile(path.split('?')[0]);return [path,path==='app/sw.js'?normalizeWorkerCache(content):content] as const;})),['dist-integrity',Buffer.from(JSON.stringify(manifest.assets))],['worker-source.js',Buffer.from(worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE="build"'))]]);
 const builtWorker=worker.replace(/const CACHE\s*=\s*["'][^"']+["']/, 'const CACHE='+JSON.stringify(identity));
-await writeAtomic('mobile/sw.js',builtWorker);
 await writeAtomic('app/sw.js',builtWorker);
 
 const releasePins = text => text.replace(/(bobbyfch\/sela(?:@|#)v)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z0-9.]+)?/g,'$1'+VERSION);

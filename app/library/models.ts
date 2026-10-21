@@ -1,7 +1,7 @@
 import type { BookMetadata, SelaOptions } from '../../src/public-api.ts';
 export interface LibraryBook {
  id: string; name: string; filename: string; format: SelaOptions['format']; size: number;
- saved: number; opened: number; favorite?: boolean; completed?: boolean; pinned?: boolean;
+ saved: number; opened: number; favorite?: boolean; completed?: boolean; didNotFinish?: boolean; pinned?: boolean;
  progress?: number; total?: number; tags?: string[]; metadata?: BookMetadata;
  cover?: Blob; coverBytes?: ArrayBuffer; coverType?: string;
 }

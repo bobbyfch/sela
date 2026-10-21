@@ -13,8 +13,8 @@ const faults: string[] = [];
 page.on('pageerror', error => faults.push(error.message));
 try {
   const start = performance.now();
-  await page.goto(base + '/mobile/');
-  await page.locator('#mobile-app[data-ready="true"]').waitFor();
+  await page.goto(base + '/app/');
+  await page.locator('#sela-root .sela-app').waitFor();
   const appReadyMs = performance.now() - start;
   await page.goto(base + '/?geo=off');
   await page.evaluate(async () => { await SelaReady; });

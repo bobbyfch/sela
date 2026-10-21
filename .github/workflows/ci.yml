@@ -18,9 +18,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Tailwind serializes both shipped CSS bundles differently across OSes; mobile/sw.js embeds those CSS hashes.
-      # Cache identity unit tests and browser tests validate the CSS and matching workers built on this runner.
-      - run: git diff --exit-code -- dist index.html mobile library site examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/mobile-app.css' ':(exclude)site/public.css' ':(exclude)mobile/sw.js'
+      # Tailwind can serialize the public stylesheet differently across operating systems; its contract is covered by the unit and browser suites.
+      - run: git diff --exit-code -- dist index.html library site app examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)site/public.css'
       - run: npm test
       - run: npm run test:types
       - run: npm run typecheck
@@ -29,9 +28,11 @@ jobs:
         run: |
           mkdir -p pages-site
           cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt manifest.webmanifest sela-sw.js offline-assets.json README.md README.id.md THIRD_PARTY_NOTICES.md pages-site/
-          cp -r site dist example mobile library docs licenses pages-site/
+          cp -r site dist example library docs licenses pages-site/
           mkdir -p pages-site/app
           cp app/index.html app/*.js app/*.webmanifest app/*-LICENSE.txt pages-site/app/
+          cp app/app.css pages-site/app/
+          cp -r app/assets app/chunks pages-site/app/
           touch pages-site/.nojekyll
       - name: Upload validated Pages site
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

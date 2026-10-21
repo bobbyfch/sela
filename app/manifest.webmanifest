@@ -2,80 +2,90 @@
   "id": "./",
   "name": "Sela Books",
   "short_name": "Sela",
-  "description": "Your personal reading room on desktop, tablet and phone. Read books, comics and documents.",
+  "description": "Open local books, documents and comics with Sela.",
   "start_url": "./?installed=1",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#376cda",
+  "background_color": "#f1eee6",
+  "theme_color": "#f1eee6",
   "icons": [
     {
-      "src": "../site/icon-192.png?v=0.9.0-beta.7-9775b8eac611",
+      "src": "../site/icon-192.png?v=0.9.0-beta.8-d5e12de22d9a",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "../site/icon-512.png?v=0.9.0-beta.7-772adaeabd40",
+      "src": "../site/icon-512.png?v=0.9.0-beta.8-2c9c76fd5724",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "../site/icon-maskable-512.png?v=0.9.0-beta.7-772adaeabd40",
+      "src": "../site/icon-maskable-512.png?v=0.9.0-beta.8-2c9c76fd5724",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
   "share_target": {
+    "action": "./share",
     "method": "POST",
+    "enctype": "multipart/form-data",
     "params": {
       "files": [
         {
+          "name": "books",
           "accept": [
             "application/pdf",
             "application/epub+zip",
             "application/zip",
+            "application/vnd.comicbook+zip",
             "text/plain",
+            "text/markdown",
             "text/html",
+            "application/x-fictionbook+xml",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.oasis.opendocument.text",
             ".pdf",
             ".epub",
             ".cbz",
             ".txt",
             ".md",
             ".html",
+            ".htm",
             ".fb2",
             ".docx",
             ".odt"
-          ],
-          "name": "books"
+          ]
         }
       ]
-    },
-    "enctype": "multipart/form-data",
-    "action": "./share"
+    }
   },
   "file_handlers": [
     {
+      "action": "./",
       "accept": {
-        "text/html": [
-          ".html",
-          ".htm"
-        ],
-        "application/xml": [
-          ".fb2"
+        "application/pdf": [
+          ".pdf"
         ],
         "application/epub+zip": [
           ".epub"
         ],
-        "application/pdf": [
-          ".pdf"
-        ],
         "application/zip": [
-          ".cbz"
+          ".epub",
+          ".cbz",
+          ".docx",
+          ".odt"
         ],
         "text/plain": [
           ".txt",
           ".md"
+        ],
+        "text/html": [
+          ".html",
+          ".htm"
+        ],
+        "application/x-fictionbook+xml": [
+          ".fb2"
         ],
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
           ".docx"
@@ -83,8 +93,7 @@
         "application/vnd.oasis.opendocument.text": [
           ".odt"
         ]
-      },
-      "action": "./"
+      }
     }
   ]
 }

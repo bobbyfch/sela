@@ -24,6 +24,10 @@ The app navigation and controls use tree-shaken Lucide React 1.59.0 icons.
 Lucide is ISC licensed; its license and required MIT notice for icons derived
 from Feather are preserved in `licenses/Lucide-React.txt`.
 
+The GitHub, Instagram and Threads marks use selected paths from Simple Icons
+16.35.0; the LinkedIn mark uses its standard wordmark silhouette. Simple Icons
+is CC0-1.0 licensed. The icons are decorative beside text labels.
+
 The optional EPUB/CBZ adapter includes fflate 0.8.3 (MIT), Copyright Arjun
 Barrett. Its full license is preserved in `dist/fflate-LICENSE.txt`.
 
@@ -32,7 +36,7 @@ created for Sela. Their original artwork is included under this project's MIT
 license. The app icon, favicon, and navigation glyphs are custom Sela artwork;
 no Apple, OpenAI, or Meta logos or UI assets are included.
 
-The mobile Home room animation optionally bundles Three.js 0.186.1 (MIT),
+The optional 3D bookshelf view bundles Three.js 0.186.1 (MIT),
 Copyright three.js authors. Its full license is preserved in
 `dist/three-LICENSE.txt`.
 
@@ -52,7 +56,7 @@ Home city weather uses Open-Meteo when enabled. Data attribution: Open-Meteo, CC
 
 ## React application shell
 
-The separate application shell bundles React 19.3.0 and React DOM 19.3.0, MIT licensed, Copyright Meta Platforms, Inc. and affiliates. Their full licenses are preserved in `mobile/react-LICENSE.txt` and `mobile/react-dom-LICENSE.txt`. The Universal Viewer SDK does not bundle React. Astro, Vite and TypeScript are development/build tools.
+The application shell bundles React 19.3.1 and React DOM 19.3.1, MIT licensed, Copyright Meta Platforms, Inc. and affiliates. Their full licenses are preserved in `app/react-LICENSE.txt` and `app/react-dom-LICENSE.txt`. Mantine and its dropzone extension are MIT licensed; their notices and the React Dropzone notice are preserved in `app/mantine-LICENSE.txt`, `app/mantine-dropzone-LICENSE.txt`, and `app/react-dropzone-LICENSE.txt`. The Universal Viewer SDK does not bundle React. Astro, Vite and TypeScript are development/build tools.
 
 ## Product screenshot tooling
 
@@ -104,3 +108,8 @@ indexes: `sindresorhus/awesome` (CC0-1.0), `GitIndonesia/awesome-indonesia-repo`
 license was found). Sela copies no descriptions or project code from the latter
 two indexes and does not treat a linked project's public availability as a
 reuse license. Their URLs are documented in `docs/library-sources.md`.
+
+OpenDyslexic is bundled for the optional reader font through
+`@fontsource/opendyslexic` 5.3.0. The font is licensed under the SIL Open Font
+License 1.1; the build copies the package license to
+`dist/opendyslexic-LICENSE.txt`. Source: https://opendyslexic.org/.

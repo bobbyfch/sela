@@ -1,10 +1,10 @@
 # Install Sela Books
 
-1. Open [Sela Books](https://bobbyfch.github.io/sela/app/) in your browser on desktop, tablet or phone. The legacy `/mobile/` address remains supported for existing bookmarks and installations.
+1. Open [Sela Books](https://bobbyfch.github.io/sela/app/) in your browser on desktop, tablet or phone. `/app/` is the single installed app and works across screen sizes.
 2. On Home, choose **Install Sela**. Chromium browsers show their native install prompt when available; otherwise Sela gives instructions for the detected browser and operating system. The browser menu is always a fallback.
 3. Add local books. Open each format once online to cache its decoder; imported books live in this browser’s IndexedDB.
 
-Reader has Home, Shelf, Explore and Settings. Wide screens use a side rail, touch-sized phones a bottom bar. Theme and language are in Settings.
+The `/app/` workspace has Home, Shelf, Explore, Reading log and Settings. Wide screens use a side rail; narrow screens use a bottom bar. Theme and language are in Settings.
 After a useful import, browsers with a native prompt can offer an install invitation. Dismissing it pauses invitations for seven days; installation remains available on Home. Sela detects standalone launches and installations made through its own prompt. Browsers do not expose a universal way to ask whether the same site was installed in a different browser or profile, so an installation made elsewhere may still show the guide.
 
 ## Browser and device instructions

@@ -1,13 +1,15 @@
 export const BOOK_ACCEPT='.pdf,.epub,.cbz,.txt,.md,.html,.htm,.fb2,.docx,.odt,application/pdf,application/epub+zip,application/vnd.comicbook+zip,text/plain,text/markdown,text/html,application/x-fictionbook+xml,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text';
+import type {LibraryBook} from './models.ts';
+import {extractArchiveAsync} from '../../src/archive-client.ts';
 // Android content providers often omit MIME types or usable extensions.
 // File contents decide binary formats; extension is only a text-format hint.
-export async function detectBookFormat(file,data?: any) {
+export async function detectBookFormat(file:File,data?:ArrayBuffer):Promise<LibraryBook['format']> {
   if(!file.size||file.size>64*1048576)throw Error('Choose a non-empty book up to 64 MiB.');
   const header=data?new Uint8Array(data,0,Math.min(512,data.byteLength)):new Uint8Array(await file.slice(0,512).arrayBuffer());
-  const prefix=new TextDecoder().decode(header),ext=(file.name||'').split('.').pop().toLowerCase();
+  const prefix=new TextDecoder().decode(header),ext=(file.name||'').split('.').pop()?.toLowerCase()||'';
   if(prefix.startsWith('%PDF-'))return 'pdf';
   if(header[0]===80&&header[1]===75){
-    const {extractArchiveAsync,validateEpub}=await import('../../dist/js/sela.archive.js');
+    const {validateEpub}=await import('../../dist/js/sela.archive.js');
     const files=await extractArchiveAsync(new Uint8Array(data||await file.arrayBuffer()));
     if(files['word/document.xml']&&files['[Content_Types].xml'])return 'docx';
     if(files['content.xml']&&new TextDecoder().decode(files.mimetype||new Uint8Array()).trim()==='application/vnd.oasis.opendocument.text')return 'odt';

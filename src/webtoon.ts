@@ -24,12 +24,16 @@ export class Webtoon {
     declare onScroll: any;
     declare scrollFrame: any;
     declare ro: any;
+    declare resizeFrame: any;
+    declare observedWidth: number;
+    declare observedHeight: number;
     declare gesturing: boolean;
     declare renderTimer: any;
 
   constructor(container, opts) {
     this.container = container; this.opts = opts; this.zoom = 1; this.page = 1;
     this.destroyed = false; this.jobs = []; this.running = 0; this.slots = []; this.visible = new Set();
+    this.resizeFrame = 0; this.observedWidth = container.clientWidth; this.observedHeight = container.clientHeight;
     container.classList.add('sela-webtoon');
     container.tabIndex = 0;
     container.style.setProperty('--sela-page-gap', `${opts.mode === 'scroll' ? (opts.pageGap || 16) : (opts.pageGap ?? 0)}px`);
@@ -100,8 +104,22 @@ export class Webtoon {
         });
       };
       this.container.addEventListener('scroll', this.onScroll, { passive: true });
-    this.ro = new ResizeObserver(() => { this.fit(); this.scheduleRender(); }); this.ro.observe(this.container);
-    this.slots.forEach(slot => this.ro.observe(slot.el));
+    // Fitting depends only on the scroll viewport. Observing the page slots as well
+    // creates a resize feedback loop in WebKit when their aspect ratios settle.
+    this.ro = new ResizeObserver(() => {
+      // Defer layout writes until after ResizeObserver delivery. Safari/WebKit reports
+      // a loop error when page sizing changes in the same frame as the resize notice.
+      if (this.resizeFrame) return;
+      this.resizeFrame = requestAnimationFrame(() => {
+        this.resizeFrame = 0;
+        if (this.destroyed) return;
+        const width = this.container.clientWidth, height = this.container.clientHeight;
+        if (width === this.observedWidth && height === this.observedHeight) return;
+        this.observedWidth = width; this.observedHeight = height;
+        this.fit(); this.scheduleRender();
+      });
+    });
+    this.ro.observe(this.container);
       this.goTo(this.opts.startPage || 1);
       this.emit('ready', { pages: this.numPages });
     } catch (error) { if (!this.destroyed) this.emit('error', { error }); }
@@ -174,6 +192,7 @@ export class Webtoon {
     this.observer?.disconnect(); this.pageObserver?.disconnect(); this.ro?.disconnect();
     this.removeGestures?.();
     cancelAnimationFrame(this.scrollFrame);
+    cancelAnimationFrame(this.resizeFrame);
     clearTimeout(this.renderTimer);
     this.slots.forEach(slot => this.free(slot));
     if (!preserveDocument) this.loadingTask?.destroy().catch(() => {});

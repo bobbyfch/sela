@@ -1,11 +1,15 @@
 export type SelaMode = 'book' | 'single' | 'scroll' | 'webtoon' | 'manga';
 export type SelaSource = string | File | Blob | ArrayBuffer | Uint8Array;
+export interface ReaderContentItem { title: string; page: number; anchor?: string; level: number; }
+export interface ReaderAnnotations { notes: Record<string, string>; highlights: Record<string, string[]>; }
 export type { SelaEventMap, SelaEventName, SelaEventListener } from './events.ts';
 export interface SelaOptions {
   /** One responsive interface. 'classic' is a deprecated alias for 'app'. */
   ui?: 'classic' | 'app';
   /** Application shell integration; use false/default for standalone embeds. */
   appContext?: boolean;
+  /** Keep only the document renderer mounted; the host owns all reader controls. */
+  headless?: boolean;
   /** Accent palette; historical names remain supported aliases. Dark appearance is controlled by `theme`. */
   palette?: 'white' | 'kids' | 'cyberpunk' | 'forest' | 'sakura' | 'ocean' | 'lavender' | 'citrus' | 'linen' | 'rimba' | 'nila' | 'seroja' | 'paper' | 'ink' | 'rose' | 'charcoal' | 'walnut' | 'oak' | 'laskar' | 'bumi' | 'hujan' | 'nurbaya' | 'wijck' | 'menara' | 'cantik' | 'kopi' | 'laut' | 'rindu';
   metadata?: BookMetadata;
@@ -25,7 +29,7 @@ export interface SelaOptions {
   lineHeight?: number;
   textMargin?: number;
   cropMargin?: number;
-  fontFamily?: 'serif' | 'sans' | 'mono';
+  fontFamily?: 'serif' | 'sans' | 'mono' | 'opendyslexic';
   textAlign?: 'start' | 'justify';
   onPreferences?: (preferences: Partial<SelaOptions>) => void;
   /** Optional audio provider. Enable online voices explicitly; keep API secrets on your server. */
@@ -92,6 +96,7 @@ export declare class Sela extends EventTarget {
   options: SelaOptions;
   readonly overlay: HTMLElement | null;
   readonly totalPages: number;
+  readonly soundEnabled: boolean | undefined;
   readonly zoom: number;
   open(source?: SelaSource): Promise<this>;
   mount(container: HTMLElement | string): Promise<this>;
@@ -116,12 +121,25 @@ export declare class Sela extends EventTarget {
   setTypography(values: Pick<SelaOptions, 'fontSize' | 'lineHeight' | 'textMargin' | 'fontFamily' | 'textAlign'>): this;
   back(): this;
   showTools(): Promise<unknown>;
+  showPreviews(): this;
+  getContents(): Promise<ReaderContentItem[]>;
+  goToContent(item: ReaderContentItem): this;
+  getBookmarks(): number[];
+  toggleBookmark(page?: number): number[];
+  setBookmarks(pages: number[]): number[];
+  getAnnotations(): ReaderAnnotations;
+  setNote(page: number, note: string): ReaderAnnotations;
+  setHighlights(page: number, quotes: string[]): ReaderAnnotations;
+  downloadOriginal(): this;
   getText(page?: number): Promise<string>;
+  /** Render a bounded PDF page thumbnail. Returns null when the format has no PDF page renderer. */
+  getPageThumbnail(page: number, maxWidth?: number): Promise<Blob | null>;
   getMetadata(): Promise<BookMetadata>;
   toggleFullscreen(): this;
   setFilter(value: NonNullable<SelaOptions['filter']>): this;
   setBrightness(value: number): this;
   setDim(value: boolean): this;
+  setSoundEnabled(value: boolean): this;
 }
 export interface BookMetadata {
   title?: string; author?: string; publisher?: string; publicationDate?: string;

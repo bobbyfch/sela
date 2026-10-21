@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {VERSION} from '../../app/library/version.ts';
 async function routePwaFixture(page,prefix:string){
- await page.route(`**/${prefix}/mobile/pwa.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('mobile/pwa.js','utf8')}));
+ await page.route(`**/${prefix}/app/pwa.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('app/pwa.js','utf8')}));
  await page.route(`**/${prefix}/library/controls.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('library/controls.js','utf8')}));
  await page.route(`**/${prefix}/dist/source/src/i18n.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/i18n.js','utf8')}));
  await page.route(`**/${prefix}/dist/source/src/locale.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/locale.js','utf8')}));
@@ -14,8 +14,10 @@ test('public and installed app manifests point to refreshed Sela artwork',async(
  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href',`favicon.svg?v=${revision}`);
  await expect(page.locator('a.brand img')).toHaveAttribute('src',`logo.svg?v=${revision}`);
  await page.goto('/app/');
- await expect(page.locator('.brand-logo')).toHaveAttribute('src',`../logo.svg?v=${revision}`);
- for(const manifestPath of ['/manifest.webmanifest','/app/manifest.webmanifest','/mobile/manifest.webmanifest']){
+ const appIconHref=await page.locator('link[rel="icon"]').getAttribute('href');
+ expect(appIconHref).toMatch(/^\.\.\/favicon\.svg(?:\?v=.+)?$/);
+ const appIcon=await page.request.get(new URL(appIconHref!,page.url()).href);expect(appIcon.ok()).toBe(true);expect(appIcon.headers()['content-type']).toContain('image/svg+xml');
+ for(const manifestPath of ['/manifest.webmanifest','/app/manifest.webmanifest']){
   const response=await page.request.get(`${manifestPath}?v=${revision}`);
   expect(response.ok(),`${manifestPath} should be available`).toBeTruthy();
   const manifest=await response.json();
@@ -29,36 +31,40 @@ test('public and installed app manifests point to refreshed Sela artwork',async(
  }
 });
 test.use({serviceWorkers:'allow',userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36'});
-test('mobile PWA registration stays within its project subfolder',async({page})=>{
- await page.route('**/nested/mobile/index.html',route=>route.fulfill({contentType:'text/html',body:'<button id="install-mobile-app"></button><p id="mobile-offline-status"></p><script type="module" src="./pwa.js"></script>'}));
+test('app PWA registration stays within its project subfolder',async({page})=>{
+ await page.route('**/nested/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<p id="app-offline-status"></p><script type="module" src="./pwa.js"></script>'}));
  await routePwaFixture(page,'nested');
- await page.addInitScript(()=>{window.SelaPlatform={mobile:true} as typeof SelaPlatform;Object.defineProperty(navigator,'serviceWorker',{value:{addEventListener(){},ready:Promise.resolve({}),register(url,options){window.registration={url:String(url),scope:options.scope};return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
- await page.goto('/nested/mobile/index.html');await expect(page.locator('#mobile-offline-status')).toContainText('Bookshelf ready');
- expect(await page.evaluate(()=>window.registration)).toEqual({url:'http://127.0.0.1:4173/nested/mobile/sw.js',scope:'http://127.0.0.1:4173/nested/mobile/'});
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'serviceWorker',{value:{addEventListener(){},ready:Promise.resolve({}),register(url,options){window.registration={url:String(url),scope:options.scope};return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
+ await page.goto('/nested/app/index.html');await expect(page.locator('#app-offline-status')).toContainText(/Bookshelf ready|Rak siap/);
+ expect(await page.evaluate(()=>window.registration)).toEqual({url:'http://127.0.0.1:4173/nested/app/sw.js',scope:'http://127.0.0.1:4173/nested/app/'});
 });
-test('mobile app persists local books offline outside service-worker caches',async({page,context,browserName})=>{
- test.skip(browserName!=='chromium','Service-worker offline scenario is verified on Chromium');await page.goto('/mobile/');await expect(page.locator('#mobile-offline-status')).toContainText('Bookshelf ready');await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();
- await page.locator('#books').setInputFiles({name:'private-note.txt',mimeType:'text/plain',buffer:Buffer.from('Local mobile note survives offline.')});await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('#books')).toBeEnabled();
- await context.setOffline(true);await page.reload();await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('[data-tab=library]').click();await expect(page.locator('.book')).toHaveCount(1);await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(page.locator('.sela-epub article')).toContainText('survives offline');
+async function waitForAppWorker(page){
+ await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));});
+ await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);
+}
+test('app keeps imported books local and readable offline',async({page,context,browserName})=>{
+ test.skip(browserName!=='chromium','Service-worker offline scenario is verified on Chromium');await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await waitForAppWorker(page);await page.reload();await expect(page.locator('.sela-app')).toBeVisible();
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'private-note.txt',mimeType:'text/plain',buffer:Buffer.from('Local note survives offline.')});await expect(page.locator('.book-card')).toHaveCount(1);
+ await context.setOffline(true);await page.reload();await expect(page.locator('.sela-app')).toBeVisible();await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);await page.locator('.book-cover-button').click();await expect(page.locator('.reader-body')).toContainText('survives offline');
  const keys=await page.evaluate(async()=>{const names=await caches.keys();return(await Promise.all(names.map(async name=>(await(await caches.open(name)).keys()).map(r=>r.url)))).flat();});expect(keys.some(url=>url.includes('private-note')||url.startsWith('blob:'))).toBe(false);
 });
 
 test('update notice names both the ready version and the installed version',async({page})=>{
- await page.route('**/update/mobile/index.html',route=>route.fulfill({contentType:'text/html',body:'<p id="mobile-offline-status"></p><button id="check-update"></button><p id="update-status"></p><script type="module" src="./pwa.js"></script>'}));
+ await page.route('**/update/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<p id="app-offline-status"></p><button id="check-update"></button><p id="update-status"></p><script type="module" src="./pwa.js"></script>'}));
  await routePwaFixture(page,'update');
  const match=VERSION.match(/^(.*-beta\.)(\d+)$/);expect(match,'update notice fixture needs a beta package version').not.toBeNull();const nextVersion=`${match![1]}${Number(match![2])+1}`;
  await page.addInitScript((version:string)=>{window.sent=[];window.swEvents={};Object.defineProperty(navigator,'serviceWorker',{value:{controller:{},ready:Promise.resolve({}),addEventListener(name,callback){window.swEvents[name]=callback;},register(){return Promise.resolve({waiting:{postMessage(data,ports){window.sent.push(data);if(data.type==='GET_VERSION')ports?.[0]?.postMessage({type:'SELA_VERSION',version});}},addEventListener(){},update(){return Promise.resolve();}});}}});},nextVersion);
- await page.goto('/update/mobile/index.html');await expect(page.locator('.pwa-notice')).toContainText(`Sela ${nextVersion} is ready`);await expect(page.locator('.pwa-notice')).toContainText(`Installed version: ${VERSION}`);await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='GET_VERSION').length)).toBe(1);
- await page.evaluate(()=>{const reader=document.createElement('div');reader.className='library-reader-overlay';document.body.append(reader);});await page.getByRole('button',{name:'Update now',exact:true}).click();await expect(page.locator('.pwa-notice')).toContainText('Close the reader');expect(await page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE'))).toEqual([]);
- await page.evaluate(()=>document.querySelector('.library-reader-overlay').remove());await page.getByRole('button',{name:'Update now',exact:true}).click();await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE').length)).toBe(1);
+ await page.goto('/update/app/index.html');await expect(page.locator('.pwa-notice')).toContainText(`Sela ${nextVersion} is ready`);await expect(page.locator('.pwa-notice')).toContainText(`Installed: ${VERSION}`);await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='GET_VERSION').length)).toBe(1);
+ await page.evaluate(()=>{const reader=document.createElement('main');reader.className='reader-layout';document.body.append(reader);});await page.getByRole('button',{name:'Update now',exact:true}).click();await expect(page.locator('.pwa-notice')).toContainText('Close the reader');expect(await page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE'))).toEqual([]);
+ await page.evaluate(()=>document.querySelector('.reader-layout')?.remove());await page.getByRole('button',{name:'Update now',exact:true}).click();await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE').length)).toBe(1);
  await page.evaluate(()=>swEvents.message({data:{type:'UPDATE_BLOCKED'}}));await expect(page.locator('.pwa-notice')).toContainText('Close other Sela windows');await page.getByRole('button',{name:'Later',exact:true}).click();await expect(page.locator('.pwa-notice')).toBeHidden();
 });
 
-test('the mobile app does not add its own install invitation or intercept the browser prompt',async({page})=>{
- await page.route('**/install-state/mobile/index.html',route=>route.fulfill({contentType:'text/html',body:'<main><h1>Sela Books</h1><p id="mobile-offline-status"></p><script type="module" src="./pwa.js"></script></main>'}));
+test('the app does not add its own install invitation or intercept the browser prompt',async({page})=>{
+ await page.route('**/install-state/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<main><h1>Sela Books</h1><p id="app-offline-status"></p><script type="module" src="./pwa.js"></script></main>'}));
  await routePwaFixture(page,'install-state');
  await page.addInitScript(()=>{Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{addEventListener(){},ready:Promise.resolve({}),register(){return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
- await page.goto('/install-state/mobile/index.html');
+ await page.goto('/install-state/app/index.html');
  await expect(page.getByRole('button',{name:/install/i})).toHaveCount(0);await expect(page.getByText(/pasang sela di perangkat ini/i)).toHaveCount(0);await expect(page.locator('.pwa-notice:visible,.install-guide:visible')).toHaveCount(0);
  const prevented=await page.evaluate(()=>{const event=new Event('beforeinstallprompt',{cancelable:true});window.dispatchEvent(event);return event.defaultPrevented;});expect(prevented).toBe(false);
 });

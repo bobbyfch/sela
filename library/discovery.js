@@ -42,7 +42,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   const resultsHeading = node(resultsCopy, "h2", t("Top reads", "Bacaan populer"), "discovery-results-heading tw:mb-1 tw:text-xl tw:font-semibold tw:tracking-tight tw:text-sela-ink");
   const resultsIntro = node(resultsCopy, "p", t("A few good books to start with.", "Beberapa buku pilihan untuk memulai."), "discovery-results-intro tw:m-0 tw:text-sm tw:leading-6 tw:text-sela-muted");
   const resultsActions = node(resultsHeader, "div", "", "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:gap-2");
-  const more = node(resultsActions, "button", t("More books", "Buku lainnya"), "tw:inline-flex tw:min-h-10 tw:items-center tw:justify-center tw:rounded-xl tw:bg-sela-accent tw:px-3.5 tw:text-sm tw:font-semibold tw:text-white tw:transition-colors tw:hover:opacity-90");
+  const more = node(resultsActions, "button", t("More books", "Buku lainnya"), "tw:inline-flex tw:min-h-10 tw:items-center tw:justify-center tw:rounded-xl tw:bg-sela-accent tw:px-3.5 tw:text-sm tw:font-semibold tw:text-primary-foreground tw:transition-colors tw:hover:opacity-90");
   more.type = "button";
   more.hidden = true;
   const results = node(resultsSection, "div", "", "open-results tw:flex tw:min-w-0 tw:snap-x tw:snap-mandatory tw:gap-4 tw:overflow-x-auto tw:overscroll-x-contain tw:pb-4");
@@ -115,7 +115,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   providerGrid.setAttribute("role", "group");
   providerGrid.setAttribute("aria-labelledby", providerHeading.id);
   for (const provider of providers) {
-    const card = node(providerGrid, "button", "", "discovery-source-card tw:flex tw:min-h-24 tw:min-w-0 tw:flex-col tw:items-start tw:gap-1.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3.5 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+    const card = node(providerGrid, "button", "", "discovery-source-card tw:flex tw:min-h-24 tw:min-w-0 tw:flex-col tw:items-start tw:gap-1.5 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3.5 tw:text-left tw:transition-colors tw:hover:border-sela-accent tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
     card.type = "button";
     card.dataset.provider = provider.id;
     card.setAttribute("aria-pressed", String(provider.id === activeProviderId));
@@ -253,7 +253,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     }
     for (const key of group.keys) {
       const option = categoryOptions.find((item) => item[0] === key);
-      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-14 tw:w-full tw:min-w-0 tw:flex-row tw:items-center tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3 tw:text-left tw:transition-all tw:hover:-translate-y-0.5 tw:hover:border-sela-accent tw:hover:shadow-md tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+      const button = node(row, "button", "", "discovery-category tw:flex tw:min-h-14 tw:w-full tw:min-w-0 tw:flex-row tw:items-center tw:gap-3 tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-3 tw:text-left tw:transition-colors tw:hover:border-sela-accent tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
       button.type = "button";
       button.setAttribute("aria-pressed", String(key === "trending"));
       const icon = node(button, "span", "", "tw:grid tw:size-9 tw:max-[370px]:size-8 tw:shrink-0 tw:place-items-center tw:rounded-xl tw:bg-sela-accent/10 tw:text-sela-accent");
@@ -303,10 +303,10 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
     for (const book of books) {
       const card = node(results, "article", "", "open-book tw:relative tw:block tw:min-w-0 tw:overflow-hidden tw:border-0 tw:bg-transparent tw:p-0 tw:shadow-none " + (resultsExpanded ? "tw:w-full" : "tw:w-40 tw:shrink-0 tw:snap-start tw:sm:w-44 tw:lg:w-48")), cover = coverFor(book), fallback = URL.createObjectURL(cover), remote = catalogCoverUrl(book.coverUrl);
       urls.push(fallback);
-      const coverButton = node(card, "button", "", "open-book-cover tw:group tw:relative tw:block tw:aspect-[2/3] tw:w-full tw:overflow-hidden tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-0 tw:text-left tw:shadow-sm tw:transition tw:hover:-translate-y-1 tw:hover:shadow-lg tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
+      const coverButton = node(card, "button", "", "open-book-cover tw:group tw:relative tw:block tw:aspect-[2/3] tw:w-full tw:overflow-hidden tw:rounded-2xl tw:border tw:border-sela-line tw:bg-sela-surface tw:p-0 tw:text-left tw:shadow-sm tw:transition-colors tw:hover:border-sela-accent tw:focus-visible:outline-2 tw:focus-visible:outline-offset-2 tw:focus-visible:outline-sela-accent");
       coverButton.type = "button";
       coverButton.setAttribute("aria-label", t("Open book details: ", "Buka detail buku: ") + book.title);
-      const image = node(coverButton, "img", "", "tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:transition-transform tw:duration-300 tw:group-hover:scale-[1.025]");
+      const image = node(coverButton, "img", "", "tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover ");
       image.src = fallback;
       image.alt = "";
       image.loading = "eager";
@@ -343,7 +343,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
         try {
           const external = new URL(book.external);
           if (external.protocol === "https:") {
-            const sourceButton = node(card, "a", "", "tw:absolute tw:right-2 tw:top-2 tw:z-10 tw:grid tw:size-9 tw:place-items-center tw:rounded-full tw:bg-sela-surface/95 tw:text-sela-ink tw:shadow-sm tw:transition tw:hover:scale-105");
+            const sourceButton = node(card, "a", "", "tw:absolute tw:right-2 tw:top-2 tw:z-10 tw:grid tw:size-9 tw:place-items-center tw:rounded-full tw:bg-sela-surface/95 tw:text-sela-ink tw:shadow-sm tw:transition-colors tw:hover:bg-sela-canvas");
             sourceButton.href = external.href;
             sourceButton.target = "_blank";
             sourceButton.rel = "noopener noreferrer";
@@ -670,7 +670,7 @@ export function mountDiscovery(parent, { t, status, addFiles, openBook }) {
   address.className = "tw:min-h-11 tw:min-w-0 tw:rounded-xl tw:border tw:border-sela-line tw:bg-sela-bg tw:px-3 tw:text-sm tw:text-sela-ink";
   address.placeholder = "https://\u2026/opds";
   opdsRow.append(address);
-  const find = node(opdsRow, "button", t("Search catalog", "Cari katalog"), "tw:min-h-11 tw:rounded-xl tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-white");
+  const find = node(opdsRow, "button", t("Search catalog", "Cari katalog"), "tw:min-h-11 tw:rounded-xl tw:bg-sela-accent tw:px-4 tw:text-sm tw:font-semibold tw:text-primary-foreground");
   find.type = "button";
   find.onclick = () => void load();
   const profileRow = node(sourceBody, "div", "", "tw:grid tw:min-w-0 tw:grid-cols-1 tw:gap-2 tw:sm:grid-cols-[minmax(0,1fr)_auto]");

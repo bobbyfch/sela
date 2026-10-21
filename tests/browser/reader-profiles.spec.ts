@@ -1,29 +1,139 @@
-import {test,expect} from '@playwright/test';
-import {openSettingsCategory} from './settings-helpers.ts';
-import {readFile} from 'node:fs/promises';
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { createBackupArchive, readBackupArchive } from '../../dist/js/sela.archive.js';
 
-async function openText(page){
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await page.locator('#books').setInputFiles({name:'Profile.txt',mimeType:'text/plain',buffer:Buffer.from('The original text remains intact.\n\nA second paragraph.')});await expect(page.locator('#books')).toBeEnabled();await page.getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await page.locator('.sela-epub article').waitFor();await page.getByRole('button',{name:'Reader settings',exact:true}).click();
+async function openTextProfiles(page) {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+  await page.goto('/app/');
+  await expect(page.locator('.sela-app')).toBeVisible();
+  await page.getByLabel('Choose book files').setInputFiles({ name: 'Profile.txt', mimeType: 'text/plain', buffer: Buffer.from('The original text remains intact.\n\nA second paragraph.') });
+  await page.getByRole('link', { name: 'My shelf', exact: true }).click();
+  await expect(page.locator('.book-card')).toHaveCount(1);
+  await page.locator('.book-title-button').click();
+  await expect(page.locator('.reader-chrome-top')).toBeVisible();
+  await page.getByRole('button', { name: 'Reading desk', exact: true }).click();
+  await page.getByRole('tab', { name: 'Profiles', exact: true }).click();
 }
-test('profiles adapt to text books, persist settings and manage names without replacing originals',async({page})=>{
- await openText(page);const profile=(key:string)=>page.locator(`[data-profile-choice="${key}"]`);await profile('manga').click();await expect(page.locator('[aria-label="Reading mode"] [data-choice="single"]')).toHaveAttribute('aria-pressed','true');await profile('night').click();await expect(page.getByLabel('Brightness',{exact:true})).toHaveValue('0.65');await expect(page.getByLabel('Page filter',{exact:true})).toHaveValue('lowblue');await expect(page.getByLabel('Font size',{exact:true})).toHaveValue('21');await expect(page.locator('.app-profile-manager')).toHaveCount(0);
- await page.getByLabel('Custom profile name',{exact:true}).fill('My late chapters');await page.getByRole('button',{name:'Save current',exact:true}).click();await expect(profile('custom:0')).toHaveAttribute('aria-pressed','true');
- await page.getByRole('button',{name:'Save current',exact:true}).click();await expect(page.locator('[aria-labelledby="reader-profile-heading"] [role="status"]')).toContainText('already exists');await expect(page.locator('[data-profile-choice]')).toHaveCount(5);
- await page.getByLabel('Custom profile name',{exact:true}).fill('Quiet pages');await page.getByRole('button',{name:'Update selected',exact:true}).click();await expect(profile('custom:0')).toContainText('Quiet pages');await profile('academic').click();await expect(page.getByLabel('Font size',{exact:true})).toHaveValue('18');await profile('custom:0').click();await expect(page.getByLabel('Font size',{exact:true})).toHaveValue('21');
- await page.getByRole('button',{name:'Delete',exact:true}).click();await page.getByRole('button',{name:'Confirm delete',exact:true}).click();await expect(page.locator('[data-profile-choice]')).toHaveCount(4);await page.getByRole('button',{name:'Back to library',exact:true}).click();await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await page.getByRole('button',{name:'Reader settings',exact:true}).click();await expect(page.getByLabel('Font size',{exact:true})).toHaveValue('21');expect(await page.evaluate(async()=>{const s=await import('/library/storage.js');const [b]=await s.listBooks();return (await s.getFile(b.id)).text();})).toContain('The original text remains intact.');
+
+async function openBackupSettings(page) {
+  await page.goto('/app/');
+  await page.getByRole('link', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: /Backup & data/ }).click();
+  await expect(page.getByRole('button', { name: 'Export backup', exact: true })).toBeVisible();
+}
+
+test('Reader profiles apply, save, update, confirm deletion and preserve the source book', async ({ page }) => {
+  await openTextProfiles(page);
+  await expect(page.locator('.reader-profile-card')).toHaveCount(5);
+  const reader = page.locator('.library-reader-overlay');
+  await page.locator('.reader-profile-card').filter({ hasText: 'Night' }).getByRole('button', { name: 'Apply', exact: true }).click();
+  await expect(reader).toHaveAttribute('data-dim', 'true');
+  await expect(reader).toHaveCSS('--sela-page-filter', 'sepia(.5) saturate(.6)');
+
+  await page.getByLabel('Name this profile', { exact: true }).fill('Quiet pages');
+  await page.getByRole('button', { name: 'Save current settings', exact: true }).click();
+  const saved = page.locator('.reader-profile-saved').filter({ hasText: 'Quiet pages' });
+  await expect(saved).toBeVisible();
+  await page.locator('.reader-profile-card').filter({ hasText: 'Study' }).getByRole('button', { name: 'Apply', exact: true }).click();
+  await expect(reader).toHaveAttribute('data-dim', 'false');
+  await saved.getByRole('button', { name: 'Apply', exact: true }).click();
+  await expect(reader).toHaveAttribute('data-dim', 'true');
+
+  await page.getByRole('tab', { name: 'Layout', exact: true }).click();
+  const fontSize = page.getByRole('slider', { name: 'Font size', exact: true });
+  await fontSize.focus(); await page.keyboard.press('ArrowRight');
+  const updatedSize = Number(await fontSize.getAttribute('aria-valuenow'));
+  await page.getByRole('tab', { name: 'Profiles', exact: true }).click();
+  await page.getByRole('button', { name: 'Update selected', exact: true }).click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sela-library:profiles') || '[]').find(profile => profile.name === 'Quiet pages')?.values.fontSize)).toBe(updatedSize);
+
+  await saved.getByRole('button', { name: 'Delete Quiet pages', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Confirm delete Quiet pages', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm delete Quiet pages', exact: true }).click();
+  await expect(page.locator('.reader-profile-saved').filter({ hasText: 'Quiet pages' })).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator('.reader-chrome-top')).toBeVisible();
+  await page.getByRole('button', { name: 'Reading desk', exact: true }).click();
+  await page.getByRole('tab', { name: 'Profiles', exact: true }).click();
+  await expect(page.locator('.reader-profile-card')).toHaveCount(5);
+  expect(await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('sela-private-library', 3);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const files = await new Promise<Array<{ bytes?: ArrayBuffer; blob?: Blob }>>((resolve, reject) => {
+      const request = db.transaction('files', 'readonly').objectStore('files').getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    const [stored] = files;
+    return stored?.bytes ? new TextDecoder().decode(stored.bytes) : await stored?.blob?.text();
+  })).toContain('The original text remains intact.');
 });
 
-test('custom profiles survive backups and malformed profiles reject before writing books',async({page,browser})=>{
- await openText(page);await page.getByLabel('Custom profile name',{exact:true}).fill('Everyday');await page.getByRole('button',{name:'Save current',exact:true}).click();await page.getByRole('button',{name:'Back to library',exact:true}).click();await openSettingsCategory(page,'Your library & data');const download=page.waitForEvent('download');await page.locator('#export-library').click();const bytes=await readFile(await(await download).path());const context=await browser.newContext();try{const restored=await context.newPage();await restored.goto('/mobile/');await expect(restored.locator('#mobile-app')).toHaveAttribute('data-ready','true');await openSettingsCategory(restored,'Your library & data');await restored.locator('#restore-library').setInputFiles({name:'backup.zip',mimeType:'application/zip',buffer:bytes});await expect(restored.locator('#status')).toContainText('1 books restored');expect(await restored.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:profiles'))[0].name)).toBe('Everyday');}finally{await context.close();}
- const bad=await page.evaluate(async()=>{const a=await import('/dist/js/sela.archive.js');const bytes=new Uint8Array(await(await(await import('/library/backup.js')).exportLibrary()).arrayBuffer());const entries=a.readBackupArchive(bytes);const manifest=JSON.parse(new TextDecoder().decode(entries['sela.json']));manifest.profiles=[{name:'Bad',values:{brightness:NaN}}];entries['sela.json']=new TextEncoder().encode(JSON.stringify(manifest));return Array.from(a.createBackupArchive(entries) as Uint8Array);});const empty=await browser.newContext();try{const p=await empty.newPage();await p.goto('/mobile/');await expect(p.locator('#mobile-app')).toHaveAttribute('data-ready','true');await openSettingsCategory(p,'Your library & data');await p.locator('#restore-library').setInputFiles({name:'invalid.zip',mimeType:'application/zip',buffer:Buffer.from(bad)});await expect(p.locator('#status')).toContainText('no supported reading settings');expect(await p.evaluate(async()=>(await(await import('/library/storage.js')).listBooks()).length)).toBe(0);}finally{await empty.close();}
+test('Reader profiles are backed up and malformed profiles are rejected before books are written', async ({ page, browser }) => {
+  await openTextProfiles(page);
+  await page.locator('.reader-profile-card').filter({ hasText: 'Night' }).getByRole('button', { name: 'Apply', exact: true }).click();
+  await page.getByLabel('Name this profile', { exact: true }).fill('Everyday');
+  await page.getByRole('button', { name: 'Save current settings', exact: true }).click();
+  await openBackupSettings(page);
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export backup', exact: true }).click();
+  const bytes = await readFile(await (await downloadPromise).path());
+  const entries = readBackupArchive(new Uint8Array(bytes));
+  const manifest = JSON.parse(new TextDecoder().decode(entries['sela.json']));
+  expect(manifest.profiles).toContainEqual(expect.objectContaining({ name: 'Everyday' }));
+
+  const restoredContext = await browser.newContext();
+  try {
+    const restored = await restoredContext.newPage();
+    await restored.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+    await openBackupSettings(restored);
+    await restored.locator('.settings-detail input[type="file"]').setInputFiles({ name: 'profiles.zip', mimeType: 'application/zip', buffer: bytes });
+    await expect(restored.getByText('1 books added; 0 existing books kept.', { exact: true })).toBeVisible();
+    expect(await restored.evaluate(() => JSON.parse(localStorage.getItem('sela-library:profiles') || '[]')[0].name)).toBe('Everyday');
+  } finally { await restoredContext.close(); }
+
+  const invalidEntries = { ...entries };
+  const invalidManifest = { ...manifest, profiles: [{ name: 'Bad', values: { brightness: null } }] };
+  invalidEntries['sela.json'] = new TextEncoder().encode(JSON.stringify(invalidManifest));
+  const invalidBackup = Buffer.from(createBackupArchive(invalidEntries));
+  const emptyContext = await browser.newContext();
+  try {
+    const empty = await emptyContext.newPage();
+    await empty.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+    await openBackupSettings(empty);
+    await empty.locator('.settings-detail input[type="file"]').setInputFiles({ name: 'invalid-profiles.zip', mimeType: 'application/zip', buffer: invalidBackup });
+    await expect(empty.getByText(/no supported reading settings/i)).toBeVisible();
+    expect(await empty.evaluate(async () => {
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open('sela-private-library', 3);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      const count = await new Promise<number>((resolve, reject) => {
+        const request = db.transaction('books', 'readonly').objectStore('books').count();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      return count;
+    })).toBe(0);
+  } finally { await emptyContext.close(); }
 });
 
-test('light and dark appearance are independent from the optional OLED black setting',async({page})=>{
- await page.emulateMedia({colorScheme:'dark'});await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('html')).toHaveAttribute('data-palette','white');
- await openSettingsCategory(page,'Reading & appearance');const oled=page.locator('.oled-setting-row input');await expect(oled).toBeVisible();await expect(page.locator('.oled-setting-row > span')).toHaveCSS('display','grid');await oled.check();await expect(page.locator('html')).toHaveAttribute('data-oled','true');expect(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)).toBe('rgb(0, 0, 0)');
- await page.reload();await expect(page.locator('html')).toHaveAttribute('data-palette','white');await expect(page.locator('html')).toHaveAttribute('data-oled','true');await page.locator('#books').setInputFiles({name:'OLED.txt',mimeType:'text/plain',buffer:Buffer.from('Read me.')});await expect(page.locator('#books')).toBeEnabled();await page.getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(page.locator('.library-reader-shell')).toHaveCSS('background-color','rgb(0, 0, 0)');expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
-});
-
-test('CDN profiles preserve PDF position and stay isolated from the library theme and profile store',async({page})=>{
- await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;localStorage.setItem('sela-library:reader-follow-appearance','false');localStorage.setItem('sela-library:profiles',JSON.stringify([{name:'Private library',values:{fontSize:22}}]));const host=document.createElement('div');host.id='profile-host';host.style.height='600px';document.body.append(host);window.profileReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',presentation:'inline',container:host,mode:'single',language:'en',theme:'dark',palette:'charcoal'});await profileReader.open();profileReader.goTo(7);});const app=page.locator('#profile-host [data-product-reader=app]');await app.scrollIntoViewIfNeeded();await expect.poll(()=>page.evaluate(()=>profileReader.currentPage())).toBe(7);await app.getByRole('button',{name:'Reader settings',exact:true}).click();await app.locator('[data-profile-choice="academic"]').click();await expect(app.locator('[aria-label="Page fit"] [aria-pressed="true"]')).toHaveAttribute('data-choice','width');expect(await page.evaluate(()=>profileReader.currentPage())).toBe(7);await app.locator('[data-profile-choice="manga"]').click();await expect(app).toHaveAttribute('data-reading-direction','rtl');await app.locator('[data-profile-choice="academic"]').click();await expect(app).toHaveAttribute('data-reading-direction','ltr');await app.getByLabel('Custom profile name',{exact:true}).fill('Website only');await app.getByRole('button',{name:'Save current',exact:true}).click();expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:profiles'))[0].name)).toBe('Private library');expect(await page.locator('html').getAttribute('data-palette')).toBeNull();await page.evaluate(()=>profileReader.destroy());await expect(app).toHaveCount(0);
+test('topbar appearance changes do not replace the selected paper theme', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en', theme: 'olive', appearance: 'light' })));
+  await page.goto('/app/');
+  await expect(page.locator('.sela-app')).toBeVisible();
+  const app = page.locator('.sela-app');
+  await expect(app).toHaveAttribute('data-theme', 'olive');
+  await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click();
+  await expect(app).toHaveAttribute('data-appearance', 'dark');
+  await expect(app).toHaveAttribute('data-theme', 'olive');
+  await page.getByRole('button', { name: 'Switch to light mode', exact: true }).click();
+  await expect(app).toHaveAttribute('data-appearance', 'light');
+  await expect(app).toHaveAttribute('data-theme', 'olive');
 });

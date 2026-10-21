@@ -1,36 +1,53 @@
 import {test,expect} from '@playwright/test';
 import {openSettingsCategory} from './settings-helpers.ts';
 import {VERSION} from '../../app/library/version.ts';
-test('icon actions keep their meaning and filter sheet supports Escape and focus return',async({page})=>{
- await page.setViewportSize({width:393,height:852});await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- const save=page.getByRole('button',{name:'Save offline',exact:true});await expect(save.locator('svg')).toHaveCount(1);await save.click();
- await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('.book')).toHaveCount(1);
- await expect(page.locator('.bulk-actions')).toBeHidden();await page.getByRole('button',{name:'Select books',exact:true}).click();await expect(page.locator('.bulk-actions')).toBeVisible();
- const filter=page.getByRole('button',{name:'Sort & filter',exact:true});await filter.click();await expect(page.getByRole('dialog',{name:'Sort & filter',exact:true})).toBeVisible();await expect(page.locator('#sort')).toBeVisible();await page.keyboard.press('Escape');await expect(filter).toBeFocused();await expect(page.locator('#sort')).toBeHidden();
- await openSettingsCategory(page,'Reading & appearance');for(const palette of ['forest','sakura','ocean','senja']){await page.locator(`[data-palette-choice=${palette}]`).click();await expect(page.locator('html')).toHaveAttribute('data-palette',palette);for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}}
- await page.reload();await expect(page.locator('html')).toHaveAttribute('data-palette','senja');
+
+test('topbar icons remain centered and collection dialogs return keyboard focus',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
+ await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ for(const width of [320,393,768,1440]){
+  await page.setViewportSize({width,height:852});
+  const buttons=page.locator('.topbar-actions .glass-control');
+  for(let index=0;index<await buttons.count();index++){
+   const button=buttons.nth(index);if(!(await button.isVisible()))continue;
+   await expect(button.locator('svg')).toHaveCount(1);
+   const centered=await button.evaluate(element=>{const button=element.getBoundingClientRect(),icon=element.querySelector('svg')!.getBoundingClientRect();return Math.abs(button.left+button.width/2-icon.left-icon.width/2)<1&&Math.abs(button.top+button.height/2-icon.top-icon.height/2)<1;});
+   expect(centered,`topbar icon centered at ${width}px`).toBe(true);
+  }
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`topbar overflow at ${width}px`).toBe(true);
+ }
+ await page.goto('/app/#/shelf');const trigger=page.getByRole('button',{name:'New collection',exact:true});await trigger.click();
+ const dialog=page.getByRole('dialog',{name:'Create a collection',exact:true});await dialog.getByRole('textbox',{name:'Collection name'}).fill('Focus test');await page.keyboard.press('Escape');
+ await expect(dialog).toBeHidden();await expect(trigger).toBeFocused();
 });
-test('large shelves render in batches and search still finds books beyond the visible batch',async({page})=>{
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await page.evaluate(async()=>{const request=indexedDB.open('sela-private-library',3);const db=await new Promise<IDBDatabase>((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});await new Promise<void>((resolve,reject)=>{const tx=db.transaction('books','readwrite');for(let i=0;i<1000;i++)tx.objectStore('books').put({id:i.toString(16).padStart(64,'0'),name:'Book '+String(i).padStart(4,'0'),filename:'book.txt',format:'txt',size:64,saved:i,tags:[]});tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);});db.close();});
- await page.reload();await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('.book')).toHaveCount(80);await page.getByRole('button',{name:'More books',exact:true}).click();await expect(page.locator('.book')).toHaveCount(160);
- await page.locator('#search').fill('Book 0001');await expect(page.locator('.book')).toHaveCount(1);await expect(page.locator('.book-title')).toHaveText('Book 0001');await expect(page.getByRole('button',{name:'More books',exact:true})).toBeHidden();await page.locator('#search').fill('');await expect(page.locator('.book')).toHaveCount(80);
+
+test('large shelves render in batches and search finds books beyond the visible batch',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await page.evaluate(async()=>{
+  const request=indexedDB.open('sela-private-library',3),db=await new Promise<IDBDatabase>((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
+  await new Promise<void>((resolve,reject)=>{const tx=db.transaction('books','readwrite');for(let i=0;i<1000;i++)tx.objectStore('books').put({id:i.toString(16).padStart(64,'0'),name:'Book '+String(i).padStart(4,'0'),filename:'book.txt',format:'txt',size:64,saved:i,tags:[]});tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);});db.close();
+ });
+ await page.reload();await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(80);await page.getByRole('button',{name:/More books/}).click();await expect(page.locator('.book-card')).toHaveCount(160);
+ const search=page.getByRole('textbox',{name:'Search your shelf'});await search.fill('Book 0912');await expect(page.locator('.book-card')).toHaveCount(1);await expect(page.getByRole('button',{name:'Open Book 0912',exact:true})).toBeVisible();
+ await search.fill('');await expect(page.locator('.book-card')).toHaveCount(80);
 });
-test('viewer materials stay separate from app palettes and About opens as a branded dialog',async({page})=>{
- await page.setViewportSize({width:393,height:852});await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await openSettingsCategory(page,'Reading & appearance');const palette=await page.locator('html').getAttribute('data-palette');
- await expect(page.locator('.room-material-picker')).toHaveCount(0);await expect(page.locator('.app-palette-picker [data-palette-choice="senja"]')).toHaveCount(1);await expect(page.locator('html')).toHaveAttribute('data-palette',palette||'white');
- for(const width of [320,393,768,1440]){await page.setViewportSize({width,height:900});expect(await page.locator('.settings-page').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);}
- await openSettingsCategory(page,'About Sela');const back=page.locator('.settings-detail-back');await expect(back).toBeVisible();await back.click();await expect(page.getByRole('navigation',{name:'Settings categories'})).toBeVisible();await openSettingsCategory(page,'About Sela');const trigger=page.locator('.app-about-trigger');await expect(trigger).toBeVisible();await expect(page.locator('.settings-page>.library-info')).toHaveCount(0);
- for(const width of [320,393,768,1440]){await page.setViewportSize({width,height:900});expect(await trigger.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);}
- await page.setViewportSize({width:393,height:852});await trigger.click();const dialog=page.getByRole('dialog',{name:'About Sela',exact:true});await expect(dialog).toBeVisible();await expect(dialog.locator('.about-app-mark img')).toBeVisible();await expect(dialog).toContainText(VERSION);await expect(dialog).toContainText('Bobby Fajar Christian');await expect(dialog.locator('.library-info')).toHaveCount(1);
- const feedback=dialog.locator('a.about-link[href="https://github.com/bobbyfch/sela/issues/new"]');await expect(feedback).toBeVisible();await expect(feedback).toHaveAttribute('rel','noopener noreferrer');await expect(dialog.locator('a[href^="mailto:"]')).toHaveCount(0);await expect(dialog).toContainText('Books stay in this browser’s IndexedDB');
- await expect(dialog.getByRole('link',{name:'Bobby Fajar Christian'})).toHaveAttribute('href','https://bobbyfch.github.io/');await expect(dialog.getByRole('link',{name:'GitHub'})).toHaveAttribute('href','https://github.com/bobbyfch');await expect(dialog.getByRole('link',{name:'Instagram'})).toHaveAttribute('href','https://www.instagram.com/bobbyfch/');await expect(dialog.getByRole('link',{name:'Threads'})).toHaveAttribute('href','https://www.threads.com/@bobby.fch');await expect(dialog.getByRole('link',{name:'LinkedIn'})).toHaveAttribute('href','https://id.linkedin.com/in/bobbyfajarc');await expect(dialog.getByRole('link',{name:'MIT license'})).toHaveAttribute('href','https://github.com/bobbyfch/sela/blob/main/LICENSE');await expect(dialog.getByRole('link',{name:'Third-party licenses'})).toHaveAttribute('href','https://github.com/bobbyfch/sela/blob/main/THIRD_PARTY_NOTICES.md');
- await page.keyboard.press('Escape');await expect(dialog).toBeHidden();await expect(trigger).toBeFocused();
+
+test('app themes stay separate from Reader materials and About details stay readable',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',appearance:'light',theme:'vanilla'})));
+ await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await openSettingsCategory(page,'Appearance & shelf');const app=page.locator('.sela-app');await expect(app).toHaveAttribute('data-theme','vanilla');
+ await expect(page.locator('.room-material-picker')).toHaveCount(0);await page.getByRole('combobox',{name:'Color theme'}).click();await page.getByRole('option',{name:'Cocoa',exact:true}).click();await expect(app).toHaveAttribute('data-theme','cocoa');
+ for(const width of [320,393,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`appearance overflow at ${width}px`).toBe(true);}
+ await page.goto('/app/#/settings');const about=page.locator('.about-sela-card');await expect(about).toBeVisible();await expect(about).toContainText(VERSION);await expect(about).toContainText('Bobby Fajar Christian');
+ await expect(about.getByRole('link',{name:'GitHub'})).toHaveAttribute('href','https://github.com/bobbyfch/sela');await expect(about.getByRole('link',{name:'Third-party notices'})).toHaveAttribute('rel','noopener noreferrer');
 });
+
 test('SDK host commands and diagnostics expose no document secrets',async({page})=>{
  await page.goto('/');const result=await page.evaluate(async()=>{const {default:Sela}=await import('/dist/js/sela.esm.js');const {mountReaderCommands,mountReaderDebug}=await import('/dist/js/sela.host.js');const viewer=new Sela({url:'/private.pdf?token=secret',httpHeaders:{Authorization:'secret'}});let ran=0;const container=document.createElement('section');document.body.append(container);const commands=mountReaderCommands(viewer,container,[{id:'annotate',label:'Annotate',run:()=>{ran++;}}]);const debug=mountReaderDebug(viewer,container);container.querySelector('button')!.click();viewer.dispatchEvent(new CustomEvent('error',{detail:{error:new Error('secret')}}));const safe=!container.textContent!.includes('secret');viewer.destroy();commands();debug();const remaining=container.children.length;container.remove();return {safe,ran,remaining};});expect(result).toEqual({safe:true,ran:1,remaining:0});
 });
-test('legacy SDK palette aliases resolve to clean current palette colors',async({page})=>{
- await page.goto('/');const result=await page.evaluate(async()=>{const {default:Sela}=await import('/dist/js/sela.esm.js');const values:Record<string,string[]>={};for(const palette of ['walnut','oak','linen'] as const){const viewer=new Sela({format:'txt',palette,theme:'light',persistPreferences:false});await viewer.open(new Blob(['A quiet material test.']));values[palette]=[viewer.overlay!.dataset.palette,getComputedStyle(viewer.overlay!).getPropertyValue('--bg').trim(),getComputedStyle(viewer.overlay!).getPropertyValue('--accent').trim()];viewer.destroy();}return values;});expect(result).toEqual({walnut:['lavender','#fff','#6555b8'],oak:['forest','#fff','#16756a'],linen:['ocean','#fff','#087fa2']});
+
+test('legacy SDK palette aliases resolve to their current paper colors',async({page})=>{
+ await page.goto('/');const result=await page.evaluate(async()=>{const {default:Sela}=await import('/dist/js/sela.esm.js');const values:Record<string,string[]>={};for(const palette of ['walnut','oak','linen'] as const){const viewer=new Sela({format:'txt',palette,theme:'light',persistPreferences:false});await viewer.open(new Blob(['A quiet material test.']));values[palette]=[viewer.overlay!.dataset.palette,getComputedStyle(viewer.overlay!).getPropertyValue('--bg').trim(),getComputedStyle(viewer.overlay!).getPropertyValue('--accent').trim()];viewer.destroy();}return values;});
+ expect(result).toEqual({walnut:['senja','#f2eee4','#754e3d'],oak:['forest','#f2eee4','#586044'],linen:['ocean','#f2eee4','#4f6765']});
 });

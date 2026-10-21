@@ -1,38 +1,106 @@
-import {test,expect} from '@playwright/test';
-test('classic collection searches locally, shows covers and reads imported books within Sela',async({page})=>{
- const network=[];page.on('request',r=>{if(/openlibrary|gutendex|googleapis|microsoftonline|raw.githubusercontent/.test(r.url()))network.push(r.url());});
- await page.route('https://raw.githubusercontent.com/GITenberg/**',r=>r.fulfill({contentType:'text/plain',body:'Chapter One\n\nA complete classic stays inside Sela.\n\nChapter Two\n\nThe story continues.'}));
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');expect(network).toEqual([]);
- await page.getByRole('button',{name:'Explore',exact:true}).click();const catalog=page.locator('.open-catalog');await expect(catalog.getByRole('button',{name:'Sela picks',exact:true})).toHaveAttribute('aria-pressed','true');network.length=0;await expect(catalog.locator('.open-book')).toHaveCount(32);expect(network).toEqual([]);await expect(catalog.locator('a:visible')).toHaveCount(32);
- const searchButton=catalog.getByRole('button',{name:'Search',exact:true});await expect(searchButton).toBeEnabled();const catalogSearch=catalog.getByRole('searchbox');await catalogSearch.fill('Walden');await catalogSearch.press('Enter');await expect(catalog.locator('.open-book')).toHaveCount(1,{timeout:15000});await expect(catalog.locator('.open-book img')).toBeVisible();await catalog.locator('.open-book-cover').click();await page.locator('.control-sheet[open] .personal-sheet').getByRole('button',{name:'Read',exact:true}).click();await expect(page.locator('.library-reader-overlay article')).toContainText('A complete classic stays inside Sela.');await page.getByRole('button',{name:'Back to library',exact:true}).click();
- await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('#shelf .book')).toHaveCount(0);await page.getByRole('button',{name:'Explore',exact:true}).click();await catalog.locator('.open-book-cover').click();await page.locator('.control-sheet[open] .personal-sheet').getByRole('button',{name:'Save offline',exact:true}).click();await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('#shelf .book')).toHaveCount(1);await page.locator('.cover').click();await page.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await page.getByRole('button',{name:'Back to library',exact:true}).click();await expect(page.locator('#shelf .book img')).toBeVisible();await page.getByRole('button',{name:'Home',exact:true}).click();await expect(page.locator('.continue-list .recent-book')).toHaveCount(1);await expect(page.locator('.reading-summary strong').first()).toHaveText('1');
- await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.locator('input[placeholder*=Client],#connect-cloud')).toHaveCount(0);await page.locator('#language').selectOption('id-ID');await page.getByRole('button',{name:'Jelajah',exact:true}).click();await catalog.locator('.open-book-cover').first().click();await expect(page.locator('.control-sheet[open] .personal-sheet').getByRole('button',{name:'Baca',exact:true})).toBeVisible();
+import { test, expect } from '@playwright/test';
+
+const setEnglish = () => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' }));
+
+test('local open-book discovery searches and imports a classic into the React shelf', async ({ page }) => {
+  const remoteCatalogRequests: string[] = [];
+  page.on('request', request => { if (/openlibrary|gutendex|googleapis|microsoftonline|raw\.githubusercontent/.test(request.url())) remoteCatalogRequests.push(request.url()); });
+  await page.addInitScript(setEnglish);
+  await page.route('https://raw.githubusercontent.com/GITenberg/**', route => route.fulfill({ contentType: 'text/plain', body: 'Chapter One\n\nA complete classic stays inside Sela.\n\nChapter Two\n\nThe story continues.' }));
+  await page.goto('/app/');
+  await page.getByRole('link', { name: 'Discover', exact: true }).click();
+  const catalog = page.locator('.catalog-explorer');
+  await expect(catalog.locator('.catalog-result-card').first()).toBeVisible();
+  expect(remoteCatalogRequests).toEqual([]);
+  await catalog.getByLabel('Search books', { exact: true }).fill('Walden');
+  await catalog.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(catalog.locator('.catalog-result-card')).toHaveCount(1);
+  await expect(catalog.locator('.catalog-result-card').first()).toContainText('Walden');
+  await catalog.locator('.catalog-result-card').getByRole('button', { name: 'Download & add to shelf', exact: true }).click();
+  await expect(page.getByText('1 book added to your shelf.', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'My shelf', exact: true }).click();
+  await expect(page.locator('.book-card')).toHaveCount(1);
+  await page.locator('.book-title-button').click();
+  await expect(page.locator('.reader-body')).toContainText('A complete classic stays inside Sela.');
+  await page.getByRole('button', { name: 'Back to shelf', exact: true }).click();
+  await expect(page).toHaveURL(/\/app\/#\/shelf$/);
 });
-test('mobile reading timer stays visible above navigation and ahead of secondary home details',async({page})=>{
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- for(const width of [320,393,600]){
-  await page.setViewportSize({width,height:852});
-  for(const theme of ['light','dark']){
-   await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
-   const layout=await page.evaluate(()=>{
-    const rect=(selector)=>{const box=document.querySelector(selector).getBoundingClientRect();return {top:box.top,bottom:box.bottom,right:box.right};};
-    return {timer:rect('.focus-card'),clock:rect('.room-intro .clock'),navigation:rect('.bottom-bar'),scrollWidth:document.documentElement.scrollWidth};
-   });
-   expect(layout.timer.bottom,`timer should precede clock at ${width}px (${theme})`).toBeLessThan(layout.clock.top);
-   expect(layout.timer.bottom,`timer should clear bottom navigation at ${width}px (${theme})`).toBeLessThan(layout.navigation.top);
-   expect(layout.scrollWidth,`horizontal overflow at ${width}px (${theme})`).toBeLessThanOrEqual(width);
+
+test('mobile focus timer remains reachable without covering the dock', async ({ page }) => {
+  await page.addInitScript(setEnglish);
+  await page.goto('/app/');
+  const app = page.locator('.sela-app');
+  const timer = page.locator('.focus-timer-card');
+  const dock = page.locator('.mobile-dock');
+  await expect(timer).toBeVisible();
+  for (const width of [320, 393, 600]) {
+    await page.setViewportSize({ width, height: 852 });
+    await timer.scrollIntoViewIfNeeded();
+    for (const appearance of ['light', 'dark'] as const) {
+      if (await app.getAttribute('data-appearance') !== appearance) {
+        await page.getByRole('button', { name: appearance === 'dark' ? 'Switch to dark mode' : 'Switch to light mode', exact: true }).click();
+      }
+      await expect(app).toHaveAttribute('data-appearance', appearance);
+      const layout = await page.evaluate(() => {
+        const timer = document.querySelector('.focus-timer-card')!.getBoundingClientRect();
+        const dock = document.querySelector('.mobile-dock')!.getBoundingClientRect();
+        return { width: document.documentElement.scrollWidth, viewport: innerWidth, timerBottom: timer.bottom, dockTop: dock.top, timerHeight: timer.height };
+      });
+      expect(layout.width, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(layout.viewport);
+      expect(layout.timerHeight).toBeGreaterThan(100);
+      expect(layout.timerBottom, `focus timer is covered by navigation at ${width}px`).toBeLessThan(layout.dockTop);
+    }
   }
- }
 });
-test('failed book download stays inside the collection and does not invent shelf success',async({page})=>{
- await page.route('https://raw.githubusercontent.com/GITenberg/**',r=>r.fulfill({status:503,body:'Unavailable'}));await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true',{timeout:15000});await page.getByRole('button',{name:'Explore',exact:true}).click();await page.locator('.open-catalog').getByRole('button',{name:'Sela picks',exact:true}).click();const catalog=page.locator('.open-catalog');await expect(catalog.locator('.open-book')).toHaveCount(32);const catalogSearch=catalog.getByRole('searchbox');await catalogSearch.fill('Frankenstein');await catalog.getByRole('button',{name:'Search',exact:true}).click();await expect(catalog.locator('.open-book')).toHaveCount(1,{timeout:15000});await catalog.locator('.open-book-cover').click();await page.locator('.control-sheet[open] .personal-sheet').getByRole('button',{name:'Save offline',exact:true}).click();await expect(catalog).toContainText('Could not open this edition');await expect(catalog.locator('.open-book-cover')).toBeEnabled();await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('#shelf .book')).toHaveCount(0);
+
+test('failed catalog download stays in discovery and never reports a shelf import', async ({ page }) => {
+  await page.addInitScript(setEnglish);
+  await page.route('https://raw.githubusercontent.com/GITenberg/**', route => route.fulfill({ status: 503, body: 'Unavailable' }));
+  await page.goto('/app/#/discover');
+  const catalog = page.locator('.catalog-explorer');
+  await catalog.getByLabel('Search books', { exact: true }).fill('Frankenstein');
+  await catalog.getByRole('button', { name: 'Search', exact: true }).click();
+  const result = catalog.locator('.catalog-result-card');
+  await expect(result).toHaveCount(1);
+  await result.getByRole('button', { name: 'Download & add to shelf', exact: true }).click();
+  await expect(catalog.getByRole('alert')).toContainText(/could not|unavailable|failed/i, { timeout: 15000 });
+  await page.getByRole('link', { name: 'My shelf', exact: true }).click();
+  await expect(page.locator('.book-card')).toHaveCount(0);
 });
-test('home asks once for nearby weather and keeps manual city fallback',async({page})=>{
- await page.context().grantPermissions(['geolocation']);await page.context().setGeolocation({latitude:-7.8,longitude:110.36});
- const requests=[];page.on('request',r=>{if(/open-meteo/.test(r.url()))requests.push(r.url());});await page.route('https://geocoding-api.open-meteo.com/**',r=>r.fulfill({json:{results:[{name:'Yogyakarta',admin1:'DIY',country:'Indonesia',latitude:-7.8,longitude:110.36}]}}));await page.route('https://api.open-meteo.com/**',r=>r.fulfill({json:{current:{temperature_2m:27.4,weather_code:3}}}));
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect.poll(()=>requests.length).toBe(1);await expect(page.locator('.weather-summary strong')).toHaveText('27°C');await expect(page.locator('.home-page .continue-section')).toBeHidden();await expect(page.locator('.topbar #add-books')).toHaveCount(1);await expect(page.locator('.home-page button').filter({hasText:'Add a book'})).toHaveCount(0);
- await page.locator('.weather-widget details summary').click();await page.getByRole('searchbox',{name:'City name'}).fill('Jogja');await page.getByRole('button',{name:'Find',exact:true}).click();await page.getByRole('button',{name:'Yogyakarta, DIY, Indonesia',exact:true}).click();await expect(page.locator('.weather-summary strong')).toHaveText('27°C');await expect(page.locator('.weather-summary span')).toHaveText('Cloudy');
- const focus=page.locator('.focus-card');await expect(focus.getByRole('group',{name:'Choose a reading session'})).toBeVisible();const fifteen=focus.getByRole('button',{name:'15 minutes',exact:true});await expect(fifteen).toHaveAttribute('aria-pressed','true');await focus.getByRole('button',{name:'Start',exact:true}).click();await expect(focus.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await expect(fifteen).toBeDisabled();await focus.getByRole('button',{name:'Pause',exact:true}).click();await focus.getByRole('button',{name:'25 minutes',exact:true}).click();await expect(focus.getByRole('button',{name:'25 minutes',exact:true})).toHaveAttribute('aria-pressed','true');await expect(focus.locator('output')).toHaveText('25:00');await expect(focus.getByRole('progressbar')).toHaveAttribute('aria-valuenow','0');await focus.getByRole('button',{name:'Reset',exact:true}).click();
- for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:900});for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}if(width>=800){const book=await page.locator('.home-page .catalog-book').boundingBox(),timer=await focus.boundingBox();expect(book.width).toBeGreaterThan(100);expect(timer.width).toBeGreaterThan(100);}}
- await page.reload();await expect(page.locator('.weather-summary strong')).toHaveText('27°C');expect(requests.filter(url=>url.includes('geocoding-api.open-meteo.com'))).toHaveLength(1);expect(requests.filter(url=>url.includes('api.open-meteo.com/v1/forecast'))).toHaveLength(2);await page.locator('.weather-widget details summary').click();await page.getByRole('button',{name:'Turn off weather',exact:true}).click();await expect(page.locator('.weather-summary strong')).toHaveText('—');
+
+test('weather requests location only after a user action and keeps city search as a fallback', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem('sela:app:preferences')) localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' }));
+    Object.defineProperty(navigator, 'geolocation', { configurable: true, value: { getCurrentPosition: (_success: unknown, error: (reason: { code: number }) => void) => { (window as any).locationPromptCount = ((window as any).locationPromptCount || 0) + 1; error({ code: 1 }); } } });
+  });
+  const requests: string[] = [];
+  page.on('request', request => { if (/open-meteo/.test(request.url())) requests.push(request.url()); });
+  await page.route('https://geocoding-api.open-meteo.com/**', route => route.fulfill({ json: { results: [{ name: 'Yogyakarta', admin1: 'DIY', country: 'Indonesia', latitude: -7.8, longitude: 110.36, timezone: 'Asia/Jakarta' }] } }));
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: { current: { temperature_2m: 27.4, weather_code: 3, is_day: 1 }, timezone: 'Asia/Jakarta' } }));
+  await page.goto('/app/#/settings/appearance');
+  await page.getByRole('switch', { name: /^Weather/ }).check();
+  await page.getByRole('link', { name: 'Today', exact: true }).click();
+  const weather = page.locator('.weather-widget');
+  await expect(weather).toBeVisible();
+  expect(await page.evaluate(() => (window as any).locationPromptCount || 0)).toBe(0);
+  expect(requests).toEqual([]);
+  await weather.getByRole('button', { name: 'Choose a city', exact: true }).click();
+  const locationDialog = page.getByRole('dialog', { name: 'Weather location', exact: true });
+  await locationDialog.getByRole('button', { name: 'Use my location', exact: true }).click();
+  await expect(locationDialog).toContainText('Location permission was declined');
+  expect(await page.evaluate(() => (window as any).locationPromptCount)).toBe(1);
+  await locationDialog.getByLabel('Find a city', { exact: true }).fill('Jogja');
+  await locationDialog.getByRole('button', { name: 'Search', exact: true }).click();
+  await locationDialog.getByRole('button', { name: 'Yogyakarta, DIY, Indonesia', exact: true }).click();
+  await expect(weather.locator('.weather-current strong')).toHaveText('27°C');
+  await expect(weather.locator('.weather-current span')).toHaveText('Overcast');
+  expect(requests.filter(url => url.includes('geocoding-api.open-meteo.com'))).toHaveLength(1);
+  expect(requests.filter(url => url.includes('api.open-meteo.com/v1/forecast'))).toHaveLength(1);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('sela:app:preferences') || '{}').widgets?.weather)).toBe(true);
+  await page.reload();
+  await expect(page.locator('.weather-current strong')).toHaveText('27°C');
+  expect(requests.filter(url => url.includes('api.open-meteo.com/v1/forecast'))).toHaveLength(1);
+  await page.locator('.weather-widget').getByRole('button', { name: 'Weather settings', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Weather location', exact: true }).getByRole('button', { name: 'Remove saved location', exact: true }).click();
+  await expect(page.locator('.weather-widget')).toContainText('No location is saved.');
 });

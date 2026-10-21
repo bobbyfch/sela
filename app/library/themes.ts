@@ -2,14 +2,15 @@
 import {controlIcon, type ControlIcon} from './controls.ts';
 
 export const paletteCatalog = [
-  {key:'white',en:'Sela',id:'Sela',accent:'#3264c6',soft:'#eef4ff',motif:'sparkles'},
-  {key:'forest',en:'Rimba',id:'Rimba',accent:'#16756a',soft:'#e8f7f3',motif:'leaf'},
-  {key:'sakura',en:'Sakura',id:'Sakura',accent:'#c14672',soft:'#fff0f6',motif:'flower'},
-  {key:'ocean',en:'Samudra',id:'Samudra',accent:'#087fa2',soft:'#e9f7fb',motif:'wave'},
-  {key:'lavender',en:'Lembayung',id:'Lembayung',accent:'#6555b8',soft:'#f0efff',motif:'moon'},
-  {key:'citrus',en:'Kenanga',id:'Kenanga',accent:'#687b17',soft:'#f4f7e7',motif:'sun'},
-  {key:'senja',en:'Senja',id:'Senja',accent:'#b84c2c',soft:'#fff1e9',motif:'mountain'},
-  {key:'arunika',en:'Arunika',id:'Arunika',accent:'#947000',soft:'#fbf5dc',motif:'tea'}
+  {key:'white',en:'Vanilla',id:'Vanila',accent:'#6c624d',soft:'#eee7d8',motif:'journal'},
+  {key:'forest',en:'Olive',id:'Zaitun',accent:'#586044',soft:'#e1e5d4',motif:'books'},
+  {key:'sakura',en:'Parchment',id:'Perkamen',accent:'#785b40',soft:'#ecdfcc',motif:'journal'},
+  {key:'ocean',en:'Mist',id:'Kabut',accent:'#4f6765',soft:'#dfe8e4',motif:'newspaper'},
+  {key:'lavender',en:'Stone',id:'Batu',accent:'#615d53',soft:'#e5e1d8',motif:'shelf'},
+  {key:'citrus',en:'Oat',id:'Gandum',accent:'#806a49',soft:'#eee3ce',motif:'image'},
+  {key:'senja',en:'Cocoa',id:'Kakao',accent:'#754e3d',soft:'#e8d7cb',motif:'read'},
+  {key:'arunika',en:'Ivory',id:'Gading',accent:'#655f4b',soft:'#f0eadb',motif:'journal'},
+  {key:'oled',en:'OLED',id:'OLED',accent:'#d5cebd',soft:'#171716',motif:'read'}
 ] as const satisfies readonly {key:string;en:string;id:string;accent:string;soft:string;motif:ControlIcon}[];
 export const palettes = paletteCatalog.map(palette=>palette.key);
 export type PaletteKey = typeof paletteCatalog[number]['key'];
@@ -18,7 +19,7 @@ export function getPaletteDefinition(value:string) {
 }
 
 const legacyPalettes: Record<string, PaletteKey> = {
-  dark: 'white', oled: 'white', charcoal: 'white', oak: 'forest', walnut: 'lavender',
+  dark: 'white', charcoal: 'white', oak: 'forest', walnut: 'senja',
   paper: 'white', linen: 'ocean', rimba: 'forest', nila: 'ocean', seroja: 'sakura',
   ink: 'lavender', rose: 'sakura', kids: 'sakura', cyberpunk: 'lavender',
   forest: 'forest', ocean: 'ocean', citrus: 'citrus', laskar: 'senja', bumi: 'forest',
@@ -87,6 +88,14 @@ export function applyPalette(value: string, target = document.documentElement) {
   target.dataset.palette = chosen;
   applyPaletteTokens(target,chosen);
   if (target === document.documentElement) {
+    if (chosen === 'oled') {
+      target.dataset.theme = 'dark';
+      try { localStorage.setItem(themeKey, 'dark'); } catch {}
+      applyOled(true, target);
+      document.dispatchEvent(new Event('sela:appearance'));
+    } else if (target.dataset.oled === 'true') {
+      applyOled(false, target);
+    }
     try {
       localStorage.setItem(paletteKey, chosen);
       localStorage.setItem('sela-library:palette-version', paletteVersion);
@@ -108,14 +117,14 @@ export function mountOledToggle(parent: HTMLElement, t: (en: string, id: string)
   row.className = 'oled-setting-row';
   const copy = document.createElement('span');
   const title = document.createElement('strong');
-  title.textContent = t('Pure black in dark mode', 'Hitam pekat saat mode gelap');
+  title.textContent = t('OLED black', 'Hitam OLED');
   const note = document.createElement('small');
-  note.textContent = t('Only changes dark mode; may save power on OLED screens.', 'Hanya mengubah mode gelap; dapat menghemat daya pada layar OLED.');
+  note.textContent = t('Use a true-black canvas when dark appearance is active.', 'Gunakan latar hitam pekat saat tampilan gelap aktif.');
   copy.append(title, note);
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.checked = target.dataset.oled === 'true';
-  input.setAttribute('aria-label', t('Pure black in dark mode', 'Hitam pekat saat mode gelap'));
+  input.setAttribute('aria-label', t('OLED black', 'Hitam OLED'));
   input.addEventListener('change', () => applyOled(input.checked, target));
   row.append(copy, input);
   parent.append(row);

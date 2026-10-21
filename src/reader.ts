@@ -1,5 +1,7 @@
 import { FILTERS, FILTER_LABELS, applyAppearance } from './appearance.ts';
 import { MODES, readingPreferences, storePreferences, captureTextPosition, restoreTextPosition, applyTypography } from './preferences.ts';
+import { pageText } from './page-text.ts';
+import { decorateHighlights } from './highlights.ts';
 export function createReader(global, engine) {
     'use strict';
 
@@ -76,6 +78,7 @@ export function createReader(global, engine) {
         if (state.thumbObserver) state.thumbObserver.disconnect();
         state.thumbQueue = [];
         if (state.thumbTasks) state.thumbTasks.forEach(function (task) { task.cancel(); });
+        if (state.downloadObjectUrl) global.URL.revokeObjectURL(state.downloadObjectUrl);
         if(state.book?.getText){save(state.locationKey,captureTextPosition(state.book.container));}
         state.tools?.destroy();
         if(state.orientationLocked)global.screen.orientation?.unlock?.();
@@ -147,6 +150,7 @@ export function createReader(global, engine) {
         overlay.dataset.selaTheme = options.theme || 'auto';
         overlay.dataset.paper = options.paperTexture&&!options.lowPower ? 'true' : 'false';
         overlay.dataset.pageSurface = options.pageSurface || (options.paperTexture ? 'vellum' : 'smooth');
+        if (options.headless) { overlay.dataset.productReader = 'app'; overlay.dataset.readerChrome = 'headless'; }
         var filters = FILTERS;
         applyAppearance(overlay,options);
         if (options.zIndex) overlay.style.zIndex = String(options.zIndex);
@@ -177,8 +181,22 @@ export function createReader(global, engine) {
         }catch{notice.textContent=copy('Rotate your device manually; the layout adapts automatically.','Putar perangkat secara manual; tata letak menyesuaikan otomatis.');}});
         var filter=document.createElement('select');Object.keys(FILTERS).forEach(function(key){var option=document.createElement('option');option.value=key;filter.appendChild(option);});filter.value=options.filter||'none';
         var marksButton=button('Page previews'),soundButton=button('Page sound');
-        var download=document.createElement('a'),documentFormat=options.format||'pdf';if(options.url)download.href=options.url;else download.removeAttribute('href');download.hidden=!options.url;
+        var download=document.createElement('a'),documentFormat=options.format||'pdf';if(options.url)download.href=options.url;else download.removeAttribute('href');download.hidden=!options.url&&!options.data;
         download.setAttribute('download',((options.title||'ebook').replace(/\.(pdf|epub|cbz|djvu|djv|txt|md|html|fb2)$/i,'').replace(/[\\/:*?"<>|]/g,'').trim().slice(0,80)||'ebook')+'.'+documentFormat);
+        state.downloadOriginal=function(){
+            if(!download.href&&options.data){
+                var mimeByFormat={pdf:'application/pdf',epub:'application/epub+zip',cbz:'application/vnd.comicbook+zip',djvu:'image/vnd.djvu',txt:'text/plain',md:'text/markdown',html:'text/html',fb2:'application/xml',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',odt:'application/vnd.oasis.opendocument.text'};
+                state.downloadObjectUrl=global.URL.createObjectURL(new Blob([options.data],{type:mimeByFormat[documentFormat]||'application/octet-stream'}));
+                download.href=state.downloadObjectUrl;
+            }
+            if(download.href){
+                download.hidden=false;
+                download.style.cssText='position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none';
+                if(!download.isConnected)document.body.appendChild(download);
+                download.click();
+                global.setTimeout(function(){download.remove();},0);
+            }
+        };
         var closeButton=button(t("Tutup pembaca"));closeButton.className='library-reader-close';
 
         var content = document.createElement('div');
@@ -204,7 +222,7 @@ export function createReader(global, engine) {
         sidebar.appendChild(marksList);
         sidebar.appendChild(thumbsTitle);
         sidebar.appendChild(thumbsList);
-        content.appendChild(sidebar);
+        if (!options.headless) content.appendChild(sidebar);
         shell.appendChild(content);
         var toolsHost=document.createElement('aside');toolsHost.className='sela-tools';toolsHost.hidden=true;content.appendChild(toolsHost);
         state.setAppearance=function(values){Object.assign(options,readingPreferences(values));filter.value=options.filter||'none';applyAppearance(overlay,options);state.savePreferences?.();};
@@ -243,8 +261,93 @@ export function createReader(global, engine) {
             }).catch(function(error){toolsPromise=null;if(active===state)notice.textContent=error.message;throw error;});
             return toolsPromise;
         }
-        state.getText=function(page){return loadTools().then(function(){return state.getText(page);});};
-        state.showTools=function(){sidebar.hidden=true;marksButton.setAttribute('aria-expanded','false');toolsHost.hidden=false;toolsButton.setAttribute('aria-expanded','true');return loadTools();};
+        state.getText=function(page){return state.book?pageText(state.book,page):Promise.resolve('');};
+        state.getPageThumbnail=async function(page,maxWidth=180){
+            page=Number(page);maxWidth=Math.max(48,Math.min(320,Math.round(Number(maxWidth)||180)));
+            if(!Number.isInteger(page)||page<1||page>state.pages)throw new RangeError('Thumbnail page is outside this book');
+            var book=state.book,pdf=book?.pdf;if(!pdf?.getPage)return null;
+            var pdfPage=await pdf.getPage(page),canvas=document.createElement('canvas'),task;
+            try{
+                if(active!==state||state.book!==book)throw new DOMException('Reader changed','AbortError');
+                var base=pdfPage.getViewport({scale:1}),scale=Math.min(1,maxWidth/base.width,420/base.height),viewport=pdfPage.getViewport({scale});
+                canvas.width=Math.max(1,Math.ceil(viewport.width));canvas.height=Math.max(1,Math.ceil(viewport.height));
+                var context=canvas.getContext('2d',{alpha:false});if(!context)return null;
+                task=pdfPage.render({canvasContext:context,viewport});state.thumbTasks.add(task);await task.promise;
+                if(active!==state||state.book!==book)throw new DOMException('Reader changed','AbortError');
+                return await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/webp',.78));
+            }finally{
+                if(task)state.thumbTasks.delete(task);
+                pdfPage.cleanup?.();canvas.width=1;canvas.height=1;
+            }
+        };
+        state.getBookmarks=function(){return state.marks.filter(function(page){return Number.isInteger(page)&&page>=1&&page<=state.pages;}).slice().sort(function(a,b){return a-b;});};
+        state.toggleBookmark=function(page){
+            page=Number(page);if(!Number.isInteger(page)||page<1||page>state.pages)throw new RangeError('Bookmark page is outside this book');
+            var index=state.marks.indexOf(page);if(index<0)state.marks.push(page);else state.marks.splice(index,1);
+            save(state.marksKey,state.marks);updateMarks();return state.getBookmarks();
+        };
+        state.setBookmarks=function(pages){
+            if(!Array.isArray(pages)||pages.length>2000||pages.some(function(page){return !Number.isInteger(page)||page<1||page>state.pages;}))throw new TypeError('Invalid bookmark pages');
+            state.marks=Array.from(new Set(pages));save(state.marksKey,state.marks);updateMarks();return state.getBookmarks();
+        };
+        state.getContents=async function(){
+            var raw=state.book?.getOutline?await state.book.getOutline():await state.book?.pdf?.getOutline?.();
+            var count=0;
+            async function flatten(items,level){
+                if(level>20||!Array.isArray(items))return [];
+                var rows=[];
+                for(var item of items){
+                    if(++count>2000)break;
+                    var page=Number(item?.page)||0;
+                    if(!page&&item?.dest&&state.book?.pdf){
+                        try{var dest=typeof item.dest==='string'?await state.book.pdf.getDestination(item.dest):item.dest;if(Array.isArray(dest)&&dest.length)page=typeof dest[0]==='number'?dest[0]+1:await state.book.pdf.getPageIndex(dest[0])+1;}catch{}
+                    }
+                    var title=String(item?.title||item?.label||'').trim().slice(0,500);
+                    if(title&&Number.isInteger(page)&&page>=1&&page<=state.pages)rows.push({title,page,anchor:typeof item.anchor==='string'?item.anchor.slice(0,500):undefined,level});
+                    rows.push(...await flatten(item?.items||item?.children,level+1));
+                    if(count>2000)break;
+                }
+                return rows;
+            }
+            return flatten(raw,0);
+        };
+        state.goToContent=function(item){
+            var page=Number(item?.page);if(!Number.isInteger(page)||page<1||page>state.pages)throw new RangeError('Contents location is outside this book');
+            state.remember();if(state.book?.goToLocation&&item.anchor)state.book.goToLocation({page,anchor:item.anchor});else state.book?.goTo?.(page);
+        };
+        state.getAnnotations=function(){
+            var notes=read(state.notesKey,{}),highlights=read(state.notesKey.replace(/:notes$/u,':highlights'),{});
+            if(!notes||typeof notes!=='object'||Array.isArray(notes))notes={};if(!highlights||typeof highlights!=='object'||Array.isArray(highlights))highlights={};
+            var cleanNotes={},cleanHighlights={};
+            for(var entry of Object.entries(notes).slice(0,2000)){var n=Number(entry[0]),value=entry[1];if(Number.isInteger(n)&&n>=1&&n<=state.pages&&typeof value==='string')cleanNotes[n]=value.slice(0,10000);}
+            for(var pair of Object.entries(highlights).slice(0,2000)){var p=Number(pair[0]),quotes=pair[1];if(Number.isInteger(p)&&p>=1&&p<=state.pages&&Array.isArray(quotes))cleanHighlights[p]=quotes.filter(function(q){return typeof q==='string'&&q.length<=10000;}).slice(0,100);}
+            return {notes:cleanNotes,highlights:cleanHighlights};
+        };
+        state.setNote=function(page,note){
+            page=Number(page);if(!Number.isInteger(page)||page<1||page>state.pages||typeof note!=='string'||note.length>10000)throw new TypeError('Invalid page note');
+            var annotations=state.getAnnotations();if(note.trim())annotations.notes[page]=note;else delete annotations.notes[page];save(state.notesKey,annotations.notes);return state.getAnnotations();
+        };
+        function renderSavedHighlights(){
+            var currentBook=state.book;if(!currentBook?.container?.querySelectorAll)return;
+            var highlights=state.getAnnotations().highlights;
+            for(var section of currentBook.container.querySelectorAll('.sela-epub-chapter')){
+                if(section.hidden)continue;
+                var page=Number(section.dataset.page)||state.current;
+                var bounds=section.getBoundingClientRect(),hostBounds=currentBook.container.getBoundingClientRect();
+                if(bounds.bottom<hostBounds.top-320||bounds.top>hostBounds.bottom+320)continue;
+                decorateHighlights(section.shadowRoot?.querySelector('article')||section.querySelector('article'),highlights[page]||[]);
+            }
+            if(currentBook.getText&&currentBook.container.matches?.('.sela-text-book'))decorateHighlights(currentBook.container,highlights[state.current]||[]);
+        }
+        state.setHighlights=function(page,quotes){
+            page=Number(page);if(!Number.isInteger(page)||page<1||page>state.pages||!Array.isArray(quotes)||quotes.length>100||quotes.some(function(q){return typeof q!=='string'||q.length>10000;}))throw new TypeError('Invalid page highlights');
+            var annotations=state.getAnnotations();if(quotes.length)annotations.highlights[page]=Array.from(new Set(quotes));else delete annotations.highlights[page];
+            save(state.notesKey.replace(/:notes$/u,':highlights'),annotations.highlights);renderSavedHighlights();state.overlay.dispatchEvent(new CustomEvent('sela:annotations'));return state.getAnnotations();
+        };
+        state.showTools=function(){
+            if(options.headless){overlay.dispatchEvent(new CustomEvent('sela:request-tools',{detail:{tab:'search'}}));return Promise.resolve(null);}
+            sidebar.hidden=true;marksButton.setAttribute('aria-expanded','false');toolsHost.hidden=false;toolsButton.setAttribute('aria-expanded','true');return loadTools();
+        };
         state.hideTools=function(){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');toolsButton.focus();};
         toolsButton.addEventListener('click',function(){if(toolsHost.hidden)state.showTools().catch(function(){});else{toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');}});
 
@@ -257,7 +360,10 @@ export function createReader(global, engine) {
         var bookmarkButton=button(t('Tandai halaman ini'));bookmarkButton.setAttribute('aria-pressed','false');
         var positionLabel=document.createElement('output');
         state.controls={bookmark:bookmarkButton,sound:soundButton,rotate:rotateButton,help:helpButton,filter:filter,pageForm,download,previews:sidebar};
-        state.showPreviews=function(){toolsHost.hidden=true;sidebar.hidden=false;buildThumbs();};
+        state.showPreviews=function(){
+            if(options.headless){overlay.dispatchEvent(new CustomEvent('sela:request-previews'));return;}
+            toolsHost.hidden=true;sidebar.hidden=false;buildThumbs();
+        };
 
         function updateMarks() {
             marksList.replaceChildren();
@@ -293,6 +399,7 @@ export function createReader(global, engine) {
             positionLabel.textContent=state.pageLabels?.[state.current-1] || '';
             save(key + ':page', state.current);
             updateMarks();
+            renderSavedHighlights();
             if (state.currentThumb) state.currentThumb.removeAttribute('aria-current');
             state.currentThumb = thumbsList.querySelector('[data-page="' + state.current + '"]');
             if (state.currentThumb) state.currentThumb.setAttribute('aria-current', 'page');
@@ -400,6 +507,11 @@ export function createReader(global, engine) {
             overlay.dispatchEvent(new CustomEvent('sela:sound'));
             soundButton.setAttribute('aria-pressed', state.sound ? 'true' : 'false');
         }
+        state.setSoundEnabled = function(enabled) {
+            state.sound = !!enabled;
+            save((options.storagePrefix || 'sela:') + 'sound', state.sound);
+            updateSound();
+        };
 
         function fallback(error) {
             state.rejectMode?.(error || new Error('Could not change reading mode'));
@@ -432,10 +544,11 @@ export function createReader(global, engine) {
         }
 
         state.onKey = function (event) {
-            if(document.querySelector('dialog[open]'))return;
+            var blockingDialog=document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]');
+            if(blockingDialog&&blockingDialog!==overlay)return;
             if (state.inline && !overlay.contains(event.target)) return;
             if(event.altKey&&event.key==='ArrowLeft'&&state.book){event.preventDefault();state.back();return;}
-            if(!event.defaultPrevented&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'&&state.book){event.preventDefault();state.showTools().then(function(){state.tools.selectTab('search');(toolsHost.querySelector('input[type=search]') as HTMLElement).focus();}).catch(function(){});return;}
+            if(!event.defaultPrevented&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'&&state.book){event.preventDefault();if(options.headless){state.showTools();return;}state.showTools().then(function(){state.tools.selectTab('search');(toolsHost.querySelector('input[type=search]') as HTMLElement).focus();}).catch(function(){});return;}
             if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
             if (event.key === 'Escape') { if(overlay.querySelector('.sela-footnote[open]'))return;event.preventDefault(); if(!help.hidden)toggleHelp();else if(!toolsHost.hidden){toolsHost.hidden=true;toolsButton.setAttribute('aria-expanded','false');toolsButton.focus();}else close(); return; }
             if (!/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) && !event.target.isContentEditable && state.book) {
@@ -468,13 +581,7 @@ export function createReader(global, engine) {
             save((options.storagePrefix || 'sela:') + 'sound', state.sound);
             updateSound();
         });
-        bookmarkButton.addEventListener('click', function () {
-            var index = state.marks.indexOf(state.current);
-            if (index === -1) state.marks.push(state.current);
-            else state.marks.splice(index, 1);
-            save(key + ':marks', state.marks);
-            updateMarks();
-        });
+        bookmarkButton.addEventListener('click', function () { state.toggleBookmark(state.current); });
         pageForm.addEventListener('submit', function (event) {
             event.preventDefault();
             var page = Number(pageInput.value);
@@ -509,7 +616,7 @@ export function createReader(global, engine) {
             if (document.activeElement === closeButton) bookHost.focus();
             if(state.book.getText&&!options.startPage){var location=read(key+':location',null);if(location&&location.page===state.book.currentPage())restoreTextPosition(bookHost,location);}
             if(state.resolveMode)state.resolveMode();else if (options.onReady) options.onReady(state);
-            if(read(key+':highlights',null))loadTools().catch(function(){});
+            renderSavedHighlights();
         });
         bookHost.addEventListener('flipbook:pagechange', function (event) {
             if (active !== state) return;

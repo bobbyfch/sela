@@ -3,66 +3,143 @@ import { responseText } from "./network.js";
 import { catalogCoverUrl } from "./covers.js";
 export const catalogSources = [["wikisource", "Wikisumber \xB7 Indonesia"], ["gitenberg", "GITenberg \xB7 Classics"], ["gutendex", "Gutenberg \xB7 Public-domain books"], ["wiki-en", "Wikisource \xB7 English"], ["wiki-fr", "Wikisource \xB7 Fran\xE7ais"], ["wiki-es", "Wikisource \xB7 Espa\xF1ol"], ["wiki-jv", "Wikisumber \xB7 Jawa"], ["wiki-su", "Wikisumber \xB7 Sunda"], ["wiki-de", "Wikisource \xB7 Deutsch"], ["wiki-nl", "Wikisource \xB7 Nederlands"], ["wiki-pt", "Wikisource \xB7 Portugu\xEAs"], ["wiki-it", "Wikisource \xB7 Italiano"], ["wiki-zh", "Wikisource \xB7 \u4E2D\u6587"], ["wiki-ja", "Wikisource \xB7 \u65E5\u672C\u8A9E"], ["wiki-ru", "Wikisource \xB7 \u0420\u0443\u0441\u0441\u043A\u0438\u0439"], ["wiki-ar", "Wikisource \xB7 \u0627\u0644\u0639\u0631\u0628\u064A\u0629"], ["openlibrary-trending", "Open Library \xB7 Top reads"], ["openlibrary-hidden", "Open Library \xB7 Hidden gems"], ["openlibrary", "Open Library \xB7 Discovery"], ["bookrank", "BookRank \xB7 Reader rankings"], ["openstax", "OpenStax \xB7 Open textbooks"], ["id-tech", "Indonesian \xB7 Tech reading"], ["local", "Sela \xB7 Selected classics"], ["opds", "OPDS \xB7 My catalogs"]];
 const catalogCache = /* @__PURE__ */ new Map();
+const cacheFreshFor = 10 * 6e4, cacheStaleFor = 7 * 24 * 60 * 6e4, requestTimeout = 1e4, maxRetries = 2;
+function isRecord(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+function records(value) {
+  if (value == null) return [];
+  if (!Array.isArray(value)) throw Error("Catalog returned an invalid list.");
+  return value.filter(isRecord);
+}
+function recordsOrEmpty(value) {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+function stringsOrEmpty(value) {
+  return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
+}
 function browserReadUrl(value) {
-  const url = new URL(value);
-  if (url.protocol !== "https:" || url.username || url.password) throw Error("Catalog URLs must use HTTPS without credentials.");
-  return ["gutendex.com", "openlibrary.org"].includes(url.hostname) ? "https://proxy.cors.dev/" + url.href : url.href;
+  const url = new URL(value), host = url.hostname.toLowerCase();
+  if (url.protocol !== "https:" || url.username || url.password || url.port) throw Error("Catalog URLs must use HTTPS without credentials.");
+  const allowed = host === "gutendex.com" || host === "openlibrary.org" || host === "openbookrank.com" || host === "wikisource.org" || host.endsWith(".wikisource.org");
+  if (!allowed) throw Error("Unsupported catalog host.");
+  return host === "gutendex.com" ? "https://proxy.cors.dev/" + url.href : url.href;
+}
+function retryDelay(response, attempt) {
+  const value = response?.headers.get("retry-after");
+  if (value) {
+    const seconds = Number(value);
+    const until = Number.isFinite(seconds) ? seconds * 1e3 : Date.parse(value) - Date.now();
+    if (Number.isFinite(until) && until >= 0) return Math.min(until, 1500);
+  }
+  return 250 * (attempt + 1);
+}
+function wait(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(signal.reason || new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", abort);
+      resolve();
+    }, ms);
+    const abort = () => {
+      clearTimeout(timer);
+      reject(signal.reason || new DOMException("Aborted", "AbortError"));
+    };
+    signal.addEventListener("abort", abort, { once: true });
+  });
 }
 async function json(url, signal) {
   const cached = catalogCache.get(url);
-  if (cached && Date.now() - cached.at < 10 * 6e4) return cached.data;
-  const r = await fetch(browserReadUrl(url), { signal, headers: { Accept: "application/json" }, credentials: "omit", referrerPolicy: "no-referrer" });
-  if (!r.ok) throw Error("Catalog unavailable (" + r.status + ")");
-  const data = JSON.parse(await responseText(r));
-  if (catalogCache.size > 80) catalogCache.delete(catalogCache.keys().next().value);
-  catalogCache.set(url, { at: Date.now(), data });
-  return data;
+  if (cached && Date.now() - cached.at < cacheFreshFor) return cached.data;
+  const stale = cached && Date.now() - cached.at < cacheStaleFor ? cached : void 0;
+  const caller = signal || new AbortController().signal;
+  let lastError, fallbackAllowed = true;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (caller.aborted) throw caller.reason || new DOMException("Aborted", "AbortError");
+    const timeout = AbortSignal.timeout(requestTimeout), combined = AbortSignal.any([caller, timeout]);
+    let response;
+    try {
+      response = await fetch(browserReadUrl(url), { signal: combined, headers: { Accept: "application/json" }, credentials: "omit", referrerPolicy: "no-referrer" });
+      if (!response.ok) {
+        const error = Error("Catalog unavailable (" + response.status + ")");
+        if (![429, 500, 502, 503, 504].includes(response.status)) {
+          fallbackAllowed = false;
+          throw error;
+        }
+        if (attempt === maxRetries) throw error;
+        lastError = error;
+        await response.body?.cancel();
+        await wait(retryDelay(response, attempt), caller);
+        continue;
+      }
+      const data = JSON.parse(await responseText(response));
+      if (!isRecord(data)) throw Error("Catalog returned an invalid response.");
+      if (catalogCache.size > 80) catalogCache.delete(catalogCache.keys().next().value);
+      catalogCache.set(url, { at: Date.now(), data });
+      return data;
+    } catch (error) {
+      if (caller.aborted) throw caller.reason || error;
+      if (timeout.aborted) {
+        lastError = Error("Catalog request timed out.");
+      } else lastError = error;
+      if (response && !response.ok && ![429, 500, 502, 503, 504].includes(response.status)) fallbackAllowed = false;
+      if (attempt === maxRetries) break;
+      if (response && ![429, 500, 502, 503, 504].includes(response.status)) break;
+      await wait(retryDelay(response, attempt), caller);
+    }
+  }
+  if (stale && fallbackAllowed && !caller.aborted) return stale.data;
+  throw lastError instanceof Error ? lastError : Error("Catalog unavailable.");
 }
 export async function externalBooks({ source, query = "", page = 1, category = "", collection = "", signal }) {
   if (source === "gutendex") {
     const topics = { fiction: "fiction", nonfiction: "non-fiction", comics: "comic", children: "children", history: "history", fantasy: "fantasy", mystery: "mystery", romance: "romance", science_fiction: "science fiction", poetry: "poetry", philosophy: "philosophy", biography: "biography" };
     const data = await json("https://gutendex.com/books/?" + new URLSearchParams({ search: query, page: String(page), sort: collection === "recent" ? "descending" : "popular", ...topics[category] ? { topic: topics[category] } : {} }), signal);
-    return { books: (data.results || []).map((b) => {
-      const cover = Object.entries(b.formats || {}).find(([type]) => type === "image/jpeg")?.[1];
-      return { id: "gutenberg-" + b.id, title: b.title, author: b.authors?.map((a) => a.name).join(", "), source, language: b.languages?.[0], genre: b.subjects?.[0] || "Classic", rights: "Catalog metadata only. Open the Project Gutenberg edition to check its formats and local copyright status.", coverUrl: catalogCoverUrl(cover), external: "https://www.gutenberg.org/ebooks/" + b.id };
-    }), next: !!data.next, total: data.count };
+    return { books: records(data.results).filter((b) => typeof b.id === "number" && typeof b.title === "string" && b.title.trim()).map((b) => {
+      const cover = Object.entries(isRecord(b.formats) ? b.formats : {}).find(([type]) => type === "image/jpeg")?.[1];
+      return { id: "gutenberg-" + b.id, title: b.title, author: recordsOrEmpty(b.authors).map((a) => typeof a.name === "string" ? a.name : "").filter(Boolean).join(", "), source, language: stringsOrEmpty(b.languages)[0], genre: stringsOrEmpty(b.subjects)[0] || "Classic", rights: "Catalog metadata only. Open the Project Gutenberg edition to check its formats and local copyright status.", coverUrl: catalogCoverUrl(typeof cover === "string" ? cover : void 0), external: "https://www.gutenberg.org/ebooks/" + b.id };
+    }), next: typeof data.next === "string" && !!data.next, total: Number.isSafeInteger(data.count) ? data.count : void 0 };
   }
   if (source.startsWith("wiki-")) {
     const language = source.slice(5);
     if (!["en", "fr", "es", "jv", "su", "de", "nl", "pt", "it", "zh", "ja", "ru", "ar"].includes(language)) throw Error("Unsupported wiki language");
     const data = await json(`https://${language}.wikisource.org/w/api.php?` + new URLSearchParams({ action: "query", list: "search", srnamespace: "0", srsearch: query || "novel", srlimit: "24", sroffset: String((page - 1) * 24), format: "json", origin: "*" }), signal);
-    return { books: (data.query?.search || []).map((b) => ({ id: source + "-" + b.pageid, title: b.title, source, pageid: b.pageid, language, author: "", genre: "Wikisource", rights: "See original work rights and contributor credits at source.", format: "html" })), next: !!data.continue, total: data.query?.searchinfo?.totalhits };
+    return { books: records(data.query?.search).filter((b) => Number.isSafeInteger(b.pageid) && typeof b.title === "string" && b.title.trim()).map((b) => ({ id: source + "-" + b.pageid, title: b.title, source, pageid: b.pageid, language, author: "", genre: "Wikisource", rights: "See original work rights and contributor credits at source.", format: "html" })), next: !!data.continue, total: data.query?.searchinfo?.totalhits };
   }
   if (source === "openlibrary-trending" && query.trim()) {
-    const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q: query.trim(), limit: "24", page: String(page), fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject" }), signal), docs = data.docs || [];
-    return { books: docs.map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Search \xB7 Open Library", accessType: "catalog", rights: "Search result metadata only. Edition availability and rights vary; check Open Library before access.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < (data.numFound || 0) };
+    const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q: query.trim(), limit: "24", page: String(page), fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject" }), signal), docs = records(data.docs).filter((b) => typeof b.key === "string" && typeof b.title === "string");
+    return { books: docs.map((b) => ({ id: b.key, title: b.title, author: stringsOrEmpty(b.author_name).join(", "), source, year: b.first_publish_year, language: stringsOrEmpty(b.language)[0], genre: "Search \xB7 Open Library", accessType: "catalog", rights: "Search result metadata only. Edition availability and rights vary; check Open Library before access.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < (data.numFound || 0) };
   }
   if (source === "openlibrary-trending") {
-    const data = await json("https://openlibrary.org/trending/daily.json?" + new URLSearchParams({ limit: "24", page: String(page) }), signal), works = data.works || [];
-    return { books: works.map((b, index) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, genre: "Top reads \xB7 Open Library", accessType: "catalog", rights: "Popularity reflects reading activity recorded by Open Library, not sales; edition access and rights vary.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key, trendingRank: (page - 1) * 24 + index + 1 })), total: void 0, next: works.length === 24 };
+    const data = await json("https://openlibrary.org/trending/daily.json?" + new URLSearchParams({ limit: "24", page: String(page) }), signal), works = records(data.works).filter((b) => typeof b.key === "string" && typeof b.title === "string");
+    return { books: works.map((b, index) => ({ id: b.key, title: b.title, author: stringsOrEmpty(b.author_name).join(", "), source, year: b.first_publish_year, genre: "Top reads \xB7 Open Library", accessType: "catalog", rights: "Popularity reflects reading activity recorded by Open Library, not sales; edition access and rights vary.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key, trendingRank: (page - 1) * 24 + index + 1 })), total: void 0, next: works.length === 24 };
   }
   if (source === "bookrank") {
     const categories = /* @__PURE__ */ new Set(["fantasy", "science-fiction", "crime", "thriller", "horror", "romance", "historical-fiction", "literary-fiction", "classics", "adventure", "dystopian", "short-stories", "poetry", "humor", "war-fiction", "contemporary-fiction", "spy-fiction", "western", "urban-fantasy", "mythology", "drama", "biography", "history", "popular-science", "psychology", "philosophy", "business", "self-help", "true-crime", "travel", "politics", "economics", "nature", "health", "religion", "technology", "essays", "young-adult", "middle-grade", "children", "picture-books", "fairy-tales", "comics", "graphic-novels", "cooking", "music", "personal-finance"]);
     const selected = categories.has(category) ? category : "classics", data = await json(`https://openbookrank.com/api/v1/rankings/${selected}.json`, signal), needle = query.trim().toLocaleLowerCase();
-    const rows = (data.items || []).filter((b) => !needle || (b.title + " " + (b.author || "")).toLocaleLowerCase().includes(needle));
+    const rows = records(data.items).filter((b) => typeof b.title === "string" && typeof b.slug === "string" && (!needle || (b.title + " " + (typeof b.author === "string" ? b.author : "")).toLocaleLowerCase().includes(needle)));
     return { books: rows.slice((page - 1) * 24, page * 24).map((b) => ({ id: "bookrank-" + b.slug, title: b.title, author: b.author, source, year: b.year, genre: data.names?.en || data.name || selected, rating: b.score, ratingsCount: b.ratings, trendingRank: b.rank, rights: "Ranking scores and ranks: CC BY 4.0; attribution: BookRank (openbookrank.com). Book text and cover rights are separate; open the source record.", external: b.url })), total: rows.length, next: page * 24 < rows.length };
   }
   if (source === "openlibrary-hidden") {
     const subject = category && /^[a-z_]{2,60}$/.test(category) ? category : "fiction", queryText = query.trim().slice(0, 80), q = [queryText, `subject:${subject}`].filter(Boolean).join(" ");
     const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q, limit: "48", page: String(page), sort: "rating desc", fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject,ratings_average,ratings_count,edition_count" }), signal);
-    const docs = (data.docs || []).filter((b) => Number(b.ratings_count) >= 3 && Number(b.ratings_count) < 800 && Number(b.ratings_average) >= 3.8).slice(0, 24);
+    const docs = records(data.docs).filter((b) => typeof b.key === "string" && typeof b.title === "string" && Number(b.ratings_count) >= 3 && Number(b.ratings_count) < 800 && Number(b.ratings_average) >= 3.8).slice(0, 24);
     return { books: docs.map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Hidden gem \xB7 reader ratings", rating: b.ratings_average, ratingsCount: b.ratings_count, rights: "A reader-rated discovery, not a sales ranking. Edition access and rights vary; check the source.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: docs.length ? void 0 : data.numFound, next: docs.length === 24 };
   }
   if (source === "openlibrary" && category) {
     const subjects = ["fiction", "nonfiction", "fantasy", "mystery_and_detective_stories", "romance", "science_fiction", "religion", "technology", "psychology", "health", "nature", "business", "self_help", "history", "poetry", "childrens_literature", "philosophy", "biography", "comics", "graphic_novels"];
     if (!subjects.includes(category)) throw Error("Unsupported book category");
-    const data = await json(`https://openlibrary.org/subjects/${category}.json?` + new URLSearchParams({ limit: "24", offset: String((page - 1) * 24) }), signal), works = data.works || [], needle = query.trim().toLocaleLowerCase();
-    const books = works.filter((b) => !needle || (b.title + " " + (b.authors || []).map((a) => a.name).join(" ")).toLocaleLowerCase().includes(needle)).map((b) => ({ id: b.key, title: b.title, author: b.authors?.map((a) => a.name).join(", "), source, year: b.first_publish_year, genre: category.replaceAll("_", " "), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key }));
+    const data = await json(`https://openlibrary.org/subjects/${category}.json?` + new URLSearchParams({ limit: "24", offset: String((page - 1) * 24) }), signal), works = records(data.works).filter((b) => typeof b.key === "string" && typeof b.title === "string"), needle = query.trim().toLocaleLowerCase();
+    const books = works.filter((b) => !needle || (b.title + " " + recordsOrEmpty(b.authors).map((a) => typeof a.name === "string" ? a.name : "").join(" ")).toLocaleLowerCase().includes(needle)).map((b) => ({ id: b.key, title: b.title, author: recordsOrEmpty(b.authors).map((a) => typeof a.name === "string" ? a.name : "").filter(Boolean).join(", "), source, year: b.first_publish_year, genre: category.replaceAll("_", " "), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_id) && b.cover_id > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_id}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key }));
     return { books, total: data.work_count, next: page * 24 < (data.work_count || 0) };
   }
   if (source === "openlibrary") {
     const data = await json("https://openlibrary.org/search.json?" + new URLSearchParams({ q: query || "classics", limit: "24", page: String(page), fields: "key,title,author_name,first_publish_year,language,ebook_access,cover_i,subject" }), signal);
-    return { books: (data.docs || []).map((b) => ({ id: b.key, title: b.title, author: b.author_name?.join(", "), source, year: b.first_publish_year, language: b.language?.[0], genre: "Discovery \xB7 " + (b.subject?.[0] || b.ebook_access || "metadata"), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < data.numFound };
+    const docs = records(data.docs).filter((b) => typeof b.key === "string" && typeof b.title === "string");
+    return { books: docs.map((b) => ({ id: b.key, title: b.title, author: stringsOrEmpty(b.author_name).join(", "), source, year: b.first_publish_year, language: stringsOrEmpty(b.language)[0], genre: "Discovery \xB7 " + (stringsOrEmpty(b.subject)[0] || b.ebook_access || "metadata"), accessType: "catalog", rights: "Availability and edition rights are shown at Open Library.", coverUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg?default=false`) : void 0, coverDownloadUrl: Number.isSafeInteger(b.cover_i) && b.cover_i > 0 ? catalogCoverUrl(`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg?default=false`) : void 0, external: "https://openlibrary.org" + b.key })), total: data.numFound, next: page * 24 < (data.numFound || 0) };
   }
   if (source === "openstax") {
     const titles = [
@@ -111,7 +188,7 @@ export async function externalWikiFile(book, signal) {
   if (!["en", "fr", "es", "jv", "su", "de", "nl", "pt", "it", "zh", "ja", "ru", "ar"].includes(language)) throw Error("Invalid wiki");
   const root = `https://${language}.wikisource.org/`, api = root + "w/api.php?", params = { format: "json", origin: "*" };
   const listing = await json(api + new URLSearchParams({ ...params, action: "query", list: "allpages", apprefix: book.title + "/", apnamespace: "0", aplimit: "80" }), signal);
-  const chapters = (listing.query?.allpages || []).slice(0, 80).sort((a, b) => a.title.localeCompare(b.title, language, { numeric: true }));
+  const chapters = records(listing.query?.allpages).filter((chapter) => typeof chapter.pageid === "number" && typeof chapter.title === "string").slice(0, 80).sort((a, b) => a.title.localeCompare(b.title, language, { numeric: true }));
   const pages = [{ pageid: book.pageid, title: book.title }, ...chapters.filter((c) => c.pageid !== book.pageid)];
   const htmls = new Array(pages.length);
   let cursor = 0, total = 0;

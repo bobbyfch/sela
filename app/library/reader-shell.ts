@@ -1,4 +1,5 @@
 import {animatePanel,controlIcon,notify} from './controls.ts';
+import {isReflowableBookFormat} from './reader-modes.ts';
 import {openDictionary} from './dictionary.ts';
 import {mountAudio} from './audio.ts';
 // Shared responsive reader chrome for the library and embedded Viewer.
@@ -50,7 +51,7 @@ export function configureLibraryReader(reader,{mobile,viewer=false,language='en'
  const sharePanel=mountSharePanel(reader,shell,{t,metadata,dismiss,palette:()=>paletteTarget.dataset.palette});const shareQuote=e=>{if(typeof e.detail==='string'&&e.detail.trim())openShare(shareButton,e.detail);};overlay.addEventListener('sela:share-quote',shareQuote);
  const dictionaryEvent=e=>openDictionary(String(e.detail||''),t);overlay.addEventListener('sela:dictionary',dictionaryEvent);
  const finishPanels=[drawer,infoPanel,sharePanel.panel,controls.previews,tools].map(animatePanel);
- const textBook=!!reader.book.getText;const previews=controls.previews;const previewTop=el('div','app-drawer-heading');previews.prepend(previewTop);el('h2','',previewTop).textContent=t('Pages & bookmarks','Halaman & penanda');button('close','Close previews','Tutup pratinjau',previewTop,dismiss);button('previews','Page previews','Pratinjau halaman',top,e=>{if(!previews.hidden){dismiss();return;}dismiss();returnFocus=e.currentTarget;overlay.classList.add('app-panel-open');state.showPreviews();previewTop.querySelector('button').focus();});
+ const textBook=isReflowableBookFormat(state.options.format);const previews=controls.previews;const previewTop=el('div','app-drawer-heading');previews.prepend(previewTop);el('h2','',previewTop).textContent=t('Pages & bookmarks','Halaman & penanda');button('close','Close previews','Tutup pratinjau',previewTop,dismiss);button('previews','Page previews','Pratinjau halaman',top,e=>{if(!previews.hidden){dismiss();return;}dismiss();returnFocus=e.currentTarget;overlay.classList.add('app-panel-open');state.showPreviews();previewTop.querySelector('button').focus();});
  const modes=textBook?[['single','Chapter','Bab'],['scroll','Continuous','Berkelanjutan']]:[['single','Single page','Satu halaman'],['book','Spread','Dua halaman'],['manga','Manga · RTL','Manga · kanan ke kiri'],['scroll','Vertical · gaps','Vertikal · bercelah'],['webtoon','Webtoon · seamless','Webtoon · tanpa celah']];
   const followAppearanceKey=viewer?'sela-viewer:follow-app-appearance':'sela-library:reader-follow-appearance';let followAppearance=!viewer;try{const saved=localStorage.getItem(followAppearanceKey);if(saved!==null)followAppearance=saved==='true';}catch{}let followAppearanceInput:HTMLInputElement;
   function persistFollowAppearance(){try{localStorage.setItem(followAppearanceKey,String(followAppearance));}catch{}}

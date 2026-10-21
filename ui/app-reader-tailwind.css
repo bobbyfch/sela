@@ -3,11 +3,11 @@
 @import "tailwindcss" source(none) prefix(tw);
 @import "./design-system.css";
 @import "tw-animate-css";
+@import "./reader-font.css";
 @import "./app-reader-utilities.css";
 @import "./palette-tokens.css";
 @import "./palette-mobile.css";
 
-@source "./pages/reader.tsx";
 @source "./icons.tsx";
 @source "../app/library/audio.ts";
 @source "../app/library/reader-shell.ts";

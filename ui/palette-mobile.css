@@ -1,17 +1,209 @@
-/* Compact palette swatches and the ambient scene marker. The SVG motif comes
-   from the shared TypeScript palette catalog. */
-.app-palette-picker button:before { display: none !important; content: none !important; }
-.app-palette-picker .palette-swatch {
-  position: relative; display: grid; width: 34px; height: 34px; flex: none; place-items: center; overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--palette-choice-accent) 35%, white); border-radius: 11px 11px 11px 5px;
-  background: linear-gradient(145deg, var(--palette-choice-accent) 0 57%, var(--palette-choice-soft) 58% 100%);
-  color: white; box-shadow: inset 0 1px 0 #ffffff9c;
+/* Sela app and reader palette tokens.
+   Stored palette ids are stable for existing libraries; the labels and surfaces are refreshed. */
+:root {
+  --paper-hue: 88;
+  --bg: oklch(96.1% 0.0124 91.5);
+  --panel: oklch(99.4% 0.0082 91.5);
+  --fg: oklch(27.2% 0.0128 93.9);
+  --muted: oklch(51.1% 0.0176 90.3);
+  --line: oklch(89.2% 0.0155 90.2);
+  --accent: oklch(47.5% 0.0342 85.5);
+  --accent-ink: oklch(99.4% 0.0082 91.5);
+  --palette-soft: oklch(93.5% 0.0210 88.7);
+  --app-danger: oklch(50.3% 0.1296 28.0);
+  --app-oled-swatch-bg: oklch(0.0% 0.0000 0.0);
+  --app-oled-swatch-ink: oklch(91.4% 0.0157 86.4);
+  color-scheme: light;
 }
-.app-palette-picker .palette-swatch .control-symbol { z-index: 1; width: 19px; height: 19px; color: white; stroke-width: 1.8; }
-.home-world-doodle {
-  position: absolute; z-index: 3; inset: 14px auto auto 14px; display: grid; width: 42px; height: 42px; place-items: center;
-  border: 1px solid #ffffffb8; border-radius: 15px 15px 15px 7px;
-  background: color-mix(in srgb, white 78%, var(--palette-soft)); color: var(--accent);
-  box-shadow: 0 4px 12px #10274722; pointer-events: none;
+
+:root[data-palette="white"] {
+  --paper-hue: 88;
+  --bg: oklch(96.1% 0.0124 91.5);
+  --panel: oklch(99.4% 0.0082 91.5);
+  --fg: oklch(27.2% 0.0128 93.9);
+  --muted: oklch(51.1% 0.0176 90.3);
+  --line: oklch(89.2% 0.0155 90.2);
+  --accent: oklch(50.0% 0.0342 85.5);
+  --palette-soft: oklch(93.5% 0.0210 88.7);
 }
-.home-world-doodle .control-symbol { width: 23px; height: 23px; stroke-width: 1.65; }
+:root[data-palette="forest"] {
+  --paper-hue: 122;
+  --bg: oklch(95.4% 0.0134 115.8);
+  --panel: oklch(98.2% 0.0093 113.2);
+  --fg: oklch(28.7% 0.0165 122.4);
+  --muted: oklch(51.2% 0.0224 123.2);
+  --line: oklch(89.0% 0.0219 118.3);
+  --accent: oklch(45.8% 0.0441 121.0);
+  --palette-soft: oklch(91.4% 0.0231 117.6);
+}
+:root[data-palette="sakura"] {
+  --paper-hue: 72;
+  --bg: oklch(93.8% 0.0239 79.7);
+  --panel: oklch(97.2% 0.0171 84.6);
+  --fg: oklch(28.9% 0.0241 69.3);
+  --muted: oklch(52.4% 0.0286 75.0);
+  --line: oklch(86.4% 0.0318 75.2);
+  --accent: oklch(46.8% 0.0552 63.9);
+  --palette-soft: oklch(90.9% 0.0291 77.5);
+}
+:root[data-palette="ocean"] {
+  --paper-hue: 184;
+  --bg: oklch(95.7% 0.0066 160.1);
+  --panel: oklch(98.6% 0.0050 134.8);
+  --fg: oklch(30.3% 0.0147 175.2);
+  --muted: oklch(51.6% 0.0170 175.2);
+  --line: oklch(89.5% 0.0118 162.0);
+  --accent: oklch(46.8% 0.0287 189.9);
+  --palette-soft: oklch(92.3% 0.0110 167.8);
+}
+:root[data-palette="lavender"] {
+  --paper-hue: 82;
+  --bg: oklch(94.5% 0.0067 97.4);
+  --panel: oklch(97.9% 0.0067 97.4);
+  --fg: oklch(29.2% 0.0090 97.6);
+  --muted: oklch(51.0% 0.0111 93.7);
+  --line: oklch(89.0% 0.0122 101.5);
+  --accent: oklch(46.5% 0.0164 88.8);
+  --palette-soft: oklch(91.0% 0.0129 86.8);
+}
+:root[data-palette="citrus"] {
+  --paper-hue: 78;
+  --bg: oklch(94.8% 0.0201 84.6);
+  --panel: oklch(97.6% 0.0139 88.7);
+  --fg: oklch(30.1% 0.0214 79.0);
+  --muted: oklch(53.8% 0.0266 82.0);
+  --line: oklch(87.9% 0.0319 84.6);
+  --accent: oklch(47.2% 0.0551 77.3);
+  --palette-soft: oklch(91.9% 0.0304 83.6);
+}
+:root[data-palette="senja"] {
+  --paper-hue: 55;
+  --bg: oklch(93.4% 0.0153 61.3);
+  --panel: oklch(97.1% 0.0120 67.7);
+  --fg: oklch(28.2% 0.0234 49.7);
+  --muted: oklch(50.4% 0.0335 48.0);
+  --line: oklch(86.7% 0.0242 59.3);
+  --accent: oklch(44.8% 0.0594 44.4);
+  --palette-soft: oklch(89.0% 0.0249 57.6);
+}
+:root[data-palette="arunika"] {
+  --paper-hue: 91;
+  --bg: oklch(97.0% 0.0136 93.0);
+  --panel: oklch(98.4% 0.0108 95.2);
+  --fg: oklch(28.4% 0.0161 96.9);
+  --muted: oklch(51.0% 0.0220 93.9);
+  --line: oklch(90.0% 0.0221 92.5);
+  --accent: oklch(46.2% 0.0315 93.3);
+  --palette-soft: oklch(93.8% 0.0210 88.7);
+}
+
+:root[data-theme="dark"],
+:root[data-sela-theme="dark"],
+[data-product-reader="app"][data-theme="dark"],
+[data-product-reader="app"][data-sela-theme="dark"] {
+  --bg: oklch(20.5% 0.014 var(--paper-hue));
+  --panel: oklch(25% 0.015 var(--paper-hue));
+  --fg: oklch(94.5% 0.0122 96.4);
+  --muted: oklch(75.7% 0.0174 91.6);
+  --line: oklch(37% 0.014 var(--paper-hue));
+  --accent: oklch(76% 0.035 var(--paper-hue));
+  --accent-ink: oklch(23.9% 0.0094 97.7);
+  --app-danger: oklch(77.5% 0.0809 25.8);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --bg: oklch(20.5% 0.014 var(--paper-hue));
+    --panel: oklch(25% 0.015 var(--paper-hue));
+    --fg: oklch(94.5% 0.0122 96.4);
+    --muted: oklch(75.7% 0.0174 91.6);
+    --line: oklch(37% 0.014 var(--paper-hue));
+    --accent: oklch(76% 0.035 var(--paper-hue));
+    --accent-ink: oklch(23.9% 0.0094 97.7);
+    --app-danger: oklch(77.5% 0.0809 25.8);
+    color-scheme: dark;
+  }
+}
+
+:root[data-palette="oled"],
+:root[data-oled="true"][data-theme="dark"],
+:root[data-sela-theme="dark"][data-oled="true"],
+[data-product-reader="app"][data-palette="oled"],
+[data-product-reader="app"][data-oled="true"][data-theme="dark"],
+[data-product-reader="app"][data-sela-theme="dark"][data-oled="true"] {
+  --bg: oklch(0.0% 0.0000 0.0);
+  --panel: oklch(15.4% 0.0050 106.6);
+  --fg: oklch(95.1% 0.0080 98.9);
+  --muted: oklch(75.9% 0.0099 100.0);
+  --line: oklch(30.8% 0.0050 106.6);
+  --accent: oklch(85.2% 0.0243 88.2);
+  --accent-ink: oklch(20.4% 0.0050 106.6);
+  --palette-soft: oklch(20.4% 0.0050 106.6);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-oled="true"][data-theme="auto"] {
+    --bg: oklch(0.0% 0.0000 0.0);
+    --panel: oklch(15.4% 0.0050 106.6);
+    --fg: oklch(95.1% 0.0080 98.9);
+    --muted: oklch(75.9% 0.0099 100.0);
+    --line: oklch(30.8% 0.0050 106.6);
+    --accent: oklch(85.2% 0.0243 88.2);
+    --accent-ink: oklch(20.4% 0.0050 106.6);
+    --palette-soft: oklch(20.4% 0.0050 106.6);
+    color-scheme: dark;
+  }
+}
+
+[data-product-reader="app"] {
+  --fb-bg: var(--bg);
+  --fb-paper: var(--bg);
+  --sela-bg: var(--bg);
+  --sela-panel: var(--panel);
+  --sela-fg: var(--fg);
+  --sela-muted: var(--muted);
+  --sela-border: var(--line);
+  --sela-accent: var(--accent);
+}
+
+[data-product-reader="app"],
+[data-product-reader="app"] :where(button, input, select, textarea) {
+  color: var(--fg);
+}
+[data-product-reader="app"] :where(button, select, input, textarea) {
+  border-color: var(--line);
+  background-color: var(--panel);
+}
+[data-product-reader="app"] .app-reading-top,
+[data-product-reader="app"] .app-reading-dock {
+  border-color: color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--panel) 84%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  backdrop-filter: blur(20px) saturate(1.15);
+}
+[data-product-reader="app"] .app-reading-settings,
+[data-product-reader="app"] .app-reading-utilities,
+[data-product-reader="app"] .app-share-panel,
+[data-product-reader="app"] .app-page-previews {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--fg);
+}
+[data-product-reader="app"] .app-reading-book,
+[data-product-reader="app"] .app-reading-content,
+[data-product-reader="app"] .library-reader-content {
+  background: var(--bg);
+}
+@media (prefers-reduced-transparency: reduce) {
+  body[data-product="mobile"] .bottom-bar,
+  body[data-product="mobile"] .top-actions .icon,
+  body[data-product="mobile"] .language-picker,
+  [data-product-reader="app"] .app-reading-top,
+  [data-product-reader="app"] .app-reading-dock {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: var(--panel, var(--bg)) !important;
+  }
+}

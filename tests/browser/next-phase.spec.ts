@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
-import {openSettingsCategory} from './settings-helpers.ts';
+import {readBackupArchive,createBackupArchive} from '../../dist/js/sela.archive.js';
+import {readFile} from 'node:fs/promises';
 test('closing keyboard help keeps manual zoom instead of refitting the inner reading area',async({page})=>{
  await page.goto('/?geo=off');await page.evaluate(async()=>{await SelaReady;window.panelReader=new Sela({url:'/example/yang-tidak-ikut-pulang.pdf',mode:'book',fit:'page',duration:0,language:'en',id:'panel-zoom-test'});await panelReader.open();});
  await page.getByRole('button',{name:'Reader settings',exact:true}).click();await page.getByRole('button',{name:'Keyboard shortcuts',exact:true}).click();await expect(page.locator('.sela-shortcuts')).toBeVisible();await page.waitForTimeout(100);
@@ -67,42 +68,47 @@ test('PDF mode changes reuse the loaded document and preserve page and preferenc
  await page.evaluate(()=>r.close());expect(errors).toEqual([]);
 });
 
-test('complete backup restores original bytes and reading data while keeping existing books',async({page})=>{
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await page.locator('#books').setInputFiles({name:'Backup.txt',mimeType:'text/plain',buffer:Buffer.from('Original private text')});await expect(page.locator('.book')).toHaveCount(1);
- const result=await page.evaluate(async()=>{
-  const storage=await import('/library/storage.js'),backup=await import('/library/backup.js');
-  const [book]=await storage.listBooks();book.tags=['Favorites'];book.completed=true;book.progress=3;book.total=8;await storage.writeBook(book);
-  const key='sela-library:'+book.id;localStorage.setItem(key+':notes',JSON.stringify({1:'A saved quote'}));localStorage.setItem(key+':marks','[1]');localStorage.setItem(key+':page','1');
-  const archive=await backup.exportLibrary();await storage.writeBook(book,null,true);localStorage.removeItem(key+':notes');
-  const first=await backup.restoreLibrary(archive);const restored=(await storage.listBooks())[0];const original=await(await storage.getFile(book.id)).text();
-  localStorage.setItem(key+':notes',JSON.stringify({1:'Newer note'}));const second=await backup.restoreLibrary(archive);
-  return {first,restored,original,second,note:JSON.parse(localStorage.getItem(key+':notes'))};
- });
- expect(result.first.added).toBe(1);expect(result.restored.tags).toEqual(['Favorites']);expect(result.restored.completed).toBe(true);expect(result.restored.progress).toBe(3);expect(result.original).toBe('Original private text');expect(result.second.added).toBe(0);expect(result.note[1]).toBe('Newer note');
+test('complete backup restores original bytes and reading data while keeping existing books',async({page,browser})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'Backup.txt',mimeType:'text/plain',buffer:Buffer.from('Original private text')});await expect(page.locator('.book-card')).toHaveCount(1);
+ await page.goto('/app/#/settings/data');
+ const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export backup',exact:true}).click();
+ const download=await downloadPromise,archive=readBackupArchive(new Uint8Array(await readFile(await download.path())));
+ const bookPath=Object.keys(archive).find(name=>name.startsWith('books/'));
+ expect(bookPath).toBeTruthy();expect(new TextDecoder().decode(archive[bookPath!])).toBe('Original private text');
+ const restoreContext=await browser.newContext();
+ const restorePage=await restoreContext.newPage();
+ await restorePage.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
+ await restorePage.goto('/app/#/settings/data');
+ await restorePage.locator('.settings-detail input[type="file"]').setInputFiles(await download.path());
+ await expect(restorePage.getByText('1 books added; 0 existing books kept.')).toBeVisible();
+ await restorePage.goto('/app/#/shelf');await expect(restorePage.locator('.book-card')).toHaveCount(1);
+ await restorePage.locator('.book-cover-button').click();
+ await expect(restorePage.locator('.reader-body')).toContainText('Original private text');
+ await restoreContext.close();
 });
 
 test('tampered backup is rejected before changing the shelf',async({page})=>{
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await page.locator('#books').setInputFiles({name:'Safe.txt',mimeType:'text/plain',buffer:Buffer.from('Keep this')});await expect(page.locator('.book')).toHaveCount(1);
- const result=await page.evaluate(async()=>{
-  const backup=await import('/library/backup.js'),zip=await import('/dist/js/sela.archive.js'),storage=await import('/library/storage.js');
-  const archive=await backup.exportLibrary(),entries=zip.readBackupArchive(new Uint8Array(await archive.arrayBuffer()));const name=Object.keys(entries).find(n=>n.startsWith('books/'));entries[name]=new TextEncoder().encode('Tampered');
-  try{await backup.restoreLibrary(new Blob([zip.createBackupArchive(entries)]));return null;}catch(e){return {error:e.message,count:(await storage.listBooks()).length};}
- });expect(result.error).toContain('integrity');expect(result.count).toBe(1);
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'Safe.txt',mimeType:'text/plain',buffer:Buffer.from('Keep this')});await expect(page.locator('.book-card')).toHaveCount(1);
+ await page.goto('/app/#/settings/data');
+ const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export backup',exact:true}).click();
+ const download=await downloadPromise,entries=readBackupArchive(new Uint8Array(await readFile(await download.path())));
+ const name=Object.keys(entries).find(item=>item.startsWith('books/'));
+ expect(name).toBeTruthy();entries[name!]=new TextEncoder().encode('Tampered');
+ await page.locator('.settings-detail input[type="file"]').setInputFiles({name:'tampered.zip',mimeType:'application/zip',buffer:Buffer.from(createBackupArchive(entries))});
+ await expect(page.getByText(/integrity/i)).toBeVisible();await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);
 });
 
-test('mobile screens keep personal books separate from Explore with usable themes and collections',async({browser})=>{
- const context=await browser.newContext({userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',viewport:{width:320,height:740},serviceWorkers:'block'}),page=await context.newPage();
- await page.route('https://raw.githubusercontent.com/GITenberg/**',route=>route.fulfill({contentType:'text/plain',body:'A private reading preview stays inside Sela.'}));
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('.home-page')).toBeVisible();await expect(page.locator('.library')).toBeHidden();
- await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('.shelf-file-drop')).toBeVisible();await expect(page.locator('.shelf-file-drop svg').first()).toBeVisible();await expect(page.getByRole('button',{name:'Choose book files'}).last()).toBeVisible();
- await page.locator('#books').setInputFiles({name:'My book.txt',mimeType:'text/plain',buffer:Buffer.from('My private book')});await expect(page.locator('.book')).toHaveCount(1);
- await page.getByRole('button',{name:'Select books',exact:true}).click();await page.locator('.cover').click();await expect(page.locator('.select-book')).toBeChecked();await page.locator('.bulk-actions').getByRole('button',{name:'Finished',exact:true}).click();await page.locator('.shelf-refine').evaluate(el=>{if(!el.hasAttribute('open'))(el.querySelector('.shelf-refine-toggle') as HTMLElement).click();});await page.locator('#read-filter').selectOption('completed');await expect(page.locator('.book')).toHaveCount(1);await page.keyboard.press('Escape');await expect(page.locator('.control-sheet[open]')).toHaveCount(0);
- await page.getByRole('button',{name:'Explore',exact:true}).click();await expect(page.locator('.browse-page')).toBeVisible();await expect(page.locator('.browse-page .catalog-book')).toHaveCount(0);await expect(page.getByRole('searchbox',{name:'Search titles or authors'})).toBeVisible();await expect(page.locator('.library')).toBeHidden();
- await page.locator('.open-catalog').getByRole('button',{name:'Sela picks',exact:true}).click();await expect(page.locator('.browse-page .open-book')).toHaveCount(32);await page.locator('.browse-page .open-book-cover').first().click();await page.locator('.control-sheet[open] .personal-sheet').getByRole('button',{name:'Read',exact:true}).click();await expect(page.locator('.library-reader-overlay article')).toContainText('A private reading preview stays inside Sela.');await page.getByRole('button',{name:'Back to library',exact:true}).click();await page.getByRole('button',{name:'Shelf',exact:true}).click();await expect(page.locator('.book')).toHaveCount(1);
- await page.getByRole('button',{name:'Settings',exact:true}).click();await openSettingsCategory(page,'Your library & data');await expect(page.locator('#export-library')).toBeVisible();
- for(const scheme of ['light','dark'] as const){await page.emulateMedia({colorScheme:scheme});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
- await page.screenshot({path:'test-results/mobile-settings-new.png',fullPage:true});
- await page.getByRole('button',{name:'Home',exact:true}).click();await expect(page.locator('.home-page .catalog-section')).toBeHidden();await page.getByRole('button',{name:'Explore',exact:true}).click();await expect(page.getByRole('searchbox',{name:'Search titles or authors'})).toBeVisible();await context.close();
+test('mobile routes keep the private shelf separate from discovery and settings',async({page})=>{
+ await page.setViewportSize({width:320,height:740});
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await expect(page.locator('.home-screen')).toBeVisible();
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'My book.txt',mimeType:'text/plain',buffer:Buffer.from('My private book')});
+ await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);await expect(page.locator('.book-card')).toContainText('My book');
+ await page.goto('/app/#/discover');await expect(page.locator('.catalog-explorer')).toBeVisible();await expect(page.locator('.catalog-source-card')).toHaveCount(9);await expect(page.getByRole('textbox',{name:'Search books'})).toBeVisible();
+ await page.goto('/app/#/settings/data');await expect(page.locator('.settings-detail')).toBeVisible();await expect(page.getByRole('button',{name:'Export backup',exact:true})).toBeVisible();
+ for(const width of [320,393,768,1440]){await page.setViewportSize({width,height:740});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px route overflow`).toBe(true);}
 });

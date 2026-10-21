@@ -11,13 +11,14 @@ function contrast(first:string,second:string) {
   return (light+.05)/(dark+.05);
 }
 
-test('all viewer palette accents are unique, white-text readable, and have a distinct motif',()=>{
-  assert.equal(paletteCatalog.length,8);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.key)).size,8);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.accent)).size,8);
-  assert.equal(new Set(paletteCatalog.map(palette=>palette.motif)).size,8);
+test('all paper and OLED palette accents are unique, readable on their intended surface, and retain motif variety',()=>{
+  assert.equal(paletteCatalog.length,9);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.key)).size,9);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.accent)).size,9);
+  assert.equal(new Set(paletteCatalog.map(palette=>palette.motif)).size,6);
   for(const palette of paletteCatalog){
-    assert.ok(contrast(palette.accent,'#ffffff')>=4.5,`${palette.key} accent contrast is ${contrast(palette.accent,'#ffffff').toFixed(2)}:1`);
+    const surface=palette.key==='oled'?'#000000':'#ffffff';
+    assert.ok(contrast(palette.accent,surface)>=4.5,`${palette.key} accent contrast is ${contrast(palette.accent,surface).toFixed(2)}:1`);
     assert.notEqual(getPaletteDefinition(palette.key).soft,palette.accent);
   }
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catalogCoverUrl} from '../../app/library/covers.ts';
+import {catalogCoverUrl, catalogCoverUrlForQuality} from '../../app/library/covers.ts';
 import {externalBooks} from '../../app/library/external-catalogs.ts';
 import {searchBooks} from '../../app/library/book-sources.ts';
 
@@ -8,9 +8,23 @@ test('cover URLs accept known public providers and reject arbitrary hosts',()=>{
   assert.equal(catalogCoverUrl('https://covers.openlibrary.org/b/id/123-M.jpg?default=false'),'https://covers.openlibrary.org/b/id/123-M.jpg?default=false');
   assert.equal(catalogCoverUrl('https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg'),'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg');
   assert.equal(catalogCoverUrl('http://books.google.com/books/content?id=abc-123&printsec=frontcover&img=1&zoom=1&source=gbs_api'),'https://books.google.com/books/content?id=abc-123&printsec=frontcover&img=1&zoom=1&source=gbs_api');
+  assert.equal(catalogCoverUrl('https://books.google.com/books?id=abc-123&printsec=frontcover&img=1&zoom=4&edge=curl&source=gbs_api'),'https://books.google.com/books/content?id=abc-123&printsec=frontcover&img=1&zoom=4&source=gbs_api');
   assert.equal(catalogCoverUrl('https://books.google.com/books/content?id=abc-123'),undefined);
   assert.equal(catalogCoverUrl('https://attacker.example/cover.jpg'),undefined);
   assert.equal(catalogCoverUrl('http://covers.openlibrary.org/b/id/123-M.jpg'),undefined);
+});
+
+test('the chosen cover size resolves to the same provider rendition for display and download',()=>{
+  const medium='https://covers.openlibrary.org/b/id/123-M.jpg?default=false';
+  const large='https://covers.openlibrary.org/b/id/123-L.jpg?default=false';
+  assert.equal(catalogCoverUrlForQuality(medium,'sd',large),medium);
+  assert.equal(catalogCoverUrlForQuality(medium,'hd',large),large);
+  assert.equal(catalogCoverUrlForQuality('https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg','hd'),'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg');
+
+  const thumbnail='https://books.google.com/books?id=abc-123&printsec=frontcover&img=1&zoom=1&source=gbs_api';
+  const high='https://books.google.com/books?id=abc-123&printsec=frontcover&img=1&zoom=4&source=gbs_api';
+  assert.equal(catalogCoverUrlForQuality(thumbnail,'sd',high),'https://books.google.com/books/content?id=abc-123&printsec=frontcover&img=1&zoom=1&source=gbs_api');
+  assert.equal(catalogCoverUrlForQuality(thumbnail,'hd',high),'https://books.google.com/books/content?id=abc-123&printsec=frontcover&img=1&zoom=4&source=gbs_api');
 });
 
 test('Gutendex and Open Library results expose their real cover artwork',async()=>{
@@ -20,7 +34,7 @@ test('Gutendex and Open Library results expose their real cover artwork',async()
     globalThis.fetch=async input=>{
       const url=String(input);
       if(url.startsWith('https://proxy.cors.dev/https://gutendex.com/'))return new Response(JSON.stringify({count:1,next:null,results:[{id:84,title:'Frankenstein',authors:[{name:'Mary Shelley'}],languages:['en'],subjects:['Science fiction'],formats:{'application/epub+zip':'https://www.gutenberg.org/ebooks/84.epub','image/jpeg':'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg'}}]}),{status:200,headers:{'content-type':'application/json'}});
-      if(url.startsWith('https://proxy.cors.dev/https://openlibrary.org/'))return new Response(JSON.stringify({numFound:1,docs:[{key:'/works/OL123W',title:'Frankenstein',cover_i:98765,author_name:['Mary Shelley']}]}),{status:200,headers:{'content-type':'application/json'}});
+      if(url.startsWith('https://openlibrary.org/'))return new Response(JSON.stringify({numFound:1,docs:[{key:'/works/OL123W',title:'Frankenstein',cover_i:98765,author_name:['Mary Shelley']}]}),{status:200,headers:{'content-type':'application/json'}});
       throw new Error('Unexpected request: '+url);
     };
     const gutenberg=await externalBooks({source:'gutendex',query:'Frankenstein',signal});
@@ -103,4 +117,38 @@ test('Open Library hidden gems are identified by ratings, not presented as sales
     assert.equal(result.books[0].coverDownloadUrl,'https://covers.openlibrary.org/b/id/881-L.jpg?default=false');
     assert.match(result.books[0].rights,/not a sales ranking/i);
   }finally{globalThis.fetch=originalFetch;}
+});
+
+test('public catalogs retry a 429 once and keep credential-free, bounded fetch options',async()=>{
+  const originalFetch=globalThis.fetch;let calls=0;const query='retry-fixture-'+Math.random().toString(36).slice(2);
+  try{
+    globalThis.fetch=async(input,init)=>{calls++;assert.match(String(input),/^https:\/\/proxy\.cors\.dev\/https:\/\/gutendex\.com\//);assert.equal(init?.credentials,'omit');assert.equal(init?.referrerPolicy,'no-referrer');assert.ok(init?.signal);if(calls===1)return new Response('',{status:429,headers:{'retry-after':'0'}});return new Response(JSON.stringify({count:0,results:[]}),{status:200,headers:{'content-type':'application/json'}});};
+    const result=await externalBooks({source:'gutendex',query,signal:new AbortController().signal});assert.equal(result.books.length,0);assert.equal(calls,2);
+  }finally{globalThis.fetch=originalFetch;}
+});
+
+test('catalog adapters reject invalid payload shapes and discard malformed records',async()=>{
+  const originalFetch=globalThis.fetch;let payload:unknown,query='shape-fixture-'+Math.random().toString(36).slice(2);
+  try{
+    payload=[];globalThis.fetch=async()=>new Response(JSON.stringify(payload),{status:200,headers:{'content-type':'application/json'}});
+    await assert.rejects(externalBooks({source:'gutendex',query,signal:new AbortController().signal}),/invalid response/);
+    payload={count:2,results:'not-an-array'};await assert.rejects(externalBooks({source:'gutendex',query:query+'-rows',signal:new AbortController().signal}),/invalid list/);
+    payload={count:2,results:[null,{id:1,title:'Valid record',authors:[],languages:[],subjects:[],formats:{}},{id:'bad',title:'Invalid ID'},{id:2,title:''}]};
+    const result=await externalBooks({source:'gutendex',query:query+'-filtered',signal:new AbortController().signal});assert.deepEqual(result.books.map(book=>book.title),['Valid record']);
+  }finally{globalThis.fetch=originalFetch;}
+});
+
+test('catalogs use a recent cached result on temporary failure and reject permanent 404s',async()=>{
+  const originalFetch=globalThis.fetch,originalNow=Date.now;let now=originalNow(),calls=0;const query='stale-fixture-'+Math.random().toString(36).slice(2);
+  try{
+    Date.now=()=>now;globalThis.fetch=async()=>{calls++;return new Response(JSON.stringify({count:1,results:[{id:1,title:'Cached record',authors:[],languages:[],subjects:[],formats:{}}]}),{status:200,headers:{'content-type':'application/json'}});};
+    const first=await externalBooks({source:'gutendex',query,signal:new AbortController().signal});assert.equal(first.books[0].title,'Cached record');now+=11*60_000;
+    globalThis.fetch=async()=>{calls++;return new Response('',{status:503});};const fallback=await externalBooks({source:'gutendex',query,signal:new AbortController().signal});assert.equal(fallback.books[0].title,'Cached record');assert.equal(calls,4);
+    globalThis.fetch=async()=>{calls++;return new Response('',{status:404});};await assert.rejects(externalBooks({source:'gutendex',query,signal:new AbortController().signal}),/404/);assert.equal(calls,5);
+  }finally{Date.now=originalNow;globalThis.fetch=originalFetch;}
+});
+
+test('catalog requests stop immediately when the caller aborts',async()=>{
+  const originalFetch=globalThis.fetch,controller=new AbortController();let calls=0;
+  try{globalThis.fetch=async()=>{calls++;controller.abort();throw new DOMException('Stopped','AbortError');};await assert.rejects(externalBooks({source:'gutendex',query:'abort-fixture-'+Math.random().toString(36).slice(2),signal:controller.signal}));assert.equal(calls,1);}finally{globalThis.fetch=originalFetch;}
 });

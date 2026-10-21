@@ -22,9 +22,12 @@ test('built public worker identity covers the current hero, page and runtime ass
  assert.equal(match[1],'sela-viewer-'+expected);assert(!output.includes('{{SELA_PUBLIC_CACHE}}'));
 });
 
-test('installed app shell receives the same content-addressed worker as the mobile alias',async()=>{
- const [app,mobile]=await Promise.all([readFile('app/sw.js','utf8'),readFile('mobile/sw.js','utf8')]);
- assert.equal(app,mobile);
- assert.match(app,/const CACHE="sela-bookshelf-[^"]+"/);
+test('the unified app shell has its own content-addressed worker and no retired mobile alias',async()=>{
+ const [app,manifestText]=await Promise.all([readFile('app/sw.js','utf8'),readFile('offline-assets.json','utf8')]);
+ const manifest=JSON.parse(manifestText) as {version:string;appShell:string[]};
+ assert.match(app,new RegExp(`const CACHE="sela-bookshelf-${manifest.version.replaceAll('.','\\.')}-[a-f0-9]{16}"`));
  assert(!app.includes('{{SELA_CACHE}}'));
+ assert(manifest.appShell.includes('app/app.js'));
+ assert(manifest.appShell.includes('app/index.html'));
+ assert(!manifest.appShell.some(path=>path.startsWith('mobile/')));
 });

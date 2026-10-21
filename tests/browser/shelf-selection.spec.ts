@@ -1,10 +1,56 @@
-import {test,expect} from '@playwright/test';
-import {openSettingsCategory} from './settings-helpers.ts';
-import {readFile} from 'node:fs/promises';
-test('pin ordering, contextual selection and backups keep the original shelf data',async({page,browser})=>{
- await page.goto('/mobile/');await page.getByRole('button',{name:'Shelf',exact:true}).click();await page.locator('#books').setInputFiles([{name:'Alpha.txt',mimeType:'text/plain',buffer:Buffer.from('Alpha original.')},{name:'Zulu.txt',mimeType:'text/plain',buffer:Buffer.from('Zulu original.')}]);await expect(page.locator('.book')).toHaveCount(2);await expect(page.locator('#books')).toBeEnabled();await page.locator('.shelf-refine').evaluate(el=>{if(!el.hasAttribute('open'))(el.querySelector('.shelf-refine-toggle') as HTMLElement).click();});await page.locator('#sort').selectOption('name');await expect(page.locator('.book-title').first()).toHaveText('Alpha');
- await page.getByRole('button',{name:'Book options: Zulu',exact:true}).click();await page.getByRole('button',{name:'Pin book',exact:true}).click();await expect(page.locator('.book-title').first()).toHaveText('Zulu');
- await page.getByRole('button',{name:'Select books',exact:true}).click();await expect(page.locator('body')).toHaveAttribute('data-selecting','true');await expect(page.locator('.library-reader-overlay')).toHaveCount(0);await page.locator('.cover').nth(1).click();await page.locator('.cover').first().click();await expect(page.locator('.bulk-actions output')).toHaveText('2 selected');await page.locator('.bulk-actions').getByRole('button',{name:'Clear',exact:true}).click();
- await openSettingsCategory(page,'Your library & data');const download=page.waitForEvent('download');await page.locator('#export-library').click();const buffer=await readFile(await(await download).path());
- const context=await browser.newContext();try{const restored=await context.newPage();await restored.goto('/mobile/');await openSettingsCategory(restored,'Your library & data');await restored.locator('#restore-library').setInputFiles({name:'sela-backup.zip',mimeType:'application/zip',buffer});await expect(restored.locator('#status')).toContainText('2 books restored');await restored.getByRole('button',{name:'Shelf',exact:true}).click();await restored.locator('.shelf-refine').evaluate(el=>{if(!el.hasAttribute('open'))(el.querySelector('.shelf-refine-toggle') as HTMLElement).click();});await restored.locator('#sort').selectOption('name');await expect(restored.locator('.book-title').first()).toHaveText('Zulu');await restored.locator('.cover').first().click();await restored.getByRole('dialog',{name:'Book information',exact:true}).getByRole('button',{name:'Read this book',exact:true}).click();await expect(restored.locator('.sela-epub article')).toContainText('Zulu original.');}finally{await context.close();}
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { readBackupArchive } from '../../dist/js/sela.archive.js';
+import { readStoredBooks } from './library-helpers.ts';
+
+test('React shelf pinning, selection, favorites and backup preserve the original books', async ({ page, browser }) => {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+  await page.goto('/app/');
+  await page.getByLabel('Choose book files').setInputFiles([
+    { name: 'Alpha.txt', mimeType: 'text/plain', buffer: Buffer.from('Alpha original.') },
+    { name: 'Zulu.txt', mimeType: 'text/plain', buffer: Buffer.from('Zulu original.') },
+  ]);
+  await page.getByRole('link', { name: 'My shelf', exact: true }).click();
+  await expect(page.locator('.book-card')).toHaveCount(2);
+  const sort = page.getByRole('combobox', { name: 'Sort books', exact: true });
+  await sort.click(); await page.getByRole('option', { name: 'Title A–Z', exact: true }).click();
+  await expect(page.locator('.book-title-button').first()).toHaveText('Alpha');
+  const zulu = page.locator('.book-card').filter({ hasText: 'Zulu' });
+  await zulu.getByRole('button', { name: 'Book actions', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Pin to top', exact: true }).click();
+  await sort.click(); await page.getByRole('option', { name: 'Pinned first', exact: true }).click();
+  await expect(page.locator('.book-title-button').first()).toHaveText('Zulu');
+
+  await page.getByRole('button', { name: 'Select books', exact: true }).click();
+  await page.getByRole('checkbox', { name: 'Select Alpha', exact: true }).check();
+  await page.getByRole('checkbox', { name: 'Select Zulu', exact: true }).check();
+  await expect(page.locator('.bulk-selection-panel')).toContainText('2 selected');
+  await page.locator('.bulk-selection-panel').getByRole('button', { name: 'Favorite', exact: true }).click();
+  const status = page.getByRole('combobox', { name: 'Filter by reading status', exact: true });
+  await status.click(); await page.getByRole('option', { name: 'Favorites', exact: true }).click();
+  await expect(page.locator('.book-card')).toHaveCount(2);
+
+  await page.goto('/app/#/settings/data');
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export backup', exact: true }).click();
+  const bytes = await readFile(await (await downloadPromise).path());
+  const archive = readBackupArchive(new Uint8Array(bytes));
+  const manifest = JSON.parse(new TextDecoder().decode(archive['sela.json']));
+  expect(manifest.books).toHaveLength(2);
+  expect(manifest.books.find(book => book.metadata.name === 'Zulu').metadata.pinned).toBe(true);
+  expect(manifest.books.every(book => book.metadata.favorite)).toBe(true);
+
+  const restoredContext = await browser.newContext();
+  try {
+    const restored = await restoredContext.newPage();
+    await restored.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+    await restored.goto('/app/#/settings/data');
+    await restored.locator('.settings-detail input[type="file"]').setInputFiles({ name: 'sela-backup.zip', mimeType: 'application/zip', buffer: bytes });
+    await expect(restored.getByText('2 books added; 0 existing books kept.', { exact: true })).toBeVisible();
+    const saved = await readStoredBooks(restored);
+    expect(saved.sort((a, b) => a.name.localeCompare(b.name)).map(({ name, text, pinned, favorite }) => ({ name, bytes: text, pinned, favorite }))).toEqual([
+      { name: 'Alpha', bytes: 'Alpha original.', pinned: false, favorite: true },
+      { name: 'Zulu', bytes: 'Zulu original.', pinned: true, favorite: true },
+    ]);
+  } finally { await restoredContext.close(); }
 });

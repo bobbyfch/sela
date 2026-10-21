@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "moduleDetection": "force"
   },
-  "include": ["app/mobile/sw.ts", "app/site/viewer-sw.ts"]
+  "include": ["web/app/platform/sw.ts", "app/site/viewer-sw.ts"]
 }

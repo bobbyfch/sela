@@ -1,7 +1,7 @@
 // Generated from app/library/personal-store.ts by npm run build. Do not edit.
 export const PERSONAL_KEY = "sela-library:personal";
 export function emptyPersonal() {
-  return { version: 1, room: "", companion: "tanuki", faith: "none", quiet: false, hidden: [], queue: [], books: {}, racks: [], sessions: [], quoteTopic: "reading", quoteLanguage: "auto", quranTranslationKey: "", quranSurah: 1, quranVerse: 1, quranArabicSize: 32, quranTranslationSize: 18 };
+  return { version: 1, room: "", companion: "tanuki", faith: "none", gender: "unspecified", quiet: false, hidden: [], queue: [], books: {}, racks: [], sessions: [], quoteTopic: "reading", quoteLanguage: "auto", quranTranslationKey: "", quranSurah: 1, quranVerse: 1, quranArabicSize: 32, quranTranslationSize: 18 };
 }
 export function validatePersonal(value) {
   const result = emptyPersonal();
@@ -20,6 +20,7 @@ export function validatePersonal(value) {
   if (typeof data.companion === "string" && companions[data.companion]) result.companion = companions[data.companion];
   const faithAliases = { none: "none", islam: "islam", christianity: "protestantism", protestantism: "protestantism", catholicism: "catholicism", buddhism: "buddhism", hinduism: "hinduism", confucianism: "confucianism" };
   if (typeof data.faith === "string" && faithAliases[data.faith]) result.faith = faithAliases[data.faith];
+  if (["unspecified", "woman", "man", "nonbinary", "another"].includes(data.gender)) result.gender = data.gender;
   result.quiet = data.quiet === true;
   if (Number.isFinite(data.weeklyTarget) && data.weeklyTarget >= 0 && data.weeklyTarget <= 6e3) result.weeklyTarget = Math.round(data.weeklyTarget);
   result.hidden = Array.isArray(data.hidden) ? data.hidden.filter((x) => ["quote", "timer", "rediscover"].includes(x)).slice(0, 10) : [];
@@ -63,11 +64,13 @@ export function matchesRack(book, rule) {
   const value = rest.join(":").toLowerCase();
   switch (key) {
     case "unread":
-      return !book.opened && !book.completed;
+      return !book.opened && !book.completed && !book.didNotFinish;
     case "reading":
-      return !!book.opened && !book.completed;
+      return !!book.opened && !book.completed && !book.didNotFinish;
     case "finished":
       return !!book.completed;
+    case "didNotFinish":
+      return !!book.didNotFinish;
     case "favorite":
       return !!book.favorite;
     case "recent":

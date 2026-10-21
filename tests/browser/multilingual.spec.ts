@@ -1,12 +1,23 @@
 import {test,expect} from '@playwright/test';
 
-test('mobile and public language selectors offer the same locales and keep one preference',async({page})=>{
- await page.route('https://date.nager.at/api/v3/PublicHolidays/**',route=>route.fulfill({json:[]}));
- await page.goto('/mobile/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');
- await page.getByRole('button',{name:'Settings',exact:true}).click();
- const mobileLanguage=page.locator('#language');await expect(mobileLanguage.locator('option')).toHaveCount(3);await mobileLanguage.selectOption('ja-JP');
- await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');await expect(page.locator('.settings-page>h2')).toHaveText('設定');await expect.poll(()=>page.evaluate(()=>localStorage.getItem('sela:language'))).toBe('ja-JP');
- await page.goto('/');const publicLanguage=page.locator('#language');await expect(publicLanguage).toBeVisible();await expect(publicLanguage).toHaveValue('ja-JP');await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');
- await publicLanguage.selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect.poll(()=>page.evaluate(()=>localStorage.getItem('sela:language'))).toBe('id-ID');
- await page.goto('/app/');await expect(page.locator('#mobile-app')).toHaveAttribute('data-ready','true');await expect(page.locator('#language')).toHaveValue('id-ID');await expect(page.locator('#books')).toHaveAttribute('aria-label','Pilih berkas buku');await page.locator('#language').selectOption('ja-JP');await expect(page.locator('#books')).toHaveAttribute('aria-label','本のファイルを選択');await page.locator('#language').selectOption('en-US');await expect(page.locator('#books')).toHaveAttribute('aria-label','Choose book files');
+test('React app language switch and public locale selector use their supported choices',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'})));
+ await page.goto('/app/');
+ await expect(page.locator('.sela-app')).toBeVisible();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.getByRole('link',{name:'My shelf',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Switch language',exact:true}).click();
+ await expect(page.locator('html')).toHaveAttribute('lang','id');
+ await expect(page.getByRole('link',{name:'Rak buku',exact:true})).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela:app:preferences')||'{}').language)).toBe('id');
+ await page.getByRole('button',{name:'Ganti bahasa',exact:true}).click();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.goto('/?geo=off');
+ const publicLanguage=page.locator('#language');
+ await expect(publicLanguage).toBeVisible();
+ await publicLanguage.selectOption('ja-JP');
+ await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');
+ await publicLanguage.selectOption('id-ID');
+ await expect(page.locator('html')).toHaveAttribute('lang','id-ID');
+ await expect(page.locator('.hero-copy h1')).not.toHaveText('Your books. Within reach.');
 });

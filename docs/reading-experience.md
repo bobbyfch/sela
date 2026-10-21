@@ -69,7 +69,7 @@ Keep credentials, access control, provider consent, quotas and charging on your 
 
 Reader has four separate screens: Home (continue reading and sample catalog), Shelf (personal books), Explore (search open catalogs and read/save books), and Settings (defaults, storage, backup). Reader is available on desktop, tablet and phone; browser-extension packages are discontinued. Collections/tags, favorites, unread/started/finished, sorting and shelf/grid/list layouts work in both. Long-press a cover, use its Select book menu action, or Select all to enable batch favorite, finished, collection and remove/undo. Pins stay first in the chosen sort order.
 
-The empty shelf shows an add-book icon. Online catalog acquisitions join the local shelf when you choose Read or Save offline. The included 50-page sample can be read immediately or saved to the local shelf. Documents are never uploaded by these library features.
+The empty shelf shows an add-book icon. Online catalog acquisitions are downloaded to the local shelf when you choose **Download & add to shelf**. The included 50-page sample can be downloaded and opened with **Download & read sample**, or downloaded without opening with **Download & add to shelf**. Documents are never uploaded by these library features.
 
 ## Full backup
 

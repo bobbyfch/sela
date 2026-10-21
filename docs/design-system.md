@@ -1,52 +1,30 @@
-# Sela Design System
+# Sela Books Design System
 
-Sela shares one visual foundation across its public site, app shell, app reader, and standalone viewer. Product palettes remain semantic and can change independently; type, control sizing, radii, elevation, motion, and component behavior use shared tokens.
+The installed reading app has one React entry at `/app/`, built on Mantine 9.7. Public marketing pages and the embeddable Sela reader remain separate products with their own stylesheets.
 
 ## Foundations
 
-The source of truth is [`ui/design-system.css`](../ui/design-system.css). Each Tailwind entry imports it so the same tokens are available in the independently built CSS bundles.
-
-| Area | Shared rule |
+| Area | Source and rule |
 | --- | --- |
-| UI type | System sans for controls and interface copy; editorial serif reserved for long-form or literary display text |
-| Type scale | Meta, caption, label, button, body, body-large, title-small, and title tokens with paired line heights |
-| Spacing | Tailwind's 4 px base scale plus named control heights at 32, 36, 40, and 44 px |
-| Radius | Compact control, standard control, popover, surface, dialog, and pill tokens |
-| Elevation | Control, card, popover, and modal shadow tokens |
-| Motion | Shared easing and fast/normal durations; honor reduced-motion preferences |
-| Color | Semantic canvas, surface, ink, muted, line, accent, primary, secondary, destructive, and focus-ring aliases |
-| Accessibility | Visible focus, disabled and invalid states, readable type hierarchy, and a shared 44 px touch-target token |
-| Icons and artwork | Rounded Lucide outline controls, a custom minimal book mark, and transparent original companion art; avoid mixing icon weights or using brand marks as decoration |
-| Glass surfaces | Use translucent material for navigation and short-lived controls; keep reading surfaces opaque and legible |
+| Components | Mantine core components; app-specific composition in [`web/app/ui/screens.tsx`](../web/app/ui/screens.tsx) and [`web/app/ui/app.tsx`](../web/app/ui/app.tsx) |
+| Theme | [`web/app/ui/theme.tsx`](../web/app/ui/theme.tsx) maps Mantine state colors to Sela semantic tokens |
+| Tokens | [`tokens.css`](../tokens.css) defines paper, ink, glass, shadow, type, and spacing values |
+| App styling | [`web/app/ui/app.css`](../web/app/ui/app.css) owns responsive layouts and component skin |
+| Public and reader styles | Tailwind entrypoints under `ui/` build the public page and standalone reader outputs independently |
+| Icons | Lucide outline icons at a consistent 1.6–1.8 stroke weight; book-cover artwork keeps its original colors |
+| Glass | Reserve translucent material for app navigation, compact controls, and transient overlays; keep book pages and text surfaces opaque |
+| Responsive layout | Desktop AppShell rail, compact top bar, and bottom navigation on narrow screens; use minmax grids and wrap controls before reducing readable text |
+| Accessibility | Visible focus, labeled icon controls, keyboard-operable menus, reduced-motion support, and 44 px primary touch targets |
 
-## Component inventory
+## Reusable patterns
 
-| Component family | Source of truth |
-| --- | --- |
-| Buttons and button variants | [`ui/components/ui/button.tsx`](../ui/components/ui/button.tsx) |
-| Native select | [`ui/components/ui/native-select.tsx`](../ui/components/ui/native-select.tsx) |
-| Dialog, overlay, title, description, footer | [`ui/components/ui/dialog.tsx`](../ui/components/ui/dialog.tsx) |
-| Popover, title, description | [`ui/components/ui/popover.tsx`](../ui/components/ui/popover.tsx) |
-| App navigation and control-sheet host | [`app/mobile/react-app.tsx`](../app/mobile/react-app.tsx) |
-| Home, widgets, timer, weather, quotes, prayer times | `ui/app-redesign-utilities.css`, `ui/home-responsive-utilities.css`, `app/library/home-*.ts`, `app/library/weather.ts`, and `app/library/prayer-times.ts` |
-| Shelf, book covers, collections, book actions | `ui/app-tailwind-utilities.css`, `ui/app-redesign-utilities.css`, and `app/library/*` shelf/catalog modules |
-| Explore, catalog, search, filters | `ui/app-tailwind-utilities.css`, `ui/app-redesign-utilities.css`, and `app/library/discovery.ts`, `catalog.ts`, `smart-search.ts` |
-| Progress and reading controls | `ui/app-redesign-utilities.css`, `ui/app-reader-utilities.css`, and `app/library/reading-*.ts` |
-| Settings, preferences, dialogs, and forms | `ui/app-tailwind-utilities.css`, `ui/app-redesign-utilities.css`, `ui/app-reader-utilities.css`, and `app/library/advanced.ts`, `controls.ts` |
-| Shared reader chrome and reader settings | `ui/app-reader-utilities.css` and `ui/pages/reader.tsx` |
-| Standalone viewer controls and reading surfaces | `ui/viewer-tailwind-utilities.css` |
-| Public landing page and embed demo | `ui/public-tailwind.css` and `ui/pages/public.tsx` |
+- `PageHeader` provides consistent page title hierarchy and contextual actions.
+- `EmptyState` keeps first-use, filtered-empty, and error recovery clear.
+- `AppPreferences` is the shared source for themes, shelf finishes, grid density, widget visibility, language, and reading defaults.
+- Mantine `Modal`, `Menu`, `Select`, `Slider`, `Calendar`, `Carousel`, `Spotlight`, `Notifications`, and `Dropzone` supply consistent interaction behavior.
+- Setting categories open as routes within the app shell; the back control returns to the settings index.
+- The bookshelf supports grid, list, and lazy 3D views; list and grid remain available when WebGL is unavailable.
 
-## Component rules
+## Theme rules
 
-- Use the shared `Button`, `NativeSelect`, `Dialog`, and `Popover` primitives for React surfaces. Keep page-specific layout in the page; keep base size, focus, radius, and state behavior in the primitive.
-- Use semantic color utilities instead of fixed light/dark colors. Palette and theme selectors own the semantic values.
-- Use the shared radius and shadow tokens for controls, cards, popovers, and dialogs. Avoid one-off pixel radii for these component families.
-- Use semantic text utilities for controls and interface metadata. Serif type is an intentional reading/editorial treatment, not a UI fallback.
-- Use the 44 px token for primary touch targets. Compact variants remain for dense desktop or secondary actions; do not use them for primary touch actions.
-- Keep loading, empty, disabled, invalid, hover, focus, selected, and reduced-motion states in the same component family.
-- Settings is an index of labeled categories; each category opens as a full-page view with a back control. Keep multi-step preferences within that route.
-
-## Built surfaces
-
-`mobile-tailwind.css`, `app-reader-tailwind.css`, `viewer-tailwind.css`, and `public-tailwind.css` import the same token source. The build emits separate scoped bundles so CDN integrations and the app can retain their existing contracts while sharing the design language.
+Vanilla, Olive, Cocoa, Mist, and OLED use the same semantic tokens. Components consume paper, ink, muted, rule, accent, glass, and shadow variables instead of hard-coded palette values. Cover art is never color-shifted to match the current theme.

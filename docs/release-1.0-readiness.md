@@ -1,6 +1,6 @@
 # Sela 1.0 release readiness
 
-**Review date:** 18 October 2026
+**Review date:** 19 October 2026
 **Current package version:** 0.9.0-beta.7
 **Release state:** Not ready to publish as 1.0 yet. This review records shipped work, verified behavior, and content or release gates that still need evidence.
 
@@ -8,9 +8,9 @@
 
 Sela already uses TypeScript for its maintained application, viewer, API, workers, and build scripts. Astro is already in the toolchain and produces the public pages. The generated JavaScript in `dist/` is part of the browser/CDN package: CI3, Laravel, Bootstrap, Vue, React, and plain HTML sites consume JavaScript bundles, so generated `.js` files are required outputs rather than leftover Flippy source.
 
-Keep Astro for public, documentation, and other static routes. Keep the document viewer as a small framework-independent TypeScript package, with the app experience using React, Tailwind CSS 4, and Base UI. A wholesale Astro rewrite would not remove the need for a browser-side reader, and would add migration risk without a user-facing gain. Astro 7.4 is current on this review date; its build-timing flag is a good next tool for identifying slow GitHub Pages deployments.
+Keep Astro for public, documentation, and other static routes. Keep the document viewer as a small framework-independent TypeScript package, with the app experience using React, Tailwind CSS 4, and Radix primitives through the local shadcn component source. A wholesale Astro rewrite would not remove the need for a browser-side reader, and would add migration risk without a user-facing gain. Astro 7.4 is current on this review date; its build-timing flag is a good next tool for identifying slow GitHub Pages deployments.
 
-Base UI fits the app shell because it provides accessible, unstyled React primitives that work with Tailwind. Keep viewer-critical controls native and framework-independent so the CDN embeds stay easy to install. Use utility classes for the main style layer, and reserve small custom utilities for reader-engine integration, page rendering, and effects that cannot be expressed cleanly as standard utilities.
+Radix fits the app shell because it provides accessible, unstyled React primitives that work with Tailwind. Keep viewer-critical controls native and framework-independent so the CDN embeds stay easy to install. Use utility classes for the main style layer, and reserve small custom utilities for reader-engine integration, page rendering, and effects that cannot be expressed cleanly as standard utilities.
 
 ## Work completed in this pass
 
@@ -109,7 +109,7 @@ Avoid adding a cloud account requirement, public social feed, or automatic machi
 
 - [Tailwind responsive design](https://tailwindcss.com/docs/responsive-design) — mobile-first breakpoints and container queries.
 - [W3C WCAG 2.2 Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html) — content reflow at a 320 CSS px viewport.
-- [Base UI accessibility](https://base-ui.com/react/overview/accessibility) — keyboard navigation, focus management, labels, and contrast responsibilities.
+- [Radix accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility) — keyboard navigation, focus management, labeling, and contrast responsibilities.
 - [Orama JavaScript documentation](https://docs.orama.com/docs/orama-js) — local full-text search, supported search options, and stemming integration.
 - [Orama search API](https://docs.orama.com/docs/orama-js/search) — query and result behavior used by the local bookshelf index.
 - [Astro 7.4 release notes](https://astro.build/blog/astro-740/) — current release and `astro build --timings`.

@@ -5,7 +5,7 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "ui/mobile-tailwind.css",
+    "css": "ui/public-tailwind.css",
     "baseColor": "stone",
     "cssVariables": true,
     "prefix": "tw"

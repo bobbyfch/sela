@@ -10,7 +10,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
   },
   {
     "id": "11",
@@ -23,7 +27,14 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "myth-folklore",
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "84",
@@ -36,7 +47,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "uncanny",
+      "speculative",
+      "storycraft"
+    ]
   },
   {
     "id": "1661",
@@ -49,7 +65,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "uncanny",
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "514",
@@ -62,7 +83,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
   },
   {
     "id": "345",
@@ -75,7 +100,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "uncanny"
+    ]
   },
   {
     "id": "98",
@@ -88,7 +116,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg terms; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "storycraft"
+    ]
   },
   {
     "id": "35",
@@ -102,7 +133,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
   },
   {
     "id": "36",
@@ -116,7 +151,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
   },
   {
     "id": "120",
@@ -130,7 +169,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "55",
@@ -144,7 +187,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "myth-folklore",
+      "speculative"
+    ]
   },
   {
     "id": "215",
@@ -158,7 +205,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "236",
@@ -172,7 +223,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "myth-folklore",
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "45",
@@ -186,7 +242,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home"
+    ]
   },
   {
     "id": "113",
@@ -200,7 +259,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
   },
   {
     "id": "147",
@@ -214,7 +277,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
   },
   {
     "id": "2680",
@@ -228,7 +295,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this edition's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection"
+    ]
   },
   {
     "id": "1497",
@@ -242,7 +312,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this translation's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection"
+    ]
   },
   {
     "id": "205",
@@ -256,7 +329,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "nature-journey"
+    ]
   },
   {
     "id": "1232",
@@ -270,7 +347,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this translation's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
   },
   {
     "id": "1400",
@@ -284,7 +365,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
   },
   {
     "id": "158",
@@ -298,7 +383,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
   },
   {
     "id": "768",
@@ -312,7 +401,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "uncanny",
+      "longing",
+      "storycraft"
+    ]
   },
   {
     "id": "2600",
@@ -326,7 +420,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this translation's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
   },
   {
     "id": "6130",
@@ -340,7 +438,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this translation's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "poetry-sound",
+      "myth-folklore"
+    ]
   },
   {
     "id": "100",
@@ -354,7 +457,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and edition notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
   },
   {
     "id": "23",
@@ -368,7 +475,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "life-writing",
+      "storycraft"
+    ]
   },
   {
     "id": "1228",
@@ -382,7 +493,12 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and edition notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "18",
@@ -396,7 +512,11 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
   },
   {
     "id": "2376",
@@ -410,7 +530,10 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "life-writing"
+    ]
   },
   {
     "id": "1727",
@@ -424,7 +547,14 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and this translation's notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "memory-home",
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft",
+      "nature-journey"
+    ]
   },
   {
     "id": "34901",
@@ -438,6 +568,2954 @@
     "language": "en",
     "source": "Project Gutenberg / GITenberg",
     "rights": "Project Gutenberg edition; public domain in the United States. Check local copyright and edition notes.",
-    "format": "txt"
+    "format": "txt",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "6688",
+    "title": "The Mill on the Floss",
+    "author": "George Eliot",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/6688",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "4300",
+    "title": "Ulysses",
+    "author": "James Joyce",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4300",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "longing",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "792",
+    "title": "Wieland; Or, The Transformation: An American Tale",
+    "author": "Charles Brockden Brown",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/792",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "14851",
+    "title": "Uncle Silas: A Tale of Bartram-Haugh",
+    "author": "Joseph Sheridan Le Fanu",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/14851",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "601",
+    "title": "The Monk: A Romance",
+    "author": "M. G. (Matthew Gregory) Lewis",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/601",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1695",
+    "title": "The Man Who Was Thursday: A Nightmare",
+    "author": "G. K. (Gilbert Keith) Chesterton",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1695",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "speculative",
+      "reflection",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "41",
+    "title": "The Legend of Sleepy Hollow",
+    "author": "Washington Irving",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/41",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "804",
+    "title": "A Sentimental Journey Through France and Italy",
+    "author": "Laurence Sterne",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/804",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1329",
+    "title": "A Voyage to Arcturus",
+    "author": "David Lindsay",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1329",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "228",
+    "title": "The Aeneid",
+    "author": "Virgil",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/228",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1122",
+    "title": "Hamlet",
+    "author": "William Shakespeare",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1122",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2554",
+    "title": "Crime and Punishment",
+    "author": "Fyodor Dostoyevsky",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2554",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "15",
+    "title": "Moby-Dick; or, The Whale",
+    "author": "Herman Melville",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/15",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "77",
+    "title": "The House of the Seven Gables",
+    "author": "Nathaniel Hawthorne",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/77",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "209",
+    "title": "The Turn of the Screw",
+    "author": "Henry James",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/209",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "219",
+    "title": "Heart of Darkness",
+    "author": "Joseph Conrad",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/219",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "289",
+    "title": "The Wind in the Willows",
+    "author": "Kenneth Grahame",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/289",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2276",
+    "title": "The Private Memoirs and Confessions of a Justified Sinner",
+    "author": "James Hogg",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2276",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3155",
+    "title": "She",
+    "author": "H. Rider (Henry Rider) Haggard",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3155",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "5658",
+    "title": "Lord Jim",
+    "author": "Joseph Conrad",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/5658",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "6593",
+    "title": "History of Tom Jones, a Foundling",
+    "author": "Henry Fielding",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/6593",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "6761",
+    "title": "The Adventures of Ferdinand Count Fathom — Complete",
+    "author": "T. (Tobias) Smollett",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/6761",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "7849",
+    "title": "The Trial",
+    "author": "Franz Kafka",
+    "language": "en",
+    "genre": "Gothic & uncanny",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/7849",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "uncanny",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "8800",
+    "title": "The divine comedy",
+    "author": "Dante Alighieri",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8800",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "11000",
+    "title": "An Old Babylonian Version of the Gilgamesh Epic",
+    "author": "Morris Jastrow",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/11000",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "16659",
+    "title": "Translations of Shakuntala and Other Works",
+    "author": "Kālidāsa",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/16659",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "21765",
+    "title": "The Metamorphoses of Ovid, Books I-VII",
+    "author": "Ovid",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/21765",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "26073",
+    "title": "The Metamorphoses of Ovid, Books VIII-XV",
+    "author": "Ovid",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/26073",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "28621",
+    "title": "The Metamorphoses of Publius Ovidus Naso in English blank verse Vols. I & II",
+    "author": "Ovid",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/28621",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "33",
+    "title": "The Scarlet Letter",
+    "author": "Nathaniel Hawthorne",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/33",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1004",
+    "title": "Divine Comedy, Longfellow's Translation, Complete",
+    "author": "Dante Alighieri",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1004",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1008",
+    "title": "Divine Comedy, Cary's Translation, Complete",
+    "author": "Dante Alighieri",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1008",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1200",
+    "title": "Gargantua and Pantagruel",
+    "author": "François Rabelais",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1200",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2160",
+    "title": "The Expedition of Humphry Clinker",
+    "author": "T. (Tobias) Smollett",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2160",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "18466",
+    "title": "The Æneid of Virgil, Translated into English Verse",
+    "author": "Virgil",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/18466",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "22456",
+    "title": "The Aeneid of Virgil",
+    "author": "Virgil",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/22456",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "586",
+    "title": "Religio Medici, Hydriotaphia, and the Letter to a Friend",
+    "author": "Thomas Sir Browne",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/586",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "996",
+    "title": "Don Quixote",
+    "author": "Miguel de Cervantes Saavedra",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/996",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1399",
+    "title": "Anna Karenina",
+    "author": "Leo graf Tolstoy",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1399",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "31",
+    "title": "Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone",
+    "author": "Sophocles",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/31",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "308",
+    "title": "Three men in a boat (to say nothing of the dog)",
+    "author": "Jerome K. (Jerome Klapka) Jerome",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/308",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1026",
+    "title": "The Diary of a Nobody",
+    "author": "George Grossmith",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1026",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1597",
+    "title": "Andersen's Fairy Tales",
+    "author": "H. C. (Hans Christian) Andersen",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1597",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "597",
+    "title": "The Story of Burnt Njal: The Great Icelandic Tribune, Jurist, and Counsellor",
+    "author": "George Webbe Sir Dasent",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/597",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "766",
+    "title": "David Copperfield",
+    "author": "Charles Dickens",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/766",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "76",
+    "title": "Adventures of Huckleberry Finn",
+    "author": "Mark Twain",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/76",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "82",
+    "title": "Ivanhoe: A Romance",
+    "author": "Walter Scott",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/82",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "95",
+    "title": "The prisoner of Zenda",
+    "author": "Anthony Hope",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/95",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "145",
+    "title": "Middlemarch",
+    "author": "George Eliot",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/145",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "159",
+    "title": "The island of Doctor Moreau",
+    "author": "H. G. (Herbert George) Wells",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/159",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "271",
+    "title": "Black Beauty",
+    "author": "Anna Sewell",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/271",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "580",
+    "title": "The Pickwick Papers",
+    "author": "Charles Dickens",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/580",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "829",
+    "title": "Gulliver's Travels into Several Remote Nations of the World",
+    "author": "Jonathan Swift",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/829",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1531",
+    "title": "Othello",
+    "author": "William Shakespeare",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1531",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1845",
+    "title": "Zuleika Dobson; Or, An Oxford Love Story",
+    "author": "Max Sir Beerbohm",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1845",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1947",
+    "title": "Scaramouche: A Romance of the French Revolution",
+    "author": "Rafael Sabatini",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1947",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2542",
+    "title": "A Doll's House : a play",
+    "author": "Henrik Ibsen",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2542",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "9609",
+    "title": "Joseph Andrews, Vol. 2",
+    "author": "Henry Fielding",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/9609",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "9611",
+    "title": "Joseph Andrews, Vol. 1",
+    "author": "Henry Fielding",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/9611",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "29468",
+    "title": "The Story of Don Quixote",
+    "author": "Arvid Paulson",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/29468",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "35993",
+    "title": "The History of Don Quixote de la Mancha",
+    "author": "Miguel de Cervantes Saavedra",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/35993",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "599",
+    "title": "Vanity Fair",
+    "author": "William Makepeace Thackeray",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/599",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1128",
+    "title": "King Lear",
+    "author": "William Shakespeare",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1128",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1322",
+    "title": "Leaves of Grass",
+    "author": "Walt Whitman",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1322",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1880",
+    "title": "The Pathfinder; Or, The Inland Sea",
+    "author": "James Fenimore Cooper",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1880",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2130",
+    "title": "Utopia",
+    "author": "Thomas Saint More",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2130",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2383",
+    "title": "The Canterbury Tales, and Other Poems",
+    "author": "Geoffrey Chaucer",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2383",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2388",
+    "title": "The Song Celestial; Or, Bhagavad-Gîtâ (from the Mahâbhârata) Being a discourse between Arjuna, Prince of India, and the Supreme Being under the form of Krishna",
+    "author": "Edwin Sir Arnold",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2388",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore",
+      "reflection"
+    ]
+  },
+  {
+    "id": "2527",
+    "title": "The Sorrows of Young Werther",
+    "author": "Johann Wolfgang von Goethe",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2527",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2610",
+    "title": "Notre-Dame de Paris",
+    "author": "Victor Hugo",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2610",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "10850",
+    "title": "Philaster; Or, Love Lies a Bleeding",
+    "author": "Francis Beaumont",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/10850",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "12169",
+    "title": "Sakoontala; Or, The Lost Ring: An Indian Drama",
+    "author": "Kālidāsa",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/12169",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "15081",
+    "title": "The Tragedies of Euripides, Volume I.",
+    "author": "Euripides",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/15081",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "35451",
+    "title": "Medea of Euripides",
+    "author": "Euripides",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/35451",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "12",
+    "title": "Through the Looking-Glass",
+    "author": "Lewis Carroll",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/12",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "28",
+    "title": "The Fables of Aesop Selected, Told Anew, and Their History Traced",
+    "author": "Aesop",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/28",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "32",
+    "title": "Herland",
+    "author": "Charlotte Perkins Gilman",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/32",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "718",
+    "title": "Tono-Bungay",
+    "author": "H. G. (Herbert George) Wells",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/718",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1279",
+    "title": "Poems and Songs of Robert Burns",
+    "author": "Robert Burns",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1279",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1745",
+    "title": "The Poetical Works of John Milton",
+    "author": "John Milton",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1745",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1906",
+    "title": "Erewhon; Or, Over the Range",
+    "author": "Samuel Butler",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1906",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1977",
+    "title": "Phaedra",
+    "author": "Jean Racine",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1977",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3748",
+    "title": "A Journey into the Interior of the Earth",
+    "author": "Jules Verne",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3748",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "5314",
+    "title": "Household Tales by Brothers Grimm",
+    "author": "Jacob Grimm",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/5314",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "7073",
+    "title": "Specimens of Greek Tragedy — Aeschylus and Sophocles",
+    "author": "Aeschylus",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/7073",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "7998",
+    "title": "The Frogs",
+    "author": "Aristophanes",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/7998",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "8418",
+    "title": "Hippolytus; The Bacchae",
+    "author": "Euripides",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8418",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "8604",
+    "title": "The House of Atreus; Being the Agamemnon, the Libation bearers, and the Furies",
+    "author": "Aeschylus",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8604",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "13268",
+    "title": "Hindu literature : Comprising The Book of good counsels, Nala and Damayanti, The Ramayana, and Sakoontala",
+    "author": "Epiphanius Wilson",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13268",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "myth-folklore"
+    ]
+  },
+  {
+    "id": "13674",
+    "title": "Chronicle and Romance: Froissart, Malory, Holinshed (The Harvard Classics Series)",
+    "author": "Jean Froissart",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13674",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "13944",
+    "title": "After London; Or, Wild England",
+    "author": "Richard Jefferies",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13944",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "14417",
+    "title": "The Agamemnon of Aeschylus Translated into English Rhyming Verse with Explanatory Notes",
+    "author": "Aeschylus",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/14417",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "20158",
+    "title": "The Works of Lord Byron. Vol. 4",
+    "author": "George Gordon Byron Baron Byron",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/20158",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2434",
+    "title": "New Atlantis",
+    "author": "Francis Bacon",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2434",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3420",
+    "title": "A Vindication of the Rights of Woman With Strictures on Political and Moral Subjects",
+    "author": "Mary Wollstonecraft",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3420",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "575",
+    "title": "The Essays or Counsels, Civil and Moral",
+    "author": "Francis Bacon",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/575",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "608",
+    "title": "Areopagitica A Speech for the Liberty of Unlicensed Printing to the Parliament of England",
+    "author": "John Milton",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/608",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "1237",
+    "title": "Father Goriot",
+    "author": "Honoré de Balzac",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1237",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2445",
+    "title": "Letters on England",
+    "author": "Voltaire",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2445",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "2811",
+    "title": "Letters of Pliny",
+    "author": "the Younger Pliny",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2811",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "2812",
+    "title": "Letters of Marcus Tullius Cicero",
+    "author": "Marcus Tullius Cicero",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2812",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "2944",
+    "title": "Essays — First Series",
+    "author": "Ralph Waldo Emerson",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2944",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "2945",
+    "title": "Essays — Second Series",
+    "author": "Ralph Waldo Emerson",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2945",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "5637",
+    "title": "Literary and Philosophical Essays: French, German and Italian",
+    "author": "Michel de Montaigne",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/5637",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "13182",
+    "title": "Prefaces and prologues to famous books",
+    "author": "Charles William Eliot",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13182",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "16643",
+    "title": "Essays by Ralph Waldo Emerson",
+    "author": "Ralph Waldo Emerson",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/16643",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "18269",
+    "title": "Pascal's Pensées",
+    "author": "Blaise Pascal",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/18269",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "reflection",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "652",
+    "title": "Rasselas, Prince of Abyssinia",
+    "author": "Samuel Johnson",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/652",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "968",
+    "title": "Martin Chuzzlewit",
+    "author": "Charles Dickens",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/968",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1653",
+    "title": "The Imitation of Christ",
+    "author": "à Kempis Thomas",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1653",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1656",
+    "title": "Apology",
+    "author": "Plato",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1656",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1657",
+    "title": "Crito",
+    "author": "Plato",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1657",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1658",
+    "title": "Phaedo",
+    "author": "Plato",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1658",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2808",
+    "title": "Treatises on Friendship and Old Age",
+    "author": "Marcus Tullius Cicero",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2808",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "longing",
+      "reflection"
+    ]
+  },
+  {
+    "id": "3296",
+    "title": "The Confessions of St. Augustine",
+    "author": "of Hippo Saint Augustine",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3296",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3330",
+    "title": "The Analects of Confucius (from the Chinese Classics)",
+    "author": "Confucius",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3330",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "13726",
+    "title": "Apology, Crito, and Phaedo of Socrates",
+    "author": "Plato",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13726",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "60",
+    "title": "The Scarlet Pimpernel",
+    "author": "Emmuska Orczy Baroness Orczy",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/60",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "73",
+    "title": "The Red Badge of Courage: An Episode of the American Civil War",
+    "author": "Stephen Crane",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/73",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "103",
+    "title": "Around the World in Eighty Days",
+    "author": "Jules Verne",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/103",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "217",
+    "title": "Sons and Lovers",
+    "author": "D. H. (David Herbert) Lawrence",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/217",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "life-writing",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "402",
+    "title": "Penrod",
+    "author": "Booth Tarkington",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/402",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "421",
+    "title": "Kidnapped",
+    "author": "Robert Louis Stevenson",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/421",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "555",
+    "title": "The Unbearable Bassington",
+    "author": "Saki",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/555",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "561",
+    "title": "The Further Adventures of Robinson Crusoe",
+    "author": "Daniel Defoe",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/561",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "674",
+    "title": "Plutarch: Lives of the noble Grecians and Romans",
+    "author": "Plutarch",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/674",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "1079",
+    "title": "The life and opinions of Tristram Shandy, gentleman",
+    "author": "Laurence Sterne",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1079",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1081",
+    "title": "Dead Souls",
+    "author": "Nikolai Vasilevich Gogol",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1081",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1257",
+    "title": "The three musketeers",
+    "author": "Alexandre Dumas",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1257",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1965",
+    "title": "Captain Blood",
+    "author": "Rafael Sabatini",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1965",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2005",
+    "title": "Piccadilly Jim",
+    "author": "P. G. (Pelham Grenville) Wodehouse",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2005",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2021",
+    "title": "Nostromo: A Tale of the Seaboard",
+    "author": "Joseph Conrad",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2021",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2042",
+    "title": "Something New",
+    "author": "P. G. (Pelham Grenville) Wodehouse",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2042",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2166",
+    "title": "King Solomon's Mines",
+    "author": "H. Rider (Henry Rider) Haggard",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2166",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2270",
+    "title": "Shakespeare's First Folio",
+    "author": "William Shakespeare",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2270",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2413",
+    "title": "Madame Bovary",
+    "author": "Gustave Flaubert",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2413",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2432",
+    "title": "Barchester Towers",
+    "author": "Anthony Trollope",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2432",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2638",
+    "title": "The Idiot",
+    "author": "Fyodor Dostoyevsky",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2638",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3186",
+    "title": "The Mysterious Stranger, and Other Stories",
+    "author": "Mark Twain",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3186",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3726",
+    "title": "The Decameron, Volume I",
+    "author": "Giovanni Boccaccio",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3726",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "4084",
+    "title": "The Adventures of Peregrine Pickle",
+    "author": "T. (Tobias) Smollett",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4084",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "4085",
+    "title": "The Adventures of Roderick Random",
+    "author": "T. (Tobias) Smollett",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4085",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "4709",
+    "title": "Brewster's Millions",
+    "author": "George Barr McCutcheon",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4709",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "4737",
+    "title": "A Tale of a Tub",
+    "author": "Jonathan Swift",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4737",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "6840",
+    "title": "Queen Lucia",
+    "author": "E. F. (Edward Frederic) Benson",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/6840",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "8117",
+    "title": "The possessed",
+    "author": "Fyodor Dostoyevsky",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8117",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "8245",
+    "title": "The World English Bible (WEB): Job",
+    "author": "Anonymous",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8245",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "8387",
+    "title": "Hunger",
+    "author": "Knut Hamsun",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/8387",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "13102",
+    "title": "The Decameron, Volume II",
+    "author": "Giovanni Boccaccio",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/13102",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "19942",
+    "title": "Candide",
+    "author": "Voltaire",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/19942",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "23700",
+    "title": "The Decameron of Giovanni Boccaccio",
+    "author": "Giovanni Boccaccio",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/23700",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "24754",
+    "title": "Wit and Wisdom of Don Quixote",
+    "author": "Miguel de Cervantes Saavedra",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/24754",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "27575",
+    "title": "Madame Bovary: A Tale of Provincial Life, Vol. 1 (of 2)",
+    "author": "Gustave Flaubert",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/27575",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "28054",
+    "title": "The Brothers Karamazov",
+    "author": "Fyodor Dostoyevsky",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/28054",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "34414",
+    "title": "Just—William",
+    "author": "Richmal Crompton",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/34414",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "131",
+    "title": "The Pilgrim's Progress from this world to that which is to come Delivered under the similitude of a dream, by John Bunyan",
+    "author": "John Bunyan",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/131",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "383",
+    "title": "She Stoops to Conquer; Or, The Mistakes of a Night: A Comedy",
+    "author": "Oliver Goldsmith",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/383",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "689",
+    "title": "The Kreutzer Sonata and Other Stories",
+    "author": "Leo graf Tolstoy",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/689",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "779",
+    "title": "The Tragical History of Doctor Faustus From the Quarto of 1604",
+    "author": "Christopher Marlowe",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/779",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1929",
+    "title": "The School for Scandal",
+    "author": "Richard Brinsley Sheridan",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1929",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "1945",
+    "title": "Egmont",
+    "author": "Johann Wolfgang von Goethe",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1945",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2027",
+    "title": "Tartuffe; Or, The Hypocrite",
+    "author": "Molière",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2027",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2062",
+    "title": "All for Love; Or, The World Well Lost: A Tragedy",
+    "author": "John Dryden",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2062",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2232",
+    "title": "The Duchess of Malfi",
+    "author": "John Webster",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2232",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2543",
+    "title": "Polyeucte",
+    "author": "Pierre Corneille",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2543",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2587",
+    "title": "Life Is a Dream",
+    "author": "Pedro Calderón de la Barca",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2587",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2590",
+    "title": "Guy Mannering",
+    "author": "Walter Scott",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2590",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2663",
+    "title": "Minna Von Barnhelm",
+    "author": "Gotthold Ephraim Lessing",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2663",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2782",
+    "title": "Wilhelm Tell",
+    "author": "Friedrich Schiller",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2782",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "2880",
+    "title": "A Blot in the 'Scutcheon",
+    "author": "Robert Browning",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2880",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "4081",
+    "title": "The Alchemist",
+    "author": "Ben Jonson",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4081",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "5355",
+    "title": "Guy Mannering, Or, the Astrologer — Complete",
+    "author": "Walter Scott",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/5355",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "memory-home",
+      "storycraft"
+    ]
+  },
+  {
+    "id": "5721",
+    "title": "A House of Gentlefolk",
+    "author": "Ivan Sergeevich Turgenev",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/5721",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "12058",
+    "title": "The Mahabharata of Krishna-Dwaipayana Vyasa Translated into English Prose Virata Parva",
+    "author": "Kisari Mohan Ganguli",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/12058",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore"
+    ]
+  },
+  {
+    "id": "12633",
+    "title": "A Happy Boy",
+    "author": "Bjørnstjerne Bjørnson",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/12633",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "12816",
+    "title": "The Devil's Pool",
+    "author": "George Sand",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/12816",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "15868",
+    "title": "The Man Without a Country, and Other Tales",
+    "author": "Edward Everett Hale",
+    "language": "en",
+    "genre": "Short stories",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/15868",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "19315",
+    "title": "The Poems of Giacomo Leopardi",
+    "author": "Giacomo Leopardi",
+    "language": "en",
+    "genre": "Poetry & verse",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/19315",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "poetry-sound"
+    ]
+  },
+  {
+    "id": "20288",
+    "title": "Edward the Second",
+    "author": "Christopher Marlowe",
+    "language": "en",
+    "genre": "Drama",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/20288",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "62",
+    "title": "A princess of Mars",
+    "author": "Edgar Rice Burroughs",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/62",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "1951",
+    "title": "The Coming Race",
+    "author": "Edward Bulwer Lytton Baron Lytton",
+    "language": "en",
+    "genre": "Speculative fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/1951",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "speculative",
+      "storycraft",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2484",
+    "title": "The Boys' and Girls' Plutarch Being Parts of the \"Lives\" of Plutarch, Edited for Boys and Girls",
+    "author": "Plutarch",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2484",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "life-writing"
+    ]
+  },
+  {
+    "id": "20916",
+    "title": "The Arabian Nights: Their Best-known Tales",
+    "author": "Kate Douglas Smith Wiggin",
+    "language": "en",
+    "genre": "Myth & folklore",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/20916",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "myth-folklore",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "3300",
+    "title": "An Inquiry into the Nature and Causes of the Wealth of Nations",
+    "author": "Adam Smith",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3300",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "storycraft"
+    ]
+  },
+  {
+    "id": "3600",
+    "title": "Essays of Michel de Montaigne — Complete",
+    "author": "Michel de Montaigne",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3600",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "59",
+    "title": "Discourse on the Method of Rightly Conducting One's Reason and of Seeking Truth in the Sciences",
+    "author": "René Descartes",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/59",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "148",
+    "title": "The Autobiography of Benjamin Franklin",
+    "author": "Benjamin Franklin",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/148",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "life-writing"
+    ]
+  },
+  {
+    "id": "274",
+    "title": "Disputation of Doctor Martin Luther on the Power and Efficacy of Indulgences",
+    "author": "Martin Luther",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/274",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "871",
+    "title": "The Golden Sayings of Epictetus, with the Hymn of Cleanthes",
+    "author": "Epictetus",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/871",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "944",
+    "title": "The Voyage of the Beagle",
+    "author": "Charles Darwin",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/944",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "2055",
+    "title": "Two Years Before the Mast",
+    "author": "Richard Henry Dana",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/2055",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "life-writing",
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "3207",
+    "title": "Leviathan",
+    "author": "Thomas Hobbes",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3207",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
+  },
+  {
+    "id": "3704",
+    "title": "Journal of Researches into the Natural History and Geology of the Countries Visited During the Voyage Round the World of H.M.S. Beagle Under the Command of Captain Fitz Roy, R.N.",
+    "author": "Charles Darwin",
+    "language": "en",
+    "genre": "Classic fiction",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/3704",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "nature-journey"
+    ]
+  },
+  {
+    "id": "4028",
+    "title": "The Autobiography of Benvenuto Cellini",
+    "author": "Benvenuto Cellini",
+    "language": "en",
+    "genre": "Memoir & biography",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4028",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "life-writing"
+    ]
+  },
+  {
+    "id": "4724",
+    "title": "Three Dialogues Between Hylas and Philonous in Opposition to Sceptics and Atheists",
+    "author": "George Berkeley",
+    "language": "en",
+    "genre": "Essays & philosophy",
+    "rights": "Free edition from Project Gutenberg; public-domain status is stated for the United States. Check local copyright before downloading.",
+    "external": "https://www.gutenberg.org/ebooks/4724",
+    "source": "Project Gutenberg",
+    "format": "epub",
+    "topics": [
+      "reflection"
+    ]
   }
 ]

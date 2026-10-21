@@ -133,7 +133,7 @@ test('private endpoint headers, binary data, and host style isolation', async ({
     await viewer.open(); const result = { pages: viewer.totalPages, originalBytes: data.byteLength, hiddenDownload: viewer.overlay.querySelector<HTMLElement>('a[download]').hidden };
     viewer.close(); return result;
   }, Array.from(pdfBytes(2)));
-  expect(result.pages).toBe(2); expect(result.originalBytes).toBeGreaterThan(0); expect(result.hiddenDownload).toBe(true);
+  expect(result.pages).toBe(2); expect(result.originalBytes).toBeGreaterThan(0); expect(result.hiddenDownload).toBe(false);
 });
 
 test('demo loads no PDF engine until opened and renders the real sample', async ({ page }) => {

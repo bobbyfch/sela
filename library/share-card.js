@@ -18,7 +18,7 @@ export async function capturePage(reader) {
     reader.removeEventListener("close", cancel);
   }
 }
-export async function createQuoteCard({ quote = "", metadata = {}, page = 1, palette = "white", pageImage = null }) {
+export async function createQuoteCard({ quote = "", metadata = {}, page = 1, palette = "white", pageImage = null } = {}) {
   const paletteDefinition = getPaletteDefinition(palette), colors = ["#fff", paletteDefinition.soft, paletteDefinition.accent];
   const canvas = document.createElement("canvas");
   canvas.width = 1080;

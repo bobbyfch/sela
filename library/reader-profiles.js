@@ -4,6 +4,7 @@ const builtins = [
   ["novel", "Novel", "Novel", "A calm, comfortable page", "Halaman tenang dan nyaman", { mode: "single", fit: "page", filter: "none", brightness: 1, dim: false, fontFamily: "serif", fontSize: 20, lineHeight: 1.8, textMargin: 24, textAlign: "start", paperTexture: true, lowPower: false, cropMargin: 0 }],
   ["manga", "Manga", "Manga", "Right-to-left page turns", "Balik halaman kanan ke kiri", { mode: "manga", fit: "page", filter: "none", brightness: 1, dim: false, paperTexture: false, lowPower: false, cropMargin: 0 }],
   ["academic", "Study", "Kajian", "Wide, focused reading", "Bacaan lebar dan fokus", { mode: "single", fit: "width", filter: "none", brightness: 1, dim: false, fontFamily: "sans", fontSize: 18, lineHeight: 1.6, textMargin: 20, textAlign: "start", paperTexture: false, lowPower: false, cropMargin: 0 }],
+  ["accessible", "OpenDyslexic", "OpenDyslexic", "OpenDyslexic font with roomier line spacing", "Font OpenDyslexic dengan jarak baris lebih lapang", { mode: "single", fit: "page", filter: "none", brightness: 1, dim: false, fontFamily: "opendyslexic", fontSize: 20, lineHeight: 2, textMargin: 28, textAlign: "start", paperTexture: false, lowPower: false, cropMargin: 0 }],
   ["night", "Night", "Malam", "Dimmer, warmer pages", "Halaman lebih redup dan hangat", { mode: "single", fit: "page", filter: "lowblue", brightness: 0.65, dim: true, fontFamily: "serif", fontSize: 21, lineHeight: 1.9, textMargin: 24, paperTexture: false, lowPower: true, cropMargin: 0 }]
 ];
 export function validateProfiles(value) {
@@ -130,7 +131,7 @@ export function mountReaderProfiles(parent, state, { t, onApplied = () => {
       const icon = document.createElement("span");
       icon.className = "tw:grid tw:size-6 tw:place-items-center tw:rounded-lg tw:bg-sela-accent/10 tw:text-sela-accent";
       icon.setAttribute("aria-hidden", "true");
-      icon.textContent = option.key === "manga" ? "\u25A4" : option.key === "academic" ? "\u2261" : option.key === "night" ? "\u263E" : option.key.startsWith("custom:") ? "\u2726" : "\u25AF";
+      icon.textContent = option.key === "manga" ? "\u25A4" : option.key === "academic" ? "\u2261" : option.key === "accessible" ? "Aa" : option.key === "night" ? "\u263E" : option.key.startsWith("custom:") ? "\u2726" : "\u25AF";
       button.append(icon);
       const title = document.createElement("span");
       title.className = "tw:max-w-full tw:truncate tw:text-xs tw:font-semibold tw:text-sela-ink";

@@ -14,7 +14,12 @@ export async function extractArchiveAsync(bytes: Uint8Array, signal?: AbortSigna
     return decodeArchive(bytes, backup);
   }
   return new Promise((resolve, reject) => {
-    const workerUrl = new URL(/* @vite-ignore */ './sela.archive-worker.js', import.meta.url);
+    const moduleUrl = new URL(import.meta.url);
+    const workerUrl = moduleUrl.pathname.includes('/dist/source/src/')
+      ? new URL('../../js/sela.archive-worker.js', moduleUrl)
+      : moduleUrl.pathname.includes('/dist/js/')
+        ? new URL('./sela.archive-worker.js', moduleUrl)
+      : new URL('../dist/js/sela.archive-worker.js', moduleUrl);
     const crossOrigin = globalThis.location && workerUrl.origin !== globalThis.location.origin;
     const wrapper = crossOrigin ? URL.createObjectURL(new Blob([`import ${JSON.stringify(workerUrl.href)};`], { type: 'text/javascript' })) : undefined;
     let worker: Worker;

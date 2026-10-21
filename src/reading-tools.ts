@@ -2,15 +2,9 @@
 import { FILTER_LABELS, brightness } from './appearance.ts';
 import { storePreferences, readStored } from './preferences.ts';
 import {decorateHighlights} from './highlights.ts';
+import { pageText } from './page-text.ts';
 let toolsCount=0;
-export async function pageText(book, page) {
-  if (book.getText) return (await book.getText(page)).slice(0, 1000000);
-  if (!book.pdf?.getPage) return '';
-  const pdfPage = await book.pdf.getPage(page);
-  if (!pdfPage.getTextContent) return '';
-  const content = await pdfPage.getTextContent();
-  return content.items.map(item => (item.str || '') + (item.hasEOL ? '\n' : ' ')).join('').slice(0, 1000000);
-}
+export { pageText } from './page-text.ts';
 
 export function speechChunks(text) {
   const chunks = [];
@@ -147,7 +141,7 @@ export function mountTools(state, host) {
   const powerLabel=element('label');const power=element('input',null,powerLabel);power.type='checkbox';power.checked=!!options.lowPower;powerLabel.append(document.createTextNode(label(' Low power · fewer effects, lower resolution',' Hemat daya · kurangi efek dan resolusi')));power.onchange=()=>state.setPreferences({lowPower:power.checked});
   if(!book.getText){const cropLabel=element('label',label('Crop page margins','Pangkas margin halaman'));const crop=element('input',null,cropLabel);crop.type='range';crop.min='0';crop.max='15';crop.value=options.cropMargin||0;crop.setAttribute('aria-label',label('Crop page margins','Pangkas margin halaman'));const amount=element('output',crop.value+'%',cropLabel);crop.oninput=()=>{amount.textContent=crop.value+'%';state.setPreferences({cropMargin:+crop.value});};}
   else {
-    for(const [key,en,indo,items] of [['fontFamily','Text font','Font teks',[['serif','Serif'],['sans','Sans serif'],['mono','Monospace']]],['textAlign','Text alignment','Perataan teks',[['start',label('Left / start','Kiri / awal')],['justify',label('Justified','Rata kanan-kiri')]]]] as [string,string,string,[string,string][]][]){const l=element('label',label(en,indo));const select=element('select',null,l);select.setAttribute('aria-label',label(en,indo));items.forEach(([value,title])=>{const opt=element('option',title,select);opt.value=value;});select.value=options[key]||(key==='fontFamily'?'serif':'start');select.onchange=()=>state.setPreferences({[key]:select.value});}
+    for(const [key,en,indo,items] of [['fontFamily','Text font','Font teks',[['serif','Serif'],['sans','Sans serif'],['mono','Monospace'],['opendyslexic','OpenDyslexic']]],['textAlign','Text alignment','Perataan teks',[['start',label('Left / start','Kiri / awal')],['justify',label('Justified','Rata kanan-kiri')]]]] as [string,string,string,[string,string][]][]){const l=element('label',label(en,indo));const select=element('select',null,l);select.setAttribute('aria-label',label(en,indo));items.forEach(([value,title])=>{const opt=element('option',title,select);opt.value=value;});select.value=options[key]||(key==='fontFamily'?'serif':'start');select.onchange=()=>state.setPreferences({[key]:select.value});}
     for(const [key,en,indo,min,max,step,defaultValue] of [['fontSize','Text size','Ukuran teks',12,36,1,19],['lineHeight','Line spacing','Spasi baris',1.2,2.4,.1,1.8],['textMargin','Text margins','Margin teks',0,64,2,28]]){const l=element('label',label(en,indo));const input=element('input',null,l);input.type='range';Object.assign(input,{min,max,step,value:options[key]??defaultValue});input.setAttribute('aria-label',label(en,indo));const output=element('output',String(input.value),l);input.oninput=()=>{output.textContent=input.value;state.setPreferences({[key]:+input.value});};}
   }
   element('p',label('Filters change the displayed page only. Brightness is a visual adjustment, not a device setting or medical color correction.','Filter hanya mengubah tampilan halaman. Kecerahan ini bukan pengaturan perangkat atau koreksi warna medis.'));

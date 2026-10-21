@@ -1,5 +1,6 @@
 // Generated from app/library/reader-shell.ts by npm run build. Do not edit.
 import { animatePanel, controlIcon, notify } from "./controls.js";
+import { isReflowableBookFormat } from "./reader-modes.js";
 import { openDictionary } from "./dictionary.js";
 import { mountAudio } from "./audio.js";
 import { mountPalettes, applyPalette, getPaletteDefinition } from "./themes.js";
@@ -317,7 +318,7 @@ export function configureLibraryReader(reader, { mobile, viewer = false, languag
   const dictionaryEvent = (e) => openDictionary(String(e.detail || ""), t);
   overlay.addEventListener("sela:dictionary", dictionaryEvent);
   const finishPanels = [drawer, infoPanel, sharePanel.panel, controls.previews, tools].map(animatePanel);
-  const textBook = !!reader.book.getText;
+  const textBook = isReflowableBookFormat(state.options.format);
   const previews = controls.previews;
   const previewTop = el("div", "app-drawer-heading");
   previews.prepend(previewTop);

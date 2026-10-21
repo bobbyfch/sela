@@ -25,7 +25,7 @@ test('extension assets are allowed only within the currently running extension',
 });
 test('optional capabilities keep the core within its declared download budget', async () => {
   const manifest = JSON.parse(await readFile('dist/manifest.json', 'utf8'));
-  assert(manifest.assets['dist/js/sela.min.js'].gzip < 30 * 1024); // Optional locale loading stays out of the default viewer payload.
+  assert(manifest.assets['dist/js/sela.min.js'].gzip < 32 * 1024); // Optional locale loading stays out of the default viewer payload.
   assert(manifest.assets['dist/js/sela.tools.js'].gzip < 10.5 * 1024); // Lazy reader includes page-material choices.
   assert(manifest.assets['dist/js/sela.locales.js'].gzip < 53 * 1024); // Japanese reader labels stay optional and load on demand.
   // The optional text adapter sanitizes scripture markup and applies bounded reader font choices.

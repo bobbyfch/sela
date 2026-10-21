@@ -53,7 +53,7 @@ test('site language/theme persistence, responsive layout and metadata', async ({
   await page.locator('#language').selectOption('id-ID');
   await expect(page.locator('#language')).toHaveValue('id-ID');
   await expect(page.locator('html')).toHaveAttribute('lang', 'id-ID');
-  await expect(page.locator('h1')).toContainText('Buku-bukumu');
+  await expect(page.locator('h1')).toHaveText('Lebih banyak ruang untuk membaca.');
   await page.locator('[data-theme-choice=dark]').click();
   await page.reload();
   await expect(page.locator('#language')).toHaveValue('id-ID');

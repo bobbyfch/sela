@@ -10,19 +10,51 @@ async function json(url, signal) {
   if (!response.ok) throw Error(response.status === 403 || response.status === 429 ? "Catalog limit reached. Try later." : "Catalog unavailable (" + response.status + ").");
   const data = await response.json();
   if (data.error) throw Error(data.error.info || "Catalog unavailable");
-  if (cache.size > 40) cache.delete(cache.keys().next().value);
+  if (cache.size > 40) {
+    const oldest = cache.keys().next().value;
+    if (oldest) cache.delete(oldest);
+  }
   cache.set(url, { time: Date.now(), data });
   return data;
 }
+function gutenbergIdFromUrl(value) {
+  try {
+    const url = new URL(value || "");
+    if (url.protocol !== "https:" || url.hostname !== "www.gutenberg.org") return void 0;
+    return url.pathname.match(/^\/ebooks\/(\d+)(?:\.html)?\/?$/)?.[1];
+  } catch {
+    return void 0;
+  }
+}
+async function acquireGutenbergBook(book, signal) {
+  const id = gutenbergIdFromUrl(book.external);
+  if (!id) throw Error("This Project Gutenberg record is not valid.");
+  const metadata = await json(`https://gutendex.com/books/${id}`, signal), formats = metadata.formats;
+  if (!formats || typeof formats !== "object" || Array.isArray(formats)) throw Error("No downloadable text formats are listed for this edition.");
+  const entries = Object.entries(formats).filter((entry) => typeof entry[1] === "string");
+  const choices = ["application/epub+zip", "text/html; charset=utf-8", "text/html", "text/plain; charset=utf-8", "text/plain"];
+  const selected = choices.map((type) => entries.find(([mime2]) => mime2.toLowerCase() === type)).find(Boolean);
+  if (!selected) throw Error("No EPUB, HTML, or plain-text edition is available for this book.");
+  const [mime, url] = selected;
+  let target;
+  try {
+    target = new URL(url);
+  } catch {
+    throw Error("The listed download address is invalid.");
+  }
+  if (target.protocol !== "https:" || !/(^|\.)gutenberg\.org$/i.test(target.hostname)) throw Error("The listed download address is not a Project Gutenberg file.");
+  const extension = mime.includes("epub") ? "epub" : mime.includes("html") ? "html" : "txt";
+  return fetchFile(target.href, book.title + "." + extension, { signal });
+}
 const wiki = (params, signal) => json("https://id.wikisource.org/w/api.php?" + new URLSearchParams({ format: "json", origin: "*", ...params }), signal);
-export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, category = "", collection = "", signal } = {}) {
+export async function searchBooks({ source = "gitenberg", query = "", page = 1, continuation, category = "", collection = "", signal } = { source: "gitenberg" }) {
   if (!["wikisource", "gitenberg"].includes(source)) return externalBooks({ source, query, page, category, collection, signal });
   if (source === "wikisource") {
     const categories = { fiction: "Kategori:Novel", poetry: "Kategori:Puisi", "short-stories": "Kategori:Cerita pendek" };
     const browseCategory = categories[category];
     const data2 = await wiki(browseCategory ? { action: "query", list: "categorymembers", cmtitle: browseCategory, cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} } : query ? { action: "query", list: "search", srnamespace: "0", srsearch: query, srlimit: "24", sroffset: String((page - 1) * 24) } : { action: "query", list: "categorymembers", cmtitle: "Kategori:Novel", cmnamespace: "0", cmlimit: "24", ...continuation ? { cmcontinue: continuation } : {} }, signal);
     const rows = (data2.query?.search || data2.query?.categorymembers || []).filter((b) => !query || String(b.title || "").toLocaleLowerCase().includes(query.toLocaleLowerCase()));
-    return { books: rows.map((b) => ({ id: "ws-" + b.pageid, title: b.title, source, author: "", language: "id", genre: browseCategory?.replace("Kategori:", "") || "Wikisumber", rights: "Original work: see source. Wikisource contributions: CC BY-SA.", pageid: b.pageid })), next: browseCategory ? !!data2.continue?.cmcontinue : query ? data2.continue?.sroffset != null : data2.continue?.cmcontinue != null, continuation: data2.continue?.cmcontinue, total: data2.query?.searchinfo?.totalhits };
+    return { books: rows.map((b) => ({ id: "ws-" + b.pageid, title: String(b.title || ""), source, author: "", language: "id", genre: browseCategory?.replace("Kategori:", "") || "Wikisumber", rights: "Original work: see source. Wikisource contributions: CC BY-SA.", pageid: Number(b.pageid) })), next: browseCategory ? !!data2.continue?.cmcontinue : query ? data2.continue?.sroffset != null : data2.continue?.cmcontinue != null, continuation: data2.continue?.cmcontinue, total: data2.query?.searchinfo?.totalhits };
   }
   const q = (query.replace(/[:<>]/g, " ").slice(0, 100) + " user:GITenberg").trim();
   const data = await json("https://api.github.com/search/repositories?" + new URLSearchParams({ q, per_page: "24", page: String(page) }), signal);
@@ -33,11 +65,19 @@ export async function searchBooks({ source = "gitenberg", query = "", page = 1, 
   }), next: page * 24 < Math.min(data.total_count || 0, 1e3), total: data.total_count };
 }
 export async function acquireBook(book, { signal } = {}) {
-  if (book.source?.startsWith("wiki-")) return externalWikiFile(book, signal);
+  if (book.source.startsWith("wiki-")) {
+    if (typeof book.pageid !== "number") throw Error("Invalid book identifier.");
+    return externalWikiFile({ source: book.source, title: book.title, pageid: book.pageid }, signal);
+  }
   if (book.url) return fetchFile(book.url, book.title + "." + (book.format || "txt"), { signal });
-  if (book.source === "wikisource") return acquireWiki(book, signal);
-  if (!/^[\w.-]+$/.test(book.repo)) throw Error("Invalid book identifier.");
-  const files = await json(`https://api.github.com/repos/GITenberg/${encodeURIComponent(book.repo)}/contents/`, signal);
+  if (gutenbergIdFromUrl(book.external)) return acquireGutenbergBook(book, signal);
+  if (book.source === "wikisource") {
+    if (typeof book.pageid !== "number") throw Error("Invalid book identifier.");
+    return acquireWiki(book, signal);
+  }
+  const repo = book.repo;
+  if (typeof repo !== "string" || !/^[\w.-]+$/.test(repo)) throw Error("Invalid book identifier.");
+  const files = await json(`https://api.github.com/repos/GITenberg/${encodeURIComponent(repo)}/contents/`, signal);
   const file = Array.isArray(files) && files.find((f) => f.type === "file" && /\.txt$/i.test(f.name) && !/^readme|license/i.test(f.name));
   if (!file || !file.download_url || new URL(file.download_url).hostname !== "raw.githubusercontent.com") throw Error("This edition has no readable text file.");
   return fetchFile(file.download_url, book.title + ".txt", { signal });

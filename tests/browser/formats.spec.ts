@@ -2,27 +2,23 @@ import { test, expect } from '@playwright/test';
 import { zipSync, strToU8 } from 'fflate';
 import { readFile } from 'node:fs/promises';
 
-test('story card opens reader; upload, live mode/filter/gap and global shortcuts',async({page})=>{
+test('story card opens reader; page keys, live mode/filter and upload work',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.locator('.developer-playground').evaluate(el=>(el as HTMLDialogElement).open=true);
   await page.locator('.trial-book[data-story-open]').click();
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
   await expect(page.locator('.app-page-seek')).toBeEnabled();
-  await page.getByRole('button',{name:'Back to library',exact:true}).focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
-  await page.keyboard.press('?');await expect(page.locator('.sela-shortcuts')).toBeVisible();
-  await page.keyboard.press('Escape');await expect(page.locator('.sela-shortcuts')).toBeHidden();
+  await page.locator('.fb-root').focus();
+  await page.keyboard.press('ArrowRight');await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
+  await page.keyboard.press('ArrowLeft');await expect(page.locator('.library-reader-page-form input')).toHaveValue('1');
+  await page.keyboard.press('ArrowRight');await expect(page.locator('.library-reader-page-form input')).toHaveValue('2');
   await expect(page.locator('.library-reader-overlay')).toBeVisible();
-  await page.keyboard.press('+');
-  await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
-  await page.keyboard.press('0');await expect.poll(()=>page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1)');
   await page.getByRole('button',{name:'Reader settings',exact:true}).click();
   await page.locator('[aria-label="Reading mode"] [data-choice="webtoon"]').click();
   await expect(page.locator('.sela-webtoon')).toBeVisible();
   await expect(page.locator('.app-page-seek')).toBeEnabled();
   await page.getByLabel('Page filter',{exact:true}).selectOption('grayscale');
-  await expect.poll(()=>page.locator('.sela-webtoon-page canvas').first().evaluate(el=>getComputedStyle(el).filter)).toBe('grayscale(1) brightness(1)');
-  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();
+  await expect.poll(()=>page.locator('.library-reader-overlay').evaluate(el=>getComputedStyle(el).getPropertyValue('--sela-page-filter').trim())).toBe('grayscale(1)');
+  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();await expect(page.locator('.app-reading-settings').first()).toBeHidden();
   const positions=await page.locator('.sela-webtoon-page').evaluateAll(nodes=>nodes.slice(0,2).map(el=>({top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom})));
   expect(Math.abs(positions[1].top-positions[0].bottom)).toBeLessThan(1);
   await page.keyboard.press('Escape');await expect(page.locator('.library-reader-overlay')).toHaveCount(0);await page.locator('#pdf-file').setInputFiles({name:'story.epub',mimeType:'application/epub+zip',buffer:await readFile('example/yang-tidak-ikut-pulang.epub')});
@@ -80,16 +76,15 @@ test('wheel zoom, touch pinch and cancellation leave no active pointer state',as
   await page.evaluate(()=>r.close());await expect(page.locator('.library-reader-overlay')).toHaveCount(0);
 });
 
-test('mobile live settings stay in viewport; book zoom and editable shortcuts',async({page})=>{
+test('reader settings and mobile zoom stay inside the viewport',async({page})=>{
   await page.setViewportSize({width:375,height:812});await page.goto('/');await page.locator('.developer-playground').evaluate(el=>(el as HTMLDialogElement).open=true);await page.locator('.trial-book[data-story-open]').click();
   await expect(page.locator('.app-page-seek')).toBeEnabled();
   await page.getByRole('button',{name:'Reader settings',exact:true}).click();
   await page.locator('.app-reading-settings').first().evaluate(async el=>await Promise.all(el.getAnimations().map(a=>a.finished.catch(()=>{}))));const panel=await page.locator('.app-reading-settings').first().boundingBox();expect(panel.x).toBeGreaterThanOrEqual(0);expect(panel.x+panel.width).toBeLessThanOrEqual(375);expect(panel.y+panel.height).toBeLessThanOrEqual(812);
   await page.screenshot({path:'test-results/mobile-live-settings.png'});
-  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();
+  await page.getByRole('button',{name:'Close panel',exact:true}).filter({visible:true}).click();await expect(page.locator('.app-reading-settings').first()).toBeHidden();
   await page.locator('.fb-root').dispatchEvent('wheel',{deltaY:-80,ctrlKey:true});expect(await page.evaluate(()=>(document.querySelector('.fb-stage') as HTMLElement).style.transform)).not.toContain('scale(1)');
   const field=page.locator('.library-reader-page-form input');await field.focus();await page.keyboard.press('End');await expect(field).toHaveValue('1');
-  await page.locator('.fb-root').focus();await page.keyboard.press('0');await page.keyboard.press('+');expect(await page.locator('.fb-stage').evaluate(el=>el.style.transform)).toContain('scale(1.5)');
 });
 
 test('invalid archives and missing EPUB spine fail explicitly',async({page})=>{

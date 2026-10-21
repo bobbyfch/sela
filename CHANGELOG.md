@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0-beta.8 — Sela Books rebuild (2026-10-21)
+
+- Rebuild the public site and `/app` around a shared responsive design system; remove the obsolete `/mobile` app and align the Pages packaging workflow with the new routes.
+- Rework the reading app's Home, shelf, discovery, reader and Settings flows while retaining the existing library, reading, prayer and Islamic reading features.
+- Add 195 optional Project Gutenberg classics to Sela picks, for 227 curated records total, with live local category counts and on-demand book downloads.
+- Add typographic cover fallbacks for missing or broken artwork on the immersive 3D shelf, and refine its view controls with centered glass-treated icon buttons.
+- Refresh book branding, themes, icons, typography, public-page artwork and responsive screenshots; validate core browser flows across Chromium, Firefox and WebKit.
+
 ## 0.9.0-beta.7 — Settings and visual polish (2026-10-18)
 
 - Keep full-page Settings category names, descriptions, and accessible labels in sync when the app language changes.

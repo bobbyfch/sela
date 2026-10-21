@@ -1,13 +1,13 @@
 /** Local personal data is separate from original files and existing reading keys. */
 export interface PersonalData {
- version:1; room:string; companion:'fox'|'tanuki'|'crane'|'rabbit'|'plant'; faith:'none'|'islam'|'protestantism'|'catholicism'|'buddhism'|'hinduism'|'confucianism'; quiet:boolean;
+ version:1; room:string; companion:'fox'|'tanuki'|'crane'|'rabbit'|'plant'; faith:'none'|'islam'|'protestantism'|'catholicism'|'buddhism'|'hinduism'|'confucianism'; gender:'unspecified'|'woman'|'man'|'nonbinary'|'another'; quiet:boolean;
  hidden:string[]; queue:string[]; books:Record<string,{later?:string;review?:string;quote?:string;volume?:number;marks?:Record<string,string>;copies?:{page:number;text:string;at:number}[]}>;
  racks:{name:string;rule:string;description?:string;badge?:string}[];
  sessions:{book:string;at:number;seconds:number}[];
  quoteTopic:string; quoteLanguage:string; weeklyTarget?:number; quranTranslationKey?:string; quranLanguage?:'id'|'en'|'ja'; quranSurah?:number; quranVerse?:number; quranArabicSize?:number; quranTranslationSize?:number;
 }
 export const PERSONAL_KEY='sela-library:personal';
-export function emptyPersonal():PersonalData{return {version:1,room:'',companion:'tanuki',faith:'none',quiet:false,hidden:[],queue:[],books:{},racks:[],sessions:[],quoteTopic:'reading',quoteLanguage:'auto',quranTranslationKey:'',quranSurah:1,quranVerse:1,quranArabicSize:32,quranTranslationSize:18};}
+export function emptyPersonal():PersonalData{return {version:1,room:'',companion:'tanuki',faith:'none',gender:'unspecified',quiet:false,hidden:[],queue:[],books:{},racks:[],sessions:[],quoteTopic:'reading',quoteLanguage:'auto',quranTranslationKey:'',quranSurah:1,quranVerse:1,quranArabicSize:32,quranTranslationSize:18};}
 export function validatePersonal(value:unknown):PersonalData {
  const result=emptyPersonal();if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Invalid personal data');
  const data=value as Record<string,any>;if(data.version!==1)throw Error('Unsupported personal data version');
@@ -22,6 +22,7 @@ export function validatePersonal(value:unknown):PersonalData {
  const companions:Record<string,PersonalData['companion']>={fox:'fox',tanuki:'tanuki',crane:'crane',rabbit:'rabbit',plant:'plant',cat:'tanuki',hamster:'tanuki',owl:'crane',turtle:'tanuki','red-panda':'tanuki',penguin:'crane',shiba:'tanuki',fawn:'rabbit'};
  if(typeof data.companion==='string'&&companions[data.companion])result.companion=companions[data.companion];
  const faithAliases:Record<string,PersonalData['faith']>={none:'none',islam:'islam',christianity:'protestantism',protestantism:'protestantism',catholicism:'catholicism',buddhism:'buddhism',hinduism:'hinduism',confucianism:'confucianism'};if(typeof data.faith==='string'&&faithAliases[data.faith])result.faith=faithAliases[data.faith];
+ if(['unspecified','woman','man','nonbinary','another'].includes(data.gender))result.gender=data.gender;
  result.quiet=data.quiet===true;if(Number.isFinite(data.weeklyTarget)&&data.weeklyTarget>=0&&data.weeklyTarget<=6000)result.weeklyTarget=Math.round(data.weeklyTarget);
  result.hidden=Array.isArray(data.hidden)?data.hidden.filter(x=>['quote','timer','rediscover'].includes(x)).slice(0,10):[];
  result.queue=Array.isArray(data.queue)?[...new Set<string>(data.queue.filter(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x)))].slice(0,100):[];
@@ -40,4 +41,4 @@ export function validatePersonal(value:unknown):PersonalData {
 export function readPersonal():PersonalData{try{return validatePersonal(JSON.parse(localStorage.getItem(PERSONAL_KEY)||'null'));}catch{return emptyPersonal();}}
 export function savePersonal(data:PersonalData){const valid=validatePersonal(data);localStorage.setItem(PERSONAL_KEY,JSON.stringify(valid));document.dispatchEvent(new Event('sela:personal'));return valid;}
 export function editPersonal(change:(data:PersonalData)=>void){const data=readPersonal();change(data);return savePersonal(data);}
-export function matchesRack(book:Record<string,any>,rule:string){const [key,...rest]=rule.split(':');const value=rest.join(':').toLowerCase();switch(key){case 'unread':return !book.opened&&!book.completed;case 'reading':return !!book.opened&&!book.completed;case 'finished':return !!book.completed;case 'favorite':return !!book.favorite;case 'recent':return !!book.opened&&Date.now()-book.opened<Number(value)*86400000;case 'collection':return (book.tags||[]).includes(rest.join(':'));case 'format':return book.format===value;case 'language':return String(book.metadata?.language||'').toLowerCase().startsWith(value);case 'series':return String(book.metadata?.series||'').toLowerCase()===value;default:return false;}}
+export function matchesRack(book:Record<string,any>,rule:string){const [key,...rest]=rule.split(':');const value=rest.join(':').toLowerCase();switch(key){case 'unread':return !book.opened&&!book.completed&&!book.didNotFinish;case 'reading':return !!book.opened&&!book.completed&&!book.didNotFinish;case 'finished':return !!book.completed;case 'didNotFinish':return !!book.didNotFinish;case 'favorite':return !!book.favorite;case 'recent':return !!book.opened&&Date.now()-book.opened<Number(value)*86400000;case 'collection':return (book.tags||[]).includes(rest.join(':'));case 'format':return book.format===value;case 'language':return String(book.metadata?.language||'').toLowerCase().startsWith(value);case 'series':return String(book.metadata?.series||'').toLowerCase()===value;default:return false;}}

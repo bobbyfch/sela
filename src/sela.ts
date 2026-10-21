@@ -86,7 +86,9 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
     setTheme(theme: NonNullable<SelaOptions['theme']>) {
       if (!['auto','light','dark'].includes(theme)) throw new TypeError('Unknown theme');
       this.options.theme = theme;
+      const state = this._reader?.getState();
       if (this.overlay) this.overlay.dataset.selaTheme = theme;
+      state?.setAppearance?.({});
       return this;
     }
 
@@ -166,7 +168,7 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
               options.djvujsSrc = safeUrl(options.djvujsSrc, win.location.href);
               return module.loadDjvu(options);
             }),
-          options.ui==='app'?Promise.all([import(/* webpackIgnore: true */ /* @vite-ignore */ new URL('js/sela.app.js',base).href),options.autoStyles===false?Promise.resolve():loadCss(safeUrl(new URL('css/sela.app.css',base),win.location.href),win.document)]).then(([module])=>module):Promise.resolve(null)
+          options.ui==='app'?Promise.all([options.headless?Promise.resolve(null):import(/* webpackIgnore: true */ /* @vite-ignore */ new URL('js/sela.app.js',base).href),options.autoStyles===false?Promise.resolve():loadCss(safeUrl(new URL('css/sela.app.css',base),win.location.href),win.document)]).then(([module])=>module):Promise.resolve(null)
         ]);
         if (generation !== this._generation) throw abortError();
         options.pdfjsLib = lib;
@@ -180,7 +182,7 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
           this._rejectReady = reject;
           options.onReady = () => {
             this._rejectReady = null;
-            try{if(appUI)appUI.configureLibraryReader(this,{mobile:true,viewer:!options.appContext,language:options.language||'id'});}catch(error){reject(error);return;}
+            try{if(appUI&&!options.headless)appUI.configureLibraryReader(this,{mobile:true,viewer:!options.appContext,language:options.language||'id'});}catch(error){reject(error);return;}
             this._event('ready', { pages: this.book?.numPages || 0 });
             this._event('documentLoaded', { pages: this.totalPages, format: options.format });
             resolve(this);
@@ -232,6 +234,7 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
     zoomOut() { this.book?.zoomOut(); return this; }
     setZoom(value) { this.book?.setZoom(value); return this; }
     get zoom() { return this.book?.zoom || 1; }
+    get soundEnabled() { return this._reader?.getState()?.sound ?? this.options.soundEnabled; }
     setMode(mode: SelaMode) {
       if (!MODES.includes(mode)) return Promise.reject(new TypeError('Unknown reading mode'));
       const state = this._reader?.getState();
@@ -250,7 +253,18 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
     }
     back() { this._reader?.getState()?.back(); return this; }
     showTools() { return this._reader?.getState()?.showTools?.() || Promise.reject(new Error('Open the reader first')); }
+    showPreviews() { this._reader?.getState()?.showPreviews?.(); return this; }
+    downloadOriginal() { this._reader?.getState()?.downloadOriginal?.(); return this; }
     getText(page = this.currentPage()) { return this._reader?.getState()?.getText?.(page) || Promise.resolve(''); }
+    getPageThumbnail(page: number, maxWidth = 180) { return this._reader?.getState()?.getPageThumbnail?.(page, maxWidth) || Promise.resolve(null); }
+    getContents() { return this._reader?.getState()?.getContents?.() || Promise.resolve([]); }
+    goToContent(item) { this._reader?.getState()?.goToContent?.(item); return this; }
+    getBookmarks() { return this._reader?.getState()?.getBookmarks?.() || []; }
+    toggleBookmark(page = this.currentPage()) { return this._reader?.getState()?.toggleBookmark?.(page) || []; }
+    setBookmarks(pages) { return this._reader?.getState()?.setBookmarks?.(pages) || []; }
+    getAnnotations() { return this._reader?.getState()?.getAnnotations?.() || { notes: {}, highlights: {} }; }
+    setNote(page, note) { return this._reader?.getState()?.setNote?.(page, note) || { notes: {}, highlights: {} }; }
+    setHighlights(page, quotes) { return this._reader?.getState()?.setHighlights?.(page, quotes) || { notes: {}, highlights: {} }; }
     async getMetadata() {
       const base=new URL(this.options.assetBase||defaultAssetBase,window.location.href);if(!base.pathname.endsWith('/'))base.pathname+='/';
       const module=await import(/* webpackIgnore: true */ /* @vite-ignore */ new URL('js/sela.metadata.js',base).href);
@@ -275,6 +289,11 @@ export function createSelaClass(defaultAssetBase: string): typeof import('./publ
     setDim(value) {
       this.options.dim=!!value;const state=this._reader?.getState();
       if(state){state.options.dim=!!value;applyAppearance(this.overlay,state.options);}
+      return this;
+    }
+    setSoundEnabled(value: boolean) {
+      this.options.soundEnabled = !!value;
+      this._reader?.getState()?.setSoundEnabled?.(value);
       return this;
     }
     close() {

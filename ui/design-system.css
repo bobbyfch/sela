@@ -1,11 +1,14 @@
+/* Hallmark · shared editorial tokens for Sela surfaces. */
+@import "../tokens.css";
+
 /*
  * Sela Design System
  * Shared foundations for the app shell, app reader, hosted viewer, and public site.
  * Product themes provide semantic colors; components consume the tokens below.
  */
 :root {
-  --sela-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --sela-font-editorial: Georgia, "Times New Roman", serif;
+  --sela-font-sans: var(--font-body);
+  --sela-font-editorial: var(--font-display);
 
   --sela-control-height-xs: 2rem;
   --sela-control-height-sm: 2.25rem;
@@ -13,22 +16,22 @@
   --sela-control-height-lg: 2.75rem;
 
   --sela-radius-control-xs: 0.5rem;
-  --sela-radius-control: 0.75rem;
-  --sela-radius-popover: 1rem;
-  --sela-radius-surface: 1.25rem;
-  --sela-radius-dialog: 1.5rem;
-  --sela-radius-pill: 9999px;
+  --sela-radius-control: var(--radius-input);
+  --sela-radius-popover: var(--radius-card);
+  --sela-radius-surface: var(--radius-card);
+  --sela-radius-dialog: var(--space-md);
+  --sela-radius-pill: var(--radius-pill);
 
-  --sela-shadow-control: 0 1px 2px rgb(32 38 52 / 8%);
-  --sela-shadow-card: 0 8px 24px rgb(32 38 52 / 6%);
-  --sela-shadow-popover: 0 12px 32px rgb(10 18 32 / 14%);
-  --sela-shadow-overlay: 0 24px 80px rgb(10 18 32 / 20%);
+  --sela-shadow-control: var(--shadow-card);
+  --sela-shadow-card: var(--shadow-card);
+  --sela-shadow-popover: 0 12px 32px color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --sela-shadow-overlay: 0 24px 80px color-mix(in srgb, var(--color-ink) 20%, transparent);
 
-  --sela-motion-ease: cubic-bezier(0.2, 0, 0, 1);
-  --sela-motion-fast: 140ms;
-  --sela-motion-normal: 200ms;
-  --sela-overlay-backdrop: color-mix(in srgb, var(--fg, #202634) 48%, transparent);
-  --sela-overlay-blur: 8px;
+  --sela-motion-ease: var(--ease-out);
+  --sela-motion-fast: var(--dur-micro);
+  --sela-motion-normal: var(--dur-short);
+  --sela-overlay-backdrop: color-mix(in srgb, var(--color-ink) 48%, transparent);
+  --sela-overlay-blur: 0px;
 }
 
 @theme {
@@ -73,39 +76,39 @@
   --duration-fast: var(--sela-motion-fast);
   --duration-normal: var(--sela-motion-normal);
 
-  --color-sela-pink: #e98fac;
-  --color-sela-sky: #72bdd5;
-  --color-sela-mint: #8ac6a7;
-  --color-sela-violet: #6558df;
-  --color-sela-lemon: #e8ba4f;
+  --color-sela-pink: oklch(77.4% 0.0147 88.7);
+  --color-sela-sky: oklch(73.0% 0.0085 106.6);
+  --color-sela-mint: oklch(76.9% 0.0114 95.2);
+  --color-sela-violet: oklch(67.6% 0.0118 95.2);
+  --color-sela-lemon: oklch(79.6% 0.0205 87.5);
 }
 
 @theme inline {
-  --color-sela-canvas: var(--bg, #f7f9fc);
-  --color-sela-surface: var(--panel, var(--card, #fff));
-  --color-sela-ink: var(--fg, #202634);
-  --color-sela-muted: var(--muted, #6c7687);
-  --color-sela-line: var(--line, #e7ebf2);
-  --color-sela-accent: var(--accent, #3264c6);
+  --color-sela-canvas: var(--color-paper);
+  --color-sela-surface: var(--color-paper-2);
+  --color-sela-ink: var(--color-ink);
+  --color-sela-muted: var(--color-ink-2);
+  --color-sela-line: var(--color-rule);
+  --color-sela-accent: var(--color-accent);
 
-  --color-background: var(--bg, #f7f9fc);
-  --color-foreground: var(--fg, #202634);
-  --color-card: var(--panel, var(--card, #fff));
-  --color-card-foreground: var(--fg, #202634);
-  --color-popover: var(--panel, var(--card, #fff));
-  --color-popover-foreground: var(--fg, #202634);
-  --color-primary: var(--accent, #3264c6);
-  --color-primary-foreground: var(--accent-ink, var(--bg, #fff));
-  --color-secondary: var(--palette-soft, var(--line, #e7ebf2));
-  --color-secondary-foreground: var(--fg, #202634);
-  --color-muted: var(--palette-soft, var(--line, #e7ebf2));
-  --color-muted-foreground: var(--muted, #6c7687);
-  --color-accent: var(--palette-soft, var(--line, #e7ebf2));
-  --color-accent-foreground: var(--fg, #202634);
-  --color-destructive: #b42318;
-  --color-border: var(--line, #e7ebf2);
-  --color-input: var(--line, #e7ebf2);
-  --color-ring: var(--accent, #3264c6);
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-paper-2);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-paper-2);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-ink);
+  --color-secondary: var(--color-paper-3);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-paper-3);
+  --color-muted-foreground: var(--color-ink-2);
+  --color-accent: var(--sela-color-accent);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: oklch(50.0% 0.1821 29.5);
+  --color-border: var(--color-rule);
+  --color-input: var(--color-rule);
+  --color-ring: var(--color-focus);
 }
 
 @layer base {
@@ -134,5 +137,18 @@
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  html:has(body[data-product="mobile"]),
+  body[data-product="mobile"] {
+    overflow-x: clip;
+  }
+
+  body[data-product="mobile"] :where(h1, h2, h3, h4, h5, h6) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-style: normal;
   }
 }
