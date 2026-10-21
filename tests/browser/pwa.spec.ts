@@ -1,34 +1,70 @@
-import { test, expect } from '@playwright/test';
+import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+import {VERSION} from '../../app/library/version.ts';
+async function routePwaFixture(page,prefix:string){
+ await page.route(`**/${prefix}/app/pwa.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('app/pwa.js','utf8')}));
+ await page.route(`**/${prefix}/library/controls.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('library/controls.js','utf8')}));
+ await page.route(`**/${prefix}/dist/source/src/i18n.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/i18n.js','utf8')}));
+ await page.route(`**/${prefix}/dist/source/src/locale.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('dist/source/src/locale.js','utf8')}));
+ await page.route(`**/${prefix}/library/version.js`,async route=>route.fulfill({contentType:'application/javascript',body:await readFile('library/version.js','utf8')}));
+}
+test('public and installed app manifests point to refreshed Sela artwork',async({page})=>{
+ const revision=VERSION;
+ await page.goto('/');
+ await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href',`favicon.svg?v=${revision}`);
+ await expect(page.locator('a.brand img')).toHaveAttribute('src',`logo.svg?v=${revision}`);
+ await page.goto('/app/');
+ const appIconHref=await page.locator('link[rel="icon"]').getAttribute('href');
+ expect(appIconHref).toMatch(/^\.\.\/favicon\.svg(?:\?v=.+)?$/);
+ const appIcon=await page.request.get(new URL(appIconHref!,page.url()).href);expect(appIcon.ok()).toBe(true);expect(appIcon.headers()['content-type']).toContain('image/svg+xml');
+ for(const manifestPath of ['/manifest.webmanifest','/app/manifest.webmanifest']){
+  const response=await page.request.get(`${manifestPath}?v=${revision}`);
+  expect(response.ok(),`${manifestPath} should be available`).toBeTruthy();
+  const manifest=await response.json();
+  expect(manifest.icons).toHaveLength(3);
+  for(const icon of manifest.icons){
+   expect(icon.src).toContain(`?v=${revision}`);
+   const image=await page.request.get(new URL(icon.src,response.url()).href);
+   expect(image.ok(),`${manifestPath} icon ${icon.sizes} should be available`).toBeTruthy();
+   expect(image.headers()['content-type']).toContain('image/png');
+  }
+ }
+});
+test.use({serviceWorkers:'allow',userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36'});
+test('app PWA registration stays within its project subfolder',async({page})=>{
+ await page.route('**/nested/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<p id="app-offline-status"></p><script type="module" src="./pwa.js"></script>'}));
+ await routePwaFixture(page,'nested');
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'serviceWorker',{value:{addEventListener(){},ready:Promise.resolve({}),register(url,options){window.registration={url:String(url),scope:options.scope};return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
+ await page.goto('/nested/app/index.html');await expect(page.locator('#app-offline-status')).toContainText(/Bookshelf ready|Rak siap/);
+ expect(await page.evaluate(()=>window.registration)).toEqual({url:'http://127.0.0.1:4173/nested/app/sw.js',scope:'http://127.0.0.1:4173/nested/app/'});
+});
+async function waitForAppWorker(page){
+ await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));});
+ await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);
+}
+test('app keeps imported books local and readable offline',async({page,context,browserName})=>{
+ test.skip(browserName!=='chromium','Service-worker offline scenario is verified on Chromium');await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await waitForAppWorker(page);await page.reload();await expect(page.locator('.sela-app')).toBeVisible();
+ await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'private-note.txt',mimeType:'text/plain',buffer:Buffer.from('Local note survives offline.')});await expect(page.locator('.book-card')).toHaveCount(1);
+ await context.setOffline(true);await page.reload();await expect(page.locator('.sela-app')).toBeVisible();await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);await page.locator('.book-cover-button').click();await expect(page.locator('.reader-body')).toContainText('survives offline');
+ const keys=await page.evaluate(async()=>{const names=await caches.keys();return(await Promise.all(names.map(async name=>(await(await caches.open(name)).keys()).map(r=>r.url)))).flat();});expect(keys.some(url=>url.includes('private-note')||url.startsWith('blob:'))).toBe(false);
+});
 
-test('installed app opens and resumes a bookmarked book offline without clearing shelf data', async ({ page, context }) => {
-  const pageErrors: string[] = [];
-  page.on('pageerror', error => pageErrors.push(error.message));
-  await page.addInitScript(() => {
-    localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en', appearance: 'light', theme: 'vanilla' }));
-  });
+test('update notice names both the ready version and the installed version',async({page})=>{
+ await page.route('**/update/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<p id="app-offline-status"></p><button id="check-update"></button><p id="update-status"></p><script type="module" src="./pwa.js"></script>'}));
+ await routePwaFixture(page,'update');
+ const match=VERSION.match(/^(.*-beta\.)(\d+)$/);expect(match,'update notice fixture needs a beta package version').not.toBeNull();const nextVersion=`${match![1]}${Number(match![2])+1}`;
+ await page.addInitScript((version:string)=>{window.sent=[];window.swEvents={};Object.defineProperty(navigator,'serviceWorker',{value:{controller:{},ready:Promise.resolve({}),addEventListener(name,callback){window.swEvents[name]=callback;},register(){return Promise.resolve({waiting:{postMessage(data,ports){window.sent.push(data);if(data.type==='GET_VERSION')ports?.[0]?.postMessage({type:'SELA_VERSION',version});}},addEventListener(){},update(){return Promise.resolve();}});}}});},nextVersion);
+ await page.goto('/update/app/index.html');await expect(page.locator('.pwa-notice')).toContainText(`Sela ${nextVersion} is ready`);await expect(page.locator('.pwa-notice')).toContainText(`Installed: ${VERSION}`);await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='GET_VERSION').length)).toBe(1);
+ await page.evaluate(()=>{const reader=document.createElement('main');reader.className='reader-layout';document.body.append(reader);});await page.getByRole('button',{name:'Update now',exact:true}).click();await expect(page.locator('.pwa-notice')).toContainText('Close the reader');expect(await page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE'))).toEqual([]);
+ await page.evaluate(()=>document.querySelector('.reader-layout')?.remove());await page.getByRole('button',{name:'Update now',exact:true}).click();await expect.poll(()=>page.evaluate(()=>sent.filter(message=>message.type==='ACTIVATE_UPDATE').length)).toBe(1);
+ await page.evaluate(()=>swEvents.message({data:{type:'UPDATE_BLOCKED'}}));await expect(page.locator('.pwa-notice')).toContainText('Close other Sela windows');await page.getByRole('button',{name:'Later',exact:true}).click();await expect(page.locator('.pwa-notice')).toBeHidden();
+});
 
-  await page.goto('/app/');
-  await expect(page.locator('.sela-app')).toBeVisible();
-  await expect.poll(() => page.evaluate(async () => {
-    const registration = await navigator.serviceWorker.getRegistration('/app/');
-    return registration?.active?.state || '';
-  })).toBe('activated');
-  await page.reload();
-  await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL || '')).toContain('/app/sw.js');
-
-  await page.getByRole('button', { name: /^(?:Download & read sample|Read sample)$/ }).click();
-  const reader = page.locator('.reader-layout');
-  await expect(reader.locator('.reader-chrome-top')).toBeVisible({ timeout: 20000 });
-  await reader.getByRole('button', { name: 'Next page', exact: true }).click();
-  await expect(reader.getByRole('spinbutton', { name: 'Current page' })).toHaveValue('2');
-  await reader.getByRole('button', { name: 'Bookmark page', exact: true }).click();
-  await expect(reader.getByRole('button', { name: 'Remove bookmark', exact: true })).toHaveAttribute('aria-pressed', 'true');
-
-  await context.setOffline(true);
-  await page.reload();
-  await expect(page.locator('.reader-chrome-top')).toBeVisible({ timeout: 20000 });
-  await expect(page.locator('.reader-body')).toBeVisible();
-  await expect(page.getByRole('spinbutton', { name: 'Current page' })).toHaveValue('2');
-  await expect(page.getByRole('button', { name: 'Remove bookmark', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  expect(pageErrors).toEqual([]);
+test('the app does not add its own install invitation or intercept the browser prompt',async({page})=>{
+ await page.route('**/install-state/app/index.html',route=>route.fulfill({contentType:'text/html',body:'<main><h1>Sela Books</h1><p id="app-offline-status"></p><script type="module" src="./pwa.js"></script></main>'}));
+ await routePwaFixture(page,'install-state');
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{addEventListener(){},ready:Promise.resolve({}),register(){return Promise.resolve({addEventListener(){},update(){return Promise.resolve();}});}}});});
+ await page.goto('/install-state/app/index.html');
+ await expect(page.getByRole('button',{name:/install/i})).toHaveCount(0);await expect(page.getByText(/pasang sela di perangkat ini/i)).toHaveCount(0);await expect(page.locator('.pwa-notice:visible,.install-guide:visible')).toHaveCount(0);
+ const prevented=await page.evaluate(()=>{const event=new Event('beforeinstallprompt',{cancelable:true});window.dispatchEvent(event);return event.defaultPrevented;});expect(prevented).toBe(false);
 });

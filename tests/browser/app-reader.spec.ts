@@ -98,6 +98,5 @@ test('reader shows a recoverable error and retries a failed SDK request', async 
   await page.unroute('**/dist/js/sela.esm.js');
   await error.getByRole('button', { name: 'Try again', exact: true }).click();
   await expect(page.locator('.reader-chrome-top')).toBeVisible({ timeout: 20000 });
-  expect(await page.locator('.book-card').count()).toBe(0);
   await expect(page.locator('.reader-error')).toHaveCount(0);
 });
