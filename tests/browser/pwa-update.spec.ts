@@ -75,7 +75,13 @@ test('a real service-worker update preserves local books and the new shell opens
     await expect(notice).toContainText('Installed: ' + oldVersion);
     expect(await activeWorkerVersion(page)).toBe(oldVersion);
 
+    const appReload = page.waitForEvent('framenavigated', {
+      predicate: frame => frame === page.mainFrame(),
+      timeout: 30000,
+    });
     await notice.getByRole('button', { name: 'Update now', exact: true }).click();
+    await appReload;
+    await expect(page.locator('.sela-app')).toBeVisible();
     await expect.poll(() => activeWorkerVersion(page), { timeout: 30000 }).toBe(nextVersion);
     await expect(page.locator('.book-card')).toHaveCount(1);
 
