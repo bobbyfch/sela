@@ -46,6 +46,7 @@
 
 
 ### Final verification · 21 October 2026
-- Run 39603567263 on commit d2d5381bdc2f4afc7fb24cc8aaf726613a328fa5 completed successfully: build and generated-artifact checks, unit tests, test types, typecheck, Chromium browser tests, Firefox browser tests, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
+- Run 39611043615 on code commit 1de247444b2bda82f39e2b1892a2fbe88ec79faa completed successfully: build and generated-artifact checks, unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
+- The mobile pass also covers the Discover and shelf layouts at narrow widths, including the constrained full-screen drop prompt and stable responsive measurements.
 - The optional multi-framework matrix (`npm run test:frameworks`) was not run. Its host runtimes are not provisioned by this recovery workflow, so it is outside the required CI gate.
 - The Work workspace has no local checkout, so local tests were not run. Live GitHub Pages verification and deployment remain outstanding; this PR has not deployed the changes.
