@@ -174,6 +174,7 @@ export function CatalogExplorer() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const abortRef = useRef<AbortController | null>(null);
+  const searchTimerRef = useRef<number | undefined>(undefined);
   const t = (en: string, id: string) => copy(lang, en, id);
   const provider = providers.find(item => item.id === providerId) || providers[0];
   const source = sourceFor(provider, collection, wikiLanguage);
@@ -232,8 +233,16 @@ export function CatalogExplorer() {
   };
 
   useEffect(() => {
-    const timer = window.setTimeout(() => { void load(false); }, 240);
-    return () => { window.clearTimeout(timer); abortRef.current?.abort(); };
+    const timer = window.setTimeout(() => {
+      if (searchTimerRef.current === timer) searchTimerRef.current = undefined;
+      void load(false);
+    }, 240);
+    searchTimerRef.current = timer;
+    return () => {
+      window.clearTimeout(timer);
+      if (searchTimerRef.current === timer) searchTimerRef.current = undefined;
+      abortRef.current?.abort();
+    };
     // Catalog changes and typed searches intentionally share the same debounced request.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerId, collection, topic, wikiLanguage, query, opdsUrl]);
@@ -241,7 +250,14 @@ export function CatalogExplorer() {
   const chooseProvider = (item: Provider) => { setProviderId(item.id); setCollection(item.collections[0]); setTopic(''); setPage(1); };
   const chooseCollection = (value: string) => { setCollection(value); setTopic(''); setPage(1); };
   const chooseTopic = (value: string) => { setTopic(current => current === value ? '' : value); setPage(1); };
-  const submit = (event: FormEvent) => { event.preventDefault(); void load(false); };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (searchTimerRef.current !== undefined) {
+      window.clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = undefined;
+    }
+    void load(false);
+  };
   const surprise = () => {
     const choices = [...provider.collections.filter(value => value !== collection), ...provider.topics.filter(value => value !== topic)];
     if (!choices.length) return;
@@ -322,10 +338,10 @@ export function CatalogExplorer() {
       <Text className="catalog-rights-note">{provider.id === 'sela' ? t('Only this book list is stored with Sela. The full texts are fetched when you choose “Download & add to shelf”. Project Gutenberg states public-domain status for the United States; check local copyright.', 'Hanya daftar judul yang disimpan di Sela. Naskah lengkap baru diambil saat kamu memilih “Unduh & simpan ke rak”. Project Gutenberg menyatakan status domain publik untuk Amerika Serikat; periksa aturan hak cipta setempat.') : t('Edition availability and reuse terms vary. Check the source record and local copyright before sharing.', 'Ketersediaan edisi dan hak penggunaan berbeda-beda. Periksa halaman sumber dan aturan hak cipta setempat sebelum membagikan.')}</Text>
     </Card>
 
-    {error && <Alert color="red" variant="light" title={t('Could not complete this request', 'Permintaan belum berhasil')} withCloseButton onClose={() => setError('')}>{error}</Alert>}
+    {error && <Alert role="alert" color="red" variant="light" title={t('Could not complete this request', 'Permintaan belum berhasil')} withCloseButton onClose={() => setError('')}>{error}</Alert>}
     <section className="catalog-results-section" aria-labelledby="catalog-results-title"><div className="catalog-section-heading"><div><PageEyebrow>{t('02 · RESULTS', '02 · HASIL')}</PageEyebrow><Title id="catalog-results-title" order={2}>{query.trim() ? t('Search results', 'Hasil pencarian') : t('A place to begin', 'Pilihan untuk memulai')}</Title><Text className="catalog-results-context">{contextLabel}{results.length ? ` · ${total !== undefined ? `${total} ${t('books', 'buku')}` : `${results.length}${next ? '+' : ''}`}` : ''}</Text></div><div className="catalog-results-tools"><div className="catalog-cover-quality"><Text className="catalog-cover-quality-label">{t('Cover size', 'Ukuran cover')}</Text><SegmentedControl aria-label={t('Cover image size', 'Ukuran gambar cover')} size="xs" value={coverQuality} onChange={changeCoverQuality} data={[{ label: 'SD', value: 'sd' }, { label: 'HD', value: 'hd' }]} /></div>{sourceHref && <Anchor href={sourceHref} target="_blank" rel="noopener noreferrer" size="sm" className="catalog-attribution">{t('Source details', 'Detail sumber')} <ArrowUpRight size={13} /></Anchor>}</div></div>
       {loading && results.length === 0 ? <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">{[0, 1, 2, 3, 4, 5].map(index => <Skeleton key={index} h={212} radius="lg" />)}</SimpleGrid>
-        : results.length ? <SimpleGrid cols={{ base: 2, sm: 3, lg: 4, xl: 5 }} spacing={{ base: 'sm', md: 'md' }}>{results.map((book, index) => <CatalogResult key={`${book.id}-${index}`} book={book} lang={lang} quality={coverQuality} loading={downloading === book.id} onAdd={() => void addBook(book)} onNavigate={() => openNavigation(book)} onOpenDetails={() => { setSelectedBook(book); setCoverDownloadError(''); }} t={t} />)}</SimpleGrid>
+        : results.length ? <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, lg: 4, xl: 5 }} spacing={{ base: 'sm', md: 'md' }}>{results.map((book, index) => <CatalogResult key={`${book.id}-${index}`} book={book} lang={lang} quality={coverQuality} loading={downloading === book.id} onAdd={() => void addBook(book)} onNavigate={() => openNavigation(book)} onOpenDetails={() => { setSelectedBook(book); setCoverDownloadError(''); }} t={t} />)}</SimpleGrid>
         : searched && !loading ? <Card className="catalog-empty-state" withBorder radius="lg"><Text fw={600}>{t('No editions found.', 'Tidak ada edisi ditemukan.')}</Text><Text size="sm" c="dimmed">{error ? t('Check the address or try another source.', 'Periksa alamat atau coba sumber lain.') : t('Try a shorter title, a different spelling, or another topic.', 'Coba judul lebih singkat, ejaan lain, atau topik lain.')}</Text></Card>
         : <Card className="catalog-empty-state" withBorder radius="lg"><Text fw={600}>{t('Your next book is a few shelves away.', 'Buku berikutnya hanya beberapa rak dari sini.')}</Text><Text size="sm" c="dimmed">{t('Choose a source or search its catalog.', 'Pilih sumber atau cari di katalognya.')}</Text></Card>}
       {next && <Group justify="center" mt="lg"><Button variant="default" onClick={() => void load(true)} loading={loading}>{t('More books', 'Buku lainnya')}</Button></Group>}

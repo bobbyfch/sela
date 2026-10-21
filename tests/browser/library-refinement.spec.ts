@@ -35,7 +35,7 @@ test('shelf filters, grid/list/room views and responsive widths use the React sh
   await page.setViewportSize({width,height:820});
   await page.waitForTimeout(200);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px document overflow`).toBe(true);
-  expect(await page.locator('.book-grid').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${width}px shelf overflow`).toBe(true);
+  const gridMetrics=await page.locator('.book-grid').evaluate(root=>{const rect=root.getBoundingClientRect();const overflow=[...root.querySelectorAll<HTMLElement>('*')].filter(element=>{const box=element.getBoundingClientRect();return box.right>rect.right+.5||element.scrollWidth>element.clientWidth+1;}).slice(0,12).map(element=>{const box=element.getBoundingClientRect(),style=getComputedStyle(element);return{tag:element.tagName,classes:String(element.className),text:(element.innerText||'').slice(0,50),width:Math.round(box.width),right:Math.round(box.right),scroll:element.scrollWidth,client:element.clientWidth,minWidth:style.minWidth,display:style.display,grid:style.gridTemplateColumns};});return{scroll:root.scrollWidth,client:root.clientWidth,overflow};});expect(gridMetrics.scroll,`${width}px shelf overflow ${JSON.stringify(gridMetrics)}`).toBeLessThanOrEqual(gridMetrics.client+1);
  }
 });
 

@@ -10,9 +10,10 @@ export default defineConfig({
   workers: 1,
   use: { baseURL: 'http://127.0.0.1:4173', headless: true, serviceWorkers: 'block' },
   projects: [
-    {name:'chromium',use:{browserName:'chromium',launchOptions:!process.env.CI&&process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}}},
-    {name:'firefox',use:{browserName:'firefox',launchOptions:!process.env.CI&&existsSync(localFirefox)?{executablePath:localFirefox}:{}}},
-    {name:'webkit',use:{browserName:'webkit'}}
+    {name:'chromium',testIgnore:'**/pwa-update.spec.ts',use:{browserName:'chromium',launchOptions:!process.env.CI&&process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}}},
+    {name:'firefox',testIgnore:'**/pwa-update.spec.ts',use:{browserName:'firefox',launchOptions:!process.env.CI&&existsSync(localFirefox)?{executablePath:localFirefox}:{}}},
+    {name:'webkit',testIgnore:'**/pwa-update.spec.ts',use:{browserName:'webkit'}},
+    {name:'chromium-pwa',testMatch:'**/pwa-update.spec.ts',use:{browserName:'chromium',serviceWorkers:'allow'}}
   ],
   webServer: { command: 'node --experimental-strip-types scripts/serve.ts', url: 'http://127.0.0.1:4173', reuseExistingServer: !process.env.CI },
   reporter: process.env.GITHUB_ACTIONS ? [['github'],['list']] : [['list']],

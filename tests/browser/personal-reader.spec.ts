@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 
 async function start(page){
  await page.addInitScript(()=>localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en',theme:'vanilla',appearance:'light'})));
- await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();
+ await page.setViewportSize({width:393,height:852});await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await page.addStyleTag({content:'.sela-shell, .sela-shell * { transition: none !important; }'});
 }
 async function importText(page,name='alpha.txt',text='A quiet chapter with a special chrysanthemum.'){
  await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name,mimeType:'text/plain',buffer:Buffer.from(text)});
@@ -18,7 +18,11 @@ test('React app screens remain responsive from phone through desktop',async({pag
  const routes=[['/app/#/','.home-screen'],['/app/#/shelf','.shelf-screen'],['/app/#/discover','.catalog-explorer'],['/app/#/progress','.progress-screen'],['/app/#/settings','.settings-screen'],['/app/#/settings/library','.settings-detail']];
  for(const [url,selector] of routes){
   await page.goto(url);await expect(page.locator(selector)).toBeVisible();
-  for(const width of [320,393,600,768,1024,1366,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${url} overflows at ${width}px`).toBe(true);}
+  for(const width of [320,393,600,768,1024,1366,1440]){
+  await page.setViewportSize({width,height:900});
+  const metrics=await page.evaluate(()=>{const viewport=innerWidth,measure=(element:HTMLElement)=>{const rect=element.getBoundingClientRect(),style=getComputedStyle(element);return{tag:element.tagName,classes:String(element.className),text:(element.innerText||"").slice(0,70),scroll:element.scrollWidth,client:element.clientWidth,right:Math.round(rect.right),width:Math.round(rect.width),position:style.position,display:style.display,grid:style.gridTemplateColumns,flex:style.flexDirection,minWidth:style.minWidth,whiteSpace:style.whiteSpace};};const overflow=[...document.querySelectorAll<HTMLElement>("body *")].filter(element=>{const rect=element.getBoundingClientRect(),style=getComputedStyle(element);return element.getClientRects().length&&style.visibility!=="hidden"&&!element.closest(".visually-hidden, .sr-only, [aria-hidden=\"true\"]")&&rect.right>viewport+.25;}).map(measure).sort((a,b)=>b.right-a.right).slice(0,20);const overlay=[...document.querySelectorAll<HTMLElement>(".app-drop-overlay, .app-drop-overlay .mantine-Dropzone-root, .app-drop-overlay .mantine-Dropzone-inner, .app-drop-overlay .app-drop-prompt")].map(element=>{const rect=element.getBoundingClientRect(),style=getComputedStyle(element),parent=element.parentElement,parentRect=parent?.getBoundingClientRect();return{classes:String(element.className),rect:{left:Math.round(rect.left),right:Math.round(rect.right),width:Math.round(rect.width)},position:style.position,left:style.left,right:style.right,transform:style.transform,width:style.width,maxWidth:style.maxWidth,display:style.display,alignSelf:style.alignSelf,justifySelf:style.justifySelf,opacity:style.opacity,parent:parent?{classes:String(parent.className),left:Math.round(parentRect!.left),right:Math.round(parentRect!.right),width:Math.round(parentRect!.width)}:null};});return{viewport,documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,scrollX,overlay,overflow};});
+  expect(metrics.bodyWidth,`${url} body overflows at ${width}px: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(metrics.viewport);expect(metrics.documentWidth,`${url} document overflows beyond clipped assistive content at ${width}px: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(metrics.viewport+1);expect(metrics.overflow,`${url} visible content overflows at ${width}px: ${JSON.stringify(metrics)}`).toEqual([]);
+}
  }
 });
 

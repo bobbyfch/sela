@@ -79,3 +79,42 @@ test('reader chrome and reading desk follow the supported Indonesian app languag
  await reader.getByRole('button',{name:'Kembali ke rak',exact:true}).click();
  await expect(reader).toHaveCount(0);
 });
+
+
+test('a missing lazy app chunk offers a safe retry and keeps app preferences', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+  await page.route('**/chunks/screens-*.js', route => route.fulfill({ status: 503, contentType: 'text/plain', body: 'Stale app chunk' }));
+  await page.goto('/app/');
+
+  const error = page.locator('.reader-error');
+  await expect(error).toBeVisible();
+  await expect(error).toContainText('This part of Sela could not be loaded');
+  await expect(error.getByRole('button', { name: 'Refresh app', exact: true })).toBeVisible();
+
+  await page.unroute('**/chunks/screens-*.js');
+  await error.getByRole('button', { name: 'Refresh app', exact: true }).click();
+  await expect(page.locator('.reader-error')).toHaveCount(0, { timeout: 20000 });
+  await expect(page.locator('.sela-app')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('sela:app:preferences'))).toContain('"language":"en"');
+});
+
+test('reader shows a recoverable error and retries a failed SDK request', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' })));
+  let requests = 0;
+  await page.route('**/dist/js/sela.esm.js', async route => {
+    requests += 1;
+    await route.fulfill({ status: 503, contentType: 'text/plain', body: 'Reader engine temporarily unavailable' });
+  });
+  await page.goto('/app/');
+  await expect(page.locator('.sela-app')).toBeVisible();
+  await page.getByRole('button', { name: /^(?:Download & read sample|Read sample|Unduh & baca contoh|Baca contoh)$/ }).click();
+  const error = page.locator('.reader-error');
+  await expect(error).toBeVisible();
+  await expect(error).toContainText('The reader engine could not be loaded');
+  await expect(error.getByRole('button', { name: 'Try again', exact: true })).toBeVisible();
+  expect(requests).toBeGreaterThan(0);
+  await page.unroute('**/dist/js/sela.esm.js');
+  await error.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(page.locator('.reader-chrome-top')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('.reader-error')).toHaveCount(0);
+});
