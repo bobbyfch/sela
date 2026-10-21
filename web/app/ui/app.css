@@ -482,7 +482,7 @@ button, input { font: inherit; }
 .opds-save-grid .mantine-Button-root { min-height: 36px; }
 .catalog-browse-groups { display: grid; gap: 12px; }
 .catalog-group-label { margin-bottom: 7px; color: var(--color-muted); font-size: 9px; font-weight: 700; letter-spacing: .13em; }
-.catalog-chip-row { min-width: 0; }
+.catalog-chip-row { min-width: 0; flex-wrap: wrap; }
 .catalog-chip-row .mantine-Chip-label { min-height: 34px; border-color: var(--color-rule); background: var(--color-paper); color: var(--color-muted); font-size: 11px; }
 .catalog-chip-row .mantine-Chip-input:checked + .mantine-Chip-label { border-color: var(--color-accent); background: var(--color-accent-soft); color: var(--color-ink); }
 .catalog-chip-content { display: inline-flex; align-items: center; gap: 7px; }
