@@ -87,6 +87,7 @@ test('reading calendar switches between month and a seven-day week',async({page}
 });
 
 test('reading note keeps its source controls and stores the selected topic',async({page})=>{
+ await page.route(url=>url.hostname==='en.wikiquote.org'&&url.pathname==='/w/api.php',route=>route.fulfill({json:{query:{search:[]}}}));
  await openHome(page);const reflection=page.locator('.reflection-widget');await expect(reflection.locator('blockquote.daily-quote')).toBeVisible();
  await reflection.getByRole('combobox',{name:'Quote topic'}).click();await page.getByRole('option',{name:'Calm'}).click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').quoteTopic)).toBe('calm');
