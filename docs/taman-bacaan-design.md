@@ -2,7 +2,7 @@
 
 **Updated:** 22 October 2026
 
-**Status:** Implemented in the current feature branch; browser verification and screenshots pending.
+**Status:** Implemented and browser-verified on PR #5. The code changes are at commit `281c9691afc2aa940a0c0ea71a450a192cbac512`; CI run [39702081623](https://github.com/bobbyfch/sela/actions/runs/39702081623) passed.
 
 **Surface:** Discover, with a separate source-browsing view.
 
@@ -45,4 +45,8 @@ This is a curated index over existing assets, not the full pack manager mileston
 
 ## Verification record
 
-The unit test checks catalogue counts against the bundled JSON/prophet data and confirms bundled texts are service-worker-cacheable after fetching. Browser checks cover metadata search, filter behavior, existing source navigation, the edition browser and horizontal overflow across the five reference widths. Record actual results and add the Playwright captures here after the run completes.
+The unit test checks catalogue counts against the bundled JSON/prophet data and confirms bundled texts are service-worker-cacheable after fetching. CI run [39702081623](https://github.com/bobbyfch/sela/actions/runs/39702081623) passed the build/generated-artifact check, all 104 unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards and the installed-PWA update/offline suite.
+
+The browser tests cover metadata search, filter behavior, the source-browser switch, the edition browser and viewport overflow at 320, 375, 414, 768 and 1440 px. Chromium screenshots at 375 px and 1440 px were visually reviewed; both are included in the `taman-bacaan-playwright-screenshots` artifact for run 39702081623, retained through 29 October 2026. The 375 px capture shows the intended single-column mobile cards; the desktop capture shows the three-column grid and all eight collections without clipping.
+
+**Local browser status:** NOT TESTED. The workspace does not have the Playwright Chromium executable installed, so the local browser command could not launch. The CI browser suites passed on this code commit.

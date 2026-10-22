@@ -59,7 +59,7 @@ The earlier “not deployed” bullets above describe their individual pre-deplo
 ## 22 October 2026 · Taman Bacaan MVP
 
 ### Starting point
-- Local branch: `codex/reader-polish-transfer-2026-10`, based on PR [#5](https://github.com/bobbyfch/sela/pull/5), head `63c1e3db9a4378e2d072f410e9276150868280ff` before this change. GitHub reports the PR is open and mergeable.
+- Local branch: `codex/reader-polish-transfer-2026-10`, based on PR [#5](https://github.com/bobbyfch/sela/pull/5), originally at `63c1e3db9a4378e2d072f410e9276150868280ff`. The latest feature code is at `281c9691afc2aa940a0c0ea71a450a192cbac512`; the PR remains open and unmerged.
 - The existing P0 recovery and Pages-base work remains in place. The latest run on the prior PR head, [39655995025](https://github.com/bobbyfch/sela/actions/runs/39655995025), completed successfully; it does not include this new Taman Bacaan change.
 
 ### Changes in this slice
@@ -67,7 +67,8 @@ The earlier “not deployed” bullets above describe their individual pre-deplo
 - Added local metadata search plus category, language, content-type, rights-note and availability filters.
 - Listed eight existing collections with accurate scope counts, edition/language/source notes and delivery labels. The Taman view adds no book text or cover images.
 - Reused the existing local book/chapter browser. Clarified that included text enters the service-worker cache after a successful fetch; the files are allowlisted but not pre-cached in the install-time app shell.
-- Added unit and browser tests, source/rights notes, and a design record. The Chromium browser job now exports 375px and 1440px Playwright screenshots as an artifact for visual review.
+- Fixed the compiled local-edition asset path and linked the Dhammapada reader to its exact SuttaCentral edition page.
+- Added unit and browser tests, source/rights notes, and a design record. The Chromium browser job exports 375px and 1440px Playwright screenshots for review.
 
 ### Verification
 - **PASS** — `npm run build` completed. It emitted the existing >500 KB app-shell warning; the prior checked-in `app/app.js` was 509,420 bytes and the regenerated file is 510,288 bytes.
@@ -76,7 +77,8 @@ The earlier “not deployed” bullets above describe their individual pre-deplo
 - **PASS** — `npm run typecheck`.
 - **PASS** — `git diff --check`.
 - **NOT TESTED locally** — `npm run test:browser -- tests/browser/reading-garden.spec.ts --project=chromium` could not launch: the Playwright Chromium executable is not installed in this workspace. No page assertion ran.
-- **PENDING** — PR CI on the new commit must run Chromium, Firefox, all WebKit shards, and the enabled-service-worker suite; inspect the uploaded screenshots before marking browser QA passed.
+- **PASS in CI** — [Run 39702081623](https://github.com/bobbyfch/sela/actions/runs/39702081623) passed build/generated-artifact checks, all 104 unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards and installed-PWA offline/update checks.
+- **PASS visual review** — the 375px and 1440px Chromium captures were reviewed from the `taman-bacaan-playwright-screenshots` artifact. The responsive test also passed at 320, 375, 414, 768 and 1440 px.
 
 ### Next action
-Push this verified build and test change to PR #5, review the real-browser results and captures, then continue with the optional pack lifecycle and a rights-validated pack pilot. Do not merge or deploy as part of this step.
+Continue with the optional pack lifecycle and a rights-validated pack pilot. Keep PR #5 open; do not merge or deploy as part of this step.
