@@ -5,7 +5,7 @@
   --public-paper-deep: #e7e2d7;
   --public-ink: #252521;
   --public-ink-soft: #494840;
-  --public-muted: #706d64;
+  --public-muted: #66635a;
   --public-rule: #d7d2c8;
   --public-glass: rgb(248 246 240 / 76%);
   --public-shadow: 0 18px 46px rgb(36 34 29 / 9%);
@@ -405,7 +405,7 @@ html[data-theme="dark"] .public-site {
 .cdn-version-control select { min-height: 2.4rem !important; font-size: .66rem !important; }
 .copy-config-button { min-height: 2.4rem !important; padding: .5rem .75rem !important; border: 1px solid var(--public-ink) !important; border-radius: 999px !important; color: var(--public-ink) !important; background: transparent !important; font-size: .66rem !important; }
 .config-code { display: block; max-height: 18rem; overflow: auto; margin-top: .8rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--public-ink) 12%, transparent); border-radius: .65rem; color: #eeeae0; background: #282723; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .65rem; line-height: 1.65; white-space: pre; }
-.policy-note a,.install-note a { color: var(--public-ink); }
+.policy-note a,.install-note a { color: var(--public-ink); text-decoration: underline; text-underline-offset: .18em; }
 .install-note { display: flex; justify-content: space-between; align-items: start; gap: 1.2rem; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--public-rule); color: var(--public-muted); font-size: .68rem; line-height: 1.6; }
 .install-note a { white-space: nowrap; }
 .product-status,#status { color: var(--public-ink-soft); font-size: .75rem; }

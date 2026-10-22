@@ -39,5 +39,5 @@ These checks confirm the deployed app route and sample PDF path. Physical-device
 ## Local re-verification · 22 October 2026
 
 Run on a Windows checkout of `main` at `b32619a` (PR #3 and #4 merged): `npm run typecheck` PASS, `npm test` PASS, `npm run build` PASS,
-full Chromium project 156/156 PASS, `chromium-pwa` project PASS. See [taman-bacaan-design.md](taman-bacaan-design.md) for the later Taman Bacaan work.
-`tests/browser/pwa-taman.spec.ts` adds a real-service-worker offline reload of an installed content pack.
+full Chromium project 156/156 PASS, `chromium-pwa` project PASS. See [faith-readings-design.md](faith-readings-design.md) for the later faith readings work.
+`tests/browser/pwa-readings.spec.ts` adds a real-service-worker offline reload of an installed reading pack.

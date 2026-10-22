@@ -53,7 +53,7 @@ test('cover click opens a sourced book detail with description, edition ISBNs an
  const quality=page.getByRole('radiogroup',{name:'Cover image size'});await quality.getByText('HD',{exact:true}).click();
  await expect(resultCover).toHaveAttribute('src',/123-L\.jpg\?default=false/);
  expect(await page.evaluate(()=>localStorage.getItem('sela:app:cover-quality'))).toBe('hd');
- await result.getByRole('button',{name:'Open details for The Little Prince'}).click();
+ await result.getByRole('button',{name:/The Little Prince/}).first().click();
  const dialog=page.getByRole('dialog');await expect(dialog).toBeVisible();
  expect(await dialog.evaluate(element=>{const rect=element.getBoundingClientRect();return rect.left>=0&&rect.right<=innerWidth+1&&rect.top>=0&&rect.bottom<=innerHeight+1;})).toBe(true);
  await expect(dialog.locator('.catalog-detail-cover img')).toHaveAttribute('src',/123-L\.jpg\?default=false/);

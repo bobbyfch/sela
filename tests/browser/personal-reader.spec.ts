@@ -78,7 +78,7 @@ test('local book search finds text without sending the private query to a servic
 test('personal reading preferences persist locally without changing the paper palette',async({page})=>{
  await start(page);await page.goto('/app/#/settings/library');const panel=page.locator('.personal-tools-card').filter({hasText:'A reading practice that fits you'});
  await panel.getByRole('combobox',{name:'Gender preference (optional)'}).click();await page.getByRole('option',{name:'Woman',exact:true}).click();
- await panel.getByRole('combobox',{name:'Daily reflection source'}).click();await page.getByRole('option',{name:'Islam',exact:true}).click();
+ await panel.getByRole('combobox',{name:'Faith or tradition'}).click();await page.getByRole('option',{name:'Islam',exact:true}).click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}'))).toMatchObject({gender:'woman',faith:'islam'});
  await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','vanilla');await page.reload();await expect(page.locator('.sela-app')).toHaveAttribute('data-theme','vanilla');
 });

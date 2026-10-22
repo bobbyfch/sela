@@ -394,7 +394,7 @@ function CatalogResult({ book, lang, quality, loading, onAdd, onNavigate, onOpen
   const canSave = !!(book.url || book.repo || book.source === 'wikisource' || book.source.startsWith('wiki-') || isGutenbergRecord(book.external));
   const sourceName = book.source === 'gutendex' ? 'Project Gutenberg' : book.source.replaceAll('-', ' ');
   return <Card className="catalog-result-card" withBorder radius="lg" padding="md">
-    <button type="button" className="catalog-result-open" onClick={onOpenDetails} aria-label={t(`Open details for ${book.title}`, `Buka detail ${book.title}`)}>
+    <button type="button" className="catalog-result-open" onClick={onOpenDetails} aria-haspopup="dialog">
       <CatalogBookCover book={book} quality={quality} />
       <span className="catalog-result-copy"><span className="catalog-result-source page-eyebrow">{sourceName.toLocaleUpperCase()}{book.language ? ` · ${book.language.toLocaleUpperCase()}` : ''}</span><span className="catalog-result-title">{book.title}</span><span className="catalog-result-author">{book.author || t('Author not listed', 'Penulis tidak dicantumkan')}</span>
         <span className="catalog-result-meta">{book.year && <span>{book.year}</span>}{book.genre && <span className="catalog-result-genre">{book.genre}</span>}</span></span>

@@ -44,15 +44,15 @@ async function pool(items, work, done) {
   if (failure) throw failure;
   return results;
 }
-export async function listQuranEditions(signal) {
-  const data = await getJson(`${QURANENC}/translations/list/id`, signal);
+export async function listQuranEditions(language, signal) {
+  const data = await getJson(`${QURANENC}/translations/list/${language}`, signal);
   const rows = isRecord(data) && Array.isArray(data.translations) ? data.translations : [];
   const editions = rows.flatMap((row) => {
-    if (!isRecord(row) || !keyPattern.test(text(row.key)) || text(row.language_iso_code).toLowerCase() !== "id") return [];
+    if (!isRecord(row) || !keyPattern.test(text(row.key)) || text(row.language_iso_code).toLowerCase() !== language) return [];
     const key = text(row.key);
-    return [{ id: `quranenc-${key}`, kind: "quran-edition", title: text(row.title) || key, description: text(row.description), language: "id", version: text(row.version) || "unversioned", itemCount: QURAN_VERSE_TOTAL, publisher: { label: "QuranEnc.com", url: `https://quranenc.com/en/browse/${key}` }, remoteKey: key }];
+    return [{ id: `quranenc-${key}`, kind: "quran-edition", title: text(row.title) || key, description: text(row.description), language, version: text(row.version) || "unversioned", itemCount: QURAN_VERSE_TOTAL, publisher: { label: "QuranEnc.com", url: `https://quranenc.com/en/browse/${key}` }, remoteKey: key }];
   });
-  if (!editions.length) throw new Error("QuranEnc lists no Indonesian edition right now.");
+  if (!editions.length) throw new Error("QuranEnc lists no edition in this language right now.");
   return editions;
 }
 function checkSurah(number, data) {
@@ -84,14 +84,14 @@ export async function installedQuranSurah(number, key) {
   if (!surah) return null;
   return { number, name: quranSurahName(number), translationKey: key, translationTitle: record.info.title, version: record.info.version, language: record.info.language, sourceUrl: `https://quranenc.com/en/browse/${key}/${number}`, verses: surah.verses.map((verse) => ({ sura: number, aya: verse.aya, arabic: verse.arabic, translation: verse.translation, footnotes: verse.footnotes })) };
 }
-export async function listHadithCollections(signal) {
-  const data = await getJson(`${HADEETHENC}/categories/list/?language=id`, signal);
+export async function listHadithCollections(language, signal) {
+  const data = await getJson(`${HADEETHENC}/categories/list/?language=${language}`, signal);
   const fetched = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const rows = Array.isArray(data) ? data : [];
   const collections = rows.flatMap((row) => {
     if (!isRecord(row) || row.parent_id !== null || !/^\d{1,6}$/.test(text(row.id)) || !Number(row.hadeeths_count)) return [];
     const id = text(row.id);
-    return [{ id: `hadeethenc-id-${id}`, kind: "hadith-collection", title: text(row.title), description: "Hadis berterjemah Indonesia dari HadeethEnc, lengkap dengan derajat, rujukan, dan penjelasannya.", language: "id", version: `diunduh ${fetched}`, itemCount: Number(row.hadeeths_count), publisher: { label: "HadeethEnc.com", url: "https://hadeethenc.com/id/home" }, remoteKey: id }];
+    return [{ id: `hadeethenc-${language}-${id}`, kind: "hadith-collection", title: text(row.title), description: language === "id" ? "Hadis berterjemah Indonesia dari HadeethEnc, lengkap dengan derajat, rujukan, dan penjelasannya." : "Hadith in English from HadeethEnc, with grade, reference and explanation.", language, version: language === "id" ? `diunduh ${fetched}` : `downloaded ${fetched}`, itemCount: Number(row.hadeeths_count), publisher: { label: "HadeethEnc.com", url: "https://hadeethenc.com/id/home" }, remoteKey: id }];
   });
   if (!collections.length) throw new Error("HadeethEnc lists no collection right now.");
   return collections;
@@ -100,7 +100,7 @@ export async function installHadithCollection(info, signal, onProgress) {
   if (info.kind !== "hadith-collection" || !/^\d{1,6}$/.test(info.remoteKey)) throw new TypeError("Not a hadith collection.");
   const ids = [];
   for (let page = 1; ; page++) {
-    const data = await getJson(`${HADEETHENC}/hadeeths/list/?language=id&category_id=${info.remoteKey}&page=${page}&per_page=1000`, signal);
+    const data = await getJson(`${HADEETHENC}/hadeeths/list/?language=${info.language}&category_id=${info.remoteKey}&page=${page}&per_page=1000`, signal);
     if (!isRecord(data) || !Array.isArray(data.data)) throw new Error("HadeethEnc returned an unexpected list, so nothing was saved.");
     ids.push(...data.data.map((row) => isRecord(row) ? text(row.id) : "").filter((id) => /^\d{1,8}$/.test(id)));
     const last = isRecord(data.meta) ? Number(data.meta.last_page) : 1;
@@ -110,7 +110,7 @@ export async function installHadithCollection(info, signal, onProgress) {
   if (!unique.length) throw new Error("HadeethEnc returned no hadith for this collection.");
   let bytes = 0;
   const items = await pool(unique, async (id) => {
-    const row = await getJson(`${HADEETHENC}/hadeeths/one/?language=id&id=${id}`, signal);
+    const row = await getJson(`${HADEETHENC}/hadeeths/one/?language=${info.language}&id=${id}`, signal);
     if (!isRecord(row) || text(row.id) !== id || !text(row.title) || !text(row.hadeeth)) throw new Error(`Hadith ${id} came back incomplete, so nothing was saved.`);
     const { translations: _languages, ...content } = row;
     bytes += JSON.stringify(content).length;
@@ -118,7 +118,7 @@ export async function installHadithCollection(info, signal, onProgress) {
     return content;
   }, (done) => onProgress?.(done, unique.length));
   const payload = { schemaVersion: 1, categoryId: info.remoteKey, language: info.language, fetchedAt: (/* @__PURE__ */ new Date()).toISOString(), items };
-  const record = { id: info.id, info: { ...info, itemCount: items.length, version: `diunduh ${payload.fetchedAt.slice(0, 10)}` }, payload, installedAt: Date.now(), bytes };
+  const record = { id: info.id, info: { ...info, itemCount: items.length, version: `${info.language === "id" ? "diunduh" : "downloaded"} ${payload.fetchedAt.slice(0, 10)}` }, payload, installedAt: Date.now(), bytes };
   await putRecord(record);
   return record;
 }

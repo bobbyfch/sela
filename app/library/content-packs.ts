@@ -1,29 +1,26 @@
-/**
- * Optional, user-installed content packs for Taman Bacaan.
- * A pack is a small manifest (listed in library/packs/index.json) plus one JSON payload.
- * Install is download -> verify size and SHA-256 -> validate shape -> single IndexedDB commit,
- * so a failed or cancelled install never leaves a half-written pack. Personal shelf data lives in
- * a different database and is never touched here.
- */
-export type PackKind = 'editorial-collection';
+export const PACK_FAITHS = ['islam', 'protestantism', 'catholicism', 'buddhism', 'hinduism', 'confucianism'] as const;
+export type PackFaith = typeof PACK_FAITHS[number];
+export type PackKind = 'editorial-collection' | 'text-collection';
 export type PackStatus = 'pilot' | 'draft' | 'complete';
+
 export interface PackManifest {
   id: string;
   schemaVersion: 1;
   kind: PackKind;
   status: PackStatus;
+  faiths: PackFaith[];
   category: string;
   language: string;
   title: { id: string; en: string };
   description: { id: string; en: string };
   edition: string;
   itemCount: number;
-  plannedItemCount?: number;
   source: { label: string; url: string }[];
   license: { code: string; name: string; noticePath: string };
   payload: { path: string; sha256: string; bytes: number };
 }
 export interface PackIndex { schemaVersion: 1; packs: PackManifest[] }
+
 export interface ProphetRef { surah: number; from: number; to?: number }
 export interface ProphetSection { heading: string; paragraphs: string[]; refs: ProphetRef[] }
 export interface ProphetArticle {
@@ -38,12 +35,16 @@ export interface ProphetArticle {
   related: string[];
 }
 export interface ProphetPayload { schemaVersion: 1; packId: string; articles: ProphetArticle[] }
-export interface InstalledPack { id: string; manifest: PackManifest; payload: ProphetPayload; installedAt: number; bytes: number }
 
-/**
- * Packs fetched straight from the publisher's own API when the reader asks. Sela never hosts or republishes this text,
- * so the publisher's "no changes, keep the version, stay current" terms are met by storing the response verbatim.
- */
+export interface TextVerse { n: string; text: string }
+export interface TextSection { id: string; title: string; paragraphs?: string[]; verses?: TextVerse[] }
+export interface TextWork { id: string; title: string; subtitle?: string; author?: string; sections: TextSection[] }
+export interface TextPayload { schemaVersion: 1; packId: string; works: TextWork[] }
+
+export interface InstalledProphetPack { id: string; manifest: PackManifest; payload: ProphetPayload; installedAt: number; bytes: number }
+export interface InstalledTextPack { id: string; manifest: PackManifest; payload: TextPayload; installedAt: number; bytes: number }
+export type InstalledPack = InstalledProphetPack | InstalledTextPack;
+
 export type SourceKind = 'quran-edition' | 'hadith-collection';
 export interface SourcePackInfo {
   id: string;
@@ -51,7 +52,6 @@ export interface SourcePackInfo {
   title: string;
   description: string;
   language: string;
-  /** Publisher version string, or the fetch date when the publisher gives none. */
   version: string;
   itemCount: number;
   publisher: { label: string; url: string };
@@ -63,7 +63,7 @@ export interface HadithPayload { schemaVersion: 1; categoryId: string; language:
 export interface InstalledSourcePack { id: string; info: SourcePackInfo; payload: QuranEditionPayload | HadithPayload; installedAt: number; bytes: number }
 export type PackRecord = InstalledPack | InstalledSourcePack;
 
-const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024;
+const MAX_PAYLOAD_BYTES = 16 * 1024 * 1024;
 const MAX_INDEX_BYTES = 256 * 1024;
 const idPattern = /^[a-z0-9][a-z0-9-]{2,63}$/;
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,40}$/;
@@ -77,19 +77,19 @@ function fail(what: string): never { throw new TypeError(`Invalid content pack: 
 
 export function validatePackManifest(value: unknown): PackManifest {
   if (!isRecord(value)) fail('manifest is not an object');
-  const { id, schemaVersion, kind, status, category, language, title, description, edition, itemCount, plannedItemCount, source, license, payload } = value;
+  const { id, schemaVersion, kind, status, faiths, category, language, title, description, edition, itemCount, source, license, payload } = value;
   if (typeof id !== 'string' || !idPattern.test(id)) fail('id');
   if (schemaVersion !== 1) fail('unsupported schemaVersion');
-  if (kind !== 'editorial-collection') fail('kind');
+  if (kind !== 'editorial-collection' && kind !== 'text-collection') fail('kind');
   if (status !== 'pilot' && status !== 'draft' && status !== 'complete') fail('status');
-  if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 24)) fail('category, language or edition');
+  if (!Array.isArray(faiths) || !faiths.length || faiths.some(faith => !(PACK_FAITHS as readonly unknown[]).includes(faith))) fail('faiths');
+  if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 48)) fail('category, language or edition');
   if (!isRecord(title) || !isText(title.id, 120) || !isText(title.en, 120)) fail('title');
   if (!isRecord(description) || !isText(description.id, 600) || !isText(description.en, 600)) fail('description');
   if (!isCount(itemCount, 1)) fail('itemCount');
-  if (plannedItemCount !== undefined && (!isCount(plannedItemCount, itemCount) )) fail('plannedItemCount');
   if (!Array.isArray(source) || !source.length || source.some(row => !isRecord(row) || !isText(row.label, 200) || typeof row.url !== 'string' || !/^https:\/\//.test(row.url))) fail('source');
   if (!isRecord(license) || !isText(license.code, 40) || !isText(license.name, 160) || !safePath(license.noticePath)) fail('license');
-  if (!isRecord(payload) || !safePath(payload.path) || typeof payload.sha256 !== 'string' || !shaPattern.test(payload.sha256) || !isCount(payload.bytes, 1) || Number(payload.bytes) > MAX_PAYLOAD_BYTES) fail('payload');
+  if (!isRecord(payload) || !safePath(payload.path) || typeof payload.sha256 !== 'string' || !shaPattern.test(payload.sha256) || !Number.isInteger(payload.bytes) || Number(payload.bytes) < 1 || Number(payload.bytes) > MAX_PAYLOAD_BYTES) fail('payload');
   return value as unknown as PackManifest;
 }
 
@@ -129,7 +129,32 @@ export function validateProphetPayload(value: unknown, manifest: PackManifest): 
   return value as unknown as ProphetPayload;
 }
 
-/** Resolve a pack file against the deployed app so GitHub Pages sub-paths keep working. */
+export function validateTextPayload(value: unknown, manifest: PackManifest): TextPayload {
+  if (!isRecord(value) || value.schemaVersion !== 1 || value.packId !== manifest.id || !Array.isArray(value.works)) fail('payload shape');
+  if (value.works.length !== manifest.itemCount) fail(`expected ${manifest.itemCount} works, found ${value.works.length}`);
+  const workIds = new Set<string>();
+  for (const work of value.works) {
+    if (!isRecord(work) || typeof work.id !== 'string' || !slugPattern.test(work.id) || workIds.has(work.id) || !isText(work.title, 200)) fail('work');
+    workIds.add(work.id);
+    if ((work.subtitle !== undefined && !isText(work.subtitle, 300)) || (work.author !== undefined && !isText(work.author, 200))) fail(`work ${work.id} fields`);
+    if (!Array.isArray(work.sections) || !work.sections.length) fail(`work ${work.id} sections`);
+    const sectionIds = new Set<string>();
+    for (const section of work.sections) {
+      if (!isRecord(section) || typeof section.id !== 'string' || !slugPattern.test(section.id) || sectionIds.has(section.id) || !isText(section.title, 240)) fail(`work ${work.id} section`);
+      sectionIds.add(section.id);
+      const paragraphs = Array.isArray(section.paragraphs) ? section.paragraphs : [];
+      const verses = Array.isArray(section.verses) ? section.verses : [];
+      if (!paragraphs.length && !verses.length) fail(`section ${work.id}/${section.id} has no text`);
+      if (paragraphs.some(text => !isText(text, 20000)) || verses.some(verse => !isRecord(verse) || !isText(verse.n, 12) || !isText(verse.text, 4000))) fail(`section ${work.id}/${section.id} text`);
+    }
+  }
+  return value as unknown as TextPayload;
+}
+
+export function validatePayload(value: unknown, manifest: PackManifest): ProphetPayload | TextPayload {
+  return manifest.kind === 'text-collection' ? validateTextPayload(value, manifest) : validateProphetPayload(value, manifest);
+}
+
 export function packUrl(path: string, baseUrl: string | URL = document.baseURI): URL {
   if (!safePath(path)) fail('path');
   return new URL(`../library/packs/${path}`, new URL('./', baseUrl));
@@ -170,13 +195,12 @@ export async function fetchPackIndex(signal?: AbortSignal): Promise<PackIndex> {
   return validatePackIndex(JSON.parse(new TextDecoder().decode(bytes)));
 }
 
-/** Download, verify and validate a payload. Throws before anything is stored. */
-export async function downloadPack(manifest: PackManifest, signal?: AbortSignal, onProgress?: (received: number, total: number) => void): Promise<{ payload: ProphetPayload; bytes: number }> {
+export async function downloadPack(manifest: PackManifest, signal?: AbortSignal, onProgress?: (received: number, total: number) => void): Promise<{ payload: ProphetPayload | TextPayload; bytes: number }> {
   const response = await fetch(packUrl(manifest.payload.path), { signal, cache: 'no-cache', credentials: 'omit', referrerPolicy: 'no-referrer', headers: { Accept: 'application/json' } });
   const bytes = await readLimited(response, manifest.payload.bytes, signal, received => onProgress?.(received, manifest.payload.bytes));
   if (bytes.length !== manifest.payload.bytes) throw new Error('The download is incomplete or changed since the catalogue was published. Try again later.');
   if (await sha256Hex(bytes) !== manifest.payload.sha256) throw new Error('The download does not match its published checksum, so it was discarded.');
-  return { payload: validateProphetPayload(JSON.parse(new TextDecoder().decode(bytes)), manifest), bytes: bytes.length };
+  return { payload: validatePayload(JSON.parse(new TextDecoder().decode(bytes)), manifest), bytes: bytes.length };
 }
 
 const DB_NAME = 'sela-content-packs';
@@ -199,22 +223,25 @@ function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRe
   }));
 }
 
-export async function installPack(manifest: PackManifest, signal?: AbortSignal, onProgress?: (received: number, total: number) => void): Promise<InstalledPack> {
-  const { payload, bytes } = await downloadPack(manifest, signal, onProgress);
-  const record: InstalledPack = { id: manifest.id, manifest, payload, installedAt: Date.now(), bytes };
-  await putRecord(record);
-  return record;
-}
 export const putRecord = (record: PackRecord): Promise<IDBValidKey> => run('readwrite', store => store.put(record));
 export const listRecords = (): Promise<PackRecord[]> => run('readonly', store => store.getAll() as IDBRequest<PackRecord[]>);
 export const getRecord = (id: string): Promise<PackRecord | undefined> => run('readonly', store => store.get(id) as IDBRequest<PackRecord | undefined>);
-export const isEditorial = (record: PackRecord | undefined): record is InstalledPack => !!record && 'manifest' in record;
-export const isSourcePack = (record: PackRecord | undefined): record is InstalledSourcePack => !!record && 'info' in record;
-export const listInstalledPacks = async (): Promise<InstalledPack[]> => (await listRecords()).filter(isEditorial);
-export const getInstalledPack = async (id: string): Promise<InstalledPack | undefined> => { const record = await getRecord(id); return isEditorial(record) ? record : undefined; };
 export const removePack = (id: string): Promise<undefined> => run('readwrite', store => store.delete(id) as IDBRequest<undefined>);
 
-/** Newer catalogue edition than the installed copy. */
+export const isHostedPack = (record: PackRecord | undefined): record is InstalledPack => !!record && 'manifest' in record;
+export const isProphetPack = (record: PackRecord | undefined): record is InstalledProphetPack => isHostedPack(record) && record.manifest.kind === 'editorial-collection';
+export const isTextPack = (record: PackRecord | undefined): record is InstalledTextPack => isHostedPack(record) && record.manifest.kind === 'text-collection';
+export const isSourcePack = (record: PackRecord | undefined): record is InstalledSourcePack => !!record && 'info' in record;
+
+export async function installPack(manifest: PackManifest, signal?: AbortSignal, onProgress?: (received: number, total: number) => void): Promise<InstalledPack> {
+  const { payload, bytes } = await downloadPack(manifest, signal, onProgress);
+  const record = { id: manifest.id, manifest, payload, installedAt: Date.now(), bytes } as InstalledPack;
+  await putRecord(record);
+  return record;
+}
+export const listInstalledPacks = async (): Promise<InstalledPack[]> => (await listRecords()).filter(isHostedPack);
+export const getInstalledPack = async (id: string): Promise<InstalledPack | undefined> => { const record = await getRecord(id); return isHostedPack(record) ? record : undefined; };
+
 export function packUpdateAvailable(installed: InstalledPack, listed: PackManifest): boolean {
   return installed.manifest.payload.sha256 !== listed.payload.sha256;
 }
@@ -222,6 +249,10 @@ export function packUpdateAvailable(installed: InstalledPack, listed: PackManife
 export function readingMinutes(article: ProphetArticle): number {
   const words = [article.lede, ...article.sections.flatMap(section => section.paragraphs), ...article.notes].join(' ').split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+export function sectionMinutes(section: TextSection): number {
+  const words = [...(section.paragraphs ?? []), ...(section.verses ?? []).map(verse => verse.text)].join(' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
 }
 export function formatRef(ref: ProphetRef, surahName: string): string {
   return `${surahName} ${ref.surah}:${ref.from}${ref.to && ref.to !== ref.from ? `–${ref.to}` : ''}`;

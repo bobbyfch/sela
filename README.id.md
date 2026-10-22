@@ -1,39 +1,154 @@
-<p align="center"><img src="logo.svg" width="76" alt="Lambang Sela Books"></p>
+<p align="center"><img src="logo.svg" width="76" alt="Logo Sela Books"></p>
 <h1 align="center">Sela Books</h1>
-<p align="center"><strong>Perpustakaan pribadimu.</strong><br>Cerita, dokumen, dan ruang kecil untuk dirimu.</p>
+<p align="center"><strong>Rak bukumu sendiri.</strong><br>Cerita, dokumen, kitab suci, dan sedikit ruang untukmu.</p>
 
-<p align="center"><img src="https://img.shields.io/badge/beta-0.9.0--beta.8-blue" alt="Beta 0.9.0-beta.8"> <img src="https://img.shields.io/badge/lisensi-MIT-green" alt="Lisensi MIT"> <a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg" alt="CI"></a></p>
+<p align="center">
+  <a href="https://github.com/bobbyfch/sela/actions/workflows/ci.yml"><img src="https://github.com/bobbyfch/sela/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/versi-0.9.0--beta.8-blue" alt="Versi 0.9.0-beta.8">
+  <img src="https://img.shields.io/badge/lisensi-MIT-green" alt="Lisensi MIT">
+  <img src="https://img.shields.io/badge/PWA-siap%20offline-5b4b3a" alt="PWA siap offline">
+</p>
 
-<p align="center"><a href="https://bobbyfch.github.io/sela/">Situs proyek dan panduan pemasangan</a> · <a href="README.md">English</a> · <a href="https://github.com/bobbyfch/sela/releases">Rilis</a></p>
+<p align="center">
+  <a href="https://bobbyfch.github.io/sela/app/">Buka aplikasi</a> ·
+  <a href="https://bobbyfch.github.io/sela/">Situs proyek</a> ·
+  <a href="docs/README.md">Dokumentasi</a> ·
+  <a href="README.md">English</a> ·
+  <a href="https://github.com/bobbyfch/sela/releases">Rilis</a>
+</p>
 
 <p align="center"><img src="site/screenshots/app-desktop.webp" alt="Sela Books di desktop" width="720"></p>
 
-Sela berarti jeda: ruang kecil dalam hari yang sibuk untuk kembali pada sebuah cerita. Sela Books menyimpan perpustakaan pribadi di perangkatmu; Sela Viewer menghadirkan pengalaman membaca yang sama di website yang sudah ada.
+Sela adalah ruang baca pribadi untuk buku, komik, dokumen, dan kitab suci. Nama Sela berarti jeda: tempat kecil dalam sehari untuk kembali ke sebuah cerita. Perpustakaan tersimpan di peramban, bisa dipakai offline setelah dipasang, dan tidak ada yang diunggah.
+
+Sela hadir dalam dua bentuk yang memakai satu mesin dokumen:
+
+| | Sela Books | Sela Viewer |
+| --- | --- | --- |
+| Apa itu | Aplikasi web yang bisa dipasang (PWA) dengan rak pribadi | Pembaca tanpa kerangka kerja yang bisa disematkan di situs mana pun |
+| Penyimpanan | IndexedDB di perangkatmu | Tidak ada, membuka dokumen yang kamu berikan |
+| Cara memakai | [bobbyfch.github.io/sela/app](https://bobbyfch.github.io/sela/app/) | Skrip CDN atau impor ESM, lihat [Instalasi](docs/install.md) |
+
+## Isi
+
+- [Fitur](#fitur)
+- [Mulai cepat](#mulai-cepat)
+- [Sematkan Viewer](#sematkan-viewer)
+- [Bacaan agama dan lisensi konten](#bacaan-agama-dan-lisensi-konten)
+- [Privasi](#privasi)
+- [Dokumentasi](#dokumentasi)
+- [Berkontribusi](#berkontribusi)
+- [Keamanan](#keamanan)
+- [Lisensi](#lisensi)
 
 ## Fitur
 
-- Baca PDF, EPUB, CBZ, TXT, Markdown, HTML, FB2, DOCX, dan ODT. Dukungan DjVu opsional memakai decoder eksternal.
-- Pilih mode buku, satu halaman, manga RTL, atau webtoon gulir berkelanjutan.
-- Simpan penanda, catatan, sorotan, progres membaca, dan koleksi dalam perpustakaan lokal dengan backup dan pemulihan.
-- Jelajahi lewat alur pilih sumber → koleksi yang didukung → topik opsional. Sumber mencakup teks domain publik, transkripsi komunitas, buku ajar terbuka, peringkat pembaca, dan katalog OPDS pribadi. Komik memakai metadata Open Library dan BookRank; catatan tanpa edisi terbuka mengarah ke halaman sumber. Pencarian di perpustakaan memakai indeks Orama di perangkat dan memahami frasa umum Bahasa Indonesia tanpa mengunggah kueri.
-- Isi Beranda dengan kutipan, berita sesuai topik, bacaan kitab pilihan, dan peristiwa hari ini; berita Indonesia memakai cadangan ANTARA saat sumber utama gagal.
-- Catat waktu baca dan streak secara lokal, dengan ringkasan mingguan, bulanan, atau tahunan. Sesi berhenti saat pembaca tidak terlihat.
-- Atur Beranda dengan ilustrasi teman 3D, suasana sesuai cuaca, kalender membaca, kutipan, dan widget kebiasaan opsional. Pengguna Muslim dapat meminta perkiraan waktu salat; koordinat lokasi cuaca tersimpan hanya dikirim ke penyedia setelah tombol permintaan diketuk.
-- Pilih satu dari delapan palet dengan karakter berbeda: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, dan Arunika. Tampilan terang, gelap, dan OLED diatur terpisah.
-- Gunakan lima area app: Hari ini, Rak buku, Jelajah, Catatan baca, dan Pengaturan.
-- Pasang Sela Books sebagai web app, atau sematkan Viewer yang bebas framework ke HTML, React, Vue, Svelte, Astro, PHP, dan website lainnya.
-- Bahasa antarmuka mencakup Inggris, Indonesia, Jepang, Spanyol, Prancis, Jerman, Portugis, Mandarin, dan Korea.
+### Membaca
 
-Lihat [kemampuan sumber Jelajah dan catatan API](docs/library-sources.md) untuk alur yang didukung, batas akses, hak penggunaan, dan feed berita yang telah diuji. Direktori API hanya menjadi indeks pencarian; sumber ditambahkan setelah alur browser dan hak kontennya diperiksa.
+- PDF, EPUB, CBZ, TXT, Markdown, HTML, FB2, DOCX, dan ODT. DjVu berjalan dengan dekoder eksternal yang kamu sediakan.
+- Mode buku, satu halaman, manga (kanan ke kiri), dan webtoon bergulir.
+- Penanda, catatan, sorotan, progres baca, koleksi, cadangan, dan pemulihan, semuanya tersimpan lokal.
+
+### Rak dan tab Agama
+
+- Cari isi rakmu dengan indeks di perangkat yang memahami kalimat Indonesia sehari-hari. Kata kunci tidak diunggah.
+- Setelah kamu memilih agama atau tradisi di Pengaturan, tab **Agama** muncul di rak berisi kitab suci dan karya klasik tradisi itu. Lihat [Bacaan agama](#bacaan-agama-dan-lisensi-konten).
+
+### Jelajah
+
+- Pilih katalog, lalu koleksi, lalu topik opsional. Sumbernya Project Gutenberg, Wikisumber, GITenberg, Open Library, OpenStax, peringkat BookRank, Pilihan Sela, dan katalog OPDS milikmu. Data tanpa edisi terbuka diberi tautan keluar dan tidak berpura-pura bisa diunduh. Lihat [sumber pustaka](docs/library-sources.md).
+
+### Beranda
+
+- Kutipan, berita topik, kabar "pada hari ini", kalender membaca, cuaca opsional, timer fokus, dan pelacak kebiasaan. Perkiraan jadwal salat hanya diminta saat kamu memintanya.
+
+### Catatan baca
+
+- Waktu baca dan beruntun harian, dengan tampilan mingguan, bulanan, dan tahunan. Sesi berhenti saat pembaca tidak terlihat.
+
+### Tampilan dan bahasa
+
+- Delapan palet (Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, Arunika) dengan mode terang, gelap, dan OLED yang terpisah.
+- Bahasa antarmuka: Inggris, Indonesia, Jepang, Spanyol, Prancis, Jerman, Portugis, Tionghoa, dan Korea.
 
 <p align="center"><img src="site/screenshots/app-mobile.webp" width="220" alt="Sela Books di ponsel"> <img src="site/screenshots/app-palettes.png" width="360" alt="Tema warna Sela Books"></p>
 
+## Mulai cepat
+
+Pakai aplikasi yang sudah di-host, atau jalankan sendiri.
+
+```sh
+git clone https://github.com/bobbyfch/sela.git
+cd sela
+npm ci
+npm run build
+npm run serve
+```
+
+Lalu buka `http://127.0.0.1:4173/sela/app/` untuk aplikasi dan `http://127.0.0.1:4173/sela/` untuk situs proyek. Server lokal meniru awalan `/sela/` milik GitHub Pages, jadi jalur aset berperilaku sama seperti di produksi.
+
+Kebutuhan: Node.js 22.18 atau lebih baru (disarankan 24) dan npm.
+
+| Perintah | Fungsi |
+| --- | --- |
+| `npm run typecheck` | Cek tipe semua proyek |
+| `npm test` | Uji unit |
+| `npm run test:browser` | Uji Playwright di Chromium, Firefox, dan WebKit, ditambah proyek service worker asli |
+| `npm run build` | Bangun ulang aset, manifes, dan identitas cache |
+| `node --experimental-strip-types scripts/packs.ts --check` | Periksa katalog paket bacaan |
+
+Selengkapnya di [Pengembangan](docs/development.md).
+
+## Sematkan Viewer
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bobbyfch/sela@v0.9.0-beta.8/dist/js/sela.min.js"></script>
+<button id="read" type="button">Baca PDF</button>
+<script>
+  const reader = new Sela({ pdfUrl: '/books/story.pdf', title: 'Ceritaku', mode: 'book', theme: 'auto', language: 'id' });
+  document.querySelector('#read').addEventListener('click', () => reader.open());
+</script>
+```
+
+Kunci ke satu tag rilis di produksi. Contoh ESM, TypeScript, React, Vue, Svelte, Astro, PHP, dan HTML statis ada di [Instalasi](docs/install.md) dan [Integrasi](docs/integrations.md).
+
+## Bacaan agama dan lisensi konten
+
+Pilih agama atau tradisi di **Pengaturan → Alat perpustakaan**. Tab Agama lalu hanya menampilkan bacaan untuk tradisi itu. Tidak ada yang diunduh sebelum kamu menekan tombolnya, dan tidak ada yang masuk ke daftar bukumu.
+
+| Tradisi | Bacaan |
+| --- | --- |
+| Islam | Al-Qur'an (teks Arab dengan terjemahan Indonesia atau Inggris) dan hadis yang diunduh dari penerbitnya, ditambah kisah 25 nabi |
+| Kristen Protestan | Alkitab TSI (Indonesia), World English Bible, karya klasik Kristen |
+| Katolik | Douay-Rheims, karya klasik Kristen |
+| Buddha | Sutta Pali dalam bahasa Inggris, Samyukta Agama dalam bahasa Indonesia, Dhammapada, kisah Jataka, The Gospel of Buddha |
+| Hindu | Bhagavad-Gita, Upanishad, Yoga Sutra, Ramayana |
+| Konghucu | Analects, Da Xue, Zhong Yong, Tao Teh King |
+
+Unduhan diperiksa sebelum disimpan, bisa dibaca offline, dan bisa dihapus di Pengaturan tanpa menyentuh bukumu, catatan, atau cadangan. Entri yang kamu simpan dan posisi bacamu ikut dalam cadangan Sela.
+
+Setiap edisi punya lisensinya sendiri. Lisensi MIT SELA hanya mencakup kode dan teks tulisan SELA. Lihat [Bacaan agama: sumber](docs/faith-readings-sources.md) dan [pemberitahuan pihak ketiga](THIRD_PARTY_NOTICES.md). Kisah 25 nabi masih berupa draf yang belum ditelaah ulama, dan aplikasi menyatakannya.
+
+## Privasi
+
+Buku, catatan, dan progres tetap di IndexedDB perangkatmu. Tidak ada analitik dan tidak ada unggahan dokumen. Aplikasi menghubungi pihak ketiga hanya untuk fitur yang kamu aktifkan atau sumber yang kamu pilih: katalog Jelajah, cuaca dan perkiraan salat opsional, serta unduhan Al-Qur'an dan hadis dari penerbitnya. Rinciannya di [Keamanan](docs/security.md).
+
+## Dokumentasi
+
+Mulai dari [indeks dokumentasi](docs/README.md). Pintu masuk yang berguna: [Instalasi](docs/install.md), [Pasang sebagai aplikasi](docs/pwa.md), [Format dan batas](docs/formats.md), [Cadangan](docs/backup.md), [Sumber pustaka](docs/library-sources.md), [Peta repositori](docs/repository-map.md).
+
+## Berkontribusi
+
+Laporan masalah dan perbaikan kecil yang bisa direproduksi sangat diterima. Baca [CONTRIBUTING.md](CONTRIBUTING.md) dan [kode etik](CODE_OF_CONDUCT.md) lebih dulu.
+
+## Keamanan
+
+Laporkan kerentanan secara privat. Lihat [SECURITY.md](SECURITY.md).
+
 ## Lisensi
 
-Sela dirilis dengan lisensi MIT. Lihat [LICENSE](LICENSE) dan [catatan lisensi pihak ketiga](THIRD_PARTY_NOTICES.md) untuk atribusi komponen dan lisensinya. Decoder DjVu eksternal opsional tidak termasuk dalam paket MIT.
+Sela dirilis dengan [Lisensi MIT](LICENSE). Komponen dan konten pihak ketiga punya lisensi sendiri yang tercantum di [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Dekoder DjVu eksternal opsional bukan bagian dari Sela dan berlisensi terpisah.
 
-## Identitas
-
-Sela berarti jeda: waktu yang tenang untuk memberi ruang bagi membaca. Identitasnya memadukan lambang buku sederhana bernuansa kaca dengan ruang baca yang cerah dan ramah. Sela Books adalah perpustakaan pribadi; Sela Viewer adalah pendamping baca yang dapat disematkan.
+Sela (dibaca *se-la*) berarti jeda. Ilustrasinya menampilkan tokoh penyihir orisinal dan makhluk kecil pecinta buku.
 
 © Bobby Fajar Christian.

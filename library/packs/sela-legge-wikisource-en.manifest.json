@@ -1,0 +1,39 @@
+{
+  "id": "sela-legge-wikisource-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "confucianism"
+  ],
+  "category": "scripture",
+  "language": "en",
+  "title": {
+    "id": "Da Xue dan Zhong Yong (Legge)",
+    "en": "The Great Learning and the Doctrine of the Mean (Legge)"
+  },
+  "description": {
+    "id": "Dua dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.",
+    "en": "Two of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription."
+  },
+  "edition": "Wikisource, The Chinese Classics vol. 1",
+  "itemCount": 2,
+  "source": [
+    {
+      "label": "Wikisource · The Great Learning",
+      "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning"
+    },
+    {
+      "label": "Wikisource · The Doctrine of the Mean",
+      "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean"
+    }
+  ],
+  "license": {
+    "code": "CC-BY-SA-4.0",
+    "name": "CC BY-SA 4.0 · kontributor Wikisource",
+    "noticePath": "licenses/sela-wikisource-legge-NOTICE.md"
+  },
+  "payload": {
+    "path": "legge-wikisource-en-v1.json"
+  }
+}

@@ -37,7 +37,7 @@ export default function FaithReaderScreen() {
   };
 
   return <div className="faith-reader-screen" aria-label={title}>
-    <header className="faith-reader-header">
+    <header className="faith-reader-header" role="banner">
       <ActionIcon className="faith-reader-back" variant="default" aria-label={copy(lang, 'Back to Sela', 'Kembali ke Sela')} onClick={goBack}><ArrowLeft size={18} /></ActionIcon>
       <div className="faith-reader-brand"><Text className="page-eyebrow">SELA · {copy(lang, 'READING ROOM', 'RUANG BACA')}</Text><Title order={1}>{title}</Title></div>
       <BookOpenText className="faith-reader-mark" size={21} aria-hidden="true" />
@@ -89,11 +89,9 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     setSavedOnly(false);
     void installedQuranEditions(language).catch(() => []).then(saved => {
       if (controller.signal.aborted) return;
-      // The chosen edition is saved on this device: do not contact the publisher just to open the reader.
       if (translationKey && saved.some(row => row.key === translationKey)) { setTranslations(saved); setSavedOnly(true); setTranslationsReady(true); return; }
       return loadOnlineEditions(controller.signal).then(() => { if (!controller.signal.aborted) setTranslationsReady(true); }).catch(reason => {
         if (controller.signal.aborted) return;
-        // Offline or the publisher is down: editions saved from Reading garden still work.
         if (saved.length) { setTranslations(saved); setTranslationKey(current => saved.some(row => row.key === current) ? current : saved[0].key); } else setError(reason instanceof Error ? reason.message : t('Translation editions are unavailable.', 'Daftar terjemahan belum tersedia.'));
         setTranslationsReady(true);
       });
@@ -105,7 +103,6 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     if (!translationsReady) return;
     const controller = new AbortController();
     setLoading(true); setError(''); setSurah(null);
-    // A saved edition is read from this device first, so reading it makes no request to the publisher.
     void installedQuranSurah(surahNo, translationKey).catch(() => null).then(saved => saved ?? loadQuranSurah(surahNo, language, controller.signal, translationKey || undefined)).then(next => {
       if (controller.signal.aborted) return;
       setSurah(next);
@@ -231,7 +228,7 @@ function StoryReader({ index, navigate }: { index: number; navigate: ReturnType<
     <Title order={2}>{lang === 'id' ? story.indonesian : story.english}</Title>
     <Text className="faith-story-reference">{story.reference}</Text>
     <p className="faith-story-copy">{lang === 'id' ? story.storyId : story.storyEn}</p>
-    <div className="faith-story-actions"><Button leftSection={<BookOpenText size={16} />} onClick={() => navigate(`/faith/quran/${story.surah}?verse=${story.verse}`)}>{t('Open cited verses', 'Buka ayat rujukan')}</Button><span>{safeIndex + 1} / {PROPHET_PASSAGES.length}</span></div>
+    <div className="faith-story-actions"><Button leftSection={<BookOpenText size={16} />} onClick={() => navigate(`/faith/quran/${story.surah}?verse=${story.verse}`)}>{t('Open cited verses', 'Buka ayat rujukan')}</Button><Button variant="default" onClick={() => navigate('/shelf?tab=faith')}>{t('Full stories of the 25 prophets', 'Kisah lengkap 25 nabi')}</Button><span>{safeIndex + 1} / {PROPHET_PASSAGES.length}</span></div>
     <footer className="faith-reader-controls"><Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={safeIndex <= 0} onClick={() => navigate(`/faith/stories/${safeIndex - 1}`)}>{t('Previous story', 'Kisah sebelumnya')}</Button><Button variant="default" rightSection={<ChevronRight size={16} />} disabled={safeIndex >= PROPHET_PASSAGES.length - 1} onClick={() => navigate(`/faith/stories/${safeIndex + 1}`)}>{t('Next story', 'Kisah berikutnya')}</Button></footer>
   </article></main>;
 }

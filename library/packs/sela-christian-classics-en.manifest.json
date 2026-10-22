@@ -1,0 +1,40 @@
+{
+  "id": "sela-christian-classics-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "protestantism",
+    "catholicism"
+  ],
+  "category": "classics",
+  "language": "en",
+  "title": {
+    "id": "Karya klasik Kristen",
+    "en": "Christian classics"
+  },
+  "description": {
+    "id": "The Imitation of Christ karya Thomas à Kempis dan The Confessions karya Augustinus dari Hippo, dalam bahasa Inggris.",
+    "en": "The Imitation of Christ by Thomas à Kempis and The Confessions of St. Augustine."
+  },
+  "edition": "Project Gutenberg 1653, 3296",
+  "itemCount": 5,
+  "source": [
+    {
+      "label": "Project Gutenberg #1653",
+      "url": "https://www.gutenberg.org/ebooks/1653"
+    },
+    {
+      "label": "Project Gutenberg #3296",
+      "url": "https://www.gutenberg.org/ebooks/3296"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-christian-NOTICE.md"
+  },
+  "payload": {
+    "path": "christian-classics-en-v1.json"
+  }
+}

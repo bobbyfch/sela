@@ -5,8 +5,7 @@ export interface PersonalData {
  racks:{name:string;rule:string;description?:string;badge?:string}[];
  sessions:{book:string;at:number;seconds:number}[];
  quoteTopic:string; quoteLanguage:string; weeklyTarget?:number; quranTranslationKey?:string; quranLanguage?:'id'|'en'|'ja'; quranSurah?:number; quranVerse?:number; quranArabicSize?:number; quranTranslationSize?:number;
- /** Taman Bacaan: saved entries as `packId/itemId`, and the last entry read in each pack. Kept here so backups carry them. */
- tamanSaved?:string[]; tamanLast?:Record<string,string>;
+ readingsSaved?:string[]; readingsLast?:Record<string,string>;
 }
 export const PERSONAL_KEY='sela-library:personal';
 export function emptyPersonal():PersonalData{return {version:1,room:'',companion:'tanuki',faith:'none',gender:'unspecified',quiet:false,hidden:[],queue:[],books:{},racks:[],sessions:[],quoteTopic:'reading',quoteLanguage:'auto',quranTranslationKey:'',quranSurah:1,quranVerse:1,quranArabicSize:32,quranTranslationSize:18};}
@@ -19,8 +18,8 @@ export function validatePersonal(value:unknown):PersonalData {
  if(['id','en','ja'].includes(data.quranLanguage))result.quranLanguage=data.quranLanguage;
  if(Number.isInteger(data.quranSurah)&&data.quranSurah>=1&&data.quranSurah<=114)result.quranSurah=data.quranSurah;
  if(Number.isInteger(data.quranVerse)&&data.quranVerse>=1&&data.quranVerse<=286)result.quranVerse=data.quranVerse;
- if(Array.isArray(data.tamanSaved)){const saved=data.tamanSaved.filter((id:unknown):id is string=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:-[a-z0-9]{1,40})*$/.test(id));if(saved.length)result.tamanSaved=[...new Set(saved)].slice(0,500);}
- if(data.tamanLast&&typeof data.tamanLast==='object'&&!Array.isArray(data.tamanLast)){const last=Object.fromEntries(Object.entries(data.tamanLast as Record<string,unknown>).filter(([pack,item])=>/^[a-z0-9][a-z0-9-]{2,63}$/.test(pack)&&typeof item==='string'&&/^[a-z0-9]{1,40}(?:-[a-z0-9]{1,40})*$/.test(item)).slice(0,100)) as Record<string,string>;if(Object.keys(last).length)result.tamanLast=last;}
+ if(Array.isArray(data.readingsSaved)){const saved=data.readingsSaved.filter((id:unknown):id is string=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:[-.][a-z0-9]{1,40})*$/.test(id));if(saved.length)result.readingsSaved=[...new Set(saved)].slice(0,500);}
+ if(data.readingsLast&&typeof data.readingsLast==='object'&&!Array.isArray(data.readingsLast)){const last=Object.fromEntries(Object.entries(data.readingsLast as Record<string,unknown>).filter(([pack,item])=>/^[a-z0-9][a-z0-9-]{2,63}$/.test(pack)&&typeof item==='string'&&/^[a-z0-9]{1,40}(?:[-./][a-z0-9]{1,40})*$/.test(item)).slice(0,100)) as Record<string,string>;if(Object.keys(last).length)result.readingsLast=last;}
  if(Number.isFinite(data.quranArabicSize))result.quranArabicSize=Math.max(20,Math.min(48,Math.round(data.quranArabicSize)));
  if(Number.isFinite(data.quranTranslationSize))result.quranTranslationSize=Math.max(14,Math.min(28,Math.round(data.quranTranslationSize)));
  const companions:Record<string,PersonalData['companion']>={fox:'fox',tanuki:'tanuki',crane:'crane',rabbit:'rabbit',plant:'plant',cat:'tanuki',hamster:'tanuki',owl:'crane',turtle:'tanuki','red-panda':'tanuki',penguin:'crane',shiba:'tanuki',fawn:'rabbit'};

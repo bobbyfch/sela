@@ -1,5 +1,6 @@
 // Generated from app/library/content-packs.ts by npm run build. Do not edit.
-const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024;
+export const PACK_FAITHS = ["islam", "protestantism", "catholicism", "buddhism", "hinduism", "confucianism"];
+const MAX_PAYLOAD_BYTES = 16 * 1024 * 1024;
 const MAX_INDEX_BYTES = 256 * 1024;
 const idPattern = /^[a-z0-9][a-z0-9-]{2,63}$/;
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,40}$/;
@@ -13,19 +14,19 @@ function fail(what) {
 }
 export function validatePackManifest(value) {
   if (!isRecord(value)) fail("manifest is not an object");
-  const { id, schemaVersion, kind, status, category, language, title, description, edition, itemCount, plannedItemCount, source, license, payload } = value;
+  const { id, schemaVersion, kind, status, faiths, category, language, title, description, edition, itemCount, source, license, payload } = value;
   if (typeof id !== "string" || !idPattern.test(id)) fail("id");
   if (schemaVersion !== 1) fail("unsupported schemaVersion");
-  if (kind !== "editorial-collection") fail("kind");
+  if (kind !== "editorial-collection" && kind !== "text-collection") fail("kind");
   if (status !== "pilot" && status !== "draft" && status !== "complete") fail("status");
-  if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 24)) fail("category, language or edition");
+  if (!Array.isArray(faiths) || !faiths.length || faiths.some((faith) => !PACK_FAITHS.includes(faith))) fail("faiths");
+  if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 48)) fail("category, language or edition");
   if (!isRecord(title) || !isText(title.id, 120) || !isText(title.en, 120)) fail("title");
   if (!isRecord(description) || !isText(description.id, 600) || !isText(description.en, 600)) fail("description");
   if (!isCount(itemCount, 1)) fail("itemCount");
-  if (plannedItemCount !== void 0 && !isCount(plannedItemCount, itemCount)) fail("plannedItemCount");
   if (!Array.isArray(source) || !source.length || source.some((row) => !isRecord(row) || !isText(row.label, 200) || typeof row.url !== "string" || !/^https:\/\//.test(row.url))) fail("source");
   if (!isRecord(license) || !isText(license.code, 40) || !isText(license.name, 160) || !safePath(license.noticePath)) fail("license");
-  if (!isRecord(payload) || !safePath(payload.path) || typeof payload.sha256 !== "string" || !shaPattern.test(payload.sha256) || !isCount(payload.bytes, 1) || Number(payload.bytes) > MAX_PAYLOAD_BYTES) fail("payload");
+  if (!isRecord(payload) || !safePath(payload.path) || typeof payload.sha256 !== "string" || !shaPattern.test(payload.sha256) || !Number.isInteger(payload.bytes) || Number(payload.bytes) < 1 || Number(payload.bytes) > MAX_PAYLOAD_BYTES) fail("payload");
   return value;
 }
 export function validatePackIndex(value) {
@@ -60,6 +61,30 @@ export function validateProphetPayload(value, manifest) {
   }
   for (const article of value.articles) if (article.related.some((slug) => !slugs.has(slug))) fail(`article ${article.slug} links to a missing entry`);
   return value;
+}
+export function validateTextPayload(value, manifest) {
+  if (!isRecord(value) || value.schemaVersion !== 1 || value.packId !== manifest.id || !Array.isArray(value.works)) fail("payload shape");
+  if (value.works.length !== manifest.itemCount) fail(`expected ${manifest.itemCount} works, found ${value.works.length}`);
+  const workIds = /* @__PURE__ */ new Set();
+  for (const work of value.works) {
+    if (!isRecord(work) || typeof work.id !== "string" || !slugPattern.test(work.id) || workIds.has(work.id) || !isText(work.title, 200)) fail("work");
+    workIds.add(work.id);
+    if (work.subtitle !== void 0 && !isText(work.subtitle, 300) || work.author !== void 0 && !isText(work.author, 200)) fail(`work ${work.id} fields`);
+    if (!Array.isArray(work.sections) || !work.sections.length) fail(`work ${work.id} sections`);
+    const sectionIds = /* @__PURE__ */ new Set();
+    for (const section of work.sections) {
+      if (!isRecord(section) || typeof section.id !== "string" || !slugPattern.test(section.id) || sectionIds.has(section.id) || !isText(section.title, 240)) fail(`work ${work.id} section`);
+      sectionIds.add(section.id);
+      const paragraphs = Array.isArray(section.paragraphs) ? section.paragraphs : [];
+      const verses = Array.isArray(section.verses) ? section.verses : [];
+      if (!paragraphs.length && !verses.length) fail(`section ${work.id}/${section.id} has no text`);
+      if (paragraphs.some((text) => !isText(text, 2e4)) || verses.some((verse) => !isRecord(verse) || !isText(verse.n, 12) || !isText(verse.text, 4e3))) fail(`section ${work.id}/${section.id} text`);
+    }
+  }
+  return value;
+}
+export function validatePayload(value, manifest) {
+  return manifest.kind === "text-collection" ? validateTextPayload(value, manifest) : validateProphetPayload(value, manifest);
 }
 export function packUrl(path, baseUrl = document.baseURI) {
   if (!safePath(path)) fail("path");
@@ -115,7 +140,7 @@ export async function downloadPack(manifest, signal, onProgress) {
   const bytes = await readLimited(response, manifest.payload.bytes, signal, (received) => onProgress?.(received, manifest.payload.bytes));
   if (bytes.length !== manifest.payload.bytes) throw new Error("The download is incomplete or changed since the catalogue was published. Try again later.");
   if (await sha256Hex(bytes) !== manifest.payload.sha256) throw new Error("The download does not match its published checksum, so it was discarded.");
-  return { payload: validateProphetPayload(JSON.parse(new TextDecoder().decode(bytes)), manifest), bytes: bytes.length };
+  return { payload: validatePayload(JSON.parse(new TextDecoder().decode(bytes)), manifest), bytes: bytes.length };
 }
 const DB_NAME = "sela-content-packs";
 const STORE = "packs";
@@ -144,29 +169,35 @@ function run(mode, work) {
     };
   }));
 }
+export const putRecord = (record) => run("readwrite", (store) => store.put(record));
+export const listRecords = () => run("readonly", (store) => store.getAll());
+export const getRecord = (id) => run("readonly", (store) => store.get(id));
+export const removePack = (id) => run("readwrite", (store) => store.delete(id));
+export const isHostedPack = (record) => !!record && "manifest" in record;
+export const isProphetPack = (record) => isHostedPack(record) && record.manifest.kind === "editorial-collection";
+export const isTextPack = (record) => isHostedPack(record) && record.manifest.kind === "text-collection";
+export const isSourcePack = (record) => !!record && "info" in record;
 export async function installPack(manifest, signal, onProgress) {
   const { payload, bytes } = await downloadPack(manifest, signal, onProgress);
   const record = { id: manifest.id, manifest, payload, installedAt: Date.now(), bytes };
   await putRecord(record);
   return record;
 }
-export const putRecord = (record) => run("readwrite", (store) => store.put(record));
-export const listRecords = () => run("readonly", (store) => store.getAll());
-export const getRecord = (id) => run("readonly", (store) => store.get(id));
-export const isEditorial = (record) => !!record && "manifest" in record;
-export const isSourcePack = (record) => !!record && "info" in record;
-export const listInstalledPacks = async () => (await listRecords()).filter(isEditorial);
+export const listInstalledPacks = async () => (await listRecords()).filter(isHostedPack);
 export const getInstalledPack = async (id) => {
   const record = await getRecord(id);
-  return isEditorial(record) ? record : void 0;
+  return isHostedPack(record) ? record : void 0;
 };
-export const removePack = (id) => run("readwrite", (store) => store.delete(id));
 export function packUpdateAvailable(installed, listed) {
   return installed.manifest.payload.sha256 !== listed.payload.sha256;
 }
 export function readingMinutes(article) {
   const words = [article.lede, ...article.sections.flatMap((section) => section.paragraphs), ...article.notes].join(" ").split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+export function sectionMinutes(section) {
+  const words = [...section.paragraphs ?? [], ...(section.verses ?? []).map((verse) => verse.text)].join(" ").split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
 }
 export function formatRef(ref, surahName) {
   return `${surahName} ${ref.surah}:${ref.from}${ref.to && ref.to !== ref.from ? `\u2013${ref.to}` : ""}`;

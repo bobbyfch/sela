@@ -2,10 +2,223 @@
   "schemaVersion": 1,
   "packs": [
     {
+      "id": "sela-buddhist-stories-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "stories",
+      "language": "en",
+      "title": {
+        "id": "Kisah Buddha: Jataka dan Injil Buddha",
+        "en": "Buddhist stories: Jataka tales and the Gospel of Buddha"
+      },
+      "description": {
+        "id": "Jataka Tales dan More Jataka Tales karya Ellen C. Babbitt, serta The Gospel of Buddha karya Paul Carus.",
+        "en": "Jataka Tales and More Jataka Tales by Ellen C. Babbitt, and The Gospel of Buddha by Paul Carus."
+      },
+      "edition": "Project Gutenberg 62514, 7518, 35895",
+      "itemCount": 3,
+      "source": [
+        {
+          "label": "Project Gutenberg #62514",
+          "url": "https://www.gutenberg.org/ebooks/62514"
+        },
+        {
+          "label": "Project Gutenberg #7518",
+          "url": "https://www.gutenberg.org/ebooks/7518"
+        },
+        {
+          "label": "Project Gutenberg #35895",
+          "url": "https://www.gutenberg.org/ebooks/35895"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-buddhist-NOTICE.md"
+      },
+      "payload": {
+        "path": "buddhist-stories-en-v1.json",
+        "sha256": "894551c912b4e73d9924f7bc373f4fb9e44eebe312f464715d6768c5c256a4c4",
+        "bytes": 600808
+      }
+    },
+    {
+      "id": "sela-christian-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "protestantism",
+        "catholicism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Karya klasik Kristen",
+        "en": "Christian classics"
+      },
+      "description": {
+        "id": "The Imitation of Christ karya Thomas à Kempis dan The Confessions karya Augustinus dari Hippo, dalam bahasa Inggris.",
+        "en": "The Imitation of Christ by Thomas à Kempis and The Confessions of St. Augustine."
+      },
+      "edition": "Project Gutenberg 1653, 3296",
+      "itemCount": 5,
+      "source": [
+        {
+          "label": "Project Gutenberg #1653",
+          "url": "https://www.gutenberg.org/ebooks/1653"
+        },
+        {
+          "label": "Project Gutenberg #3296",
+          "url": "https://www.gutenberg.org/ebooks/3296"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-christian-NOTICE.md"
+      },
+      "payload": {
+        "path": "christian-classics-en-v1.json",
+        "sha256": "0f68bd0792a8ee4958fbec5733702d2ad24025b8166333fc0f648fc33f8002f1",
+        "bytes": 945892
+      }
+    },
+    {
+      "id": "sela-confucian-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Tao Teh King (Laozi)",
+        "en": "Tao Teh King (Laozi)"
+      },
+      "description": {
+        "id": "Klasik Tiongkok yang sering dibaca bersama tradisi Konghucu, terjemahan James Legge.",
+        "en": "A Chinese classic often read alongside the Confucian tradition, translated by James Legge."
+      },
+      "edition": "Project Gutenberg 216",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Project Gutenberg #216",
+          "url": "https://www.gutenberg.org/ebooks/216"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-confucian-NOTICE.md"
+      },
+      "payload": {
+        "path": "confucian-classics-en-v1.json",
+        "sha256": "398ae7ffea8479b18f0779d6e01f3b52ed5cf318a3f8c37bde39e083b9d97726",
+        "bytes": 62795
+      }
+    },
+    {
+      "id": "sela-hindu-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "hinduism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Karya klasik Hindu",
+        "en": "Hindu classics"
+      },
+      "description": {
+        "id": "Isa, Katha, dan Kena Upanishad; Yoga Sutra Patanjali; dan Ramayana karya Valmiki dalam bahasa Inggris.",
+        "en": "The Isa, Katha and Kena Upanishads, the Yoga Sutras of Patanjali, and the Ramayana of Valmiki in English."
+      },
+      "edition": "Project Gutenberg 3283, 2526, 24869",
+      "itemCount": 10,
+      "source": [
+        {
+          "label": "Project Gutenberg #3283",
+          "url": "https://www.gutenberg.org/ebooks/3283"
+        },
+        {
+          "label": "Project Gutenberg #2526",
+          "url": "https://www.gutenberg.org/ebooks/2526"
+        },
+        {
+          "label": "Project Gutenberg #24869",
+          "url": "https://www.gutenberg.org/ebooks/24869"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-hindu-NOTICE.md"
+      },
+      "payload": {
+        "path": "hindu-classics-en-v1.json",
+        "sha256": "58ea7523443573dceaa7ddc47dfad0af9d2e65a6dbd845a2f0037b5566154fd8",
+        "bytes": 2597511
+      }
+    },
+    {
+      "id": "sela-legge-wikisource-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Da Xue dan Zhong Yong (Legge)",
+        "en": "The Great Learning and the Doctrine of the Mean (Legge)"
+      },
+      "description": {
+        "id": "Dua dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.",
+        "en": "Two of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription."
+      },
+      "edition": "Wikisource, The Chinese Classics vol. 1",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Wikisource · The Great Learning",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning"
+        },
+        {
+          "label": "Wikisource · The Doctrine of the Mean",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · kontributor Wikisource",
+        "noticePath": "licenses/sela-wikisource-legge-NOTICE.md"
+      },
+      "payload": {
+        "path": "legge-wikisource-en-v1.json",
+        "sha256": "83f9a3c000913da897a77832f932e5bfacf73b0b51e5c391277466d0737d1487",
+        "bytes": 58083
+      }
+    },
+    {
       "id": "sela-prophets-id-v1",
       "schemaVersion": 1,
       "kind": "editorial-collection",
       "status": "draft",
+      "faiths": [
+        "islam"
+      ],
       "category": "faith-stories",
       "language": "id",
       "title": {
@@ -37,6 +250,125 @@
         "path": "prophets-id-v1.json",
         "sha256": "4cc335b6000fac5c9f80f5b2f43796a398700923e9f791e638c08f324cee8062",
         "bytes": 91308
+      }
+    },
+    {
+      "id": "sela-sa-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "id",
+      "title": {
+        "id": "Kotbah-kotbah Berkelompok (Samyukta Agama)",
+        "en": "Linked Discourses (Samyukta Agama), Indonesian"
+      },
+      "description": {
+        "id": "Sebelas sutra pertama Samyukta Agama dalam bahasa Indonesia, terjemahan Seniya, dari SuttaCentral.",
+        "en": "The first eleven suttas of the Samyukta Agama in Indonesian, translated by Seniya, from SuttaCentral."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/id/seniya"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Seniya",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "samyukta-agama-id-v1.json",
+        "sha256": "8614bc691fc04fbf39736b54cab48f2b8945448b62f3dd86548d63b27d0b6527",
+        "bytes": 16682
+      }
+    },
+    {
+      "id": "sela-suttas-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Sutta Pali pilihan (Sujato)",
+        "en": "Selected Pali suttas (Sujato)"
+      },
+      "description": {
+        "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, dan Therigatha dalam terjemahan Bhikkhu Sujato.",
+        "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha and Therigatha in Bhikkhu Sujato’s translation."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 8,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published"
+        },
+        {
+          "label": "SuttaCentral",
+          "url": "https://suttacentral.net/"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-en-v1.json",
+        "sha256": "1280461ebb1484208c1038b7d7868b49cec2013735a12442d02f18f7fa4373c5",
+        "bytes": 3872347
+      }
+    },
+    {
+      "id": "sela-tsi-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "protestantism"
+      ],
+      "category": "scripture",
+      "language": "id",
+      "title": {
+        "id": "Alkitab TSI (Terjemahan Sederhana Indonesia)",
+        "en": "Indonesian Bible (TSI)"
+      },
+      "description": {
+        "id": "Perjanjian Baru lengkap dan 21 kitab Perjanjian Lama dalam bahasa Indonesia yang sederhana. Teks tidak diubah.",
+        "en": "The complete New Testament and 21 Old Testament books in plain Indonesian. The text is unchanged."
+      },
+      "edition": "Edisi Ketiga 2025",
+      "itemCount": 48,
+      "source": [
+        {
+          "label": "eBible.org · Alkitab TSI",
+          "url": "https://ebible.org/find/details.php?id=ind"
+        },
+        {
+          "label": "Albata",
+          "url": "https://alkitab.mobi/tsi"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · Albata dan Pioneer Bible Translators",
+        "noticePath": "licenses/sela-tsi-NOTICE.md"
+      },
+      "payload": {
+        "path": "tsi-id-v1.json",
+        "sha256": "13fe2e6770e75b5360d27f89859c1d32fc5cbaf7825d879952f78ff1f4228d20",
+        "bytes": 4142471
       }
     }
   ]

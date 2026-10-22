@@ -2,47 +2,55 @@
 
 ## 22 October 2026 · branch `codex/taman-bacaan-mvp`, based on `main` at `b32619a`
 
-### Audit of the all-in-one brief
+### Done
 
-| Item | State found | Action |
-|---|---|---|
-| P0 Viewer URL bug in `reader-sdk.ts` | Already fixed upstream (PR #3). | Re-verified locally. |
-| P0 real service-worker tests | Already present (`pwa.spec.ts`, `pwa-update.spec.ts`, project `chromium-pwa`). | Re-verified. Added `pwa-taman.spec.ts`. |
-| P0 error, retry, stale-chunk states | Present. | Not changed. |
-| Taman Bacaan in Discover | Missing. | **Built.** |
-| Content pack model, install, remove, checksum | Missing. | **Built.** |
-| Kisah 25 Nabi | Only short passage starters. | **All 25 written** (draft, not scholar-reviewed). |
-| Quran Indonesian with Arabic, offline | Online only. | **Built**, 3 QuranEnc editions, downloaded from the publisher. |
-| Hadith, Indonesian, offline | Missing. | **Built**, 7 HadeethEnc categories, downloaded from the publisher. |
-| Saved entries, last read, backup | Missing. | **Built**, in the personal store so backups carry them. |
-| Built-in scripture texts in Taman Bacaan | Only on Home. | **Listed** (5 editions, values tested against the JSON files). |
-| Import and validate script with dry run | Missing. | **Built**, `scripts/packs.ts`. |
-| Design, sources, data contract docs | Missing. | **Written** (`docs/taman-bacaan-*.md`). |
-| Tanzil Arabic text | Missing. | **Declined**, QuranEnc already returns the Arabic. |
-| Indonesian folklore and classics, SuttaCentral, Sefaria, Standard Ebooks, Aozora, OpenStax packs | Missing. | **NOT STARTED**, each edition needs its own rights check. |
+| Area | Result |
+| --- | --- |
+| Viewer recovery (P0) | Already fixed upstream in PR #3. Re-verified locally. |
+| Faith tab on the shelf | Built. Appears only when a faith or tradition is chosen. The earlier Discover lens was removed. |
+| Settings drives the experience | The faith choice shapes the shelf tab, Home daily reading and prayer tools, the Home prompt, and a new downloads manager in Library tools |
+| Reading packs | Three kinds: editorial, text collection, publisher. Checksum, size and shape checks. Atomic install. |
+| Kisah 25 Nabi | All 25 written, draft, not reviewed by a scholar |
+| Quran and hadith | Downloaded unchanged from QuranEnc and HadeethEnc, Indonesian and English |
+| Text collections | Alkitab TSI, Pali suttas (English and Indonesian), Christian, Buddhist, Hindu and Confucian classics. See [sources](faith-readings-sources.md). |
+| Saved entries | Stored in the personal store, so backups carry them |
+| Whole-app audit | Browser pass over 14 routes at 3 widths and 3 appearances, plus axe-core. Findings fixed, listed below. |
+| Documentation | README (English and Indonesian), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, documentation index, faith readings docs, notices, changelog |
+| CI | Added a reading-pack catalogue check |
+
+### Audit findings fixed
+
+- Calendar header buttons and the add-books button had no accessible name.
+- Filled buttons in dark and OLED appearance showed white text on a light fill (contrast 2.4). Text now uses the paper colour.
+- Several muted texts, the reflection citation and outside calendar days were below 4.5:1. Muted tokens were darkened and the dimming by opacity was removed.
+- The brand link and the Discover result buttons had accessible names that did not contain their visible text.
+- Public site: muted text contrast, a link distinguishable only by colour, and a scrollable code block that was not focusable.
+- Faith reader headers are now banner landmarks.
 
 ### Verification (local, Windows, Node 24)
 
 - `npm run typecheck`: PASS.
-- `npm test`: PASS, 112 tests.
+- `npm test`: PASS, 116 tests.
 - `npm run build`: PASS.
-- Full Playwright run (all 4 projects, 482 cases, 18.6 min): 474 passed, 8 skipped, 0 failed.
-- Publisher APIs: the browser suite mocks QuranEnc and HadeethEnc. A separate live run in Chromium installed the real Indonesian Quran edition "Sabiq" (114 surahs, 6,236 verses, 2.2 MB) and the real hadith category "Hadis dan Ilmu Hadis" (10 items). All three Indonesian editions were checked against the Hafs verse counts: 114 of 114 surahs each.
-- Not run live: the large hadith categories (Fikih has 1,102 items).
+- Full Playwright run (Chromium, Firefox, WebKit and the real service-worker project, 503 cases): 492 passed, 8 skipped, 3 failed. The 3 failures were one test that still used the old Settings label. After fixing the label it passed in all three engines.
+- Browser pass with no page errors, console errors, failed local requests, horizontal overflow, or unlabelled controls on any route. One `h1` per page.
+- axe-core on every app route in light and dark: no critical or serious violations. Remaining moderate findings are landmark suggestions for hidden file inputs and the drop prompt.
+- axe-core on the public site: no violations.
+- Live checks against QuranEnc (all three Indonesian editions, 114 of 114 surahs each) and HadeethEnc passed earlier. The browser suite mocks both publishers.
 
 ### Known limits
 
-- The 25 articles are not scholar-reviewed. The UI shows a Draft badge and every article says so.
-- Verse numbers are machine-checked for existence. About 40 verse ranges were also compared by hand with the Kemenag translation. Accuracy of each summary is not machine-checkable.
-- Pack payloads are not in backups. Saved entries and last-read are.
-- Highlights and notes inside pack articles are not built.
-- HadeethEnc gives no version number, so the fetch date is shown as the version.
+- The 25 prophet stories are not scholar-reviewed. Verse numbers are machine-checked for existence, and about 40 ranges were compared by hand.
+- Pack payloads are not in backups. Saved entries and the reading position are.
+- Highlights and notes inside pack entries are not built.
+- The Catholic tab has no Indonesian Bible. The Indonesian editions in common use are not freely licensed.
+- The Alkitab TSI has the complete New Testament and 21 Old Testament books.
+- Small touch targets remain on a few older controls (a 30 px Discover button, a 28 px water-goal button). They were not changed.
 - No physical-device, screen-reader or deployed-URL test. Nothing was pushed or deployed.
-- On this machine `npm ci` failed with EPERM on a locked native file (`@tailwindcss/oxide`). `npm install` worked.
-- `npm run build` rewrites hashed files under `app/chunks/`, `app/app.js`, `sela-sw.js` and `offline-assets.json`. These are committed generated files.
+- On this machine `npm ci` failed with EPERM on a locked native file. `npm install` worked.
 
-### Next explicit action
+### Next
 
-1. A qualified reader reviews the 25 articles. Change `status` to `complete` in the manifest only after that.
-2. Pick the next collection and check its rights per edition before writing code.
-3. Push the branch and open a PR when authorised.
+1. A qualified reader reviews the 25 stories. Then change `status` to `complete`.
+2. Pick from the [roadmap](faith-readings-roadmap.md) and check rights per edition first.
+3. Push the branch and open a pull request when authorised.

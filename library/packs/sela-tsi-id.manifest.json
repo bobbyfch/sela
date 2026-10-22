@@ -1,0 +1,39 @@
+{
+  "id": "sela-tsi-id",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "protestantism"
+  ],
+  "category": "scripture",
+  "language": "id",
+  "title": {
+    "id": "Alkitab TSI (Terjemahan Sederhana Indonesia)",
+    "en": "Indonesian Bible (TSI)"
+  },
+  "description": {
+    "id": "Perjanjian Baru lengkap dan 21 kitab Perjanjian Lama dalam bahasa Indonesia yang sederhana. Teks tidak diubah.",
+    "en": "The complete New Testament and 21 Old Testament books in plain Indonesian. The text is unchanged."
+  },
+  "edition": "Edisi Ketiga 2025",
+  "itemCount": 48,
+  "source": [
+    {
+      "label": "eBible.org · Alkitab TSI",
+      "url": "https://ebible.org/find/details.php?id=ind"
+    },
+    {
+      "label": "Albata",
+      "url": "https://alkitab.mobi/tsi"
+    }
+  ],
+  "license": {
+    "code": "CC-BY-SA-4.0",
+    "name": "CC BY-SA 4.0 · Albata dan Pioneer Bible Translators",
+    "noticePath": "licenses/sela-tsi-NOTICE.md"
+  },
+  "payload": {
+    "path": "tsi-id-v1.json"
+  }
+}

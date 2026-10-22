@@ -2,11 +2,13 @@
 
 ## Unreleased
 
-- Add Taman Bacaan (Reading garden) to Discover: optional, user-installed reading collections with source, licence, version and size shown before download, progress and cancel, checksum verification, and removal that never touches the shelf, notes, progress or backups.
-- Add Kisah 25 Nabi: 25 draft summaries with Quran references on every section, separate interpretation notes and accuracy notes. Not yet reviewed by a scholar.
-- Add offline Indonesian Quran editions (QuranEnc) and hadith collections (HadeethEnc), downloaded unchanged from the publisher on request; the Quran reader uses a saved edition without contacting the publisher.
-- Save entries and last-read positions in the personal store so backups carry them. List the five scripture texts already built into Sela inside Taman Bacaan.
-- Add `scripts/packs.ts` to validate pack sources and rebuild the published catalogue, and a real service-worker offline test for installed packs.
+- Add a **Faith** tab to the shelf. It appears when a faith or tradition is chosen in Settings and lists only that tradition's readings: optional, user-installed packs with source, licence, version and size shown before download, byte progress, cancel, checksum verification, and removal that never touches the shelf, notes, progress or backups.
+- Add readings: the stories of the 25 prophets (draft, not yet reviewed by a scholar), Indonesian Quran and hadith downloaded unchanged from QuranEnc and HadeethEnc, the Indonesian Bible TSI (CC BY-SA 4.0), Pali suttas in English and Indonesian (CC0), Christian, Buddhist, Hindu and Confucian classics.
+- Make Settings drive the whole experience: the chosen tradition shapes the shelf, the Home reading and prayer tools, and Library tools lists and removes every download.
+- Save entries and the reading position in the personal store so backups carry them.
+- Fix accessibility findings from an axe-core pass over every route in light, dark and OLED: unlabelled calendar and add-books buttons, filled-button contrast in dark appearances, dimmed text contrast, and public-site contrast, link and scroll-region issues.
+- Add `scripts/packs.ts` and `scripts/import-readings.ts` to build and verify reading packs, and a real service-worker offline test for installed packs.
+- Refresh the README, CONTRIBUTING, and documentation index. Add SECURITY and a code of conduct.
 
 ## 0.9.0-beta.8 — Sela Books rebuild (2026-10-21)
 

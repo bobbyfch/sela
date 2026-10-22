@@ -34,6 +34,8 @@ jobs:
       # CSS minification and dependent hashes vary by operating system; unit/browser suites validate these generated assets.
       - run: git diff --exit-code -- dist index.html library site app examples/web-component.js app/library/version.ts offline-assets.json ':(exclude)app/app.css' ':(exclude)app/sw.js' ':(exclude)dist/css/sela.app.css' ':(exclude)dist/css/sela.min.css' ':(exclude)dist/manifest.json' ':(exclude)site/public.css'
       - run: npm test
+      - name: Verify reading pack catalogue
+        run: node --experimental-strip-types scripts/packs.ts --check
       - run: npm run test:types
       - run: npm run typecheck
       - name: Package Pages site

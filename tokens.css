@@ -6,7 +6,7 @@
   --color-paper-soft: oklch(91.7% 0.018 86);
   --color-paper-gradient: radial-gradient(1000px 480px at 84% -8%, color-mix(in oklch, var(--color-accent-soft) 22%, transparent), transparent 72%), linear-gradient(145deg, var(--color-paper-raised), var(--color-paper) 62%, color-mix(in oklch, var(--color-paper) 92%, var(--color-accent-soft)));
   --color-ink: oklch(27.8% 0.014 78);
-  --color-muted: oklch(51.4% 0.018 78);
+  --color-muted: oklch(48.5% 0.018 78);
   --color-rule: oklch(86.3% 0.014 84);
   --color-accent-base: oklch(43.8% 0.042 76);
   --color-accent: var(--color-accent-base);
@@ -79,7 +79,7 @@
   --color-paper-raised: oklch(98% 0.011 124);
   --color-paper-soft: oklch(90.2% 0.027 127);
   --color-ink: oklch(28.5% 0.024 124);
-  --color-muted: oklch(49.7% 0.027 126);
+  --color-muted: oklch(48% 0.027 126);
   --color-rule: oklch(85.3% 0.021 126);
   --color-accent-base: oklch(43.5% 0.055 130);
   --color-accent: var(--color-accent-base);
@@ -95,7 +95,7 @@
   --color-paper-raised: oklch(98.3% 0.012 76);
   --color-paper-soft: oklch(90.2% 0.028 70);
   --color-ink: oklch(28.5% 0.02 68);
-  --color-muted: oklch(49.5% 0.025 68);
+  --color-muted: oklch(48% 0.025 68);
   --color-rule: oklch(84.8% 0.02 70);
   --color-accent-base: oklch(43% 0.05 55);
   --color-accent: var(--color-accent-base);
@@ -111,7 +111,7 @@
   --color-paper-raised: oklch(97.7% 0.011 68);
   --color-paper-soft: oklch(89.5% 0.027 64);
   --color-ink: oklch(29.5% 0.021 55);
-  --color-muted: oklch(50% 0.027 57);
+  --color-muted: oklch(48.5% 0.027 57);
   --color-rule: oklch(84.8% 0.02 64);
   --color-accent-base: oklch(43.7% 0.052 50);
   --color-accent: var(--color-accent-base);
@@ -127,7 +127,7 @@
   --color-paper-raised: oklch(98% 0.007 184);
   --color-paper-soft: oklch(90.6% 0.016 184);
   --color-ink: oklch(28.8% 0.013 184);
-  --color-muted: oklch(50.3% 0.016 184);
+  --color-muted: oklch(48.5% 0.016 184);
   --color-rule: oklch(85.3% 0.012 184);
   --color-accent-base: oklch(44.2% 0.034 184);
   --color-accent: var(--color-accent-base);
@@ -143,7 +143,7 @@
   --color-paper-raised: oklch(98% 0.008 250);
   --color-paper-soft: oklch(90.8% 0.018 248);
   --color-ink: oklch(28.5% 0.014 250);
-  --color-muted: oklch(50.4% 0.016 250);
+  --color-muted: oklch(48.5% 0.016 250);
   --color-rule: oklch(85% 0.012 250);
   --color-accent-base: oklch(43.5% 0.03 250);
   --color-accent: var(--color-accent-base);

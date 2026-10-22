@@ -5,6 +5,7 @@ import { copy, useWorkspace } from '../../workspace.tsx';
 import { CollectionCardBuilder } from './CollectionCardBuilder.tsx';
 import { LibraryCare } from './LibraryCare.tsx';
 import { PersonalPreferences } from './PersonalPreferences.tsx';
+import ReadingDownloads from '../readings/ReadingDownloads.tsx';
 import { SmartShelves } from './SmartShelves.tsx';
 import { LibraryTextSearch } from './LibraryTextSearch.tsx';
 import { WebDavSync } from './WebDavSync.tsx';
@@ -21,6 +22,7 @@ export function LibraryToolsScreen() {
     <Text className="page-description personal-tools-intro">{t('Small tools for the books and reading habits you keep on this device.', 'Alat sederhana untuk buku dan kebiasaan membaca yang tersimpan di perangkat ini.')}</Text>
     <Stack className="settings-panel-stack">
       <PersonalPreferences />
+      <ReadingDownloads />
       <ReadingSpaceSettings />
       <SmartShelves books={store.books} onOpen={book => openBook(book.id)} />
       <LibraryCare books={store.books} />

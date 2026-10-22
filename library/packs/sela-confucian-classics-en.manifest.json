@@ -1,0 +1,35 @@
+{
+  "id": "sela-confucian-classics-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "confucianism"
+  ],
+  "category": "classics",
+  "language": "en",
+  "title": {
+    "id": "Tao Teh King (Laozi)",
+    "en": "Tao Teh King (Laozi)"
+  },
+  "description": {
+    "id": "Klasik Tiongkok yang sering dibaca bersama tradisi Konghucu, terjemahan James Legge.",
+    "en": "A Chinese classic often read alongside the Confucian tradition, translated by James Legge."
+  },
+  "edition": "Project Gutenberg 216",
+  "itemCount": 2,
+  "source": [
+    {
+      "label": "Project Gutenberg #216",
+      "url": "https://www.gutenberg.org/ebooks/216"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-confucian-NOTICE.md"
+  },
+  "payload": {
+    "path": "confucian-classics-en-v1.json"
+  }
+}

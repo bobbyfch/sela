@@ -21,7 +21,7 @@ const SettingsScreen = lazy(() => import('./screens.tsx').then(module => ({ defa
 const SettingsDetail = lazy(() => import('./screens.tsx').then(module => ({ default: module.SettingsDetail })));
 const ReaderScreen = lazy(() => import('./screens.tsx').then(module => ({ default: module.ReaderScreen })));
 const FaithReaderScreen = lazy(() => import('./features/faith/FaithReaderScreen.tsx'));
-const TamanReaderScreen = lazy(() => import('./features/taman/TamanReaderScreen.tsx'));
+const ReadingsScreen = lazy(() => import('./features/readings/ReadingsScreen.tsx'));
 
 const sections = [
   { to: '/', en: 'Today', id: 'Hari ini', icon: BookOpen, end: true },
@@ -78,7 +78,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const isReader = location.pathname.startsWith('/read/');
-  const isFaithReader = location.pathname.startsWith('/faith') || location.pathname.startsWith('/taman');
+  const isFaithReader = location.pathname.startsWith('/faith') || location.pathname.startsWith('/readings');
   const lang = workspace.lang;
 
   useEffect(() => {
@@ -119,7 +119,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
       <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, isReader ? 'Opening your book…' : 'Opening your reading…', isReader ? 'Membuka bukumu…' : 'Membuka bacaan…')}</div>}><Routes>
         <Route path="/read/:bookId" element={<ReaderScreen />} />
         <Route path="/faith/*" element={<FaithReaderScreen />} />
-        <Route path="/taman/*" element={<TamanReaderScreen />} />
+        <Route path="/readings/*" element={<ReadingsScreen />} />
       </Routes></Suspense>
     </RouteFailureBoundary>
   </div>;
@@ -151,7 +151,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
 
       <AppShell.Header className="app-topbar glass-surface" px="clamp(16px, 3vw, 36px)">
         <Group justify="space-between" wrap="nowrap" className="topbar-inner" gap="md">
-          <UnstyledButton component={RouterLink} to="/" className="brand-lockup topbar-brand" aria-label="Sela Books · Home">
+          <UnstyledButton component={RouterLink} to="/" className="brand-lockup topbar-brand" aria-label={copy(lang, 'selabooks · Home', 'selabooks · Beranda')}>
             <span className="brand-mark" aria-hidden="true"><BookOpen size={19} strokeWidth={1.7} /></span>
             <span className="brand-word">sela<span>books</span></span>
           </UnstyledButton>
@@ -172,7 +172,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
             <Tooltip label={copy(lang, 'Search your books', 'Cari bukumu')} withArrow>
               <ActionIcon className="glass-control mobile-search" variant="default" size={40} aria-label={copy(lang, 'Search your books', 'Cari bukumu')} onClick={spotlight.open}><Search size={17} /></ActionIcon>
             </Tooltip>
-            <Button className="add-books-button" leftSection={<Plus size={17} />} onClick={() => fileRef.current?.click()}>{copy(lang, 'Add books', 'Tambah buku')}</Button>
+            <Button className="add-books-button" aria-label={copy(lang, 'Add books', 'Tambah buku')} leftSection={<Plus size={17} />} onClick={() => fileRef.current?.click()}>{copy(lang, 'Add books', 'Tambah buku')}</Button>
             <input ref={fileRef} className="visually-hidden" type="file" accept=".pdf,.epub,.cbz,.txt,.md,.html,.htm,.fb2,.docx,.odt" multiple onChange={event => { const files = event.currentTarget.files; if (files?.length) void workspace.importBooks(files); event.currentTarget.value = ''; }} aria-label={copy(lang, 'Choose book files', 'Pilih file buku')} />
           </Group>
         </Group>

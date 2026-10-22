@@ -113,3 +113,14 @@ OpenDyslexic is bundled for the optional reader font through
 `@fontsource/opendyslexic` 5.3.0. The font is licensed under the SIL Open Font
 License 1.1; the build copies the package license to
 `dist/opendyslexic-LICENSE.txt`. Source: https://opendyslexic.org/.
+
+## Faith readings
+
+Reading packs in `library/packs/` carry their own notices under `licenses/`. The SELA MIT licence does not apply to them.
+
+- **Alkitab Terjemahan Sederhana Indonesia (TSI), Edisi Ketiga** © 2021 Yayasan Alkitab BahasaKita (Albata) and Pioneer Bible Translators International, CC BY-SA 4.0. Converted from USFM to JSON. See `licenses/sela-tsi-NOTICE.md`.
+- **SuttaCentral bilara-data (published branch, commit `fdb7ff39a8cc31baa53c879866588992df00bc91`)**: English translations by Bhikkhu Sujato (and with Jessica Walton for Theragatha and Therigatha) and the Indonesian Samyukta Agama translation by Seniya, all CC0 1.0. See `licenses/sela-suttas-NOTICE.md`.
+- **Wikisource transcriptions of James Legge's The Great Learning and The Doctrine of the Mean** (revisions 13888323 and 13888322), CC BY-SA 4.0 by Wikisource contributors. The underlying translation is in the public domain. See `licenses/sela-wikisource-legge-NOTICE.md`.
+- **Project Gutenberg public-domain texts** (ebooks 1653, 3296, 62514, 7518, 35895, 3283, 2526, 24869 and 216). Public domain in the United States; check local law elsewhere. The Project Gutenberg header, footer and trademark text were removed. See the `licenses/sela-gutenberg-*-NOTICE.md` files.
+- **QuranEnc** (https://quranenc.com) and **HadeethEnc** (https://hadeethenc.com) are not hosted by Sela. The reader's browser downloads Quran editions and hadith from them on request and stores them unchanged, with their version and source link, under the publishers' terms: no modification, addition or deletion; credit to the publisher; version shown; transcript information kept; text kept current.
+- **Kisah 25 Nabi** is original SELA text under the MIT licence. It cites Quran verses by number and copies no Quran text or translation. See `licenses/sela-prophets-NOTICE.md`.
