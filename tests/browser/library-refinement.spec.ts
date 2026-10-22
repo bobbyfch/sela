@@ -33,7 +33,7 @@ test('shelf filters, grid/list/room views and responsive widths use the React sh
  await labels.nth(0).click();await expect(page.locator('.book-grid')).toBeVisible();await expect(modes).toBeVisible();
  for(const width of [320,390,768,1024,1440]){
   await page.setViewportSize({width,height:820});
-  await page.waitForTimeout(200);
+  await expect.poll(()=>page.locator('.mantine-AppShell-main').evaluate(root=>Number.parseFloat(getComputedStyle(root).paddingInlineStart))).toBe(width<=767?0:256);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px document overflow`).toBe(true);
   const columns=await page.locator('.book-grid').evaluate(root=>getComputedStyle(root).gridTemplateColumns.split(' ').length);
   if(width<=767)expect(columns,`${width}px shelf grid columns`).toBe(2);
