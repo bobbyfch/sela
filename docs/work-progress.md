@@ -10,7 +10,7 @@
 | Faith tab on the shelf | Built. Appears only when a faith or tradition is chosen. The earlier Discover lens was removed. |
 | Settings drives the experience | The faith choice shapes the shelf tab, Home daily reading and prayer tools, the Home prompt, and a downloads manager in Library tools |
 | Reading packs | Three kinds: editorial, text collection, publisher. Checksum, size and shape checks. Atomic install. |
-| Kisah 25 Nabi | All 25 written, draft, not reviewed by a scholar |
+| Kisah 25 Nabi | All 25 written and listed as complete. Not reviewed by a scholar, and the card and every entry say so |
 | Quran and hadith | Downloaded unchanged from QuranEnc and HadeethEnc, Indonesian and English. The largest hadith category (1,102 items, 4.1 MB) was downloaded live in 92 seconds. |
 | Text collections | 14 hosted packs: Alkitab TSI, World English Bible deuterocanon, Pali suttas (DN, MN, SN, AN, short collections, Samyukta Agama in Indonesian), Christian, Buddhist, Hindu and Confucian classics, Mencius, Syair Perahu and Gurindam Dua Belas. See [sources](faith-readings-sources.md). |
 | Notes and quotes | One note per entry and saved quotes from selected text, listed on the Faith tab, in the personal store so backups carry them |
@@ -42,7 +42,7 @@
 - The 25 prophet stories are not scholar-reviewed. Verse numbers are machine-checked for existence, and about 40 ranges were compared by hand.
 - Pack payloads are not in backups. Saved entries, notes, quotes and the reading position are.
 - Coloured highlights drawn over the text are not built. Notes and saved quotes are.
-- The Catholic tab has no Indonesian Bible. The Indonesian editions in common use are not freely licensed.
+- The Catholic tab uses the Alkitab TSI. It is a Protestant-origin translation without the deuterocanonical books, which the tab offers separately in English. The Indonesian Catholic editions in common use are not freely licensed.
 - The Alkitab TSI has the complete New Testament and 21 Old Testament books.
 - A few hidden file inputs and the drop prompt are reported by axe-core as outside a landmark (moderate).
 - No physical-device, screen-reader or deployed-URL test. Nothing was pushed or deployed.

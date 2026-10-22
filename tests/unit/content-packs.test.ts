@@ -49,7 +49,9 @@ test('prophet payload cites only verses that exist', () => {
 });
 
 test('prophet entries are honest about scope and label interpretation separately from scripture', () => {
-  assert.equal(manifest.status, 'draft');
+  assert.equal(manifest.status, 'complete');
+  assert.match(manifest.description.id, /Belum ditelaah ulama/);
+  assert.match(manifest.description.en, /Not yet reviewed/);
   assert.equal(manifest.itemCount, 25);
   assert.equal(payload.articles.length, 25);
   assert.deepEqual(payload.articles.map(article => article.order), Array.from({ length: 25 }, (_, index) => index + 1));

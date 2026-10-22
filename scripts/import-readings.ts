@@ -474,7 +474,7 @@ const gutenbergNotice = (works: string[]) => notice('Project Gutenberg public-do
 
 const specs: PackSpec[] = [
   {
-    id: 'sela-tsi-id', file: 'tsi-id-v1.json', faiths: ['protestantism'], category: 'scripture', language: 'id',
+    id: 'sela-tsi-id', file: 'tsi-id-v1.json', faiths: ['protestantism', 'catholicism'], category: 'scripture', language: 'id',
     title: { id: 'Alkitab TSI (Terjemahan Sederhana Indonesia)', en: 'Indonesian Bible (TSI)' },
     description: { id: 'Perjanjian Baru lengkap dan 21 kitab Perjanjian Lama dalam bahasa Indonesia yang sederhana. Teks tidak diubah.', en: 'The complete New Testament and 21 Old Testament books in plain Indonesian. The text is unchanged.' },
     edition: 'Edisi Ketiga 2025', status: 'complete',

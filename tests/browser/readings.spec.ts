@@ -19,7 +19,8 @@ test('Faith readings download a verified pack, reads it offline, and removes it'
 
   await openFaith(page);
   await expect(card(page)).toBeVisible();
-  await expect(card(page).getByText(/^(Draft|Draf)$/)).toBeVisible();
+  await expect(card(page).getByText(/Not yet reviewed by scholars|Belum ditelaah ulama/)).toBeVisible();
+  await expect(card(page).getByText(/^(Draft|Draf)$/)).toHaveCount(0);
   await expect(card(page).getByText(/^(25 stories|25 kisah)$/)).toBeVisible();
 
   await card(page).getByRole('button', { name: download }).click();

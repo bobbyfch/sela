@@ -16,10 +16,10 @@ Terms were read on 22 October 2026. Re-read them before you change how a source 
 
 | Pack | Tradition | Route | Licence | Source |
 | --- | --- | --- | --- | --- |
-| Kisah 25 Nabi (25 entries, draft) | Islam | Hosted | MIT, original SELA prose | Quran references from Kemenag RI (LPMQ) |
+| Kisah 25 Nabi (25 entries, not reviewed by a scholar) | Islam | Hosted | MIT, original SELA prose | Quran references from Kemenag RI (LPMQ) |
 | Quran editions, Indonesian and English | Islam | Publisher | QuranEnc terms | `quranenc.com/api/v1` |
 | Hadith, Indonesian and English, 7 categories | Islam | Publisher | HadeethEnc terms | `hadeethenc.com/api/v1` |
-| Alkitab TSI, Edisi Ketiga (NT complete, 21 OT books) | Protestant | Hosted | CC BY-SA 4.0, Albata and Pioneer Bible Translators | eBible.org USFM, 3 May 2025 |
+| Alkitab TSI, Edisi Ketiga (NT complete, 21 OT books) | Protestant, Catholic | Hosted | CC BY-SA 4.0, Albata and Pioneer Bible Translators | eBible.org USFM, 3 May 2025 |
 | World English Bible | Protestant | Bundled | Public domain | eBible.org |
 | Douay-Rheims 1899 | Catholic | Bundled | Public domain | eBible.org |
 | World English Bible Classic, the 15 deuterocanonical and apocryphal books | Catholic | Hosted | Public domain, trademark of eBible.org | eBible.org `eng-web` USFM |
@@ -49,7 +49,7 @@ Sela meets this by not hosting the text. The browser stores the publisher's resp
 | Item | Status | Reason |
 | --- | --- | --- |
 | Tanzil Arabic text | Declined | QuranEnc already returns the Arabic. A second Arabic source would mix editions, and Tanzil allows only verbatim copies. |
-| Indonesian Catholic Bible | Not available | The Indonesian editions in common use are not freely licensed. The Catholic tab offers Douay-Rheims and classics instead. |
+| Indonesian Catholic Bible | Not available | The Indonesian editions in common use are not freely licensed. The Catholic tab offers the Alkitab TSI (which has no deuterocanonical books), Douay-Rheims, the deuterocanon in English and classics instead. |
 | Alkitab Yang Terbuka (AYT) | Declined | CC BY-ND forbids adaptations, and converting it to a pack is an adaptation. |
 | Mahabharata | Not started | Gutenberg holds only part of the Ganguli translation. |
 | Indonesian classics beyond the two above | Not started | Hikayat and chronicles on Wikisumber need a check of the text, the transcription and any modern translation. One page titled "Hikayat Sri Rama" is a 2011 poem, not the classic, and is excluded. |
@@ -60,4 +60,4 @@ Sela meets this by not hosting the text. The browser stores the publisher's resp
 - Every cited verse exists in the Hafs verse counts (`tests/unit/content-packs.test.ts`).
 - About 40 verse ranges were compared by hand with the Kemenag Indonesian translation from QuranEnc. This found and fixed one wrong phrase.
 - Details that are not in the verses (the name of the sacrificed son, the wife of the Egyptian governor, the Hira scene, the city of Lut) are stated as outside the Quran in each accuracy note.
-- A scholar has not reviewed the text. The UI shows a Draft badge and each entry says so. Machine checks prove a verse exists, not that a summary is right.
+- A scholar has not reviewed the text. The collection card says so, and every entry ends with an accuracy note that says so. Machine checks prove a verse exists, not that a summary is right.

@@ -260,7 +260,7 @@
       "id": "sela-prophets-id-v1",
       "schemaVersion": 1,
       "kind": "editorial-collection",
-      "status": "draft",
+      "status": "complete",
       "faiths": [
         "islam"
       ],
@@ -271,8 +271,8 @@
         "en": "Stories of the 25 Prophets"
       },
       "description": {
-        "id": "Ringkasan naratif 25 nabi yang disusun SELA dari ayat-ayat Al-Qur’an yang dirujuk, dengan rujukan di setiap bagian. Draf: semua 25 sudah ditulis, tetapi belum ditelaah ulama.",
-        "en": "Narrative summaries of the 25 prophets written by SELA from the cited Quran passages, with references on every section. Draft: all 25 are written, but not yet reviewed by scholars."
+        "id": "Ringkasan naratif 25 nabi yang disusun SELA dari ayat-ayat Al-Qur’an yang dirujuk, dengan rujukan di setiap bagian. Belum ditelaah ulama.",
+        "en": "Narrative summaries of the 25 prophets written by SELA from the cited Quran passages, with references on every section. Not yet reviewed by scholars."
       },
       "edition": "0.2.0",
       "itemCount": 25,
@@ -293,8 +293,8 @@
       },
       "payload": {
         "path": "prophets-id-v1.json",
-        "sha256": "4cc335b6000fac5c9f80f5b2f43796a398700923e9f791e638c08f324cee8062",
-        "bytes": 91308
+        "sha256": "401d3d7419054c8edcab7526ac137c9e950337c50982b3d3b050f022328309c6",
+        "bytes": 91163
       }
     },
     {
@@ -455,7 +455,8 @@
       "kind": "text-collection",
       "status": "complete",
       "faiths": [
-        "protestantism"
+        "protestantism",
+        "catholicism"
       ],
       "category": "scripture",
       "language": "id",

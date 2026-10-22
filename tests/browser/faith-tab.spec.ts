@@ -110,7 +110,8 @@ test('Catholic readers get the deuterocanonical books as a second edition', asyn
   await page.goto('/sela/app/#/shelf?tab=faith');
   await expect(page.getByRole('article', { name: /kitab Deuterokanonika/ })).toBeVisible();
   await expect(page.getByRole('article', { name: 'Douay-Rheims' })).toBeVisible();
-  await expect(page.getByRole('article', { name: /Alkitab TSI/ })).toHaveCount(0);
+  await expect(page.getByRole('article', { name: /Alkitab TSI/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Karya klasik Hindu/ })).toHaveCount(0);
 });
 
 test('notes and quotes are kept per entry, survive a reload, and are listed on the Faith tab', async ({ page }) => {
