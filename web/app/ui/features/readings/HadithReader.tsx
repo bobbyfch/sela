@@ -4,6 +4,7 @@ import { ArrowUpRight, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import type { HadeethRecord, HadithPayload, InstalledSourcePack } from '../../../../../app/library/content-packs.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
+import EntryTools from './EntryTools.tsx';
 import SaveButton from './SaveButton.tsx';
 
 const PAGE = 50;
@@ -62,6 +63,7 @@ function Hadeeth({ pack, items, index, credit, t }: { pack: InstalledSourcePack;
     </dl>
     {explanation && <section className="readings-section"><h3>{t('Explanation from the publisher', 'Penjelasan dari penerbit')}</h3><p className="hadith-text">{explanation}</p></section>}
     {hints.length > 0 && <section className="readings-section"><h3>{t('Lessons from the publisher', 'Faedah dari penerbit')}</h3><ul className="hadith-hints">{hints.map((hint, i) => <li key={i}>{hint}</li>)}</ul></section>}
+    <EntryTools packId={pack.id} itemId={item.id} />
     {credit}
     <footer className="faith-reader-controls">
       <Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={!previous} onClick={() => previous && navigate(`/readings/${pack.id}/${previous.id}`)}>{t('Previous', 'Sebelumnya')}</Button>

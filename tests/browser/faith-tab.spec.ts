@@ -26,6 +26,8 @@ test('the Faith tab shows only the readings of the chosen tradition', async ({ p
   await expect(page.getByRole('article', { name: /Sutta Pali pilihan/ })).toBeVisible();
   await expect(page.getByRole('article', { name: /Kotbah-kotbah Berkelompok/ })).toBeVisible();
   await expect(page.getByRole('article', { name: /Kisah Buddha/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Samyutta Nikaya/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Anguttara Nikaya/ })).toBeVisible();
   await expect(page.getByRole('article', { name: 'Dhammapada' })).toBeVisible();
   await expect(page.getByRole('article', { name: /Kisah 25 Nabi/ })).toHaveCount(0);
   await expect(page.getByRole('article', { name: /Alkitab TSI/ })).toHaveCount(0);
@@ -75,7 +77,7 @@ test('choosing a faith in Settings changes the shelf immediately', async ({ page
   await page.goto('/sela/app/#/shelf?tab=faith');
   await expect(page.getByRole('heading', { level: 2, name: 'Konghucu' })).toBeVisible();
   await expect(page.getByRole('article', { name: /Tao Teh King/ })).toBeVisible();
-  await expect(page.getByRole('article', { name: /Da Xue dan Zhong Yong/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Mencius, Da Xue, dan Zhong Yong/ })).toBeVisible();
 });
 
 test('the Faith tab fits a 320px phone without sideways scrolling', async ({ page }) => {
@@ -101,4 +103,56 @@ test('Settings lists every download with its size and removes one without touchi
   await page.getByRole('dialog').getByRole('button', { name: 'Hapus' }).click();
   await expect(row).toHaveCount(0);
   await expect(page.getByText(/Belum ada yang diunduh/)).toBeVisible();
+});
+
+test('Catholic readers get the deuterocanonical books as a second edition', async ({ page }) => {
+  await start(page, 'catholicism');
+  await page.goto('/sela/app/#/shelf?tab=faith');
+  await expect(page.getByRole('article', { name: /kitab Deuterokanonika/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: 'Douay-Rheims' })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Alkitab TSI/ })).toHaveCount(0);
+});
+
+test('notes and quotes are kept per entry, survive a reload, and are listed on the Faith tab', async ({ page }) => {
+  await start(page, 'buddhism');
+  await page.goto('/sela/app/#/shelf?tab=faith');
+  const card = page.getByRole('article', { name: /Kotbah-kotbah Berkelompok/ });
+  await card.getByRole('button', { name: 'Unduh untuk offline' }).click();
+  await card.getByRole('button', { name: 'Baca' }).click();
+  await page.getByRole('link', { name: /Samyukta Agama/ }).click();
+  await page.getByRole('link', { name: /Ketidakkekalan/ }).click();
+
+  const quoteButton = page.getByRole('button', { name: /Simpan teks terpilih sebagai kutipan/ });
+  await expect(quoteButton).toBeDisabled();
+  await page.evaluate(() => {
+    const paragraph = document.querySelector('.readings-text p');
+    if (!paragraph?.firstChild) throw new Error('no text');
+    const range = document.createRange();
+    range.setStart(paragraph.firstChild, 0);
+    range.setEnd(paragraph.firstChild, Math.min(30, (paragraph.firstChild.textContent ?? '').length));
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  });
+  await expect(quoteButton).toBeEnabled();
+  await quoteButton.click();
+  await expect(page.getByRole('list', { name: 'Kutipan tersimpan' }).getByRole('listitem')).toHaveCount(1);
+
+  await page.getByRole('textbox', { name: /Catatan untuk bagian ini/ }).fill('Renungan pribadi tentang ketidakkekalan');
+  await expect.poll(() => page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('sela-library:personal') || '{}').readingsNotes ?? {}))).toEqual(['Renungan pribadi tentang ketidakkekalan']);
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('sela-library:personal') || '{}'));
+  expect(stored.readingsQuotes).toHaveLength(1);
+
+  await page.reload();
+  await expect(page.getByRole('textbox', { name: /Catatan untuk bagian ini/ })).toHaveValue('Renungan pribadi tentang ketidakkekalan');
+  await expect(page.getByRole('list', { name: 'Kutipan tersimpan' }).getByRole('listitem')).toHaveCount(1);
+
+  await page.getByRole('button', { name: /Kembali ke Bacaan agama/ }).click();
+  const marks = page.getByRole('region', { name: 'Catatan dan kutipan' });
+  await expect(marks.getByRole('link', { name: /Catatan · / })).toContainText('Renungan pribadi');
+  await expect(marks.getByRole('link', { name: /Kutipan · / })).toBeVisible();
+
+  await page.getByRole('link', { name: /Ketidakkekalan/ }).first().click();
+  await page.getByRole('button', { name: 'Hapus kutipan ini' }).click();
+  await expect(page.getByRole('list', { name: 'Kutipan tersimpan' })).toHaveCount(0);
 });

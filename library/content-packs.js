@@ -78,7 +78,7 @@ export function validateTextPayload(value, manifest) {
       const paragraphs = Array.isArray(section.paragraphs) ? section.paragraphs : [];
       const verses = Array.isArray(section.verses) ? section.verses : [];
       if (!paragraphs.length && !verses.length) fail(`section ${work.id}/${section.id} has no text`);
-      if (paragraphs.some((text) => !isText(text, 2e4)) || verses.some((verse) => !isRecord(verse) || !isText(verse.n, 12) || !isText(verse.text, 4e3))) fail(`section ${work.id}/${section.id} text`);
+      if (paragraphs.some((text) => !isText(text, 2e4)) || verses.some((verse) => !isRecord(verse) || !isText(verse.n, 12) || !isText(verse.text, 2e4))) fail(`section ${work.id}/${section.id} text`);
     }
   }
   return value;

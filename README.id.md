@@ -118,14 +118,14 @@ Pilih agama atau tradisi di **Pengaturan → Alat perpustakaan**. Tab Agama lalu
 
 | Tradisi | Bacaan |
 | --- | --- |
-| Islam | Al-Qur'an (teks Arab dengan terjemahan Indonesia atau Inggris) dan hadis yang diunduh dari penerbitnya, ditambah kisah 25 nabi |
+| Islam | Al-Qur'an (teks Arab dengan terjemahan Indonesia atau Inggris) dan hadis yang diunduh dari penerbitnya, ditambah kisah 25 nabi, Syair Perahu, dan Gurindam Dua Belas |
 | Kristen Protestan | Alkitab TSI (Indonesia), World English Bible, karya klasik Kristen |
-| Katolik | Douay-Rheims, karya klasik Kristen |
-| Buddha | Sutta Pali dalam bahasa Inggris, Samyukta Agama dalam bahasa Indonesia, Dhammapada, kisah Jataka, The Gospel of Buddha |
+| Katolik | Douay-Rheims, kitab Deuterokanonika, karya klasik Kristen |
+| Buddha | Khotbah Pali dalam bahasa Inggris (DN, MN, SN, AN, dan kumpulan yang lebih pendek), Samyukta Agama dalam bahasa Indonesia, Dhammapada, kisah Jataka, The Gospel of Buddha |
 | Hindu | Bhagavad-Gita, Upanishad, Yoga Sutra, Ramayana |
-| Konghucu | Analects, Da Xue, Zhong Yong, Tao Teh King |
+| Konghucu | Analects, Mencius, Da Xue, Zhong Yong, Tao Teh King |
 
-Unduhan diperiksa sebelum disimpan, bisa dibaca offline, dan bisa dihapus di Pengaturan tanpa menyentuh bukumu, catatan, atau cadangan. Entri yang kamu simpan dan posisi bacamu ikut dalam cadangan Sela.
+Unduhan diperiksa sebelum disimpan, bisa dibaca offline, dan bisa dihapus di Pengaturan tanpa menyentuh bukumu, catatan, atau cadangan. Entri yang kamu simpan, catatan dan kutipanmu sendiri, serta posisi bacamu ikut dalam cadangan Sela.
 
 Setiap edisi punya lisensinya sendiri. Lisensi MIT SELA hanya mencakup kode dan teks tulisan SELA. Lihat [Bacaan agama: sumber](docs/faith-readings-sources.md) dan [pemberitahuan pihak ketiga](THIRD_PARTY_NOTICES.md). Kisah 25 nabi masih berupa draf yang belum ditelaah ulama, dan aplikasi menyatakannya.
 

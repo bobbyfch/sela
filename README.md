@@ -118,14 +118,14 @@ Choose a faith or tradition under **Settings → Library tools**. The Faith tab 
 
 | Tradition | Readings |
 | --- | --- |
-| Islam | Quran (Arabic with Indonesian or English translation) and hadith downloaded from their publishers, plus the stories of the 25 prophets |
+| Islam | Quran (Arabic with Indonesian or English translation) and hadith downloaded from their publishers, plus the stories of the 25 prophets, Syair Perahu and Gurindam Dua Belas |
 | Protestant Christianity | Alkitab TSI (Indonesian), World English Bible, Christian classics |
-| Catholic Christianity | Douay-Rheims, Christian classics |
-| Buddhism | Pali suttas in English, Samyukta Agama in Indonesian, Dhammapada, Jataka tales, The Gospel of Buddha |
+| Catholic Christianity | Douay-Rheims, the deuterocanonical books, Christian classics |
+| Buddhism | The Pali discourses in English (DN, MN, SN, AN and the shorter collections), Samyukta Agama in Indonesian, Dhammapada, Jataka tales, The Gospel of Buddha |
 | Hinduism | Bhagavad-Gita, Upanishads, Yoga Sutras, Ramayana |
-| Confucianism | Analects, The Great Learning, The Doctrine of the Mean, Tao Teh King |
+| Confucianism | Analects, Mencius, The Great Learning, The Doctrine of the Mean, Tao Teh King |
 
-Downloads are checked before they are saved, work offline, and can be removed in Settings without touching your books, notes or backups. Saved entries and your reading position are part of Sela backups.
+Downloads are checked before they are saved, work offline, and can be removed in Settings without touching your books, notes or backups. Saved entries, your own notes and quotes, and your reading position are part of Sela backups.
 
 Each edition keeps its own licence. The SELA MIT licence covers code and SELA-written text only. See [Faith readings: sources](docs/faith-readings-sources.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The 25 prophet stories are a draft that a scholar has not reviewed yet, and the app says so.
 

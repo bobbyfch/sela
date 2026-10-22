@@ -22,6 +22,15 @@ export function validatePersonal(value) {
     const last = Object.fromEntries(Object.entries(data.readingsLast).filter(([pack, item]) => /^[a-z0-9][a-z0-9-]{2,63}$/.test(pack) && typeof item === "string" && /^[a-z0-9]{1,40}(?:[-./][a-z0-9]{1,40})*$/.test(item)).slice(0, 100));
     if (Object.keys(last).length) result.readingsLast = last;
   }
+  const entryKey = /^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:[-.][a-z0-9]{1,40})*$/;
+  if (data.readingsNotes && typeof data.readingsNotes === "object" && !Array.isArray(data.readingsNotes)) {
+    const notes = Object.fromEntries(Object.entries(data.readingsNotes).filter(([key, note]) => entryKey.test(key) && typeof note === "string" && note.trim().length > 0).map(([key, note]) => [key, String(note).slice(0, 4e3)]).slice(0, 300));
+    if (Object.keys(notes).length) result.readingsNotes = notes;
+  }
+  if (Array.isArray(data.readingsQuotes)) {
+    const quotes = data.readingsQuotes.filter((item) => item && typeof item === "object" && entryKey.test(String(item.key)) && typeof item.text === "string" && item.text.trim().length > 0 && Number.isFinite(item.at)).map((item) => ({ key: String(item.key), text: String(item.text).slice(0, 800), at: Math.round(item.at) })).slice(0, 300);
+    if (quotes.length) result.readingsQuotes = quotes;
+  }
   if (Number.isFinite(data.quranArabicSize)) result.quranArabicSize = Math.max(20, Math.min(48, Math.round(data.quranArabicSize)));
   if (Number.isFinite(data.quranTranslationSize)) result.quranTranslationSize = Math.max(14, Math.min(28, Math.round(data.quranTranslationSize)));
   const companions = { fox: "fox", tanuki: "tanuki", crane: "crane", rabbit: "rabbit", plant: "plant", cat: "tanuki", hamster: "tanuki", owl: "crane", turtle: "tanuki", "red-panda": "tanuki", penguin: "crane", shiba: "tanuki", fawn: "rabbit" };

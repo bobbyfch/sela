@@ -1,0 +1,39 @@
+{
+  "id": "sela-malay-classics-id",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "islam"
+  ],
+  "category": "classics",
+  "language": "id",
+  "title": {
+    "id": "Syair Perahu dan Gurindam Dua Belas",
+    "en": "Syair Perahu and Gurindam Dua Belas"
+  },
+  "description": {
+    "id": "Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.",
+    "en": "Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam."
+  },
+  "edition": "Wikisumber",
+  "itemCount": 2,
+  "source": [
+    {
+      "label": "Wikisumber · Syair Perahu",
+      "url": "https://id.wikisource.org/wiki/Syair_Perahu"
+    },
+    {
+      "label": "Wikisumber · Gurindam Dua Belas",
+      "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+    }
+  ],
+  "license": {
+    "code": "CC-BY-SA-4.0",
+    "name": "CC BY-SA 4.0 · kontributor Wikisumber",
+    "noticePath": "licenses/sela-wikisource-malay-NOTICE.md"
+  },
+  "payload": {
+    "path": "malay-classics-id-v1.json"
+  }
+}

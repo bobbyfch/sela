@@ -113,7 +113,7 @@ export default function ReadingsTab({ faith }: { faith: PackFaith }) {
       <TextInput className="readings-search" type="search" leftSection={<Search size={16} aria-hidden="true" />} aria-label={t('Search readings', 'Cari bacaan')} placeholder={t('Search readings and downloaded entries', 'Cari bacaan dan entri yang sudah diunduh')} value={query} onChange={event => setQuery(event.currentTarget.value)} />
     </section>
     <SavedReadings />
-    <div aria-live="polite" className="readings-status">{notice && <Alert color="green" withCloseButton onClose={() => setNotice('')}>{notice}</Alert>}</div>
+    <div aria-live="polite" className="readings-status">{notice && <Alert color="green" withCloseButton closeButtonLabel={t('Dismiss', 'Tutup')} onClose={() => setNotice('')}>{notice}</Alert>}</div>
     {storageError && <Alert color="yellow" role="alert" title={t('Downloads cannot be saved here', 'Unduhan tidak dapat disimpan di sini')}>{storageError}</Alert>}
     {catalogue.state === 'loading' && <div role="status" aria-label={t('Loading readings…', 'Memuat bacaan…')}><Skeleton height={150} radius="xl" /></div>}
     {catalogue.state === 'error' && <Alert color={installed.length ? 'yellow' : 'red'} role="alert" title={navigator.onLine ? t('The catalogue could not be loaded', 'Katalog belum dapat dimuat') : t('You are offline', 'Kamu sedang offline')}>

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router';
 import { formatRef, readingMinutes, type InstalledProphetPack, type ProphetArticle } from '../../../../../app/library/content-packs.ts';
 import { quranSurahName } from '../../../../../app/library/scripture-sources.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
+import EntryTools from './EntryTools.tsx';
 import SaveButton from './SaveButton.tsx';
 
 export function ProphetIndex({ pack, articles }: { pack: InstalledProphetPack; articles: ProphetArticle[] }) {
@@ -49,6 +50,7 @@ export function ProphetArticleView({ pack, article, articles }: { pack: Installe
     {article.notes.length > 0 && <aside className="readings-note" aria-labelledby="readings-notes"><h3 id="readings-notes">{t('SELA notes — interpretation, not scripture', 'Catatan SELA — penafsiran, bukan teks wahyu')}</h3>{article.notes.map((note, index) => <p key={index}>{note}</p>)}</aside>}
     <aside className="readings-accuracy" aria-labelledby="readings-accuracy"><h3 id="readings-accuracy">{t('Accuracy note', 'Catatan keakuratan')}</h3><p>{article.accuracy}</p></aside>
     {related.length > 0 && <p className="readings-related"><span>{t('Related', 'Terkait')}</span>{related.map(item => <Link key={item.slug} to={`/readings/${pack.id}/${item.slug}`}>{item.name}</Link>)}</p>}
+    <EntryTools packId={pack.id} itemId={article.slug} />
     <footer className="faith-reader-controls">
       <Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={!previous} onClick={() => previous && navigate(`/readings/${pack.id}/${previous.slug}`)}>{previous ? previous.name : t('Previous', 'Sebelumnya')}</Button>
       <span className="readings-position">{position + 1} / {articles.length}</span>

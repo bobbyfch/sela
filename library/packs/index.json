@@ -181,15 +181,15 @@
       "category": "scripture",
       "language": "en",
       "title": {
-        "id": "Da Xue dan Zhong Yong (Legge)",
-        "en": "The Great Learning and the Doctrine of the Mean (Legge)"
+        "id": "Mencius, Da Xue, dan Zhong Yong (Legge)",
+        "en": "Mencius, The Great Learning and The Doctrine of the Mean (Legge)"
       },
       "description": {
-        "id": "Dua dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.",
-        "en": "Two of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription."
+        "id": "Tiga dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.",
+        "en": "Three of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription."
       },
-      "edition": "Wikisource, The Chinese Classics vol. 1",
-      "itemCount": 2,
+      "edition": "Wikisource, The Chinese Classics",
+      "itemCount": 3,
       "source": [
         {
           "label": "Wikisource · The Great Learning",
@@ -198,6 +198,10 @@
         {
           "label": "Wikisource · The Doctrine of the Mean",
           "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean"
+        },
+        {
+          "label": "Wikisource · The Works of Mencius",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_2/The_Works_of_Mencius"
         }
       ],
       "license": {
@@ -207,8 +211,49 @@
       },
       "payload": {
         "path": "legge-wikisource-en-v1.json",
-        "sha256": "83f9a3c000913da897a77832f932e5bfacf73b0b51e5c391277466d0737d1487",
-        "bytes": 58083
+        "sha256": "12b38f30e2671e17559d4bb46114e321030b58ea04d91e6ffb23fed0f17870bd",
+        "bytes": 384174
+      }
+    },
+    {
+      "id": "sela-malay-classics-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "islam"
+      ],
+      "category": "classics",
+      "language": "id",
+      "title": {
+        "id": "Syair Perahu dan Gurindam Dua Belas",
+        "en": "Syair Perahu and Gurindam Dua Belas"
+      },
+      "description": {
+        "id": "Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.",
+        "en": "Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam."
+      },
+      "edition": "Wikisumber",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Wikisumber · Syair Perahu",
+          "url": "https://id.wikisource.org/wiki/Syair_Perahu"
+        },
+        {
+          "label": "Wikisumber · Gurindam Dua Belas",
+          "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · kontributor Wikisumber",
+        "noticePath": "licenses/sela-wikisource-malay-NOTICE.md"
+      },
+      "payload": {
+        "path": "malay-classics-id-v1.json",
+        "sha256": "84641a71d0da770a8ed4f6d17f4f2f1daad13812696f925c40f855821c6d117b",
+        "bytes": 11798
       }
     },
     {
@@ -290,6 +335,43 @@
       }
     },
     {
+      "id": "sela-suttas-an-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Anguttara Nikaya (Sujato)",
+        "en": "Anguttara Nikaya, Numbered Discourses (Sujato)"
+      },
+      "description": {
+        "id": "Sebelas nipata dalam terjemahan Bhikkhu Sujato, disusun menurut jumlah unsur dalam tiap sutta.",
+        "en": "The eleven nipatas in Bhikkhu Sujato’s translation, arranged by the number of items in each discourse."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 11,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/an"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-an-en-v1.json",
+        "sha256": "e636ddc857748a505d4747e076a38ab41a9ff62367a17da14c21b2f28fb561da",
+        "bytes": 2762168
+      }
+    },
+    {
       "id": "sela-suttas-en",
       "schemaVersion": 1,
       "kind": "text-collection",
@@ -331,6 +413,43 @@
       }
     },
     {
+      "id": "sela-suttas-sn-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Samyutta Nikaya (Sujato)",
+        "en": "Samyutta Nikaya, Linked Discourses (Sujato)"
+      },
+      "description": {
+        "id": "Lima puluh enam samyutta, sekitar 1.800 sutta pendek dalam terjemahan Bhikkhu Sujato.",
+        "en": "The fifty-six samyuttas, about 1,800 short discourses, in Bhikkhu Sujato’s translation."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 56,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/sn"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-sn-en-v1.json",
+        "sha256": "7265d8f8d8e080dd0dd9d91b16be1c6ed2c919dc106c6733be309e17302a7aa2",
+        "bytes": 2344575
+      }
+    },
+    {
       "id": "sela-tsi-id",
       "schemaVersion": 1,
       "kind": "text-collection",
@@ -369,6 +488,43 @@
         "path": "tsi-id-v1.json",
         "sha256": "13fe2e6770e75b5360d27f89859c1d32fc5cbaf7825d879952f78ff1f4228d20",
         "bytes": 4142471
+      }
+    },
+    {
+      "id": "sela-web-deuterocanon-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "catholicism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "World English Bible: kitab Deuterokanonika",
+        "en": "World English Bible: the deuterocanonical books"
+      },
+      "description": {
+        "id": "Tobit, Yudit, Kebijaksanaan, Sirakh, Barukh, Makabe, dan kitab lain yang tidak ada di Alkitab Protestan, dalam bahasa Inggris.",
+        "en": "Tobit, Judith, Wisdom, Sirach, Baruch, the Maccabees and the other books outside the Protestant canon."
+      },
+      "edition": "WEB Classic 2026",
+      "itemCount": 15,
+      "source": [
+        {
+          "label": "eBible.org · World English Bible Classic",
+          "url": "https://ebible.org/find/details.php?id=eng-web"
+        }
+      ],
+      "license": {
+        "code": "PD",
+        "name": "Domain publik · World English Bible",
+        "noticePath": "licenses/sela-web-deuterocanon-NOTICE.md"
+      },
+      "payload": {
+        "path": "web-deuterocanon-en-v1.json",
+        "sha256": "e5d651dfe95ce79766e46f3e46b30dd5b512f2001953f999d5adbf8ab69af4e9",
+        "bytes": 1077413
       }
     }
   ]

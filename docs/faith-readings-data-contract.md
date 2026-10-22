@@ -75,11 +75,11 @@ Remove deletes only that record. Shelf books, notes, highlights, progress and ba
 - An installed Quran edition is read from the device. While it is the selected edition the Quran reader makes no request to QuranEnc. The edition dropdown asks for the online list only when opened.
 - Version shown: the publisher's version for Quran editions, the download date for hadith, because that API has none.
 - **Update** appears for Quran editions when the listed version differs. Every publisher pack has **Download again**.
-- Size: a Quran edition is about 2 to 3 MB. A hadith is about 3 KB, so the largest category (Fikih, 1,102 items) is a few MB and takes minutes. A pack over 40 MB is refused.
+- Size: a Quran edition is about 2 to 3 MB. A hadith is about 3 KB, so the largest category (Fikih, 1,102 items) is about 4 MB. A live download of it took 92 seconds. A pack over 40 MB is refused.
 
-## Saved entries and backups
+## Saved entries, notes, quotes and backups
 
-Saved entries and the last entry read are stored in the personal store (`readingsSaved`, `readingsLast`), so Sela backups and restores carry them. Pack payloads are not in backups. They can be downloaded again, and saved entries reappear when the pack is installed.
+The personal store holds `readingsSaved` (saved entries), `readingsLast` (last entry per pack), `readingsNotes` (one note per entry, up to 4,000 characters, 300 notes) and `readingsQuotes` (selected text, up to 800 characters each, 300 quotes). Keys are `packId/itemId`, and an item id is `slug` for stories, `workId.sectionId` for text collections and the publisher id for hadith. Sela backups and restores carry all four, and `validatePersonal` trims, caps and drops malformed entries. Pack payloads are not in backups. They can be downloaded again, and saved entries, notes and quotes reappear when the pack is installed.
 
 ## Adding a pack
 

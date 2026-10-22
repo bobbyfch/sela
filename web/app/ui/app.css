@@ -1372,3 +1372,17 @@ button, input { font: inherit; }
 .calendar-widget .mantine-Calendar-day[data-outside] { opacity: 1; color: var(--color-muted); }
 .readings-badge { display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border: 1px solid var(--color-rule); border-radius: 999px; color: var(--color-muted); font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
 .readings-badge[data-tone="draft"] { border-color: var(--color-accent); color: var(--color-ink); }
+.catalog-surprise.mantine-Button-root { min-height: 44px; }
+.water-goal-button.mantine-ActionIcon-root { width: 44px; height: 44px; min-width: 44px; }
+.mantine-PasswordInput-visibilityToggle { min-width: 40px; min-height: 40px; }
+.readings-tools { display: grid; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-rule); }
+.readings-tools > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.readings-tools-status { min-height: 16px; color: var(--color-muted); }
+.readings-quote-bar .mantine-Button-root { min-height: 44px; }
+.readings-quotes { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.readings-quotes li { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 10px 12px; border-left: 2px solid var(--color-accent); border-radius: 0 12px 12px 0; background: var(--color-paper-raised); }
+.readings-quotes blockquote { margin: 0; color: var(--color-ink); font-family: var(--font-display); font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; white-space: pre-line; }
+.readings-marks { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.readings-marks a { display: grid; gap: 4px; padding: 10px 14px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; overflow-wrap: anywhere; }
+.readings-marks a:hover, .readings-marks a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.readings-marks span:last-child { font-size: 14px; line-height: 1.6; }

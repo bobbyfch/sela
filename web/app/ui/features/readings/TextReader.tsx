@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { sectionMinutes, type InstalledTextPack, type TextSection, type TextWork } from '../../../../../app/library/content-packs.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
+import EntryTools from './EntryTools.tsx';
 import SaveButton from './SaveButton.tsx';
 import { rememberReadingEntry } from './readings-state.ts';
 
@@ -85,6 +86,7 @@ function SectionView({ pack, work, section }: { pack: InstalledTextPack; work: T
       {section.paragraphs?.map((paragraph, i) => <p key={i}>{paragraph}</p>)}
     </div>
     <p className="readings-planned">{pack.manifest.edition} · {pack.manifest.license.name}</p>
+    <EntryTools packId={pack.id} itemId={`${work.id}.${section.id}`} />
     <footer className="faith-reader-controls">
       <Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={!previous} onClick={() => go(previous)}>{t('Previous', 'Sebelumnya')}</Button>
       <span className="readings-position">{index + 1} / {work.sections.length}</span>

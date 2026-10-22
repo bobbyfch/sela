@@ -5,7 +5,7 @@ export interface PersonalData {
  racks:{name:string;rule:string;description?:string;badge?:string}[];
  sessions:{book:string;at:number;seconds:number}[];
  quoteTopic:string; quoteLanguage:string; weeklyTarget?:number; quranTranslationKey?:string; quranLanguage?:'id'|'en'|'ja'; quranSurah?:number; quranVerse?:number; quranArabicSize?:number; quranTranslationSize?:number;
- readingsSaved?:string[]; readingsLast?:Record<string,string>;
+ readingsSaved?:string[]; readingsLast?:Record<string,string>; readingsNotes?:Record<string,string>; readingsQuotes?:{key:string;text:string;at:number}[];
 }
 export const PERSONAL_KEY='sela-library:personal';
 export function emptyPersonal():PersonalData{return {version:1,room:'',companion:'tanuki',faith:'none',gender:'unspecified',quiet:false,hidden:[],queue:[],books:{},racks:[],sessions:[],quoteTopic:'reading',quoteLanguage:'auto',quranTranslationKey:'',quranSurah:1,quranVerse:1,quranArabicSize:32,quranTranslationSize:18};}
@@ -20,6 +20,9 @@ export function validatePersonal(value:unknown):PersonalData {
  if(Number.isInteger(data.quranVerse)&&data.quranVerse>=1&&data.quranVerse<=286)result.quranVerse=data.quranVerse;
  if(Array.isArray(data.readingsSaved)){const saved=data.readingsSaved.filter((id:unknown):id is string=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:[-.][a-z0-9]{1,40})*$/.test(id));if(saved.length)result.readingsSaved=[...new Set(saved)].slice(0,500);}
  if(data.readingsLast&&typeof data.readingsLast==='object'&&!Array.isArray(data.readingsLast)){const last=Object.fromEntries(Object.entries(data.readingsLast as Record<string,unknown>).filter(([pack,item])=>/^[a-z0-9][a-z0-9-]{2,63}$/.test(pack)&&typeof item==='string'&&/^[a-z0-9]{1,40}(?:[-./][a-z0-9]{1,40})*$/.test(item)).slice(0,100)) as Record<string,string>;if(Object.keys(last).length)result.readingsLast=last;}
+ const entryKey=/^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:[-.][a-z0-9]{1,40})*$/;
+ if(data.readingsNotes&&typeof data.readingsNotes==='object'&&!Array.isArray(data.readingsNotes)){const notes=Object.fromEntries(Object.entries(data.readingsNotes as Record<string,unknown>).filter(([key,note])=>entryKey.test(key)&&typeof note==='string'&&note.trim().length>0).map(([key,note])=>[key,String(note).slice(0,4000)]).slice(0,300)) as Record<string,string>;if(Object.keys(notes).length)result.readingsNotes=notes;}
+ if(Array.isArray(data.readingsQuotes)){const quotes=data.readingsQuotes.filter((item:any)=>item&&typeof item==='object'&&entryKey.test(String(item.key))&&typeof item.text==='string'&&item.text.trim().length>0&&Number.isFinite(item.at)).map((item:any)=>({key:String(item.key),text:String(item.text).slice(0,800),at:Math.round(item.at)})).slice(0,300);if(quotes.length)result.readingsQuotes=quotes;}
  if(Number.isFinite(data.quranArabicSize))result.quranArabicSize=Math.max(20,Math.min(48,Math.round(data.quranArabicSize)));
  if(Number.isFinite(data.quranTranslationSize))result.quranTranslationSize=Math.max(14,Math.min(28,Math.round(data.quranTranslationSize)));
  const companions:Record<string,PersonalData['companion']>={fox:'fox',tanuki:'tanuki',crane:'crane',rabbit:'rabbit',plant:'plant',cat:'tanuki',hamster:'tanuki',owl:'crane',turtle:'tanuki','red-panda':'tanuki',penguin:'crane',shiba:'tanuki',fawn:'rabbit'};

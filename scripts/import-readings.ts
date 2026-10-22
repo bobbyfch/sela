@@ -24,9 +24,10 @@ const dryRun = process.argv.includes('--dry-run');
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
   let failure: unknown;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const response = await fetch(url, { headers: agent });
+      if (response.status === 429) { await new Promise(resolve => setTimeout(resolve, 8000 * (attempt + 1))); throw new Error(`429 ${url}`); }
       if (!response.ok) throw new Error(`${response.status} ${url}`);
       return new Uint8Array(await response.arrayBuffer());
     } catch (reason) {
@@ -295,6 +296,27 @@ async function wikisourceLegge(page: string, workId: string, title: string, revi
   return finish([{ id: workId, title, author: 'Translated by James Legge', sections: chapters }]);
 }
 
+async function wikisourceMalay(page: string, workId: string, title: string, author: string, revisionNote: string[]): Promise<TextWork> {
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  const data = JSON.parse(await fetchText(`https://id.wikisource.org/w/api.php?action=query&prop=revisions&rvprop=content|ids&rvslots=main&format=json&formatversion=2&titles=${encodeURIComponent(page)}`));
+  const revision = data.query.pages[0].revisions[0];
+  revisionNote.push(`${page}: revisi ${revision.revid}`);
+  const wikitext: string = revision.slots.main.content.replace(/\{\{header[\s\S]*?\n\}\}/, '');
+  const sections: TextSection[] = [];
+  let heading = title;
+  const pattern = /(={2,4})\s*([^=\n]+?)\s*\1|<poem>([\s\S]*?)<\/poem>/g;
+  for (const match of wikitext.matchAll(pattern)) {
+    if (match[2]) { heading = match[2].trim(); continue; }
+    const body = match[3].split('\n').map(line => line.replace(/<[^>]+>/g, '').replace(/'''?/g, '').replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1').trim()).join('\n');
+    const paragraphs = body.split(/\n\s*\n/).map(block => block.split('\n').map(line => line.trim()).filter(Boolean).join('\n')).filter(Boolean);
+    if (!paragraphs.length) continue;
+    const existing = sections.find(section => section.title === heading);
+    if (existing) existing.paragraphs!.push(...paragraphs);
+    else sections.push({ id: slug(`${sections.length + 1}-${heading}`), title: heading, paragraphs });
+  }
+  return { id: workId, title, author, sections };
+}
+
 const SUTTA_COMMIT = 'fdb7ff39a8cc31baa53c879866588992df00bc91';
 type TreeEntry = { path: string; type: string };
 let treeCache: TreeEntry[] | null = null;
@@ -343,21 +365,78 @@ async function suttas(folder: string, workId: string, title: string, author: str
   return { id: workId, title, author, sections: sections.filter(section => (section.paragraphs?.length ?? 0) > 0) };
 }
 
+async function suttaSection(path: string, suffix: string, label: (uid: string) => string): Promise<TextSection> {
+  const uid = path.split('/').pop()!.replace(`_${suffix}.json`, '');
+  const segments = JSON.parse(await fetchText(`https://raw.githubusercontent.com/suttacentral/bilara-data/${SUTTA_COMMIT}/${path}`)) as Record<string, string>;
+  const heads: string[] = [];
+  const blocks = new Map<string, string>();
+  for (const [key, value] of Object.entries(segments)) {
+    const position = key.slice(key.indexOf(':') + 1);
+    const text = value.replace(/\s+/g, ' ');
+    if (position.startsWith('0.')) { if (text.trim()) heads.push(text.trim()); continue; }
+    const block = position.slice(0, position.lastIndexOf('.'));
+    blocks.set(block, (blocks.get(block) ?? '') + text);
+  }
+  const name = (heads.length > 1 ? heads[heads.length - 1] : heads[0] ?? uid).replace(/^\d+\.\s*/, '');
+  const paragraphs = [...blocks.values()].map(text => text.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  return { id: slug(uid), title: `${label(uid)} · ${name}`, paragraphs };
+}
+
+async function suttaGroups(folder: string, suffix: string, author: string, label: (uid: string) => string, groupTitle: (group: string) => string): Promise<TextWork[]> {
+  const tree = await suttaTree();
+  const files = tree.filter(entry => entry.type === 'blob' && entry.path.startsWith(folder) && entry.path.endsWith(`_${suffix}.json`)).map(entry => entry.path);
+  const groups = new Map<string, string[]>();
+  for (const path of files) {
+    const group = path.slice(folder.length).split('/')[0];
+    groups.set(group, [...(groups.get(group) ?? []), path]);
+  }
+  const ordered = [...groups.keys()].sort(naturalCompare);
+  const works: TextWork[] = [];
+  for (const group of ordered) {
+    const paths = groups.get(group)!.sort((x, y) => naturalCompare(x.split('/').pop()!, y.split('/').pop()!));
+    const sections = (await pool(paths, 8, path => suttaSection(path, suffix, label))).filter(section => (section.paragraphs?.length ?? 0) > 0);
+    if (sections.length) works.push({ id: slug(group), title: groupTitle(group), author, sections });
+  }
+  return works;
+}
+
+async function wikisourceMencius(revisionNote: string[]): Promise<TextWork[]> {
+  const sections: TextSection[] = [];
+  for (let index = 1; index <= 14; index++) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const page = `The Chinese Classics/Volume 2/The Works of Mencius/chapter${String(index).padStart(2, '0')}`;
+    const data = JSON.parse(await fetchText(`https://en.wikisource.org/w/api.php?action=query&prop=revisions&rvprop=content|ids&rvslots=main&format=json&formatversion=2&titles=${encodeURIComponent(page)}`));
+    const revision = data.query.pages[0].revisions[0];
+    revisionNote.push(`${page}: revision ${revision.revid}`);
+    const wikitext: string = revision.slots.main.content;
+    const name = wikitext.match(/\|\s*section\s*=\s*(.+)/)?.[1].trim() ?? `Part ${index}`;
+    const body = wikitext.replace(/\{\{header[\s\S]*?\n\}\}/, '').replace(/\{\{translation license[\s\S]*$/, '').replace(/<ref[^>]*>[\s\S]*?<\/ref>/g, '');
+    const paragraphs: string[] = [];
+    for (const raw of body.split('\n')) {
+      const line = raw.trim();
+      if (!line || line.startsWith('{{lang|zh|') || line.startsWith('{{DEFAULTSORT') || line.startsWith('[[Category')) continue;
+      const text = line.replace(/<[^>]+>/g, '').replace(/'''?/g, '').replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1').replace(/\{\{[^}]*\}\}/g, '').trim();
+      if (text && text !== name) paragraphs.push(text);
+    }
+    sections.push({ id: `part-${index}`, title: `${index}. ${name}`, paragraphs });
+  }
+  return finish([{ id: 'mencius', title: 'The Works of Mencius', author: 'Mencius, translated by James Legge', sections }]);
+}
+
 const upper = (uid: string) => uid.replace(/^([a-z]+)/, prefix => prefix.toUpperCase()).replace(/^(SA)(\d)/, '$1 $2').replace(/^([A-Z]+)(\d)/, '$1 $2');
 
-const USFM_NAMES: Record<string, string> = {};
+const BIBLE_BOOKS = ['GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI','1CH','2CH','EZR','NEH','EST','JOB','PSA','PRO','ECC','SNG','ISA','JER','LAM','EZK','DAN','HOS','JOL','AMO','OBA','JON','MIC','NAM','HAB','ZEP','HAG','ZEC','MAL','MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'];
+const DEUTEROCANON = ['TOB','JDT','ESG','WIS','SIR','BAR','1MA','2MA','1ES','2ES','MAN','PS2','3MA','4MA','DAG'];
 
-async function tsiBible(): Promise<TextWork[]> {
-  const archive = unzipSync(await fetchBytes('https://ebible.org/Scriptures/ind_usfm.zip'));
+async function usfmBible(url: string, canonical: string[]): Promise<TextWork[]> {
+  const archive = unzipSync(await fetchBytes(url));
   const works: { order: number; work: TextWork }[] = [];
-  const canonical = ['GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI','1CH','2CH','EZR','NEH','EST','JOB','PSA','PRO','ECC','SNG','ISA','JER','LAM','EZK','DAN','HOS','JOL','AMO','OBA','JON','MIC','NAM','HAB','ZEP','HAG','ZEC','MAL','MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'];
   for (const [name, bytes] of Object.entries(archive)) {
     if (!/\.(usfm|sfm)$/i.test(name)) continue;
-    const text = strFromU8(bytes).replace(/\r\n?/g, '\n');
-    const code = text.match(/^\\id\s+([A-Z0-9]{3})/m)?.[1];
+    const text = strFromU8(bytes).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+    const code = text.match(/\\id\s+([A-Z0-9]{3})/)?.[1];
     if (!code || !canonical.includes(code)) continue;
     const bookName = (text.match(/^\\toc2\s+(.+)$/m) ?? text.match(/^\\h\s+(.+)$/m) ?? text.match(/^\\toc1\s+(.+)$/m))?.[1].trim() ?? code;
-    USFM_NAMES[code] = bookName;
     const sections: TextSection[] = [];
     let chapter: { number: string; verses: TextVerse[] } | null = null;
     let verse: TextVerse | null = null;
@@ -368,19 +447,22 @@ async function tsiBible(): Promise<TextWork[]> {
       if (c) { flush(); chapter = { number: c[1], verses: [] }; verse = null; continue; }
       if (!chapter) continue;
       const v = line.match(/^\\v\s+(\d+(?:[-–]\d+)?[a-z]?)\s*(.*)$/);
-      const content = (v ? v[2] : /^\\(p|q\d?|m|pi\d?|li\d?|b|nb|d|qa|qr|qc|mi|pmo|pm|pmc|pmr|qm\d?|ph\d?|r|s\d?|ms\d?|mr|sp|cl|cp|cd|tr|th\d?|tc\d?)\b/.test(line) || !line.startsWith('\\') ? line.replace(/^\\[a-z0-9]+\s*/, '') : '');
-      const heading = /^\\(r|s\d?|ms\d?|mr|sp|cl|cp|cd|d)\b/.test(line);
+      const heading = /^\\(r|s\d?|ms\d?|mr|sp|cl|cp|cd|d|rem|ip|is\d?)\b/.test(line);
       if (v) { verse = { n: v[1], text: '' }; chapter.verses.push(verse); }
       if (heading || !verse) continue;
-      const plain = (v ? v[2] : content).replace(/\\f\s.*?\\f\*/g, '').replace(/\\x\s.*?\\x\*/g, '').replace(/\\(?:w|wj|nd|add|bk|dc|k|pn|qt|sc|sig|tl|ord|fig)\*?\s?/g, '').replace(/\|[^\\]*?(?=\\|\s|$)/g, '').replace(/\\[a-z0-9]+\*/g, '').replace(/\\[a-z0-9]+\s?/g, '').replace(/\s+/g, ' ').trim();
+      const content = v ? v[2] : line.replace(/^\\[a-z0-9]+\s*/, '');
+      const plain = content.replace(/\\f\s.*?\\f\*/g, '').replace(/\\x\s.*?\\x\*/g, '').replace(/\\(?:w|wj|nd|add|bk|dc|k|pn|qt|sc|sig|tl|ord|fig)\*?\s?/g, '').replace(/\|[^\\]*?(?=\\)/g, '').replace(/\\[a-z0-9]+\*/g, '').replace(/\\[a-z0-9]+\s?/g, '').replace(/\s+/g, ' ').trim();
       if (plain) verse.text = verse.text ? `${verse.text} ${plain}` : plain;
     }
     flush();
     const cleaned = sections.map(section => ({ ...section, verses: section.verses!.filter(item => item.text) })).filter(section => section.verses.length);
     if (cleaned.length) works.push({ order: canonical.indexOf(code), work: { id: code.toLowerCase(), title: bookName, sections: cleaned } });
   }
-  return works.sort((a, b) => a.order - b.order).map(item => item.work);
+  return works.sort((x, y) => x.order - y.order).map(item => item.work);
 }
+
+const tsiBible = () => usfmBible('https://ebible.org/Scriptures/ind_usfm.zip', BIBLE_BOOKS);
+const webDeuterocanon = () => usfmBible('https://ebible.org/Scriptures/eng-web_usfm.zip', DEUTEROCANON);
 
 const notice = (title: string, body: string[]) => `# ${title}\n\n${body.join('\n\n')}\n`;
 const gutenbergNotice = (works: string[]) => notice('Project Gutenberg public-domain texts', [
@@ -428,6 +510,50 @@ const specs: PackSpec[] = [
     ]),
   },
   {
+    id: 'sela-suttas-sn-en', file: 'suttas-sn-en-v1.json', faiths: ['buddhism'], category: 'scripture', language: 'en',
+    title: { id: 'Samyutta Nikaya (Sujato)', en: 'Samyutta Nikaya, Linked Discourses (Sujato)' },
+    description: { id: 'Lima puluh enam samyutta, sekitar 1.800 sutta pendek dalam terjemahan Bhikkhu Sujato.', en: 'The fifty-six samyuttas, about 1,800 short discourses, in Bhikkhu Sujato’s translation.' },
+    edition: `SuttaCentral ${SUTTA_COMMIT.slice(0, 7)}`, status: 'complete',
+    source: [{ label: 'SuttaCentral bilara-data (published)', url: 'https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/sn' }],
+    license: { code: 'CC0-1.0', name: 'CC0 1.0 · Bhikkhu Sujato', noticePath: 'licenses/sela-suttas-NOTICE.md' },
+    works: () => suttaGroups('translation/en/sujato/sutta/sn/', 'translation-en-sujato', 'Bhikkhu Sujato', upper, group => `Samyutta ${group.replace(/^sn/, '')}`),
+  },
+  {
+    id: 'sela-suttas-an-en', file: 'suttas-an-en-v1.json', faiths: ['buddhism'], category: 'scripture', language: 'en',
+    title: { id: 'Anguttara Nikaya (Sujato)', en: 'Anguttara Nikaya, Numbered Discourses (Sujato)' },
+    description: { id: 'Sebelas nipata dalam terjemahan Bhikkhu Sujato, disusun menurut jumlah unsur dalam tiap sutta.', en: 'The eleven nipatas in Bhikkhu Sujato’s translation, arranged by the number of items in each discourse.' },
+    edition: `SuttaCentral ${SUTTA_COMMIT.slice(0, 7)}`, status: 'complete',
+    source: [{ label: 'SuttaCentral bilara-data (published)', url: 'https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/an' }],
+    license: { code: 'CC0-1.0', name: 'CC0 1.0 · Bhikkhu Sujato', noticePath: 'licenses/sela-suttas-NOTICE.md' },
+    works: () => suttaGroups('translation/en/sujato/sutta/an/', 'translation-en-sujato', 'Bhikkhu Sujato', upper, group => `Nipata ${group.replace(/^an/, '')}`),
+  },
+  {
+    id: 'sela-web-deuterocanon-en', file: 'web-deuterocanon-en-v1.json', faiths: ['catholicism'], category: 'scripture', language: 'en',
+    title: { id: 'World English Bible: kitab Deuterokanonika', en: 'World English Bible: the deuterocanonical books' },
+    description: { id: 'Tobit, Yudit, Kebijaksanaan, Sirakh, Barukh, Makabe, dan kitab lain yang tidak ada di Alkitab Protestan, dalam bahasa Inggris.', en: 'Tobit, Judith, Wisdom, Sirach, Baruch, the Maccabees and the other books outside the Protestant canon.' },
+    edition: 'WEB Classic 2026', status: 'complete',
+    source: [{ label: 'eBible.org · World English Bible Classic', url: 'https://ebible.org/find/details.php?id=eng-web' }],
+    license: { code: 'PD', name: 'Domain publik · World English Bible', noticePath: 'licenses/sela-web-deuterocanon-NOTICE.md' },
+    works: webDeuterocanon,
+  },
+  {
+    id: 'sela-malay-classics-id', file: 'malay-classics-id-v1.json', faiths: ['islam'], category: 'classics', language: 'id',
+    title: { id: 'Syair Perahu dan Gurindam Dua Belas', en: 'Syair Perahu and Gurindam Dua Belas' },
+    description: { id: 'Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.', en: 'Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam.' },
+    edition: 'Wikisumber', status: 'complete',
+    source: [{ label: 'Wikisumber · Syair Perahu', url: 'https://id.wikisource.org/wiki/Syair_Perahu' }, { label: 'Wikisumber · Gurindam Dua Belas', url: 'https://id.wikisource.org/wiki/Gurindam_Dua_Belas' }],
+    license: { code: 'CC-BY-SA-4.0', name: 'CC BY-SA 4.0 · kontributor Wikisumber', noticePath: 'licenses/sela-wikisource-malay-NOTICE.md' },
+    works: async () => {
+      const revisions: string[] = [];
+      const works = [
+        await wikisourceMalay('Gurindam Dua Belas', 'gurindam-dua-belas', 'Gurindam Dua Belas', 'Raja Ali Haji', revisions),
+        await wikisourceMalay('Syair Perahu', 'syair-perahu', 'Syair Perahu', 'Hamzah Fansuri', revisions),
+      ];
+      process.env.SELA_WIKISOURCE_MALAY_REVISIONS = revisions.join('; ');
+      return finish(works);
+    },
+  },
+  {
     id: 'sela-sa-id', file: 'samyukta-agama-id-v1.json', faiths: ['buddhism'], category: 'scripture', language: 'id',
     title: { id: 'Kotbah-kotbah Berkelompok (Samyukta Agama)', en: 'Linked Discourses (Samyukta Agama), Indonesian' },
     description: { id: 'Sebelas sutra pertama Samyukta Agama dalam bahasa Indonesia, terjemahan Seniya, dari SuttaCentral.', en: 'The first eleven suttas of the Samyukta Agama in Indonesian, translated by Seniya, from SuttaCentral.' },
@@ -465,14 +591,15 @@ const specs: PackSpec[] = [
   },
   {
     id: 'sela-legge-wikisource-en', file: 'legge-wikisource-en-v1.json', faiths: ['confucianism'], category: 'scripture', language: 'en',
-    title: { id: 'Da Xue dan Zhong Yong (Legge)', en: 'The Great Learning and the Doctrine of the Mean (Legge)' },
-    description: { id: 'Dua dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.', en: 'Two of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription.' },
-    edition: 'Wikisource, The Chinese Classics vol. 1', status: 'complete',
-    source: [{ label: 'Wikisource · The Great Learning', url: 'https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning' }, { label: 'Wikisource · The Doctrine of the Mean', url: 'https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean' }],
+    title: { id: 'Mencius, Da Xue, dan Zhong Yong (Legge)', en: 'Mencius, The Great Learning and The Doctrine of the Mean (Legge)' },
+    description: { id: 'Tiga dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.', en: 'Three of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription.' },
+    edition: 'Wikisource, The Chinese Classics', status: 'complete',
+    source: [{ label: 'Wikisource · The Great Learning', url: 'https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning' }, { label: 'Wikisource · The Doctrine of the Mean', url: 'https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean' }, { label: 'Wikisource · The Works of Mencius', url: 'https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_2/The_Works_of_Mencius' }],
     license: { code: 'CC-BY-SA-4.0', name: 'CC BY-SA 4.0 · kontributor Wikisource', noticePath: 'licenses/sela-wikisource-legge-NOTICE.md' },
     works: async () => {
       const revisions: string[] = [];
       const works = [
+        ...await wikisourceMencius(revisions),
         ...await wikisourceLegge('The Chinese Classics/Volume 1/The Great Learning', 'great-learning', 'The Great Learning', revisions),
         ...await wikisourceLegge('The Chinese Classics/Volume 1/The Doctrine of the Mean', 'doctrine-of-the-mean', 'The Doctrine of the Mean', revisions),
       ];
@@ -491,14 +618,26 @@ const notices: Record<string, () => string> = {
   ]),
   'licenses/sela-suttas-NOTICE.md': () => notice('SuttaCentral translations (CC0)', [
     `Teks diambil dari repositori bilara-data cabang published di SuttaCentral, commit ${SUTTA_COMMIT} (https://github.com/suttacentral/bilara-data).`,
-    'Terjemahan bahasa Inggris oleh Bhikkhu Sujato (DN, MN, SNP, UD, ITI, KP), Bhikkhu Sujato bersama Jessica Walton (THAG, THIG), dan terjemahan bahasa Indonesia oleh Seniya (Samyukta Agama). Semuanya berlisensi CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/) menurut _publication.json pada commit itu.',
+    'Terjemahan bahasa Inggris oleh Bhikkhu Sujato (DN, MN, SN, AN, SNP, UD, ITI, KP), Bhikkhu Sujato bersama Jessica Walton (THAG, THIG), dan terjemahan bahasa Indonesia oleh Seniya (Samyukta Agama). Semuanya berlisensi CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/) menurut _publication.json pada commit itu.',
     'Perubahan: segmen dikelompokkan menjadi paragraf per sutta. Kata-kata tidak diubah.',
     'Kode SELA berlisensi MIT.',
   ]),
-  'licenses/sela-wikisource-legge-NOTICE.md': () => notice('Legge, The Great Learning and The Doctrine of the Mean (Wikisource)', [
-    'Terjemahan James Legge (1861) adalah karya domain publik. Transkripsinya di Wikisource dilisensikan CC BY-SA 4.0 oleh kontributor Wikisource (https://en.wikisource.org/wiki/Wikisource:Copyright_policy).',
+  'licenses/sela-web-deuterocanon-NOTICE.md': () => notice('World English Bible Classic: deuterocanonical books', [
+    'The World English Bible is in the public domain. "World English Bible" is a trademark of eBible.org. The text may be copied and redistributed freely. If the wording of the text is changed, the result may no longer be called the World English Bible.',
+    'Source: https://ebible.org/find/details.php?id=eng-web (USFM archive). Only the deuterocanonical and apocryphal books are included: Tobit, Judith, Esther (Greek), Wisdom, Sirach, Baruch, 1 to 4 Maccabees, 1 and 2 Esdras, the Prayer of Manasseh, Psalm 151 and Daniel (Greek).',
+    'Change: the USFM files were converted to JSON and split by book and chapter. Footnotes and section headings were left out. The wording of the verses is unchanged.',
+    'SELA code is MIT licensed. That licence does not apply to this text.',
+  ]),
+  'licenses/sela-wikisource-malay-NOTICE.md': () => notice('Syair Perahu dan Gurindam Dua Belas (Wikisumber)', [
+    'Syair Perahu (Hamzah Fansuri, abad ke-16) dan Gurindam Dua Belas (Raja Ali Haji, 1847) adalah karya domain publik. Transkripsinya di Wikisumber dilisensikan CC BY-SA 4.0 oleh kontributor Wikisumber (https://id.wikisource.org/wiki/Wikisumber:Hak_cipta).',
+    `Revisi yang dipakai: ${process.env.SELA_WIKISOURCE_MALAY_REVISIONS ?? 'lihat riwayat halaman'}.`,
+    'Perubahan: tag halaman, galeri, dan templat dibuang, dan bait dipertahankan sebagai baris. Kata-kata tidak diubah.',
+    'Kode SELA berlisensi MIT, dan lisensi itu tidak berlaku untuk teks ini.',
+  ]),
+  'licenses/sela-wikisource-legge-NOTICE.md': () => notice('Legge, Mencius, The Great Learning and The Doctrine of the Mean (Wikisource)', [
+    'Terjemahan James Legge (1861 dan 1875) adalah karya domain publik. Transkripsinya di Wikisource dilisensikan CC BY-SA 4.0 oleh kontributor Wikisource (https://en.wikisource.org/wiki/Wikisource:Copyright_policy).',
     `Revisi yang dipakai: ${process.env.SELA_WIKISOURCE_REVISIONS ?? 'lihat riwayat halaman'}.`,
-    'Perubahan: teks Tionghoa, templat, dan catatan dibuang; paragraf bahasa Inggris dikelompokkan per bab. Kata-kata tidak diubah.',
+    'Perubahan: teks Tionghoa, templat, dan catatan kaki dibuang; paragraf bahasa Inggris dikelompokkan per bagian halaman. Kata-kata tidak diubah.',
     'Kode SELA berlisensi MIT, dan lisensi itu tidak berlaku untuk teks ini.',
   ]),
   'licenses/sela-gutenberg-christian-NOTICE.md': () => gutenbergNotice(['The Imitation of Christ (Thomas à Kempis), Project Gutenberg #1653', 'The Confessions of St. Augustine, Project Gutenberg #3296']),

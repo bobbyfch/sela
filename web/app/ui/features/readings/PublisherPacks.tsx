@@ -125,7 +125,7 @@ export default function PublisherPacks({ query }: { query: string }) {
     <Text className="page-eyebrow">{t('FROM THE PUBLISHERS', 'DARI PENERBITNYA')}</Text>
     <Title id="readings-official-title" order={2}>{t('Quran and hadith, saved for offline', 'Al-Qur’an dan hadis, tersimpan untuk offline')}</Title>
     <p className="readings-lede">{t('Sela does not host this text. Your browser downloads it from the publisher when you ask, stores it unchanged with its version, and you can download it again to stay current. Asking for the list contacts the publisher.', 'Sela tidak menyimpan teks ini. Peramban mengunduhnya dari penerbit saat kamu meminta, menyimpannya tanpa perubahan beserta versinya, dan kamu bisa mengunduh ulang agar tetap terbaru. Meminta daftar berarti menghubungi penerbit.')}</p>
-    <div aria-live="polite" className="readings-status">{notice && <Alert color="green" withCloseButton onClose={() => setNotice('')}>{notice}</Alert>}</div>
+    <div aria-live="polite" className="readings-status">{notice && <Alert color="green" withCloseButton closeButtonLabel={t('Dismiss', 'Tutup')} onClose={() => setNotice('')}>{notice}</Alert>}</div>
     <SegmentedControl aria-label={t('Language of the downloads', 'Bahasa unduhan')} value={language} onChange={value => { setLanguage(value as SourceLanguage); setQuran({ state: 'idle' }); setHadith({ state: 'idle' }); }} data={[{ value: 'id', label: 'Bahasa Indonesia' }, { value: 'en', label: 'English' }]} />
     <Group gap="xs" mb="md">
       <Button variant="default" loading={quran.state === 'loading'} onClick={loadQuran}>{t('Show Quran editions (QuranEnc)', 'Tampilkan edisi Al-Qur’an (QuranEnc)')}</Button>

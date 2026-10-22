@@ -19,3 +19,12 @@ test('personal data without faith reading fields is unchanged', () => {
   assert.equal(valid.readingsSaved, undefined);
   assert.equal(valid.readingsLast, undefined);
 });
+
+test('notes and quotes are validated, trimmed and capped before they reach a backup', () => {
+  const long = 'x'.repeat(5000);
+  const valid = validatePersonal({ ...emptyPersonal(), readingsNotes: { 'sela-sa-id/samyukta-agama.sa1': long, 'bad key': 'x', 'ok-pack/item-1': '   ' }, readingsQuotes: [{ key: 'ok-pack/item-1', text: long, at: 5 }, { key: '../x', text: 'no', at: 1 }, { key: 'ok-pack/item-1', text: '', at: 2 }, { key: 'ok-pack/item-1', text: 'fine', at: Number.NaN }] });
+  assert.deepEqual(Object.keys(valid.readingsNotes ?? {}), ['sela-sa-id/samyukta-agama.sa1']);
+  assert.equal(valid.readingsNotes?.['sela-sa-id/samyukta-agama.sa1'].length, 4000);
+  assert.equal(valid.readingsQuotes?.length, 1);
+  assert.equal(valid.readingsQuotes?.[0].text.length, 800);
+});

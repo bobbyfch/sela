@@ -33,6 +33,10 @@ Each card shows status (only when not complete), state (Available or Downloaded)
 - **Text collections**: works list, then contents with a filter and 100-row pages, then one section per page with previous and next, a Save button, reading time and the licence line. Verse numbers are small and tabular. Line breaks in verse are kept.
 - **Hadith**: a searchable index with 50 rows per page, then one entry per page with the Arabic text, the publisher's grade and narrator reference, explanation and lessons, and a credit line. Text is rendered as plain text, never as HTML.
 
+## Notes and quotes
+
+Every entry ends with **Your notes**: a text area that saves on its own after a short pause, and a **Save selected text as a quote** button that is enabled only while text inside the entry is selected. Saved quotes are listed under the note and can be removed. The Faith tab lists every note and quote under **Notes and quotes**, each linking back to its entry. All of it lives in the personal store, so it is included in backups.
+
 ## States
 
 Loading skeleton, catalogue error with Try again, offline notice that keeps installed packs usable, empty search, download error (checksum or size), cancelled download, storage error, pack missing, entry missing, remove confirmation.
@@ -43,4 +47,4 @@ Checked at 320 px (no horizontal overflow, in the browser suite) and at 390, 768
 
 ## Not built
 
-Highlights and notes inside pack entries. Saving an entry and the reading position are built.
+Coloured highlights drawn over the text. Notes, saved quotes, saved entries and the reading position are built.
