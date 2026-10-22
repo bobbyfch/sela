@@ -1,0 +1,35 @@
+{
+  "id": "sela-al-ghazali-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "islam"
+  ],
+  "category": "classics",
+  "language": "en",
+  "title": {
+    "id": "Pengakuan Al-Ghazali",
+    "en": "The Confessions of Al Ghazzali"
+  },
+  "description": {
+    "id": "Kisah pencarian kebenaran Imam Al-Ghazali (Al-Munqidh min ad-Dalal), terjemahan Claud Field, bahasa Inggris.",
+    "en": "Imam Al-Ghazali’s account of his search for truth (Al-Munqidh min ad-Dalal), translated by Claud Field."
+  },
+  "edition": "Project Gutenberg 58977",
+  "itemCount": 1,
+  "source": [
+    {
+      "label": "Project Gutenberg #58977",
+      "url": "https://www.gutenberg.org/ebooks/58977"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-islam-NOTICE.md"
+  },
+  "payload": {
+    "path": "al-ghazali-en-v1.json"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "sela-buddhist-stories-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "buddhism"
+  ],
+  "category": "stories",
+  "language": "en",
+  "title": {
+    "id": "Kisah Buddha: Jataka dan Injil Buddha",
+    "en": "Buddhist stories: Jataka tales and the Gospel of Buddha"
+  },
+  "description": {
+    "id": "Jataka Tales dan More Jataka Tales karya Ellen C. Babbitt, serta The Gospel of Buddha karya Paul Carus.",
+    "en": "Jataka Tales and More Jataka Tales by Ellen C. Babbitt, and The Gospel of Buddha by Paul Carus."
+  },
+  "edition": "Project Gutenberg 62514, 7518, 35895",
+  "itemCount": 3,
+  "source": [
+    {
+      "label": "Project Gutenberg #62514",
+      "url": "https://www.gutenberg.org/ebooks/62514"
+    },
+    {
+      "label": "Project Gutenberg #7518",
+      "url": "https://www.gutenberg.org/ebooks/7518"
+    },
+    {
+      "label": "Project Gutenberg #35895",
+      "url": "https://www.gutenberg.org/ebooks/35895"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-buddhist-NOTICE.md"
+  },
+  "payload": {
+    "path": "buddhist-stories-en-v1.json"
+  }
+}

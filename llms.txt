@@ -8,6 +8,8 @@ The app has Home, Shelf, Discover, Reading log (Progress) and Settings. It store
 
 The app supports PDF, EPUB, CBZ, TXT, Markdown, sanitized HTML, FB2 text, DOCX and ODT text, plus optional DjVu through a separately supplied decoder. CBR/RAR, CB7, MOBI/AZW, legacy DOC, RTF and DRM-protected files are unsupported. EPUB is reflowable HTML, Office formats are text-only, and PDF does not include OCR or an aligned selectable text layer.
 
+The Shelf has a Faith tab when a faith or tradition is chosen in Settings. It lists optional, checksum-verified reading packs for that tradition (Quran and hadith from their publishers, Indonesian Bible TSI, Pali suttas, classics) that work offline and never touch the personal shelf.
+
 Discover uses a source-first flow: select a catalog, one of its available collections, then an optional topic. Sources include public-domain catalogs, community transcriptions, open textbooks, attributed ranking metadata and personal OPDS catalogs. Search stays within the selected source. An edition can be opened or saved when its source supports that action; metadata-only results link to the original source and do not promise a download. Rights and availability vary by title, source and region.
 
 Search across a personal shelf uses a lazy on-device Orama index with common Indonesian-language query expansion. It does not upload the search query. Reading time, history, notes, bookmarks, highlights, collections and progress stay on the device and can be included in backups. Home offers optional quotes, topic news, sourced scripture readings, an “on this day” feed, weather-aware artwork and reading widgets. Weather uses a manually selected city; no device-location permission is requested. Prayer-time estimates are fetched only after the user asks for them.
@@ -29,3 +31,4 @@ The core Viewer has no React, Bootstrap, jQuery or Tailwind runtime dependency. 
 - Manual backup and restore: https://github.com/bobbyfch/sela/blob/main/docs/backup.md
 - Source capabilities and rights: https://github.com/bobbyfch/sela/blob/main/docs/library-sources.md
 - Development and tests: https://github.com/bobbyfch/sela/blob/main/docs/development.md
+- Faith readings and their licences: https://github.com/bobbyfch/sela/blob/main/docs/faith-readings-sources.md

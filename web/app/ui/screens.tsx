@@ -24,7 +24,9 @@ import { VERSION } from '../../../app/library/version.ts';
 import { defaultReadingMode, formatDuration, initials, readingStatus, type AppPreferences } from './state.ts';
 import { copy, useWorkspace } from './workspace.tsx';
 import { loadReaderSdk } from './reader-sdk.ts';
+import { isPackFaith } from './features/readings/faith-labels.ts';
 
+const ReadingsTab = lazy(() => import('./features/readings/ReadingsTab.tsx'));
 const ShelfRoom = lazy(() => import('./shelf-room.tsx'));
 const CatalogExplorer = lazy(() => import('./features/discovery/CatalogExplorer.tsx').then(module => ({ default: module.CatalogExplorer })));
 const LibraryToolsScreen = lazy(() => import('./features/personal/LibraryToolsScreen.tsx').then(module => ({ default: module.LibraryToolsScreen })));
@@ -358,8 +360,19 @@ export function ShelfScreen() {
     { value: 'dnf', label: copy(lang, 'Did not finish', 'Tidak dilanjutkan') }, { value: 'favorite', label: copy(lang, 'Favorites', 'Favorit') },
   ];
 
+  const packFaith = isPackFaith(personal.faith) ? personal.faith : null;
+  const faithTab = packFaith && new URLSearchParams(location.search).get('tab') === 'faith';
+  const shelfTabs = packFaith ? <SegmentedControl className="shelf-tabs" aria-label={copy(lang, 'Shelf sections', 'Bagian rak')} value={faithTab ? 'faith' : 'books'} onChange={value => navigate(value === 'faith' ? '/shelf?tab=faith' : '/shelf')} data={[{ value: 'books', label: copy(lang, 'My books', 'Buku saya') }, { value: 'faith', label: copy(lang, 'Faith', 'Agama') }]} /> : null;
+
+  if (faithTab && packFaith) return <div className="page-shell shelf-screen">
+    <PageHeader eyebrow={copy(lang, 'FAITH READINGS', 'BACAAN AGAMA')} title={copy(lang, 'Faith', 'Agama')} description={copy(lang, 'Readings that follow the tradition you chose in Settings.', 'Bacaan yang mengikuti agama pilihanmu di Pengaturan.')} />
+    {shelfTabs}
+    <Suspense fallback={<Skeleton height={220} radius="xl" />}><ReadingsTab faith={packFaith} /></Suspense>
+  </div>;
+
   return <div className="page-shell shelf-screen">
     <PageHeader eyebrow={copy(lang, 'YOUR PERSONAL LIBRARY', 'PERPUSTAKAAN PRIBADIMU')} title={collection || copy(lang, 'My shelf', 'Rak buku')} description={copy(lang, `${store.books.length} books, kept close at hand.`, `${store.books.length} buku, tersimpan rapi di perangkatmu.`)} action={<Group className="shelf-header-actions"><Button variant="default" onClick={() => { if (selectionMode) finishSelection(); else { setSelectionMode(true); setSelectedIds([]); } }}>{copy(lang, selectionMode ? 'Done selecting' : 'Select books', selectionMode ? 'Selesai memilih' : 'Pilih buku')}</Button><Button ref={createCollectionTrigger} variant="default" leftSection={<Plus size={16} />} onClick={() => setModal(true)}>{copy(lang, 'New collection', 'Koleksi baru')}</Button></Group>} />
+    {shelfTabs}
     <div className="shelf-toolbar">
       <TextInput className="shelf-search" leftSection={<Search size={16} />} value={query} onChange={event => setQuery(event.currentTarget.value)} placeholder={copy(lang, 'Search titles, authors, collections', 'Cari judul, penulis, koleksi')} aria-label={copy(lang, 'Search your shelf', 'Cari rak buku')} />
       <Select className="shelf-status-select" data={statusOptions} value={status} onChange={value => setStatus(value || 'all')} aria-label={copy(lang, 'Filter by reading status', 'Filter status baca')} allowDeselect={false} />

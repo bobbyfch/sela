@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Add a **Faith** tab to the shelf. It appears when a faith or tradition is chosen in Settings and lists only that tradition's readings: optional, user-installed packs with source, licence, version and size shown before download, byte progress, cancel, checksum verification, and removal that never touches the shelf, notes, progress or backups.
+- Add readings: the stories of the 25 prophets (not yet reviewed by a scholar, and the app says so), Indonesian Quran and hadith downloaded unchanged from QuranEnc and HadeethEnc, the Indonesian Bible TSI (CC BY-SA 4.0), Pali suttas in English and Indonesian (CC0), Christian, Buddhist, Hindu and Confucian classics.
+- Make Settings drive the whole experience: the chosen tradition shapes the shelf, the Home reading and prayer tools, and Library tools lists and removes every download.
+- Add notes and saved quotes to every reading entry, listed on the Faith tab. Saved entries, notes, quotes and the reading position live in the personal store, so backups carry them.
+- Add the Samyutta and Anguttara Nikaya (CC0), the World English Bible deuterocanonical books, Mencius (Legge), Syair Perahu and Gurindam Dua Belas.
+- Add The Story of a Soul (Thérèse of Lisieux), The Confessions of Al Ghazzali, the Lyall translation of the Analects, The Book of Filial Duty, the Cariyapitaka, and three more Malay syair.
+- Enlarge small touch targets on the Discover surprise button, the water-goal button and the password toggle.
+- Fix accessibility findings from an axe-core pass over every route in light, dark and OLED: unlabelled calendar and add-books buttons, filled-button contrast in dark appearances, dimmed text contrast, and public-site contrast, link and scroll-region issues.
+- Add `scripts/packs.ts` and `scripts/import-readings.ts` to build and verify reading packs, and a real service-worker offline test for installed packs.
+- Refresh the README, CONTRIBUTING, and documentation index. Add SECURITY and a code of conduct.
+
 ## 0.9.0-beta.8 — Sela Books rebuild (2026-10-21)
 
 - Rebuild the public site and `/app` around a shared responsive design system; remove the obsolete `/mobile` app and align the Pages packaging workflow with the new routes.

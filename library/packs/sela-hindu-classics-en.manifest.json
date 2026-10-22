@@ -1,0 +1,43 @@
+{
+  "id": "sela-hindu-classics-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "hinduism"
+  ],
+  "category": "scripture",
+  "language": "en",
+  "title": {
+    "id": "Karya klasik Hindu",
+    "en": "Hindu classics"
+  },
+  "description": {
+    "id": "Isa, Katha, dan Kena Upanishad; Yoga Sutra Patanjali; dan Ramayana karya Valmiki dalam bahasa Inggris.",
+    "en": "The Isa, Katha and Kena Upanishads, the Yoga Sutras of Patanjali, and the Ramayana of Valmiki in English."
+  },
+  "edition": "Project Gutenberg 3283, 2526, 24869",
+  "itemCount": 10,
+  "source": [
+    {
+      "label": "Project Gutenberg #3283",
+      "url": "https://www.gutenberg.org/ebooks/3283"
+    },
+    {
+      "label": "Project Gutenberg #2526",
+      "url": "https://www.gutenberg.org/ebooks/2526"
+    },
+    {
+      "label": "Project Gutenberg #24869",
+      "url": "https://www.gutenberg.org/ebooks/24869"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-hindu-NOTICE.md"
+  },
+  "payload": {
+    "path": "hindu-classics-en-v1.json"
+  }
+}

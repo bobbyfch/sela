@@ -29,3 +29,15 @@ The app now bounds IndexedDB file reads, byte preparation, and engine imports to
 - Live smoke checks opened the project homepage, `/app/`, and the “Yang Tidak Ikut Pulang” sample PDF; all 50 pages rendered.
 
 These checks confirm the deployed app route and sample PDF path. Physical-device installation and the full supported-format matrix still need their own release review.
+
+## If it comes back
+
+1. In DevTools, Network, filter by `sela.esm`. Read the full resolved URL and status.
+2. In Application, Service Workers, confirm the controlling worker and cache name match the deployed version.
+3. Do not clear IndexedDB. Shelf data lives there. Use the in-app retry action, which reloads the engine only.
+
+## Local re-verification · 22 October 2026
+
+Run on a Windows checkout of `main` at `b32619a` (PR #3 and #4 merged): `npm run typecheck` PASS, `npm test` PASS, `npm run build` PASS,
+full Chromium project 156/156 PASS, `chromium-pwa` project PASS. See [faith-readings-design.md](faith-readings-design.md) for the later faith readings work.
+`tests/browser/pwa-readings.spec.ts` adds a real-service-worker offline reload of an installed reading pack.

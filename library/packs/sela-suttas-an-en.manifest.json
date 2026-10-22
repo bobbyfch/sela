@@ -1,0 +1,35 @@
+{
+  "id": "sela-suttas-an-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "buddhism"
+  ],
+  "category": "scripture",
+  "language": "en",
+  "title": {
+    "id": "Anguttara Nikaya (Sujato)",
+    "en": "Anguttara Nikaya, Numbered Discourses (Sujato)"
+  },
+  "description": {
+    "id": "Sebelas nipata dalam terjemahan Bhikkhu Sujato, disusun menurut jumlah unsur dalam tiap sutta.",
+    "en": "The eleven nipatas in Bhikkhu Sujato’s translation, arranged by the number of items in each discourse."
+  },
+  "edition": "SuttaCentral fdb7ff3",
+  "itemCount": 11,
+  "source": [
+    {
+      "label": "SuttaCentral bilara-data (published)",
+      "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/an"
+    }
+  ],
+  "license": {
+    "code": "CC0-1.0",
+    "name": "CC0 1.0 · Bhikkhu Sujato",
+    "noticePath": "licenses/sela-suttas-NOTICE.md"
+  },
+  "payload": {
+    "path": "suttas-an-en-v1.json"
+  }
+}

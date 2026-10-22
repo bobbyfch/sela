@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem privately
+    url: https://github.com/bobbyfch/sela/security/advisories/new
+    about: Do not open a public issue for vulnerabilities.
+  - name: Documentation
+    url: https://github.com/bobbyfch/sela/blob/main/docs/README.md
+    about: Install, formats, backup and reading pack guides.

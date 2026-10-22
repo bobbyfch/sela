@@ -38,10 +38,10 @@ test('topbar light and dark control changes appearance without changing the pape
 test('Islamic tools explain their preference gate and appear after the user selects Islam',async({page})=>{
  await openHome(page,{faith:'none',widgets:{faith:true,prayer:true}});
  const prompt=page.locator('.faith-tools-prompt');await expect(prompt).toBeVisible();
- await expect(prompt).toContainText('Quran, daily readings & prayer times');
- await prompt.getByRole('button',{name:'Choose reading sources'}).click();
+ await expect(prompt).toContainText('Scriptures, daily readings & prayer times');
+ await prompt.getByRole('button',{name:'Choose faith or tradition'}).click();
  await expect(page).toHaveURL(/settings\/library/);
- const source=page.getByRole('combobox',{name:'Daily reflection source'});await source.click();await page.getByRole('option',{name:'Islam',exact:true}).click();
+ const source=page.getByRole('combobox',{name:'Faith or tradition'});await source.click();await page.getByRole('option',{name:'Islam',exact:true}).click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('sela-library:personal')||'{}').faith)).toBe('islam');
  await page.goBack();
  await expect(page.locator('.faith-reading-widget')).toBeVisible();

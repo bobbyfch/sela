@@ -1,0 +1,655 @@
+{
+  "schemaVersion": 1,
+  "packs": [
+    {
+      "id": "sela-al-ghazali-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "islam"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Pengakuan Al-Ghazali",
+        "en": "The Confessions of Al Ghazzali"
+      },
+      "description": {
+        "id": "Kisah pencarian kebenaran Imam Al-Ghazali (Al-Munqidh min ad-Dalal), terjemahan Claud Field, bahasa Inggris.",
+        "en": "Imam Al-Ghazali’s account of his search for truth (Al-Munqidh min ad-Dalal), translated by Claud Field."
+      },
+      "edition": "Project Gutenberg 58977",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "Project Gutenberg #58977",
+          "url": "https://www.gutenberg.org/ebooks/58977"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-islam-NOTICE.md"
+      },
+      "payload": {
+        "path": "al-ghazali-en-v1.json",
+        "sha256": "bc39121f6540339db3693541b29cbaba2529459340975f3c23cff2430db04dc9",
+        "bytes": 67778
+      }
+    },
+    {
+      "id": "sela-buddhist-stories-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "stories",
+      "language": "en",
+      "title": {
+        "id": "Kisah Buddha: Jataka dan Injil Buddha",
+        "en": "Buddhist stories: Jataka tales and the Gospel of Buddha"
+      },
+      "description": {
+        "id": "Jataka Tales dan More Jataka Tales karya Ellen C. Babbitt, serta The Gospel of Buddha karya Paul Carus.",
+        "en": "Jataka Tales and More Jataka Tales by Ellen C. Babbitt, and The Gospel of Buddha by Paul Carus."
+      },
+      "edition": "Project Gutenberg 62514, 7518, 35895",
+      "itemCount": 3,
+      "source": [
+        {
+          "label": "Project Gutenberg #62514",
+          "url": "https://www.gutenberg.org/ebooks/62514"
+        },
+        {
+          "label": "Project Gutenberg #7518",
+          "url": "https://www.gutenberg.org/ebooks/7518"
+        },
+        {
+          "label": "Project Gutenberg #35895",
+          "url": "https://www.gutenberg.org/ebooks/35895"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-buddhist-NOTICE.md"
+      },
+      "payload": {
+        "path": "buddhist-stories-en-v1.json",
+        "sha256": "c96aa7bf4b84f91eb606625fbfd5e4ccd9cbf7a794f47c26785a3545885e0f19",
+        "bytes": 600661
+      }
+    },
+    {
+      "id": "sela-christian-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "protestantism",
+        "catholicism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Karya klasik Kristen",
+        "en": "Christian classics"
+      },
+      "description": {
+        "id": "The Imitation of Christ karya Thomas à Kempis dan The Confessions karya Augustinus dari Hippo, dalam bahasa Inggris.",
+        "en": "The Imitation of Christ by Thomas à Kempis and The Confessions of St. Augustine."
+      },
+      "edition": "Project Gutenberg 1653, 3296",
+      "itemCount": 5,
+      "source": [
+        {
+          "label": "Project Gutenberg #1653",
+          "url": "https://www.gutenberg.org/ebooks/1653"
+        },
+        {
+          "label": "Project Gutenberg #3296",
+          "url": "https://www.gutenberg.org/ebooks/3296"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-christian-NOTICE.md"
+      },
+      "payload": {
+        "path": "christian-classics-en-v1.json",
+        "sha256": "0f68bd0792a8ee4958fbec5733702d2ad24025b8166333fc0f648fc33f8002f1",
+        "bytes": 945892
+      }
+    },
+    {
+      "id": "sela-confucian-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Tao Teh King (Laozi)",
+        "en": "Tao Teh King (Laozi)"
+      },
+      "description": {
+        "id": "Klasik Tiongkok yang sering dibaca bersama tradisi Konghucu, terjemahan James Legge.",
+        "en": "A Chinese classic often read alongside the Confucian tradition, translated by James Legge."
+      },
+      "edition": "Project Gutenberg 216",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Project Gutenberg #216",
+          "url": "https://www.gutenberg.org/ebooks/216"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-confucian-NOTICE.md"
+      },
+      "payload": {
+        "path": "confucian-classics-en-v1.json",
+        "sha256": "398ae7ffea8479b18f0779d6e01f3b52ed5cf318a3f8c37bde39e083b9d97726",
+        "bytes": 62795
+      }
+    },
+    {
+      "id": "sela-confucius-sayings-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Sabda Konfusius dan Kitab Bakti (Xiao Jing)",
+        "en": "The Sayings of Confucius and the Book of Filial Duty"
+      },
+      "description": {
+        "id": "Terjemahan kedua Analects oleh Leonard Lyall, dan Xiao Jing, kitab tentang bakti, terjemahan Ivan Chen.",
+        "en": "A second translation of the Analects by Leonard Lyall, and the Xiao Jing on filial duty translated by Ivan Chen."
+      },
+      "edition": "Project Gutenberg 24055, 75878",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Project Gutenberg #24055",
+          "url": "https://www.gutenberg.org/ebooks/24055"
+        },
+        {
+          "label": "Project Gutenberg #75878",
+          "url": "https://www.gutenberg.org/ebooks/75878"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-confucius-NOTICE.md"
+      },
+      "payload": {
+        "path": "confucius-sayings-en-v1.json",
+        "sha256": "f7dd70a252085db6ee89b8e8310638c73cc576330b330b7efb7ea87d691bf0d6",
+        "bytes": 167355
+      }
+    },
+    {
+      "id": "sela-hindu-classics-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "hinduism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Karya klasik Hindu",
+        "en": "Hindu classics"
+      },
+      "description": {
+        "id": "Isa, Katha, dan Kena Upanishad; Yoga Sutra Patanjali; dan Ramayana karya Valmiki dalam bahasa Inggris.",
+        "en": "The Isa, Katha and Kena Upanishads, the Yoga Sutras of Patanjali, and the Ramayana of Valmiki in English."
+      },
+      "edition": "Project Gutenberg 3283, 2526, 24869",
+      "itemCount": 10,
+      "source": [
+        {
+          "label": "Project Gutenberg #3283",
+          "url": "https://www.gutenberg.org/ebooks/3283"
+        },
+        {
+          "label": "Project Gutenberg #2526",
+          "url": "https://www.gutenberg.org/ebooks/2526"
+        },
+        {
+          "label": "Project Gutenberg #24869",
+          "url": "https://www.gutenberg.org/ebooks/24869"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-hindu-NOTICE.md"
+      },
+      "payload": {
+        "path": "hindu-classics-en-v1.json",
+        "sha256": "085ee55aab103508416acd8f52c2f703566585fdadf8e668ba8392a4c446b489",
+        "bytes": 2597499
+      }
+    },
+    {
+      "id": "sela-legge-wikisource-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Mencius, Da Xue, dan Zhong Yong (Legge)",
+        "en": "Mencius, The Great Learning and The Doctrine of the Mean (Legge)"
+      },
+      "description": {
+        "id": "Tiga dari Empat Kitab Konghucu dalam terjemahan James Legge, dari transkripsi Wikisource.",
+        "en": "Three of the Four Books of the Confucian tradition in James Legge’s translation, from the Wikisource transcription."
+      },
+      "edition": "Wikisource, The Chinese Classics",
+      "itemCount": 3,
+      "source": [
+        {
+          "label": "Wikisource · The Great Learning",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning"
+        },
+        {
+          "label": "Wikisource · The Doctrine of the Mean",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean"
+        },
+        {
+          "label": "Wikisource · The Works of Mencius",
+          "url": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_2/The_Works_of_Mencius"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · kontributor Wikisource",
+        "noticePath": "licenses/sela-wikisource-legge-NOTICE.md"
+      },
+      "payload": {
+        "path": "legge-wikisource-en-v1.json",
+        "sha256": "12b38f30e2671e17559d4bb46114e321030b58ea04d91e6ffb23fed0f17870bd",
+        "bytes": 384174
+      }
+    },
+    {
+      "id": "sela-malay-classics-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "islam"
+      ],
+      "category": "classics",
+      "language": "id",
+      "title": {
+        "id": "Syair dan Gurindam Melayu klasik",
+        "en": "Classic Malay syair and gurindam"
+      },
+      "description": {
+        "id": "Karya klasik Melayu bernapas Islam: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, Syair Sinar Gemala Mestika Alam (kisah maulid Nabi), dan Syair Nasehat Kepada Anak.",
+        "en": "Classic Malay works with Islamic themes: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, the mawlid poem Sinar Gemala Mestika Alam, and Syair Nasehat Kepada Anak."
+      },
+      "edition": "Wikisumber",
+      "itemCount": 5,
+      "source": [
+        {
+          "label": "Wikisumber · Gurindam Dua Belas",
+          "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+        },
+        {
+          "label": "Wikisumber · Syair Perahu",
+          "url": "https://id.wikisource.org/wiki/Syair_Perahu"
+        },
+        {
+          "label": "Wikisumber · Hamzah al-Fansuri",
+          "url": "https://id.wikisource.org/wiki/Hamzah_al-Fansuri"
+        },
+        {
+          "label": "Wikisumber · Raja Ali Haji",
+          "url": "https://id.wikisource.org/wiki/Raja_Ali_Haji"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · kontributor Wikisumber",
+        "noticePath": "licenses/sela-wikisource-malay-NOTICE.md"
+      },
+      "payload": {
+        "path": "malay-classics-id-v1.json",
+        "sha256": "dce0bede3da11dfaba80f4d52252f24add01ac81d30bfc5ce5a6f5179ead024f",
+        "bytes": 31952
+      }
+    },
+    {
+      "id": "sela-prophets-id-v1",
+      "schemaVersion": 1,
+      "kind": "editorial-collection",
+      "status": "complete",
+      "faiths": [
+        "islam"
+      ],
+      "category": "faith-stories",
+      "language": "id",
+      "title": {
+        "id": "Kisah 25 Nabi",
+        "en": "Stories of the 25 Prophets"
+      },
+      "description": {
+        "id": "Ringkasan naratif 25 nabi yang disusun SELA dari ayat-ayat Al-Qur’an yang dirujuk, dengan rujukan di setiap bagian. Belum ditelaah ulama.",
+        "en": "Narrative summaries of the 25 prophets written by SELA from the cited Quran passages, with references on every section. Not yet reviewed by scholars."
+      },
+      "edition": "0.2.0",
+      "itemCount": 25,
+      "source": [
+        {
+          "label": "Al-Qur’an — Kementerian Agama RI (LPMQ)",
+          "url": "https://quran.kemenag.go.id/"
+        },
+        {
+          "label": "Kisah Para Nabi — Pustaka Lajnah Kemenag",
+          "url": "https://pustakalajnah.kemenag.go.id/detail/35"
+        }
+      ],
+      "license": {
+        "code": "MIT",
+        "name": "MIT (teks editorial SELA)",
+        "noticePath": "licenses/sela-prophets-NOTICE.md"
+      },
+      "payload": {
+        "path": "prophets-id-v1.json",
+        "sha256": "401d3d7419054c8edcab7526ac137c9e950337c50982b3d3b050f022328309c6",
+        "bytes": 91163
+      }
+    },
+    {
+      "id": "sela-sa-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "id",
+      "title": {
+        "id": "Kotbah-kotbah Berkelompok (Samyukta Agama)",
+        "en": "Linked Discourses (Samyukta Agama), Indonesian"
+      },
+      "description": {
+        "id": "Sebelas sutra pertama Samyukta Agama dalam bahasa Indonesia, terjemahan Seniya, dari SuttaCentral.",
+        "en": "The first eleven suttas of the Samyukta Agama in Indonesian, translated by Seniya, from SuttaCentral."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/id/seniya"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Seniya",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "samyukta-agama-id-v1.json",
+        "sha256": "8614bc691fc04fbf39736b54cab48f2b8945448b62f3dd86548d63b27d0b6527",
+        "bytes": 16682
+      }
+    },
+    {
+      "id": "sela-story-of-a-soul-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "catholicism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Kisah Sebuah Jiwa (Thérèse dari Lisieux)",
+        "en": "The Story of a Soul (Thérèse of Lisieux)"
+      },
+      "description": {
+        "id": "Otobiografi Santa Thérèse dari Lisieux dalam bahasa Inggris, sebelas bab.",
+        "en": "The autobiography of St. Thérèse of Lisieux, in eleven chapters."
+      },
+      "edition": "Project Gutenberg 16772",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "Project Gutenberg #16772",
+          "url": "https://www.gutenberg.org/ebooks/16772"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-catholic-NOTICE.md"
+      },
+      "payload": {
+        "path": "story-of-a-soul-en-v1.json",
+        "sha256": "cc3c6832b54baf080ab965e24cd14fd3d949dcaa2a5b903647132de74d5c8d76",
+        "bytes": 533387
+      }
+    },
+    {
+      "id": "sela-suttas-an-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Anguttara Nikaya (Sujato)",
+        "en": "Anguttara Nikaya, Numbered Discourses (Sujato)"
+      },
+      "description": {
+        "id": "Sebelas nipata dalam terjemahan Bhikkhu Sujato, disusun menurut jumlah unsur dalam tiap sutta.",
+        "en": "The eleven nipatas in Bhikkhu Sujato’s translation, arranged by the number of items in each discourse."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 11,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/an"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-an-en-v1.json",
+        "sha256": "e636ddc857748a505d4747e076a38ab41a9ff62367a17da14c21b2f28fb561da",
+        "bytes": 2762168
+      }
+    },
+    {
+      "id": "sela-suttas-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Sutta Pali pilihan (Sujato)",
+        "en": "Selected Pali suttas (Sujato)"
+      },
+      "description": {
+        "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha, dan Cariyapitaka dalam terjemahan Bhikkhu Sujato.",
+        "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha and Cariyapitaka in Bhikkhu Sujato’s translation."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 9,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published"
+        },
+        {
+          "label": "SuttaCentral",
+          "url": "https://suttacentral.net/"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-en-v1.json",
+        "sha256": "b8e580226e87963ea1d33e738df8d9bf351fc829ab5a13b8513649aab0722344",
+        "bytes": 3920519
+      }
+    },
+    {
+      "id": "sela-suttas-sn-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "buddhism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "Samyutta Nikaya (Sujato)",
+        "en": "Samyutta Nikaya, Linked Discourses (Sujato)"
+      },
+      "description": {
+        "id": "Lima puluh enam samyutta, sekitar 1.800 sutta pendek dalam terjemahan Bhikkhu Sujato.",
+        "en": "The fifty-six samyuttas, about 1,800 short discourses, in Bhikkhu Sujato’s translation."
+      },
+      "edition": "SuttaCentral fdb7ff3",
+      "itemCount": 56,
+      "source": [
+        {
+          "label": "SuttaCentral bilara-data (published)",
+          "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/en/sujato/sutta/sn"
+        }
+      ],
+      "license": {
+        "code": "CC0-1.0",
+        "name": "CC0 1.0 · Bhikkhu Sujato",
+        "noticePath": "licenses/sela-suttas-NOTICE.md"
+      },
+      "payload": {
+        "path": "suttas-sn-en-v1.json",
+        "sha256": "7265d8f8d8e080dd0dd9d91b16be1c6ed2c919dc106c6733be309e17302a7aa2",
+        "bytes": 2344575
+      }
+    },
+    {
+      "id": "sela-tsi-id",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "protestantism",
+        "catholicism"
+      ],
+      "category": "scripture",
+      "language": "id",
+      "title": {
+        "id": "Alkitab TSI (Terjemahan Sederhana Indonesia)",
+        "en": "Indonesian Bible (TSI)"
+      },
+      "description": {
+        "id": "Perjanjian Baru lengkap dan 21 kitab Perjanjian Lama dalam bahasa Indonesia yang sederhana. Teks tidak diubah.",
+        "en": "The complete New Testament and 21 Old Testament books in plain Indonesian. The text is unchanged."
+      },
+      "edition": "Edisi Ketiga 2025",
+      "itemCount": 48,
+      "source": [
+        {
+          "label": "eBible.org · Alkitab TSI",
+          "url": "https://ebible.org/find/details.php?id=ind"
+        },
+        {
+          "label": "Albata",
+          "url": "https://alkitab.mobi/tsi"
+        }
+      ],
+      "license": {
+        "code": "CC-BY-SA-4.0",
+        "name": "CC BY-SA 4.0 · Albata dan Pioneer Bible Translators",
+        "noticePath": "licenses/sela-tsi-NOTICE.md"
+      },
+      "payload": {
+        "path": "tsi-id-v1.json",
+        "sha256": "13fe2e6770e75b5360d27f89859c1d32fc5cbaf7825d879952f78ff1f4228d20",
+        "bytes": 4142471
+      }
+    },
+    {
+      "id": "sela-web-deuterocanon-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "catholicism"
+      ],
+      "category": "scripture",
+      "language": "en",
+      "title": {
+        "id": "World English Bible: kitab Deuterokanonika",
+        "en": "World English Bible: the deuterocanonical books"
+      },
+      "description": {
+        "id": "Tobit, Yudit, Kebijaksanaan, Sirakh, Barukh, Makabe, dan kitab lain yang tidak ada di Alkitab Protestan, dalam bahasa Inggris.",
+        "en": "Tobit, Judith, Wisdom, Sirach, Baruch, the Maccabees and the other books outside the Protestant canon."
+      },
+      "edition": "WEB Classic 2026",
+      "itemCount": 15,
+      "source": [
+        {
+          "label": "eBible.org · World English Bible Classic",
+          "url": "https://ebible.org/find/details.php?id=eng-web"
+        }
+      ],
+      "license": {
+        "code": "PD",
+        "name": "Domain publik · World English Bible",
+        "noticePath": "licenses/sela-web-deuterocanon-NOTICE.md"
+      },
+      "payload": {
+        "path": "web-deuterocanon-en-v1.json",
+        "sha256": "e5d651dfe95ce79766e46f3e46b30dd5b512f2001953f999d5adbf8ab69af4e9",
+        "bytes": 1077413
+      }
+    }
+  ]
+}

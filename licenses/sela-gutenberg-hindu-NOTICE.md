@@ -1,0 +1,9 @@
+# Project Gutenberg public-domain texts
+
+These readings are public-domain works distributed by Project Gutenberg. The Project Gutenberg header, footer and trademark text were removed, as its licence allows for public-domain works. Spelling and wording are unchanged. Paragraph breaks were rejoined and chapter headings were used to split each work into sections.
+
+Works in this pack: The Upanishads (Swami Paramananda), #3283; The Yoga Sutras of Patanjali (Charles Johnston), #2526; The Rámáyan of Válmíki (Ralph T. H. Griffith), #24869.
+
+Public domain status is stated for the United States. Check your local law before reusing these texts outside Sela.
+
+SELA code is MIT licensed. That licence does not apply to these texts.

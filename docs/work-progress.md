@@ -1,57 +1,55 @@
-# Sela work progress
+# Work progress
 
-## 21 October 2026 · Viewer recovery
+## 22 October 2026 · branch `feature/faith-readings`, based on `main` at `b32619a`
 
-### Baseline
-- Main HEAD: 14f7889bfb950775abbf72875863bacf1452c990.
-- Baseline run 39582416727: build, unit, types, and static checks passed; browser checks failed across Chromium, Firefox, and WebKit.
-- Observed failures: Discover had 457–491px internal overflow at a 320px viewport; the mobile focus-timer assertion scrolled only to the viewport edge and measured its fixed dock overlap; the faith-shortcut test queried the old class .islamic-reading-shelf, while the implemented component is .islamic-reading-shortcuts.
-- Pages deploy and Reader/Viewer release workflows were skipped after that failed browser run.
-- The uploaded brief's confirmed SDK path bug also exists at this HEAD: its root-relative /dist/js/sela.esm.js URL escapes /sela/ on GitHub Pages.
-- The repo already had an enabled-service-worker test covering first install and offline reading. The missing CI case was an actual worker replacement under the same app scope.
+### Done
 
-### Changes on codex/sela-viewer-recovery-2026-10-21
-- Resolve the SDK from the app document base and cover root/subpath paths.
-- Bound reader initialization, cancel pending waits on unmount, and add clear retry/re-import actions.
-- Stack Discover headings and controls at narrow widths.
-- Align the shortcut browser test with the current component and center the focus-timer card before asserting dock clearance.
-- Preserve existing PWA tests and add a Chromium real-worker old-to-new cache update plus offline book-opening test.
-- Add this handoff note and docs/reader-deployment-regression.md.
+| Area | Result |
+| --- | --- |
+| Viewer recovery (P0) | Already fixed upstream in PR #3. Re-verified locally. |
+| Faith tab on the shelf | Built. Appears only when a faith or tradition is chosen. The earlier Discover lens was removed. |
+| Settings drives the experience | The faith choice shapes the shelf tab, Home daily reading and prayer tools, the Home prompt, and a downloads manager in Library tools |
+| Reading packs | Three kinds: editorial, text collection, publisher. Checksum, size and shape checks. Atomic install. |
+| Kisah 25 Nabi | All 25 written and listed as complete. Not reviewed by a scholar, and the card and every entry say so |
+| Quran and hadith | Downloaded unchanged from QuranEnc and HadeethEnc, Indonesian and English. The largest hadith category (1,102 items, 4.1 MB) was downloaded live in 92 seconds. |
+| Text collections | 14 hosted packs: Alkitab TSI, World English Bible deuterocanon, Pali suttas (DN, MN, SN, AN, short collections, Samyukta Agama in Indonesian), Christian, Buddhist, Hindu and Confucian classics, Mencius, Syair Perahu and Gurindam Dua Belas. See [sources](faith-readings-sources.md). |
+| Notes and quotes | One note per entry and saved quotes from selected text, listed on the Faith tab, in the personal store so backups carry them |
+| Whole-app audit | Browser pass over 14 routes at 3 widths and 3 appearances, plus axe-core. Findings fixed. |
+| Documentation | README (English and Indonesian), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, documentation index, faith readings docs, roadmap, notices, changelog |
+| CI | Added a reading-pack catalogue check |
 
-### Verification status
-- Local checkout is not present in this Work workspace; local build and tests have not run.
-- Branch CI and browser verification now pass on the recovery branch; see the final verification record below.
-- Live production path and deployment are not yet verified.
+### Audit findings fixed
 
-### CI follow-up · 21 October 2026
-- Run 39593295854 at commit ef05d5afed6328f7ba4a1c57c45424cda51935b3: build/generated-artifact check, unit tests, test types, and typecheck passed.
-- The first enabled-service-worker test stopped before browser interaction because its matcher assumed single-quoted worker constants; the generated worker uses double quotes. The test is being corrected to support the emitted format. The old-to-new worker behavior remains unverified until the rerun passes.
+- Calendar header buttons, the add-books button and the notice close button had no accessible name.
+- Filled buttons in dark and OLED appearance showed white text on a light fill (contrast 2.4). Text now uses the paper colour.
+- Several muted texts, the reflection citation and outside calendar days were below 4.5:1. Muted tokens were darkened and the dimming by opacity was removed.
+- The brand link and the Discover result buttons had accessible names that did not contain their visible text.
+- Public site: muted text contrast, a link distinguishable only by colour, and a scrollable code block that was not focusable.
+- Faith reader headers are now banner landmarks.
+- Touch targets raised to 40 to 44 px on the Discover surprise button, the water-goal button and the password toggle.
 
-### CI browser follow-up · 21 October 2026
-- Run 39593295854: the WebKit layout suite exposed remaining 320px Discover internal overflow (488px scroll width inside a 320px container). The first fix did not remove the underlying overflowing descendant; the next regression run adds the descendant measurements needed to target it.
-- The new SDK failure test's sample button matcher also needed the app's Indonesian labels for WebKit's default locale. That matcher now covers both English and Indonesian.
-- At that point the separate PWA rerun was in progress; its final result is recorded below.
+### Verification (local, Windows, Node 24)
 
-### PWA locale follow-up · 21 October 2026
-- Run 39593650404 reached the real update notice successfully. The app localized it to Indonesian from the browser's default preferences, while the test expected English. The PWA test now sets English explicitly before app startup so it checks one stable copy rather than depending on the CI locale.
-- At that point the old-to-new cache replacement and offline reopen assertions still needed a passing run; the final result is recorded below.
+- `npm run typecheck`: PASS.
+- `npm test`: PASS, 117 tests.
+- `npm run build`: PASS.
+- Full Playwright run (Chromium, Firefox, WebKit and the real service-worker project, 509 cases): 501 passed, 8 skipped, 0 failed.
+- axe-core on the Faith tab, the contents page and a reading page with notes, in light, dark and OLED: no critical or serious violations. Earlier passes covered every other app route and the public site.
+- Live checks against QuranEnc (all three Indonesian editions, 114 of 114 surahs each) and HadeethEnc, including the 1,102-item Fikih category. The browser suite mocks both publishers.
 
-### Reader error follow-up · 21 October 2026
-- Failed dynamic imports now show a recoverable, non-technical reader-engine message; timeouts keep their separate timeout copy. The test fixes app language to English and verifies a failed SDK request can be retried successfully.
-- At that checkpoint, production GitHub Pages was not verified; the later live check is recorded below.
+### Known limits
 
-### Final verification · 21 October 2026
-- Run 39611043615 on code commit 1de247444b2bda82f39e2b1892a2fbe88ec79faa completed successfully: build and generated-artifact checks, unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
-- The mobile pass also covers the Discover and shelf layouts at narrow widths, including the constrained full-screen drop prompt and stable responsive measurements.
-- The optional multi-framework matrix (`npm run test:frameworks`) was not run. Its host runtimes are not provisioned by this recovery workflow, so it is outside the required CI gate.
-- At this checkpoint the Work workspace had no local checkout and Pages verification was still outstanding. The subsequent merge and live deployment are recorded below.
+- The 25 prophet stories are not scholar-reviewed. Verse numbers are machine-checked for existence, and about 40 ranges were compared by hand.
+- Pack payloads are not in backups. Saved entries, notes, quotes and the reading position are.
+- Coloured highlights drawn over the text are not built. Notes and saved quotes are.
+- The Catholic tab uses the Alkitab TSI. It is a Protestant-origin translation without the deuterocanonical books, which the tab offers separately in English. The Indonesian Catholic editions in common use are not freely licensed.
+- The Alkitab TSI has the complete New Testament and 21 Old Testament books.
+- A few hidden file inputs and the drop prompt are reported by axe-core as outside a landmark (moderate).
+- No physical-device, screen-reader or deployed-URL test. Nothing was pushed or deployed.
+- On this machine `npm ci` failed with EPERM on a locked native file. `npm install` worked.
 
-### Catalog failure follow-up · 21 October 2026
-- Run 39612168669 passed build, unit/type checks, PWA, Chromium, and most WebKit jobs, but Firefox found one failure in the failed-catalog-download test: the error alert did not remain visible after a 503 response.
-- The catalog search effect could still have a debounced request pending when the Search form was submitted. The submit handler now cancels that timer, preventing a second request from clearing the download error. The tracked app bundles and offline asset manifest were regenerated from the CI build output.
-- Run 39614776545 on commit 984a2efd4524260e40fe404cbc11240feeefddd5 passed the build/generated-artifact check, unit tests, test types, typecheck, Chromium, Firefox, all 8 WebKit shards, and the installed-PWA worker/cache update plus offline-reading test.
-- The optional multi-framework matrix remains unrun because its host runtimes are not provisioned by this recovery workflow. At this catalog-failure checkpoint, local tests and direct production Pages verification were still outstanding; see the later deployment record below.
+### Next
 
-## Recovery deployment · 21 October 2026
-
-The earlier “not deployed” bullets above describe their individual pre-deployment checkpoints. The recovery fix was later merged as PR [#3](https://github.com/bobbyfch/sela/pull/3), commit `240aaba9072e653a50cbd6e55ee783a0440a2683`. CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 jobs, and Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) succeeded. Live smoke checks opened the homepage, `/app/`, and all 50 pages of the sample PDF. The optional framework matrix and physical-device/assistive-technology checks remain unrun.
+1. A qualified reader reviews the 25 stories. Then change `status` to `complete`.
+2. Pick from the [roadmap](faith-readings-roadmap.md) and check rights per edition first.
+3. Push the branch and open a pull request when authorised.

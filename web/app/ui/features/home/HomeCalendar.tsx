@@ -106,6 +106,8 @@ export function HomeCalendar({ sessions }: Props) {
     {view === 'month' ? <Calendar
       className="home-reading-calendar"
       fullWidth
+      previousLabel={t('Previous month', 'Bulan sebelumnya')}
+      nextLabel={t('Next month', 'Bulan berikutnya')}
       date={displayedDate}
       onDateChange={value => { const date = localDate(String(value)); setDisplayedDate(date); selectDate(date); }}
       getDayProps={value => {

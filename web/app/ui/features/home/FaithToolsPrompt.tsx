@@ -17,11 +17,11 @@ export function FaithToolsPrompt() {
   if (faith !== 'none') return null;
 
   return <Card className="home-widget-card faith-tools-prompt" withBorder radius="xl" padding="lg">
-    <Text className="page-eyebrow">{copy(lang, 'OPTIONAL READING TOOLS', 'ALAT BACA OPSIONAL')}</Text>
-    <Title order={3}>{copy(lang, 'Quran, daily readings & prayer times', 'Al-Qur’an, bacaan harian & jadwal salat')}</Title>
-    <Text size="sm" c="dimmed">{copy(lang, 'Choose Islam in your personal reading preferences to show these tools on Home. A city is used for prayer estimates only when you ask to load them.', 'Pilih Islam di preferensi membaca pribadi untuk menampilkan fitur ini di Beranda. Kota hanya dipakai untuk perkiraan salat saat kamu meminta jadwal dimuat.')}</Text>
+    <Text className="page-eyebrow">{copy(lang, 'OPTIONAL FAITH READINGS', 'BACAAN AGAMA OPSIONAL')}</Text>
+    <Title order={3}>{copy(lang, 'Scriptures, daily readings & prayer times', 'Kitab suci, bacaan harian & jadwal salat')}</Title>
+    <Text size="sm" c="dimmed">{copy(lang, 'Choose your faith or tradition in your personal reading preferences. A Faith tab appears on your shelf with its scriptures, and Home shows a sourced daily reading. Prayer times are for Islam and use a city only when you ask to load them.', 'Pilih agama atau tradisimu di preferensi membaca pribadi. Tab Agama muncul di rak bukumu berisi kitab suci tradisi itu, dan Beranda menampilkan bacaan harian bersumber. Jadwal salat khusus Islam dan hanya memakai kota saat kamu memintanya.')}</Text>
     <Button variant="default" leftSection={<BookOpen size={15} />} rightSection={<ArrowUpRight size={14} />} onClick={() => navigate('/settings/library')}>
-      {copy(lang, 'Choose reading sources', 'Pilih sumber bacaan')}
+      {copy(lang, 'Choose faith or tradition', 'Pilih agama atau tradisi')}
     </Button>
   </Card>;
 }

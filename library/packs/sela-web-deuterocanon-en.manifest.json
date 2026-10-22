@@ -1,0 +1,35 @@
+{
+  "id": "sela-web-deuterocanon-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "catholicism"
+  ],
+  "category": "scripture",
+  "language": "en",
+  "title": {
+    "id": "World English Bible: kitab Deuterokanonika",
+    "en": "World English Bible: the deuterocanonical books"
+  },
+  "description": {
+    "id": "Tobit, Yudit, Kebijaksanaan, Sirakh, Barukh, Makabe, dan kitab lain yang tidak ada di Alkitab Protestan, dalam bahasa Inggris.",
+    "en": "Tobit, Judith, Wisdom, Sirach, Baruch, the Maccabees and the other books outside the Protestant canon."
+  },
+  "edition": "WEB Classic 2026",
+  "itemCount": 15,
+  "source": [
+    {
+      "label": "eBible.org · World English Bible Classic",
+      "url": "https://ebible.org/find/details.php?id=eng-web"
+    }
+  ],
+  "license": {
+    "code": "PD",
+    "name": "Domain publik · World English Bible",
+    "noticePath": "licenses/sela-web-deuterocanon-NOTICE.md"
+  },
+  "payload": {
+    "path": "web-deuterocanon-en-v1.json"
+  }
+}

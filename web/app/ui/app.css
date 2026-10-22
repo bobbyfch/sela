@@ -6,7 +6,7 @@ html[data-app-appearance="dark"] {
   --color-paper-raised: oklch(22% 0.012 78);
   --color-paper-soft: oklch(27% 0.014 78);
   --color-ink: oklch(92% 0.01 84);
-  --color-muted: oklch(70% 0.015 80);
+  --color-muted: oklch(74% 0.015 80);
   --color-rule: oklch(35% 0.012 80);
   --color-accent: color-mix(in oklch, var(--color-accent-base) 40%, oklch(92% 0.012 84));
   --color-accent-soft: color-mix(in oklch, var(--color-accent-base) 22%, var(--color-paper));
@@ -23,7 +23,7 @@ html[data-app-appearance="oled"] {
   --color-paper-raised: oklch(12% 0.008 80);
   --color-paper-soft: oklch(18% 0.01 80);
   --color-ink: oklch(93% 0.01 84);
-  --color-muted: oklch(71% 0.014 84);
+  --color-muted: oklch(75% 0.014 84);
   --color-rule: oklch(29% 0.01 84);
   --color-accent: color-mix(in oklch, var(--color-accent-base) 35%, oklch(92% 0.012 84));
   --color-accent-soft: oklch(22% 0.018 84);
@@ -40,7 +40,7 @@ html[data-app-appearance="oled"] {
   --color-paper-raised: oklch(22% 0.014 var(--theme-dark-hue, 88));
   --color-paper-soft: oklch(27% 0.016 var(--theme-dark-hue, 88));
   --color-ink: oklch(92% 0.01 84);
-  --color-muted: oklch(70% 0.015 80);
+  --color-muted: oklch(74% 0.015 80);
   --color-rule: oklch(35% 0.012 80);
   --color-accent: color-mix(in oklch, var(--color-accent-base) 40%, oklch(92% 0.012 84));
   --color-accent-soft: color-mix(in oklch, var(--color-accent-base) 22%, var(--color-paper));
@@ -58,7 +58,7 @@ html[data-app-appearance="oled"] {
   --color-paper-raised: oklch(12% 0.01 var(--theme-dark-hue, 88));
   --color-paper-soft: oklch(18% 0.012 var(--theme-dark-hue, 88));
   --color-ink: oklch(93% 0.01 84);
-  --color-muted: oklch(71% 0.014 84);
+  --color-muted: oklch(75% 0.014 84);
   --color-rule: oklch(29% 0.01 84);
   --color-accent: color-mix(in oklch, var(--color-accent-base) 35%, oklch(92% 0.012 84));
   --color-accent-soft: oklch(22% 0.018 84);
@@ -1289,3 +1289,100 @@ button, input { font: inherit; }
     white-space: normal;
   }
 }
+
+.readings-landing { display: grid; gap: 18px; align-content: start; }
+.readings-intro { display: grid; gap: 8px; max-width: 760px; }
+.readings-intro .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(27px,4vw,40px); font-weight: 470; letter-spacing: -.035em; line-height: 1.12; }
+.readings-lede { margin: 0; color: var(--color-muted); font-family: var(--font-display); font-size: 17px; line-height: 1.65; }
+.readings-search { margin-top: 8px; max-width: 520px; }
+.readings-search .mantine-Input-input { min-height: 44px; }
+.readings-status:empty { display: none; }
+.readings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.readings-card { min-width: 0; background: var(--color-paper-raised); border-color: var(--color-rule); box-shadow: 0 4px 14px var(--color-shadow); }
+.readings-card .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 23px; font-weight: 500; letter-spacing: -.02em; }
+.readings-card-text { margin-top: 6px; color: var(--color-muted); font-size: 14px; line-height: 1.6; }
+.readings-facts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px 14px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--color-rule); }
+.readings-facts div { min-width: 0; }
+.readings-facts dt { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.readings-facts dd { margin: 2px 0 0; overflow-wrap: anywhere; color: var(--color-ink); font-size: 13px; }
+.readings-sources { margin: 12px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.6; }
+.readings-progress { display: grid; gap: 4px; margin-top: 12px; }
+.readings-empty { color: var(--color-muted); }
+.readings-card .mantine-Button-root { min-height: 44px; }
+.readings-content { max-width: 760px; }
+.readings-index { display: grid; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+.readings-index a { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 12px; min-height: 64px; padding: 14px 16px; border: 1px solid var(--color-rule); border-radius: 16px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; }
+.readings-index a:hover, .readings-index a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.readings-index-order { color: var(--color-accent); font-size: 11px; font-variant-numeric: tabular-nums; }
+.readings-index-name { display: grid; min-width: 0; gap: 2px; }
+.readings-index-name strong { font-family: var(--font-display); font-size: 19px; font-weight: 520; }
+.readings-index-name small { overflow: hidden; color: var(--color-muted); font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.readings-index-meta, .readings-arabic { color: var(--color-ink); font-family: "Noto Naskh Arabic", Amiri, "Traditional Arabic", serif; font-size: 24px; }
+.readings-planned { margin: 14px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.6; }
+.readings-article { max-width: 68ch; }
+.readings-article .page-eyebrow a { color: inherit; }
+.readings-article-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 6px; }
+.readings-article-heading .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(31px,5vw,46px); font-weight: 470; letter-spacing: -.04em; line-height: 1.1; }
+.readings-arabic { font-size: clamp(26px,4vw,34px); }
+.readings-section { margin-top: 30px; }
+.readings-section h3 { margin: 0 0 8px; color: var(--color-ink); font-family: var(--font-display); font-size: 22px; font-weight: 520; }
+.readings-section p { margin: 0 0 14px; color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.8; }
+.readings-section p.readings-refs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 4px 0 0; font-family: inherit; font-size: 12px; line-height: 1.4; }
+.readings-refs > span { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.readings-refs a, .readings-related a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper-raised); color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.readings-refs a:hover, .readings-refs a:focus-visible, .readings-related a:hover, .readings-related a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.readings-note, .readings-accuracy { margin-top: 26px; padding: 16px 18px; border-left: 2px solid var(--color-accent); border-radius: 0 14px 14px 0; background: var(--color-paper-raised); }
+.readings-accuracy { border-left-color: var(--color-rule); }
+.readings-note h3, .readings-accuracy h3 { margin: 0 0 6px; color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.readings-note p, .readings-accuracy p { margin: 0 0 8px; color: var(--color-ink); font-size: 14px; line-height: 1.7; }
+.readings-related { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 22px 0 0; }
+.readings-related > span { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.readings-position { color: var(--color-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.readings-screen .faith-reader-controls .mantine-Button-root { min-height: 44px; max-width: 100%; }
+.readings-screen .faith-reader-controls .mantine-Button-label { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .readings-facts { grid-template-columns: 1fr; } .readings-index a { grid-template-columns: 28px minmax(0,1fr); } .readings-index-meta { display: none; } }
+@media (prefers-reduced-motion: reduce) { .readings-index a { transition: none; } }
+.readings-sources-panel { display: grid; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--color-rule); }
+.readings-sources-panel > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(22px,3vw,30px); font-weight: 480; letter-spacing: -.03em; }
+.readings-sources-panel .mantine-Button-root { min-height: 44px; }
+.readings-article > .mantine-Title-root { margin-top: 6px; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(24px,4vw,34px); font-weight: 480; letter-spacing: -.03em; line-height: 1.2; }
+.hadith-text { margin: 0 0 14px; color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.hadith-hints { margin: 0; padding-left: 1.2em; color: var(--color-ink); font-size: 15px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.readings-article .faith-reader-arabic { margin-block: 16px; }
+.readings-save { margin: 6px 0 4px; min-height: 44px; }
+.readings-saved { display: grid; gap: 8px; }
+.readings-saved > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.readings-saved-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.readings-saved-list a { display: grid; min-height: 44px; align-content: center; padding: 6px 14px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; }
+.readings-saved-list a:hover, .readings-saved-list a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.readings-saved-list span { color: var(--color-muted); }
+.shelf-tabs { align-self: start; max-width: 100%; margin: 4px 0 18px; }
+.shelf-tabs .mantine-SegmentedControl-label { min-height: 44px; display: grid; place-items: center; padding-inline: 18px; }
+.readings-landing { display: grid; gap: 18px; align-content: start; }
+.readings-verse { margin: 0 0 10px; }
+.readings-verse-n { display: inline-block; min-width: 2.2em; margin-right: .35em; color: var(--color-accent); font-family: var(--font-body); font-size: .62em; font-variant-numeric: tabular-nums; font-weight: 700; vertical-align: .35em; }
+.readings-text p { white-space: pre-line; margin: 0 0 16px; color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.85; overflow-wrap: anywhere; }
+.readings-downloads { margin: 0; padding: 0; list-style: none; }
+.readings-download-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--color-rule); }
+.readings-download-row > div { min-width: 0; overflow-wrap: anywhere; }
+.readings-download-row .mantine-Button-root { min-height: 44px; flex: 0 0 auto; }
+.sela-app[data-appearance="dark"] .mantine-Button-root:not([data-variant]), .sela-app[data-appearance="oled"] .mantine-Button-root:not([data-variant]) { --button-color: var(--color-paper) !important; }
+.sela-app { --mantine-color-dimmed: var(--color-muted); }
+.reflection-widget .mantine-Blockquote-cite, .daily-quote .mantine-Blockquote-cite { opacity: 1; color: var(--color-muted); }
+.calendar-widget .mantine-Calendar-day[data-outside] { opacity: 1; color: var(--color-muted); }
+.readings-badge { display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border: 1px solid var(--color-rule); border-radius: 999px; color: var(--color-muted); font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
+.readings-badge[data-tone="draft"] { border-color: var(--color-accent); color: var(--color-ink); }
+.catalog-surprise.mantine-Button-root { min-height: 44px; }
+.water-goal-button.mantine-ActionIcon-root { width: 44px; height: 44px; min-width: 44px; }
+.mantine-PasswordInput-visibilityToggle { min-width: 40px; min-height: 40px; }
+.readings-tools { display: grid; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-rule); }
+.readings-tools > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.readings-tools-status { min-height: 16px; color: var(--color-muted); }
+.readings-quote-bar .mantine-Button-root { min-height: 44px; }
+.readings-quotes { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.readings-quotes li { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 10px 12px; border-left: 2px solid var(--color-accent); border-radius: 0 12px 12px 0; background: var(--color-paper-raised); }
+.readings-quotes blockquote { margin: 0; color: var(--color-ink); font-family: var(--font-display); font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; white-space: pre-line; }
+.readings-marks { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.readings-marks a { display: grid; gap: 4px; padding: 10px 14px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; overflow-wrap: anywhere; }
+.readings-marks a:hover, .readings-marks a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.readings-marks span:last-child { font-size: 14px; line-height: 1.6; }

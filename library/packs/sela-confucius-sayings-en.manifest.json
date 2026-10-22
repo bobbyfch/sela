@@ -1,0 +1,39 @@
+{
+  "id": "sela-confucius-sayings-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "confucianism"
+  ],
+  "category": "classics",
+  "language": "en",
+  "title": {
+    "id": "Sabda Konfusius dan Kitab Bakti (Xiao Jing)",
+    "en": "The Sayings of Confucius and the Book of Filial Duty"
+  },
+  "description": {
+    "id": "Terjemahan kedua Analects oleh Leonard Lyall, dan Xiao Jing, kitab tentang bakti, terjemahan Ivan Chen.",
+    "en": "A second translation of the Analects by Leonard Lyall, and the Xiao Jing on filial duty translated by Ivan Chen."
+  },
+  "edition": "Project Gutenberg 24055, 75878",
+  "itemCount": 2,
+  "source": [
+    {
+      "label": "Project Gutenberg #24055",
+      "url": "https://www.gutenberg.org/ebooks/24055"
+    },
+    {
+      "label": "Project Gutenberg #75878",
+      "url": "https://www.gutenberg.org/ebooks/75878"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-confucius-NOTICE.md"
+  },
+  "payload": {
+    "path": "confucius-sayings-en-v1.json"
+  }
+}

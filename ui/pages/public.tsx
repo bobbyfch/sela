@@ -353,7 +353,7 @@ function PublicContent() {
             }
           </p>
           <div className="config-heading"><h4 data-en="Your website setup" data-id="Konfigurasi untuk situsmu">Your website setup</h4><div className="config-actions"><label className="cdn-version-control"><span className="visually-hidden" data-i18n="cdnLabel">CDN version</span><select id="cdn-version"><option value="pinned" data-i18n="cdnPinned">{"Pinned release · {{SELA_VERSION}}"}</option><option value="latest" data-i18n="cdnLatest">Latest · no version</option></select></label><Button type="button" variant="outline" id="copy-config" className="copy-config-button" data-en="Copy setup" data-id="Salin konfigurasi">Copy setup</Button></div></div>
-          <code className="config-code" id={"config-code"} aria-label="Sela configuration code"></code>
+          <code className="config-code" id={"config-code"} aria-label="Sela configuration code" tabIndex={0}></code>
           <p className="policy-note" data-i18n="cdnNote">Pinned is recommended for production. The unversioned URL follows the latest GitHub files and may change without notice; <a href="https://www.jsdelivr.com/?docs=gh" target="_blank" rel="noopener noreferrer">jsDelivr advises against it in production.</a></p>
           <p className="own-file-note" data-en="For your own file, upload it to a URL your website can access and replace the sample URL in this snippet." data-id="Untuk file sendiri, unggah ke alamat yang bisa diakses situsmu lalu ganti URL contoh di potongan kode ini.">For your own file, upload it to a URL your website can access and replace the sample URL in this snippet.</p>
           <p className={"format-note"} data-i18n={"formatNote"}>
@@ -520,7 +520,6 @@ function SampleGallery() {
             variant={"ghost"}
             className={"trial-book"}
             data-story-open={""}
-            aria-label={"Read Yang Tidak Ikut Pulang"}
           >
             <span className={"trial-cover"}>
               <img

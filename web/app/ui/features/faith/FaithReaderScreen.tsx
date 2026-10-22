@@ -11,6 +11,7 @@ import {
   type QuranTranslationEdition,
 } from '../../../../../app/library/scripture-sources.ts';
 import { PROPHET_PASSAGES } from '../../../../../app/library/prophet-passages.ts';
+import { installedQuranEditions, installedQuranSurah } from '../../../../../app/library/source-packs.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
 import { ISLAMIC_READING_OPTIONS } from './readings.ts';
 
@@ -36,7 +37,7 @@ export default function FaithReaderScreen() {
   };
 
   return <div className="faith-reader-screen" aria-label={title}>
-    <header className="faith-reader-header">
+    <header className="faith-reader-header" role="banner">
       <ActionIcon className="faith-reader-back" variant="default" aria-label={copy(lang, 'Back to Sela', 'Kembali ke Sela')} onClick={goBack}><ArrowLeft size={18} /></ActionIcon>
       <div className="faith-reader-brand"><Text className="page-eyebrow">SELA · {copy(lang, 'READING ROOM', 'RUANG BACA')}</Text><Title order={1}>{title}</Title></div>
       <BookOpenText className="faith-reader-mark" size={21} aria-hidden="true" />
@@ -67,6 +68,7 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
   const [translationSize, setTranslationSize] = useState(stored.quranTranslationSize || 18);
   const [translations, setTranslations] = useState<QuranTranslationEdition[]>([]);
   const [translationsReady, setTranslationsReady] = useState(false);
+  const [savedOnly, setSavedOnly] = useState(false);
   const [surah, setSurah] = useState<QuranSurah | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -75,18 +77,24 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
   const [activeVerse, setActiveVerse] = useState(requestedVerse);
   const [jumpVerse, setJumpVerse] = useState<number | string>(requestedVerse);
 
+  const loadOnlineEditions = (signal: AbortSignal) => listQuranTranslations(language, signal).then(rows => {
+    if (signal.aborted) return;
+    setTranslations(current => [...rows, ...current.filter(saved => !rows.some(row => row.key === saved.key))]);
+    setTranslationKey(current => rows.some(row => row.key === current) || current ? current : rows[0]?.key || '');
+  });
+
   useEffect(() => {
     const controller = new AbortController();
     setTranslationsReady(false);
-    void listQuranTranslations(language, controller.signal).then(rows => {
+    setSavedOnly(false);
+    void installedQuranEditions(language).catch(() => []).then(saved => {
       if (controller.signal.aborted) return;
-      setTranslations(rows);
-      setTranslationKey(current => rows.some(row => row.key === current) ? current : rows[0]?.key || '');
-      setTranslationsReady(true);
-    }).catch(reason => {
-      if (controller.signal.aborted) return;
-      setTranslationsReady(true);
-      setError(reason instanceof Error ? reason.message : t('Translation editions are unavailable.', 'Daftar terjemahan belum tersedia.'));
+      if (translationKey && saved.some(row => row.key === translationKey)) { setTranslations(saved); setSavedOnly(true); setTranslationsReady(true); return; }
+      return loadOnlineEditions(controller.signal).then(() => { if (!controller.signal.aborted) setTranslationsReady(true); }).catch(reason => {
+        if (controller.signal.aborted) return;
+        if (saved.length) { setTranslations(saved); setTranslationKey(current => saved.some(row => row.key === current) ? current : saved[0].key); } else setError(reason instanceof Error ? reason.message : t('Translation editions are unavailable.', 'Daftar terjemahan belum tersedia.'));
+        setTranslationsReady(true);
+      });
     });
     return () => controller.abort();
   }, [language]);
@@ -95,7 +103,7 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     if (!translationsReady) return;
     const controller = new AbortController();
     setLoading(true); setError(''); setSurah(null);
-    void loadQuranSurah(surahNo, language, controller.signal, translationKey || undefined).then(next => {
+    void installedQuranSurah(surahNo, translationKey).catch(() => null).then(saved => saved ?? loadQuranSurah(surahNo, language, controller.signal, translationKey || undefined)).then(next => {
       if (controller.signal.aborted) return;
       setSurah(next);
       setTranslationKey(next.translationKey);
@@ -152,7 +160,7 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
       <section className="faith-quran-toolbar" aria-label={t('Quran navigation and reading settings', 'Navigasi dan pengaturan bacaan Al-Qur’an')}>
         <Select label={t('Surah', 'Surah')} searchable value={String(surahNo)} onChange={value => value && navigate(`/faith/quran/${value}`)} data={surahData} allowDeselect={false} />
         <Select label={t('Translation', 'Terjemahan')} value={language} onChange={value => { if (value === 'id' || value === 'en' || value === 'ja') { setLanguage(value); setTranslationKey(''); saveQuranPreferences({ quranLanguage: value, quranTranslationKey: '' }); } }} data={[{ value: 'id', label: 'Bahasa Indonesia' }, { value: 'en', label: 'English' }, { value: 'ja', label: '日本語' }]} allowDeselect={false} />
-        <Select label={t('Edition', 'Edisi')} value={translations.some(row => row.key === translationKey) ? translationKey : translations[0]?.key || null} onChange={value => setTranslationKey(value || '')} data={translations.map(item => ({ value: item.key, label: `${item.title} · ${item.version}` }))} searchable allowDeselect={false} disabled={!translations.length} />
+        <Select label={t('Edition', 'Edisi')} onDropdownOpen={() => { if (savedOnly) { setSavedOnly(false); void loadOnlineEditions(new AbortController().signal).catch(() => undefined); } }} value={translations.some(row => row.key === translationKey) ? translationKey : translations[0]?.key || null} onChange={value => setTranslationKey(value || '')} data={translations.map(item => ({ value: item.key, label: `${item.title} · ${item.version}` }))} searchable allowDeselect={false} disabled={!translations.length} />
         <div className="faith-type-controls">
           <NumberInput label={t('Arabic size', 'Ukuran Arab')} value={arabicSize} onChange={value => { const next = Math.max(20, Math.min(48, Number(value) || 32)); setArabicSize(next); saveQuranPreferences({ quranArabicSize: next }); }} min={20} max={48} step={2} />
           <NumberInput label={t('Translation size', 'Ukuran terjemahan')} value={translationSize} onChange={value => { const next = Math.max(14, Math.min(28, Number(value) || 18)); setTranslationSize(next); saveQuranPreferences({ quranTranslationSize: next }); }} min={14} max={28} step={1} />
@@ -220,7 +228,7 @@ function StoryReader({ index, navigate }: { index: number; navigate: ReturnType<
     <Title order={2}>{lang === 'id' ? story.indonesian : story.english}</Title>
     <Text className="faith-story-reference">{story.reference}</Text>
     <p className="faith-story-copy">{lang === 'id' ? story.storyId : story.storyEn}</p>
-    <div className="faith-story-actions"><Button leftSection={<BookOpenText size={16} />} onClick={() => navigate(`/faith/quran/${story.surah}?verse=${story.verse}`)}>{t('Open cited verses', 'Buka ayat rujukan')}</Button><span>{safeIndex + 1} / {PROPHET_PASSAGES.length}</span></div>
+    <div className="faith-story-actions"><Button leftSection={<BookOpenText size={16} />} onClick={() => navigate(`/faith/quran/${story.surah}?verse=${story.verse}`)}>{t('Open cited verses', 'Buka ayat rujukan')}</Button><Button variant="default" onClick={() => navigate('/shelf?tab=faith')}>{t('Full stories of the 25 prophets', 'Kisah lengkap 25 nabi')}</Button><span>{safeIndex + 1} / {PROPHET_PASSAGES.length}</span></div>
     <footer className="faith-reader-controls"><Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={safeIndex <= 0} onClick={() => navigate(`/faith/stories/${safeIndex - 1}`)}>{t('Previous story', 'Kisah sebelumnya')}</Button><Button variant="default" rightSection={<ChevronRight size={16} />} disabled={safeIndex >= PROPHET_PASSAGES.length - 1} onClick={() => navigate(`/faith/stories/${safeIndex + 1}`)}>{t('Next story', 'Kisah berikutnya')}</Button></footer>
   </article></main>;
 }

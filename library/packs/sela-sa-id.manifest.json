@@ -1,0 +1,35 @@
+{
+  "id": "sela-sa-id",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "buddhism"
+  ],
+  "category": "scripture",
+  "language": "id",
+  "title": {
+    "id": "Kotbah-kotbah Berkelompok (Samyukta Agama)",
+    "en": "Linked Discourses (Samyukta Agama), Indonesian"
+  },
+  "description": {
+    "id": "Sebelas sutra pertama Samyukta Agama dalam bahasa Indonesia, terjemahan Seniya, dari SuttaCentral.",
+    "en": "The first eleven suttas of the Samyukta Agama in Indonesian, translated by Seniya, from SuttaCentral."
+  },
+  "edition": "SuttaCentral fdb7ff3",
+  "itemCount": 1,
+  "source": [
+    {
+      "label": "SuttaCentral bilara-data (published)",
+      "url": "https://github.com/suttacentral/bilara-data/tree/published/translation/id/seniya"
+    }
+  ],
+  "license": {
+    "code": "CC0-1.0",
+    "name": "CC0 1.0 · Seniya",
+    "noticePath": "licenses/sela-suttas-NOTICE.md"
+  },
+  "payload": {
+    "path": "samyukta-agama-id-v1.json"
+  }
+}
