@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ActionIcon, Group, Slider, Text, Tooltip } from '@mantine/core';
-import { ArrowDownToLine, ArrowLeft, Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Expand, Grid2X2, Settings2 } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Expand, Grid2X2, Moon, Settings2, Sun } from 'lucide-react';
 
-export function ReaderChrome({ reader, title, author, lang, onBack, onOpenTools, onOpenPreviews, onCaptureSelection }: {
-  reader: any; title: string; author?: string; lang: 'en' | 'id'; onBack: () => void; onOpenTools: () => void; onOpenPreviews: () => void; onCaptureSelection?: (text: string) => void;
+export function ReaderChrome({ reader, title, author, lang, appearance, onToggleAppearance, onBack, onOpenTools, onOpenPreviews, onCaptureSelection }: {
+  reader: any; title: string; author?: string; lang: 'en' | 'id'; appearance: 'light' | 'dark' | 'oled'; onToggleAppearance: () => void; onBack: () => void; onOpenTools: () => void; onOpenPreviews: () => void; onCaptureSelection?: (text: string) => void;
 }) {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
@@ -52,6 +52,7 @@ export function ReaderChrome({ reader, title, author, lang, onBack, onOpenTools,
       <Group className="reader-chrome-top-actions" gap={6} wrap="nowrap">
         {action(t('Page previews', 'Pratinjau halaman'), <Grid2X2 size={17} />, onOpenPreviews)}
         {action(t('Reading desk', 'Meja baca'), <Settings2 size={17} />, onOpenTools, undefined, () => onCaptureSelection?.(window.getSelection()?.toString().trim().slice(0, 10000) || ''))}
+        {action(appearance === 'light' ? t('Dark mode', 'Mode gelap') : t('Light mode', 'Mode terang'), appearance === 'light' ? <Moon size={17} /> : <Sun size={17} />, onToggleAppearance, appearance !== 'light')}
         {action(t('Download original', 'Unduh berkas asli'), <ArrowDownToLine size={17} />, () => reader.downloadOriginal())}
         {action(fullscreen ? t('Exit fullscreen', 'Keluar dari layar penuh') : t('Fullscreen', 'Layar penuh'), <Expand size={17} />, () => reader.toggleFullscreen(), fullscreen)}
       </Group>

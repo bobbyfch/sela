@@ -73,14 +73,14 @@
       "sha256": "bbdabd1428081acbb3182c82db8b1bdaf2972c30ba2e146b8f12c3d8a634d4f5"
     },
     "dist/css/sela.app.css": {
-      "bytes": 272183,
-      "gzip": 37835,
-      "sha256": "8ec475a94edac60e596bfc326fbf27cbf5504156a2bec7abd8533ff00ac89f8a"
+      "bytes": 272191,
+      "gzip": 37844,
+      "sha256": "5abb88a1e38d56c33a02a94e8f0e84d5fc0638c0b9c878c5e24de2068c002f66"
     },
     "dist/css/sela.min.css": {
-      "bytes": 43889,
-      "gzip": 10554,
-      "sha256": "a8e7332bf0b8af05d38a03823ab614136db4dea389184694c9d459ccd59dd780"
+      "bytes": 43897,
+      "gzip": 10564,
+      "sha256": "8c79878b3788ceb97ec2247514dd229687f72581c8a892357b2de60760b1a6ed"
     },
     "dist/sound/turnPage.mp3": {
       "bytes": 23839,

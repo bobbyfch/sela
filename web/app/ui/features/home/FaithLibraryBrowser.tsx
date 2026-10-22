@@ -20,7 +20,7 @@ function makeEditionFile(title: string, sectionTitle: string, text: string, edit
   return new File([html], `faith-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html`, { type: 'text/html' });
 }
 
-export function FaithLibraryBrowser({ faith }: { faith: FaithId }) {
+export function FaithLibraryBrowser({ faith, triggerLabel }: { faith: FaithId; triggerLabel?: readonly [string, string] }) {
   const { lang, store, announce } = useWorkspace();
   const navigate = useNavigate();
   const t = (en: string, id: string) => copy(lang, en, id);
@@ -43,7 +43,7 @@ export function FaithLibraryBrowser({ faith }: { faith: FaithId }) {
       const firstBook = result.books?.[0];
       setBookIndex(firstBook ? '0' : result.chapters?.length ? '0' : null);
       setChapterIndex(firstBook?.chapters?.length ? '0' : null);
-      setStatus(t('This edition is stored with the app for offline reading.', 'Edisi ini tersimpan bersama aplikasi untuk dibaca offline.'));
+      setStatus(t('Included with Sela. In the installed app, browse once online before using it offline.', 'Disertakan bersama Sela. Di app terpasang, jelajahi sekali saat online sebelum digunakan offline.'));
     }).catch(reason => {
       if (!active) return;
       setError(reason instanceof Error ? reason.message : t('The edition could not be opened.', 'Edisi belum dapat dibuka.'));
@@ -83,7 +83,7 @@ export function FaithLibraryBrowser({ faith }: { faith: FaithId }) {
   };
 
   return <>
-    <Button className="faith-library-trigger" variant="default" leftSection={<BookOpen size={15} />} onClick={() => setOpened(true)}>{t('Browse the library', 'Jelajahi pustaka')}</Button>
+    <Button className="faith-library-trigger" variant="default" leftSection={<BookOpen size={15} />} onClick={() => setOpened(true)}>{triggerLabel ? t(triggerLabel[0], triggerLabel[1]) : t('Browse the library', 'Jelajahi pustaka')}</Button>
     <Modal className="faith-library-modal" opened={opened} onClose={() => setOpened(false)} fullScreen={!!mobile} size="min(700px, calc(100vw - 32px))" centered title={t('Source library', 'Pustaka sumber')} closeButtonProps={{ icon: <X size={16} />, 'aria-label': t('Close library', 'Tutup pustaka') }} overlayProps={{ backgroundOpacity: 0.48, blur: 12 }}>
       <Stack gap="md">
         <Text size="sm" c="dimmed">{t('Choose a book and chapter from this attributed edition.', 'Pilih kitab dan bab dari edisi dengan atribusi sumber.')}</Text>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActionIcon, Alert, Anchor, Button, Group, NumberInput, Select, Skeleton, Stack, Text, Title } from '@mantine/core';
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpenText } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpenText, Moon, Sun } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { editPersonal, readPersonal } from '../../../../../app/library/personal-store.ts';
 import { localFaithReading } from '../../../../../app/library/local-faith-readings.ts';
@@ -19,7 +19,7 @@ function saveQuranPreferences(patch: { quranSurah?: number; quranLanguage?: 'id'
 }
 
 export default function FaithReaderScreen() {
-  const { lang } = useWorkspace();
+  const { lang, preferences, setPreferences } = useWorkspace();
   const location = useLocation();
   const navigate = useNavigate();
   const parts = location.pathname.split('/').filter(Boolean).slice(1);
@@ -39,7 +39,7 @@ export default function FaithReaderScreen() {
     <header className="faith-reader-header">
       <ActionIcon className="faith-reader-back" variant="default" aria-label={copy(lang, 'Back to Sela', 'Kembali ke Sela')} onClick={goBack}><ArrowLeft size={18} /></ActionIcon>
       <div className="faith-reader-brand"><Text className="page-eyebrow">SELA · {copy(lang, 'READING ROOM', 'RUANG BACA')}</Text><Title order={1}>{title}</Title></div>
-      <BookOpenText className="faith-reader-mark" size={21} aria-hidden="true" />
+      <ActionIcon className="faith-reader-back faith-reader-theme" variant="default" aria-label={copy(lang, preferences.appearance === 'light' ? 'Switch to dark mode' : 'Switch to light mode', preferences.appearance === 'light' ? 'Ganti ke mode gelap' : 'Ganti ke mode terang')} aria-pressed={preferences.appearance !== 'light'} onClick={() => setPreferences(value => ({ ...value, appearance: value.appearance === 'light' ? 'dark' : 'light' }))}>{preferences.appearance === 'light' ? <Moon size={18} /> : <Sun size={18} />}</ActionIcon>
     </header>
     <nav className="faith-reader-nav" aria-label={copy(lang, 'Reading sections', 'Bagian bacaan')}>
       <button type="button" aria-current={mode === 'quran' ? 'page' : undefined} onClick={() => navigate(`/faith/quran/${readPersonal().quranSurah || 1}`)}>{copy(lang, 'Quran', 'Al-Qur’an')}</button>
@@ -65,6 +65,8 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
   const [translationKey, setTranslationKey] = useState(stored.quranTranslationKey || '');
   const [arabicSize, setArabicSize] = useState(stored.quranArabicSize || 32);
   const [translationSize, setTranslationSize] = useState(stored.quranTranslationSize || 18);
+  const [quranOnly, setQuranOnly] = useState(() => { try { return localStorage.getItem('sela:quran-only') === 'true'; } catch { return false; } });
+  const [focusMode, setFocusMode] = useState(false);
   const [translations, setTranslations] = useState<QuranTranslationEdition[]>([]);
   const [translationsReady, setTranslationsReady] = useState(false);
   const [surah, setSurah] = useState<QuranSurah | null>(null);
@@ -124,6 +126,10 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     return () => window.cancelAnimationFrame(frame);
   }, [surah, requestedVerse, verseQuery, navigate]);
   useEffect(() => { setJumpVerse(activeVerse); }, [activeVerse]);
+  useEffect(() => {
+    document.documentElement.classList.toggle('sela-faith-focus', focusMode);
+    return () => document.documentElement.classList.remove('sela-faith-focus');
+  }, [focusMode]);
 
   useEffect(() => {
     if (!surah) return;
@@ -138,6 +144,23 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     return () => observer.disconnect();
   }, [surah]);
 
+  const goToSurah = (value: string | null) => {
+    const next = Number(value);
+    if (!Number.isInteger(next) || next < 1 || next > 114) return;
+    document.querySelector('.faith-reader-body')?.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveVerse(1); setJumpVerse(1);
+    navigate(`/faith/quran/${next}`);
+  };
+  const toggleQuranOnly = () => setQuranOnly(current => { try { localStorage.setItem('sela:quran-only', String(!current)); } catch { /* The display remains available for this session. */ } return !current; });
+  const toggleFocusMode = async () => {
+    if (focusMode) {
+      setFocusMode(false);
+      if (document.fullscreenElement) try { await document.exitFullscreen(); } catch { /* Keep the reader usable when fullscreen is unavailable. */ }
+      return;
+    }
+    setFocusMode(true);
+    try { await document.documentElement.requestFullscreen?.(); } catch { /* iOS keeps the in-page focus view without native fullscreen. */ }
+  };
   const goToVerse = (value: number) => {
     if (!surah || !Number.isFinite(value)) return;
     const verse = Math.max(1, Math.min(surah.verses.length, Math.round(value)));
@@ -162,14 +185,25 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
       {loading && <Stack className="faith-quran-loading"><Skeleton height={32} /><Skeleton height={132} /><Skeleton height={112} /></Stack>}
       {surah && <>
         <header className="faith-quran-heading"><div><Text className="page-eyebrow">{surah.translationTitle} · {surah.version}</Text><Title order={2}>{surah.name}</Title><Text size="sm" c="dimmed">{surah.verses.length} {t('verses', 'ayat')}</Text></div><Anchor href={surah.sourceUrl || quranKemenagSurahUrl(surah.number)} target="_blank" rel="noopener noreferrer">{t('Source and edition', 'Sumber dan edisi')}</Anchor></header>
-        <div className="faith-quran-source-note">{t('Translation by', 'Terjemahan oleh')} {surah.translationTitle} · {t('edition', 'edisi')} {surah.version} · {t('Arabic text and translation are shown together.', 'Teks Arab dan terjemahan ditampilkan bersama.')}</div>
+        {!quranOnly && <div className="faith-quran-source-note">{t('Translation by', 'Terjemahan oleh')} {surah.translationTitle} · {t('edition', 'edisi')} {surah.version} · {t('Arabic text and translation are shown together.', 'Teks Arab dan terjemahan ditampilkan bersama.')}</div>}
         <div className="faith-quran-verses">{surah.verses.map(verse => <article className="faith-quran-verse" id={`faith-verse-${verse.sura}-${verse.aya}`} data-verse={verse.aya} key={`${verse.sura}:${verse.aya}`}>
           <div className="faith-verse-meta"><button type="button" onClick={() => goToVerse(verse.aya)} aria-label={t(`Go to verse ${verse.aya}`, `Buka ayat ${verse.aya}`)}>{surah.number}:{verse.aya}</button><span>{t('VERSE', 'AYAT')}</span></div>
           <p className="faith-reader-arabic" lang="ar" dir="rtl" style={{ fontSize: `${arabicSize}px` }}>{verse.arabic}</p>
-          <Text className="faith-reader-translation" style={{ fontSize: `${translationSize}px` }}>{verse.translation}</Text>
+          {!quranOnly && <Text className="faith-reader-translation" style={{ fontSize: `${translationSize}px` }}>{verse.translation}</Text>}
           {verse.footnotes && <Text className="faith-reader-footnote" size="xs">{verse.footnotes}</Text>}
         </article>)}</div>
-        <footer className="faith-reader-controls faith-quran-controls"><Button className="faith-quran-previous" aria-label={t('Previous verse', 'Ayat sebelumnya')} variant="default" leftSection={<ChevronLeft size={16} />} disabled={activeVerse <= 1} onClick={() => goToVerse(activeVerse - 1)}>{t('Previous verse', 'Ayat sebelumnya')}</Button><div className="faith-jump-control"><NumberInput aria-label={t('Go to verse', 'Lompat ke ayat')} min={1} max={surah.verses.length} value={jumpVerse} onChange={setJumpVerse} hideControls={false} /><Button onClick={() => goToVerse(Number(jumpVerse))}>{t('Go', 'Buka')}</Button><span>{t('of', 'dari')} {surah.verses.length}</span></div><Button className="faith-quran-next" aria-label={t('Next verse', 'Ayat berikutnya')} variant="default" rightSection={<ChevronRight size={16} />} disabled={activeVerse >= surah.verses.length} onClick={() => goToVerse(activeVerse + 1)}>{t('Next verse', 'Ayat berikutnya')}</Button></footer>
+        <footer className="faith-reader-controls faith-quran-controls">
+          <div className="faith-quran-sticky-tools">
+            <Select aria-label={t('Change surah', 'Ganti surah')} searchable value={String(surah.number)} onChange={goToSurah} data={surahData} allowDeselect={false} />
+            <Button variant={quranOnly ? 'filled' : 'default'} aria-pressed={quranOnly} onClick={toggleQuranOnly}>{quranOnly ? t('Show translation', 'Tampilkan terjemahan') : t('Quran only', 'Al-Qur’an saja')}</Button>
+            <Button variant="default" aria-pressed={focusMode} onClick={() => void toggleFocusMode()}>{focusMode ? t('Exit fullscreen', 'Keluar layar penuh') : t('Fullscreen', 'Layar penuh')}</Button>
+          </div>
+          <div className="faith-quran-verse-nav">
+            <Button className="faith-quran-previous" aria-label={t('Previous verse', 'Ayat sebelumnya')} variant="default" leftSection={<ChevronLeft size={16} />} disabled={activeVerse <= 1} onClick={() => goToVerse(activeVerse - 1)}>{t('Previous verse', 'Ayat sebelumnya')}</Button>
+            <div className="faith-jump-control"><NumberInput aria-label={t('Go to verse', 'Lompat ke ayat')} min={1} max={surah.verses.length} value={jumpVerse} onChange={setJumpVerse} hideControls={false} /><Button onClick={() => goToVerse(Number(jumpVerse))}>{t('Go', 'Buka')}</Button><span>{t('of', 'dari')} {surah.verses.length}</span></div>
+            <Button className="faith-quran-next" aria-label={t('Next verse', 'Ayat berikutnya')} variant="default" rightSection={<ChevronRight size={16} />} disabled={activeVerse >= surah.verses.length} onClick={() => goToVerse(activeVerse + 1)}>{t('Next verse', 'Ayat berikutnya')}</Button>
+          </div>
+        </footer>
       </>}
       {!surah && !loading && !error && <Text c="dimmed">{t('Choose a surah to begin.', 'Pilih surah untuk mulai membaca.')}</Text>}
     </div>
@@ -216,9 +250,10 @@ function StoryReader({ index, navigate }: { index: number; navigate: ReturnType<
   const story = PROPHET_PASSAGES[safeIndex];
   if (!story) return null;
   return <main className="faith-reader-body"><article className="faith-reader-content faith-story-content">
-    <Text className="page-eyebrow">{t('QURAN-BASED STORY NOTE', 'CATATAN KISAH BERDASARKAN AL-QUR’AN')}</Text>
+    <Text className="page-eyebrow">{t('QURAN-BASED OFFLINE STORY SUMMARY', 'RINGKASAN KISAH OFFLINE BERDASARKAN AL-QUR’AN')}</Text>
     <Title order={2}>{lang === 'id' ? story.indonesian : story.english}</Title>
     <Text className="faith-story-reference">{story.reference}</Text>
+    <Select className="faith-story-picker" aria-label={t('Choose a prophet story', 'Pilih kisah nabi')} searchable value={String(safeIndex)} onChange={value => value !== null && navigate(`/faith/stories/${value}`)} data={PROPHET_PASSAGES.map((item, position) => ({ value: String(position), label: lang === 'id' ? item.indonesian : item.english }))} />
     <p className="faith-story-copy">{lang === 'id' ? story.storyId : story.storyEn}</p>
     <div className="faith-story-actions"><Button leftSection={<BookOpenText size={16} />} onClick={() => navigate(`/faith/quran/${story.surah}?verse=${story.verse}`)}>{t('Open cited verses', 'Buka ayat rujukan')}</Button><span>{safeIndex + 1} / {PROPHET_PASSAGES.length}</span></div>
     <footer className="faith-reader-controls"><Button variant="default" leftSection={<ChevronLeft size={16} />} disabled={safeIndex <= 0} onClick={() => navigate(`/faith/stories/${safeIndex - 1}`)}>{t('Previous story', 'Kisah sebelumnya')}</Button><Button variant="default" rightSection={<ChevronRight size={16} />} disabled={safeIndex >= PROPHET_PASSAGES.length - 1} onClick={() => navigate(`/faith/stories/${safeIndex + 1}`)}>{t('Next story', 'Kisah berikutnya')}</Button></footer>
@@ -264,6 +299,7 @@ function FaithReadingHome({ navigate }: { navigate: ReturnType<typeof useNavigat
       <button type="button" onClick={() => navigate('/faith/daily')}><span>02</span><strong>{t('Daily reading', 'Bacaan harian')}</strong><small>{t('Read a passage with its source and edition.', 'Baca teks beserta sumber dan edisinya.')}</small><ChevronRight size={18} /></button>
       <button type="button" onClick={() => navigate('/faith/stories/0')}><span>03</span><strong>{t('Stories and verses', 'Kisah dan ayat')}</strong><small>{t('Read a short note, then open its cited verses.', 'Baca ringkasan, lalu buka ayat rujukannya.')}</small><ChevronRight size={18} /></button>
       <button type="button" onClick={() => navigate('/faith/collection/morning-adhkar')}><span>04</span><strong>{t('Daily remembrance', 'Zikir harian')}</strong><small>{t('Move through Arabic, transliteration and meaning.', 'Baca teks Arab, transliterasi dan artinya.')}</small><ChevronRight size={18} /></button>
+      <button type="button" onClick={() => navigate('/faith/quran/36')}><span>05</span><strong>{t('Surah Ya-Sin', 'Surah Yasin')}</strong><small>{t('Open the surah in Arabic with an optional translation.', 'Buka surah dalam teks Arab dengan terjemahan opsional.')}</small><ChevronRight size={18} /></button>
     </div>
   </div></main>;
 }

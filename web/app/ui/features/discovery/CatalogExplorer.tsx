@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Alert, Anchor, Badge, Button, Card, Chip, Group, Loader, Modal, SegmentedControl, Select, SimpleGrid, Skeleton, Stack, Text, TextInput, Title } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { useSearchParams } from 'react-router';
 import { ArrowDownToLine, ArrowUpRight, BookOpen, Compass, ExternalLink, Search, ShoppingBag, Shuffle } from 'lucide-react';
 import curatedBooks from '../../../../../library/public-books.json' with { type: 'json' };
 import indonesianBooks from '../../../../../library/indonesia-tech-books.json' with { type: 'json' };
@@ -10,6 +11,8 @@ import { fetchFile } from '../../../../../app/library/network.ts';
 import { catalogCoverUrl, catalogCoverUrlForQuality, type CatalogCoverQuality } from '../../../../../app/library/covers.ts';
 import { lookupCatalogBookDetails, type CatalogBookDetails } from '../../../../../app/library/catalog-details.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
+import { ReadingGarden } from './ReadingGarden.tsx';
+import { READING_GARDEN_COLLECTIONS } from '../../../../../app/library/reading-garden.ts';
 
 type CatalogBook = {
   id: string; title: string; author?: string; language?: string; genre?: string; rights?: string;
@@ -146,6 +149,8 @@ function shopSearchUrl(book: CatalogBook, details: CatalogBookDetails | null) {
 
 export function CatalogExplorer() {
   const { lang, importBooks } = useWorkspace();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = searchParams.get('view') === 'sources' ? 'sources' : 'garden';
   const mobile = useMediaQuery('(max-width: 48em)');
   const [providerId, setProviderId] = useState('sela');
   const [collection, setCollection] = useState('all');
@@ -248,6 +253,17 @@ export function CatalogExplorer() {
   }, [providerId, collection, topic, wikiLanguage, query, opdsUrl]);
 
   const chooseProvider = (item: Provider) => { setProviderId(item.id); setCollection(item.collections[0]); setTopic(''); setPage(1); };
+  const switchView = (next: 'garden' | 'sources') => setSearchParams(current => {
+    const updated = new URLSearchParams(current);
+    if (next === 'garden') updated.delete('view'); else updated.set('view', 'sources');
+    return updated;
+  }, { replace: true });
+  const browseClassics = () => {
+    setQuery('');
+    if (provider.id !== 'sela') chooseProvider(providers[0]);
+    else { setCollection('all'); setTopic(''); setPage(1); }
+    switchView('sources');
+  };
   const chooseCollection = (value: string) => { setCollection(value); setTopic(''); setPage(1); };
   const chooseTopic = (value: string) => { setTopic(current => current === value ? '' : value); setPage(1); };
   const submit = (event: FormEvent) => {
@@ -316,10 +332,17 @@ export function CatalogExplorer() {
   }, [sourceLabel, topic, collection, lang]);
 
   return <div className="page-shell discover-screen catalog-explorer">
-    <div className="catalog-heading-row"><div><PageEyebrow>{t('OPEN BOOKS', 'BUKU TERBUKA')}</PageEyebrow><Title order={1}>{t('Find your next read.', 'Temukan bacaan berikutnya.')}</Title><Text className="page-description">{t('Browse trusted catalogs, check the edition details, and keep open books on this device.', 'Jelajahi katalog tepercaya, periksa detail edisi, lalu simpan buku terbuka di perangkat ini.')}</Text></div><Badge className="catalog-count-badge" variant="light" leftSection={<Compass size={13} />}>{providers.length} {t('sources', 'sumber')}</Badge></div>
+    <div className="catalog-heading-row"><div><PageEyebrow>{view === 'garden' ? t('TAMAN BACAAN', 'TAMAN BACAAN') : t('OPEN BOOKS', 'BUKU TERBUKA')}</PageEyebrow><Title order={1}>{view === 'garden' ? t('Taman Bacaan', 'Taman Bacaan') : t('Find your next read.', 'Temukan bacaan berikutnya.')}</Title><Text className="page-description">{view === 'garden' ? t('A curated guide to the editions and reading indexes already available in Sela.', 'Panduan pilihan untuk edisi dan indeks bacaan yang sudah tersedia di Sela.') : t('Browse trusted catalogs, check the edition details, and keep open books on this device.', 'Jelajahi katalog tepercaya, periksa detail edisi, lalu simpan buku terbuka di perangkat ini.')}</Text></div><Badge className="catalog-count-badge" variant="light" leftSection={<Compass size={13} />}>{view === 'garden' ? `${READING_GARDEN_COLLECTIONS.length} ${t('collections', 'koleksi')}` : `${providers.length} ${t('sources', 'sumber')}`}</Badge></div>
+
+    <nav className="discovery-lens-switch" aria-label={t('Discover view', 'Tampilan Jelajah')}>
+      <button type="button" aria-pressed={view === 'garden'} onClick={() => switchView('garden')}>{t('Taman Bacaan', 'Taman Bacaan')}</button>
+      <button type="button" aria-pressed={view === 'sources'} onClick={() => switchView('sources')}>{t('Browse sources', 'Jelajahi sumber')}</button>
+    </nav>
+
+    {view === 'garden' ? <ReadingGarden onBrowseClassics={browseClassics} /> : <>
 
     <section aria-labelledby="catalog-sources-title" className="catalog-source-section"><div className="catalog-section-heading"><div><PageEyebrow>{t('01 · CHOOSE A SOURCE', '01 · PILIH SUMBER')}</PageEyebrow><Title id="catalog-sources-title" order={2}>{t('Where would you like to browse?', 'Mau menjelajah dari mana?')}</Title></div><Button variant="subtle" size="xs" leftSection={<Shuffle size={14} />} onClick={surprise}>{t('Surprise me', 'Beri kejutan')}</Button></div>
-      <SimpleGrid cols={{ base: 1, xs: 2, lg: 3 }} spacing="sm">{providers.map(item => <button key={item.id} type="button" className="catalog-source-card" aria-pressed={provider.id === item.id} onClick={() => chooseProvider(item)}><span className="catalog-source-icon"><BookOpen size={17} strokeWidth={1.6} /></span><span className="catalog-source-title"><strong>{t(item.en, item.idLabel)}</strong>{item.id === 'sela' && <Badge className="catalog-source-count" variant="light">{(curatedBooks as CatalogBook[]).length} {t('books', 'buku')}</Badge>}</span><span className="catalog-source-detail">{t(item.detailEn, item.detailId)}</span></button>)}</SimpleGrid>
+      <SimpleGrid cols={{ base: 2, xs: 2, lg: 3 }} spacing="sm">{providers.map(item => <button key={item.id} type="button" className="catalog-source-card" aria-pressed={provider.id === item.id} onClick={() => chooseProvider(item)}><span className="catalog-source-icon"><BookOpen size={17} strokeWidth={1.6} /></span><span className="catalog-source-title"><strong>{t(item.en, item.idLabel)}</strong>{item.id === 'sela' && <Badge className="catalog-source-count" variant="light">{(curatedBooks as CatalogBook[]).length} {t('books', 'buku')}</Badge>}</span><span className="catalog-source-detail">{t(item.detailEn, item.detailId)}</span></button>)}</SimpleGrid>
     </section>
 
     <Card className="catalog-search-card" withBorder radius="xl" padding="lg">
@@ -340,8 +363,8 @@ export function CatalogExplorer() {
 
     {error && <Alert role="alert" color="red" variant="light" title={t('Could not complete this request', 'Permintaan belum berhasil')} withCloseButton onClose={() => setError('')}>{error}</Alert>}
     <section className="catalog-results-section" aria-labelledby="catalog-results-title"><div className="catalog-section-heading"><div><PageEyebrow>{t('02 · RESULTS', '02 · HASIL')}</PageEyebrow><Title id="catalog-results-title" order={2}>{query.trim() ? t('Search results', 'Hasil pencarian') : t('A place to begin', 'Pilihan untuk memulai')}</Title><Text className="catalog-results-context">{contextLabel}{results.length ? ` · ${total !== undefined ? `${total} ${t('books', 'buku')}` : `${results.length}${next ? '+' : ''}`}` : ''}</Text></div><div className="catalog-results-tools"><div className="catalog-cover-quality"><Text className="catalog-cover-quality-label">{t('Cover size', 'Ukuran cover')}</Text><SegmentedControl aria-label={t('Cover image size', 'Ukuran gambar cover')} size="xs" value={coverQuality} onChange={changeCoverQuality} data={[{ label: 'SD', value: 'sd' }, { label: 'HD', value: 'hd' }]} /></div>{sourceHref && <Anchor href={sourceHref} target="_blank" rel="noopener noreferrer" size="sm" className="catalog-attribution">{t('Source details', 'Detail sumber')} <ArrowUpRight size={13} /></Anchor>}</div></div>
-      {loading && results.length === 0 ? <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">{[0, 1, 2, 3, 4, 5].map(index => <Skeleton key={index} h={212} radius="lg" />)}</SimpleGrid>
-        : results.length ? <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, lg: 4, xl: 5 }} spacing={{ base: 'sm', md: 'md' }}>{results.map((book, index) => <CatalogResult key={`${book.id}-${index}`} book={book} lang={lang} quality={coverQuality} loading={downloading === book.id} onAdd={() => void addBook(book)} onNavigate={() => openNavigation(book)} onOpenDetails={() => { setSelectedBook(book); setCoverDownloadError(''); }} t={t} />)}</SimpleGrid>
+      {loading && results.length === 0 ? <SimpleGrid cols={{ base: 2, sm: 2, lg: 3 }} spacing="md">{[0, 1, 2, 3, 4, 5].map(index => <Skeleton key={index} h={212} radius="lg" />)}</SimpleGrid>
+        : results.length ? <SimpleGrid cols={{ base: 2, xs: 2, sm: 3, lg: 4, xl: 5 }} spacing={{ base: 'sm', md: 'md' }}>{results.map((book, index) => <CatalogResult key={`${book.id}-${index}`} book={book} lang={lang} quality={coverQuality} loading={downloading === book.id} onAdd={() => void addBook(book)} onNavigate={() => openNavigation(book)} onOpenDetails={() => { setSelectedBook(book); setCoverDownloadError(''); }} t={t} />)}</SimpleGrid>
         : searched && !loading ? <Card className="catalog-empty-state" withBorder radius="lg"><Text fw={600}>{t('No editions found.', 'Tidak ada edisi ditemukan.')}</Text><Text size="sm" c="dimmed">{error ? t('Check the address or try another source.', 'Periksa alamat atau coba sumber lain.') : t('Try a shorter title, a different spelling, or another topic.', 'Coba judul lebih singkat, ejaan lain, atau topik lain.')}</Text></Card>
         : <Card className="catalog-empty-state" withBorder radius="lg"><Text fw={600}>{t('Your next book is a few shelves away.', 'Buku berikutnya hanya beberapa rak dari sini.')}</Text><Text size="sm" c="dimmed">{t('Choose a source or search its catalog.', 'Pilih sumber atau cari di katalognya.')}</Text></Card>}
       {next && <Group justify="center" mt="lg"><Button variant="default" onClick={() => void load(true)} loading={loading}>{t('More books', 'Buku lainnya')}</Button></Group>}
@@ -385,6 +408,7 @@ export function CatalogExplorer() {
         </div>
       </div>}
     </Modal>
+    </>}
   </div>;
 }
 

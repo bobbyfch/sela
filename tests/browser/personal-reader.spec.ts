@@ -60,7 +60,7 @@ test('book notes and reading desk stay private and survive navigation',async({pa
 });
 
 test('Explore results stay separate from the personal shelf until saved',async({page})=>{
- await start(page);await page.goto('/app/#/discover');await expect(page.locator('.catalog-source-card')).toHaveCount(9);
+ await start(page);await page.goto('/app/#/discover?view=sources');await expect(page.locator('.catalog-source-card')).toHaveCount(9);
  await expect(page.locator('.catalog-result-card').first()).toBeVisible();
  await expect(page.locator('.catalog-result-actions').getByRole('button',{name:'Download & add to shelf',exact:true}).first()).toBeVisible();
  await expect(page.locator('.book-card')).toHaveCount(0);

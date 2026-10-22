@@ -6,4 +6,6 @@ export const ISLAMIC_READING_OPTIONS = [
   { slug: 'before-sleep', en: 'Before sleep', id: 'Sebelum tidur' },
   { slug: 'quranic-duas', en: 'Quranic supplications', id: 'Doa dari Al-Qur’an' },
   { slug: 'travel', en: 'Travel', id: 'Perjalanan' },
+  { slug: 'home', en: 'Arriving home', id: 'Masuk rumah' },
+  { slug: 'food-drink', en: 'Food and drink', id: 'Makan dan minum' },
 ] as const;

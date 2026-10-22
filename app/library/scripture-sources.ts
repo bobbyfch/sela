@@ -148,7 +148,7 @@ export async function loadFaithLibrary(faith:FaithId,signal?:AbortSignal):Promis
  const file=faithLibraryFiles[faith];if(!file)throw new RangeError('A browsable local edition is not available for this tradition.');
  let pending=faithLibraryCache.get(file);
  if(!pending){
-  pending=getJson(new URL('./assets/'+file,import.meta.url).href,signal,16*1024*1024).then(value=>{
+  pending=getJson(new URL('../library/assets/'+file,import.meta.url).href,signal,16*1024*1024).then(value=>{
    if(!value||typeof value!=='object')throw Error('The local scripture edition could not be read.');
    return value as FaithTextLibrary;
   });

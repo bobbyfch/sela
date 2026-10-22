@@ -1,12 +1,12 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Alert, AppShell, ActionIcon, Button, Group, Text, Tooltip, UnstyledButton } from '@mantine/core';
+import { Alert, AppShell, ActionIcon, Button, Group, Menu, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { HashRouter, Link as RouterLink, NavLink as RouterNavLink, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { notifications } from '@mantine/notifications';
 import { Dropzone } from '@mantine/dropzone';
 import { Spotlight as MantineSpotlight, spotlight, type SpotlightActionData } from '@mantine/spotlight';
 import {
   BookOpen, Bookmark, ChartNoAxesColumnIncreasing, Check,
-  Compass, FileUp, Languages, LibraryBig, Moon, Plus, Search, Settings2, Sun, X,
+  Compass, FileUp, LibraryBig, Moon, Plus, Search, Settings2, Sun, X,
 } from 'lucide-react';
 import { useLibraryStore, readAppPreferences, saveAppPreferences, type AppPreferences } from './state.ts';
 import { copy, WorkspaceProvider, type WorkspaceValue } from './workspace.tsx';
@@ -159,14 +159,25 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
             <kbd>↵</kbd>
           </form>
           <Group gap={8} wrap="nowrap" className="topbar-actions">
-            <Tooltip label={copy(lang, 'Switch language', 'Ganti bahasa')} withArrow>
-              <ActionIcon className="glass-control" variant="default" size={40} aria-label={copy(lang, 'Switch language', 'Ganti bahasa')} onClick={() => workspace.setPreferences(value => ({ ...value, language: value.language === 'id' ? 'en' : 'id' }))}><Languages size={17} /></ActionIcon>
-            </Tooltip>
-            <Tooltip label={workspace.preferences.appearance === 'light' ? copy(lang, 'Switch to dark mode', 'Ganti ke mode gelap') : copy(lang, 'Switch to light mode', 'Ganti ke mode terang')} withArrow>
-              <ActionIcon className="glass-control" variant="default" size={40} aria-pressed={workspace.preferences.appearance !== 'light'} aria-label={workspace.preferences.appearance === 'light' ? copy(lang, 'Switch to dark mode', 'Ganti ke mode gelap') : copy(lang, 'Switch to light mode', 'Ganti ke mode terang')} onClick={() => workspace.setPreferences(value => ({ ...value, appearance: value.appearance === 'light' ? 'dark' : 'light' }))}>
-                {workspace.preferences.appearance === 'light' ? <Moon size={17} /> : <Sun size={17} />}
-              </ActionIcon>
-            </Tooltip>
+            <Menu position="bottom-end" withinPortal>
+              <Menu.Target><ActionIcon className="glass-control" variant="default" size={40} aria-label={copy(lang, 'Choose language', 'Pilih bahasa')}><span className="topbar-flag" aria-hidden="true">{lang === 'id' ? '🇮🇩' : '🇬🇧'}</span></ActionIcon></Menu.Target>
+              <Menu.Dropdown className="topbar-menu">
+                <Menu.Label>{copy(lang, 'Language', 'Bahasa')}</Menu.Label>
+                <Menu.Item leftSection={<span className="topbar-flag" aria-hidden="true">🇮🇩</span>} rightSection={lang === 'id' ? <Check size={14} /> : null} onClick={() => workspace.setPreferences(value => ({ ...value, language: 'id' }))}>Bahasa Indonesia</Menu.Item>
+                <Menu.Item leftSection={<span className="topbar-flag" aria-hidden="true">🇬🇧</span>} rightSection={lang === 'en' ? <Check size={14} /> : null} onClick={() => workspace.setPreferences(value => ({ ...value, language: 'en' }))}>English</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+            <Menu position="bottom-end" withinPortal>
+              <Menu.Target><ActionIcon className="glass-control" variant="default" size={40} aria-label={copy(lang, 'Display settings', 'Pengaturan tampilan')}><Settings2 size={17} /></ActionIcon></Menu.Target>
+              <Menu.Dropdown className="topbar-menu">
+                <Menu.Label>{copy(lang, 'Appearance', 'Tampilan')}</Menu.Label>
+                <Menu.Item leftSection={<Sun size={15} />} rightSection={workspace.preferences.appearance === 'light' ? <Check size={14} /> : null} onClick={() => workspace.setPreferences(value => ({ ...value, appearance: 'light' }))}>{copy(lang, 'Light', 'Terang')}</Menu.Item>
+                <Menu.Item leftSection={<Moon size={15} />} rightSection={workspace.preferences.appearance === 'dark' ? <Check size={14} /> : null} onClick={() => workspace.setPreferences(value => ({ ...value, appearance: 'dark' }))}>{copy(lang, 'Dark', 'Gelap')}</Menu.Item>
+                <Menu.Item leftSection={<span className="oled-menu-dot" aria-hidden="true" />} rightSection={workspace.preferences.appearance === 'oled' ? <Check size={14} /> : null} onClick={() => workspace.setPreferences(value => ({ ...value, appearance: 'oled' }))}>OLED</Menu.Item>
+                <Menu.Divider />
+                <Menu.Item component={RouterLink} to="/settings/appearance" leftSection={<Settings2 size={15} />}>{copy(lang, 'More settings', 'Pengaturan lainnya')}</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
             <Tooltip label={copy(lang, 'Search your books', 'Cari bukumu')} withArrow>
               <ActionIcon className="glass-control mobile-search" variant="default" size={40} aria-label={copy(lang, 'Search your books', 'Cari bukumu')} onClick={spotlight.open}><Search size={17} /></ActionIcon>
             </Tooltip>

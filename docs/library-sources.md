@@ -84,3 +84,16 @@ Cover quality is a display-and-download preference stored locally on the device.
 ### Sela picks catalogue · 2026-10-21
 
 The local Sela picks index contains 227 unique, English-language Project Gutenberg records. It stores metadata and each book's primary Gutenberg page; full text is fetched only after the user selects **Download & add to shelf**. Topic chips show counts computed from the records' tags. This is an editorial set informed by Project Gutenberg's curated shelves and Top 100, not a frozen reproduction of a live top-200 ranking. Public-domain status is jurisdiction-specific; see the [catalogue research note](sela-picks-research.md) and [Project Gutenberg terms](https://www.gutenberg.org/policy/terms_of_use).
+
+### Taman Bacaan catalogue · 2026-10-22
+
+The Discover Taman Bacaan view is a metadata index over existing Sela material; it adds no book text or cover image. Its local editions and reference notes are served from the app's existing assets. The service worker may cache those allowlisted assets after a successful fetch; they are not in the install-time app shell, so open them once online before relying on offline access. The screen labels this as “Included with Sela” and does not claim optional pack installation.
+
+- **World English Bible:** the [publisher's copyright page](https://ebible.org/engwebp/copyright.htm) identifies it as public domain and reserves the name for faithful copies. The app uses the unmodified named text.
+- **Douay-Rheims 1899:** [eBible.org identifies this edition as public domain](https://ebible.org/engDRA/copyright.htm).
+- **Dhammapada, Bhikkhu Sujato:** the [SuttaCentral edition page](https://suttacentral.net/edition/dhp/en/sujato) identifies the translation as CC0; the card retains translator and source attribution.
+- **Bhagavad-Gita, Sir Edwin Arnold, Project Gutenberg #2388:** the [record identifies this exact English translation as public domain in the USA](https://www.gutenberg.org/ebooks/2388). The UI says to check local law.
+- **Analects, James Legge, Project Gutenberg #3330:** the [record identifies this exact English translation as public domain in the USA](https://www.gutenberg.org/ebooks/3330). The UI says to check local law.
+- **QuranEnc:** Quran stays on its existing online path in this milestone. The [official API terms](https://quranenc.com/en/home/api/) require preserving content, attribution, version and transcript information, and following updates; the Taman card does not mirror a translation.
+- **Prophet passage index:** the 25 short SELA summaries link to Quran citations and remain clearly labelled as notes, not complete biographies or a date-ordered history.
+- **SELA Picks:** its 227 records remain metadata-only in this view. Full text is still selected and downloaded from the existing source flow; Project Gutenberg cautions non-US users to check local rights.

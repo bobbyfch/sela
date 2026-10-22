@@ -10,8 +10,8 @@ test('topbar icons remain centered and collection dialogs return keyboard focus'
   const buttons=page.locator('.topbar-actions .glass-control');
   for(let index=0;index<await buttons.count();index++){
    const button=buttons.nth(index);if(!(await button.isVisible()))continue;
-   await expect(button.locator('svg')).toHaveCount(1);
-   const centered=await button.evaluate(element=>{const button=element.getBoundingClientRect(),icon=element.querySelector('svg')!.getBoundingClientRect();return Math.abs(button.left+button.width/2-icon.left-icon.width/2)<1&&Math.abs(button.top+button.height/2-icon.top-icon.height/2)<1;});
+   const icon=button.locator('svg,.topbar-flag');await expect(icon).toHaveCount(1);
+   const centered=await button.evaluate(element=>{const button=element.getBoundingClientRect(),icon=element.querySelector('svg,.topbar-flag')!.getBoundingClientRect();return Math.abs(button.left+button.width/2-icon.left-icon.width/2)<1&&Math.abs(button.top+button.height/2-icon.top-icon.height/2)<1;});
    expect(centered,`topbar icon centered at ${width}px`).toBe(true);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`topbar overflow at ${width}px`).toBe(true);

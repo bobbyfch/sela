@@ -9,7 +9,7 @@ export function AboutSelaCard() {
   const t = (en: string, id: string) => copy(lang, en, id);
   const links = [
     { label: 'GitHub', href: 'https://github.com/bobbyfch/sela', icon: <SocialIcon brand="github" /> },
-    { label: 'Instagram', href: 'https://www.instagram.com/bobbyfch/', icon: <SocialIcon brand="instagram" /> },
+    { label: 'Instagram', href: 'https://www.instagram.com/bobby.fch/', icon: <SocialIcon brand="instagram" /> },
     { label: 'Threads', href: 'https://www.threads.com/@bobby.fch', icon: <SocialIcon brand="threads" /> },
     { label: 'LinkedIn', href: 'https://id.linkedin.com/in/bobbyfajarc', icon: <SocialIcon brand="linkedin" /> },
     { label: t('MIT license', 'Lisensi MIT'), href: 'https://github.com/bobbyfch/sela/blob/main/LICENSE', icon: <ShieldCheck size={15} aria-hidden="true" /> },

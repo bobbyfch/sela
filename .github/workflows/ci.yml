@@ -101,6 +101,14 @@ jobs:
           else
             npx playwright test --project=${{ matrix.project }}
           fi
+      - name: Upload Taman Bacaan screenshots
+        if: always() && matrix.project == 'chromium'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: taman-bacaan-playwright-screenshots
+          path: test-results/**/taman-bacaan-*.png
+          if-no-files-found: ignore
+          retention-days: 7
 
 
   pwa-tests:

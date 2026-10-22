@@ -14,12 +14,13 @@ Sela berarti jeda: ruang kecil dalam hari yang sibuk untuk kembali pada sebuah c
 
 - Baca PDF, EPUB, CBZ, TXT, Markdown, HTML, FB2, DOCX, dan ODT. Dukungan DjVu opsional memakai decoder eksternal.
 - Pilih mode buku, satu halaman, manga RTL, atau webtoon gulir berkelanjutan.
-- Simpan penanda, catatan, sorotan, progres membaca, dan koleksi dalam perpustakaan lokal dengan backup dan pemulihan.
+- Simpan penanda, catatan, sorotan, progres membaca, dan koleksi dalam perpustakaan lokal dengan backup ZIP, pemulihan, dan transfer terenkripsi AES-GCM menggunakan PIN terpisah 12 digit.
 - Jelajahi lewat alur pilih sumber → koleksi yang didukung → topik opsional. Sumber mencakup teks domain publik, transkripsi komunitas, buku ajar terbuka, peringkat pembaca, dan katalog OPDS pribadi. Komik memakai metadata Open Library dan BookRank; catatan tanpa edisi terbuka mengarah ke halaman sumber. Pencarian di perpustakaan memakai indeks Orama di perangkat dan memahami frasa umum Bahasa Indonesia tanpa mengunggah kueri.
 - Isi Beranda dengan kutipan, berita sesuai topik, bacaan kitab pilihan, dan peristiwa hari ini; berita Indonesia memakai cadangan ANTARA saat sumber utama gagal.
 - Catat waktu baca dan streak secara lokal, dengan ringkasan mingguan, bulanan, atau tahunan. Sesi berhenti saat pembaca tidak terlihat.
 - Atur Beranda dengan ilustrasi teman 3D, suasana sesuai cuaca, kalender membaca, kutipan, dan widget kebiasaan opsional. Pengguna Muslim dapat meminta perkiraan waktu salat; koordinat lokasi cuaca tersimpan hanya dikirim ke penyedia setelah tombol permintaan diketuk.
-- Pilih satu dari delapan palet dengan karakter berbeda: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, dan Arunika. Tampilan terang, gelap, dan OLED diatur terpisah.
+- Pilih satu dari delapan palet dengan karakter berbeda: Sela, Rimba, Sakura, Samudra, Lembayung, Kenanga, Senja, dan Arunika. Tampilan terang, gelap, dan OLED diatur terpisah, dengan kontrol cepat di reader buku dan Al-Qur’an.
+- Baca surah dengan tipografi Arab Naskh yang dibundel, opsi tampilan Arab saja, navigasi surah dan ayat yang tetap terlihat, serta mode baca layar penuh di dalam aplikasi.
 - Gunakan lima area app: Hari ini, Rak buku, Jelajah, Catatan baca, dan Pengaturan.
 - Pasang Sela Books sebagai web app, atau sematkan Viewer yang bebas framework ke HTML, React, Vue, Svelte, Astro, PHP, dan website lainnya.
 - Bahasa antarmuka mencakup Inggris, Indonesia, Jepang, Spanyol, Prancis, Jerman, Portugis, Mandarin, dan Korea.

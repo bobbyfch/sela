@@ -13,7 +13,9 @@ The installed reading app has one React entry at `/app/`, built on Mantine 9.7. 
 | Public and reader styles | Tailwind entrypoints under `ui/` build the public page and standalone reader outputs independently |
 | Icons | Lucide outline icons at a consistent 1.6–1.8 stroke weight; book-cover artwork keeps its original colors |
 | Glass | Reserve translucent material for app navigation, compact controls, and transient overlays; keep book pages and text surfaces opaque |
-| Responsive layout | Desktop AppShell rail, compact top bar, and bottom navigation on narrow screens; use minmax grids and wrap controls before reducing readable text |
+| Responsive layout | Desktop AppShell rail, compact top bar, and bottom navigation on narrow screens; keep book and catalog cards in two columns on phones, use minmax grids, and wrap controls before reducing readable text |
+| Reading ergonomics | Reader theme stays one tap away; Quran surah and verse controls remain sticky, Arabic-only mode hides translation, and focus view can fall back to in-page fullscreen on iOS |
+| Offline Arabic | Quran Arabic uses a locally bundled Noto Naskh font so glyph coverage does not depend on a remote font request |
 | Accessibility | Visible focus, labeled icon controls, keyboard-operable menus, reduced-motion support, and 44 px primary touch targets |
 
 ## Reusable patterns

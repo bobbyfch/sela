@@ -108,7 +108,7 @@ test('mobile routes keep the private shelf separate from discovery and settings'
  await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await expect(page.locator('.home-screen')).toBeVisible();
  await page.locator('.sela-app input[type="file"][accept*=".txt"]').setInputFiles({name:'My book.txt',mimeType:'text/plain',buffer:Buffer.from('My private book')});
  await page.goto('/app/#/shelf');await expect(page.locator('.book-card')).toHaveCount(1);await expect(page.locator('.book-card')).toContainText('My book');
- await page.goto('/app/#/discover');await expect(page.locator('.catalog-explorer')).toBeVisible();await expect(page.locator('.catalog-source-card')).toHaveCount(9);await expect(page.getByRole('textbox',{name:'Search books'})).toBeVisible();
+ await page.goto('/app/#/discover?view=sources');await expect(page.locator('.catalog-explorer')).toBeVisible();await expect(page.locator('.catalog-source-card')).toHaveCount(9);await expect(page.getByRole('textbox',{name:'Search books'})).toBeVisible();
  await page.goto('/app/#/settings/data');await expect(page.locator('.settings-detail')).toBeVisible();await expect(page.getByRole('button',{name:'Export backup',exact:true})).toBeVisible();
  for(const width of [320,393,768,1440]){await page.setViewportSize({width,height:740});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}px route overflow`).toBe(true);}
 });

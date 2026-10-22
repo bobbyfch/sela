@@ -1,0 +1,141 @@
+import type { FaithId } from './scripture-sources.ts';
+
+export type ReadingGardenCategory = 'faith' | 'wisdom' | 'literature';
+export type ReadingGardenAvailability = 'bundled' | 'online' | 'metadata';
+export type ReadingGardenContentType = 'sacred-text' | 'passage-index' | 'catalogue';
+export type ReadingGardenRights = 'public-domain' | 'cc0' | 'edition-terms' | 'sela-editorial';
+
+export interface ReadingGardenCollection {
+  id: string;
+  title: string;
+  titleId: string;
+  description: string;
+  descriptionId: string;
+  category: ReadingGardenCategory;
+  contentType: ReadingGardenContentType;
+  availability: ReadingGardenAvailability;
+  rights: ReadingGardenRights;
+  rightsLabel: string;
+  rightsLabelId: string;
+  languages: readonly string[];
+  creator?: string;
+  creatorId?: string;
+  edition?: string;
+  count: number;
+  countUnit: 'books' | 'chapters' | 'surahs' | 'passages' | 'records';
+  countUnitId: string;
+  source: string;
+  sourceId: string;
+  sourceUrl: string;
+  faith?: FaithId;
+  route?: string;
+  accessNote: string;
+  accessNoteId: string;
+}
+
+/**
+ * A small catalogue of editions and reading indexes already present in Sela.
+ * This describes their current delivery state; it does not contain book text.
+ */
+export const READING_GARDEN_COLLECTIONS: readonly ReadingGardenCollection[] = [
+  {
+    id: 'quran-enc', title: 'The Quran', titleId: 'Al-Qur’an',
+    description: 'Choose a surah and an attributed QuranEnc translation.',
+    descriptionId: 'Pilih surah dan terjemahan QuranEnc dengan edisi yang dicantumkan.',
+    category: 'faith', contentType: 'sacred-text', availability: 'online', rights: 'edition-terms',
+    rightsLabel: 'QuranEnc edition terms', rightsLabelId: 'Ketentuan edisi QuranEnc',
+    languages: ['ar', 'id', 'en', 'ja'], count: 114, countUnit: 'surahs', countUnitId: 'surah',
+    source: 'QuranEnc', sourceId: 'QuranEnc', sourceUrl: 'https://quranenc.com/en/home/api/', faith: 'islam', route: '/faith/quran/1',
+    accessNote: 'Translations load from QuranEnc when you open a surah; they are not bundled for offline use.',
+    accessNoteId: 'Terjemahan dimuat dari QuranEnc saat surah dibuka; teksnya belum disertakan untuk penggunaan offline.',
+  },
+  {
+    id: 'prophet-passages', title: 'Prophets in Quran passages', titleId: 'Kisah Nabi dalam ayat Al-Qur’an',
+    description: '25 concise, cited reading notes. This is a passage index, not 25 full biographies.',
+    descriptionId: '25 catatan bacaan ringkas dengan rujukan. Ini indeks ayat, bukan 25 biografi lengkap.',
+    category: 'faith', contentType: 'passage-index', availability: 'bundled', rights: 'sela-editorial',
+    rightsLabel: 'SELA editorial notes · Quran references', rightsLabelId: 'Catatan editorial SELA · rujukan Al-Qur’an',
+    languages: ['id', 'en', 'ar'], count: 25, countUnit: 'passages', countUnitId: 'rujukan',
+    source: 'SELA · Quran passage references', sourceId: 'SELA · rujukan ayat Al-Qur’an',
+    sourceUrl: 'https://quran.kemenag.go.id/', route: '/faith/stories/0',
+    accessNote: 'The notes ship with Sela and are cached after a successful load. Open them once online before expecting offline access.',
+    accessNoteId: 'Catatan disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Buka sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'world-english-bible', title: 'World English Bible', titleId: 'World English Bible',
+    description: 'An English Bible edition with book and chapter navigation.',
+    descriptionId: 'Edisi Alkitab bahasa Inggris dengan navigasi kitab dan bab.',
+    category: 'faith', contentType: 'sacred-text', availability: 'bundled', rights: 'public-domain',
+    rightsLabel: 'Public domain · eBible.org', rightsLabelId: 'Domain publik · eBible.org',
+    languages: ['en'], creator: 'eBible.org', creatorId: 'eBible.org', edition: '66 books',
+    count: 66, countUnit: 'books', countUnitId: 'kitab', source: 'eBible.org', sourceId: 'eBible.org',
+    sourceUrl: 'https://ebible.org/engwebp/copyright.htm', faith: 'protestantism',
+    accessNote: 'The text ships with Sela and is cached after a successful load. Browse it once online before expecting offline access.',
+    accessNoteId: 'Teks disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Jelajahi sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'douay-rheims', title: 'Douay-Rheims 1899', titleId: 'Douay-Rheims 1899',
+    description: 'An English Catholic Bible edition with book and chapter navigation.',
+    descriptionId: 'Edisi Alkitab Katolik bahasa Inggris dengan navigasi kitab dan bab.',
+    category: 'faith', contentType: 'sacred-text', availability: 'bundled', rights: 'public-domain',
+    rightsLabel: 'Public domain · eBible.org', rightsLabelId: 'Domain publik · eBible.org',
+    languages: ['en'], creator: 'English College, Douai', creatorId: 'English College, Douai',
+    edition: '73 books', count: 73, countUnit: 'books', countUnitId: 'kitab',
+    source: 'eBible.org', sourceId: 'eBible.org', sourceUrl: 'https://ebible.org/engDRA/copyright.htm', faith: 'catholicism',
+    accessNote: 'The text ships with Sela and is cached after a successful load. Browse it once online before expecting offline access.',
+    accessNoteId: 'Teks disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Jelajahi sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'dhammapada-sujato', title: 'Dhammapada', titleId: 'Dhammapada',
+    description: 'An English translation by Bhikkhu Sujato, organized by chapter.',
+    descriptionId: 'Terjemahan bahasa Inggris oleh Bhikkhu Sujato, disusun per bab.',
+    category: 'wisdom', contentType: 'sacred-text', availability: 'bundled', rights: 'cc0',
+    rightsLabel: 'CC0 1.0 · Bhikkhu Sujato / SuttaCentral', rightsLabelId: 'CC0 1.0 · Bhikkhu Sujato / SuttaCentral',
+    languages: ['en'], creator: 'Bhikkhu Sujato', creatorId: 'Bhikkhu Sujato', edition: '26 chapters',
+    count: 26, countUnit: 'chapters', countUnitId: 'bab', source: 'SuttaCentral', sourceId: 'SuttaCentral',
+    sourceUrl: 'https://suttacentral.net/edition/dhp/en/sujato', faith: 'buddhism',
+    accessNote: 'The text ships with Sela and is cached after a successful load. Browse it once online before expecting offline access.',
+    accessNoteId: 'Teks disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Jelajahi sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'song-celestial', title: 'The Song Celestial · Bhagavad-Gita', titleId: 'The Song Celestial · Bhagavad-Gita',
+    description: 'Sir Edwin Arnold’s English translation, arranged in 18 chapters.',
+    descriptionId: 'Terjemahan bahasa Inggris Sir Edwin Arnold, disusun dalam 18 bab.',
+    category: 'wisdom', contentType: 'sacred-text', availability: 'bundled', rights: 'public-domain',
+    rightsLabel: 'Public domain in the USA · check local law', rightsLabelId: 'Domain publik di AS · periksa hukum setempat',
+    languages: ['en'], creator: 'Sir Edwin Arnold', creatorId: 'Sir Edwin Arnold', edition: '1885 translation',
+    count: 18, countUnit: 'chapters', countUnitId: 'bab', source: 'Project Gutenberg #2388', sourceId: 'Project Gutenberg #2388',
+    sourceUrl: 'https://www.gutenberg.org/ebooks/2388', faith: 'hinduism',
+    accessNote: 'The text ships with Sela and is cached after a successful load. Browse it once online before expecting offline access.',
+    accessNoteId: 'Teks disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Jelajahi sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'analects-legge', title: 'The Analects of Confucius', titleId: 'The Analects of Confucius',
+    description: 'James Legge’s English translation, arranged in 20 books.',
+    descriptionId: 'Terjemahan bahasa Inggris James Legge, disusun dalam 20 kitab.',
+    category: 'wisdom', contentType: 'sacred-text', availability: 'bundled', rights: 'public-domain',
+    rightsLabel: 'Public domain in the USA · check local law', rightsLabelId: 'Domain publik di AS · periksa hukum setempat',
+    languages: ['en'], creator: 'James Legge', creatorId: 'James Legge', edition: '20 books',
+    count: 20, countUnit: 'books', countUnitId: 'kitab', source: 'Project Gutenberg #3330', sourceId: 'Project Gutenberg #3330',
+    sourceUrl: 'https://www.gutenberg.org/ebooks/3330', faith: 'confucianism',
+    accessNote: 'The text ships with Sela and is cached after a successful load. Browse it once online before expecting offline access.',
+    accessNoteId: 'Teks disertakan bersama Sela dan masuk cache setelah berhasil dimuat. Jelajahi sekali saat online sebelum mengandalkan akses offline.',
+  },
+  {
+    id: 'sela-picks', title: 'SELA Picks · world classics', titleId: 'Pilihan SELA · sastra dunia',
+    description: '227 English-language book records. Texts are fetched from their source only when selected.',
+    descriptionId: '227 data buku berbahasa Inggris. Teks diambil dari sumber saat dipilih.',
+    category: 'literature', contentType: 'catalogue', availability: 'metadata', rights: 'public-domain',
+    rightsLabel: 'Gutenberg status varies by country', rightsLabelId: 'Status Gutenberg berbeda menurut negara',
+    languages: ['en'], count: 227, countUnit: 'records', countUnitId: 'data buku',
+    source: 'Project Gutenberg', sourceId: 'Project Gutenberg', sourceUrl: 'https://www.gutenberg.org/policy/terms_of_use.html',
+    accessNote: 'Only catalogue metadata is stored here. Open each edition record and check local copyright before downloading.',
+    accessNoteId: 'Di sini hanya metadata katalog yang disimpan. Buka data tiap edisi dan periksa hak cipta setempat sebelum mengunduh.',
+  },
+] as const;
+
+export const READING_GARDEN_CATEGORIES = [
+  { id: 'faith', en: 'Stories & faith', idLabel: 'Kisah & kepercayaan' },
+  { id: 'wisdom', en: 'Wisdom & philosophy', idLabel: 'Filsafat & kebijaksanaan' },
+  { id: 'literature', en: 'World literature', idLabel: 'Sastra dunia' },
+] as const satisfies readonly { id: ReadingGardenCategory; en: string; idLabel: string }[];

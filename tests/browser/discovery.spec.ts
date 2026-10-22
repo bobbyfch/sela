@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 async function start(page){
  await page.addInitScript(()=>{if(!localStorage.getItem('sela:app:preferences'))localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'}));});
- await page.goto('/app/#/discover');
+ await page.goto('/app/#/discover?view=sources');
  await expect(page.locator('.catalog-explorer')).toBeVisible();
 }
 

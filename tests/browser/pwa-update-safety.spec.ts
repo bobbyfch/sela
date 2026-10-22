@@ -46,7 +46,7 @@ test('app update waits for restore validation, then preserves the original shelf
   crypto.subtle.digest=(...args)=>new Promise((resolve,reject)=>{window.finishBackupValidation=()=>digest(...args).then(resolve,reject);});
  });
  await page.locator('.settings-detail input[type="file"]').setInputFiles({name:'backup.zip',mimeType:'application/zip',buffer:Buffer.from(bytes)});
- await expect(page.getByRole('button',{name:'Restore a backup'})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Restore backup or transfer'})).toBeDisabled();
  await expect(page.locator('.settings-detail')).toHaveAttribute('data-pwa-busy','true');
  await expect.poll(()=>page.evaluate(()=>typeof window.finishBackupValidation)).toBe('function');
  await expect(page.locator('.pwa-notice')).toBeVisible();
@@ -54,7 +54,7 @@ test('app update waits for restore validation, then preserves the original shelf
  expect(await page.evaluate(()=>window.updateMessages.filter(message=>message.type==='ACTIVATE_UPDATE'))).toEqual([]);
  await expect(page.locator('.pwa-notice')).toContainText('active action');
  await page.evaluate(()=>window.finishBackupValidation());
- await expect(page.getByRole('button',{name:'Restore a backup'})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'Restore backup or transfer'})).toBeEnabled();
  await expect(page.locator('.settings-detail')).not.toHaveAttribute('data-pwa-busy','true');
  await page.getByRole('button',{name:'Update now',exact:true}).click();
  expect(await page.evaluate(()=>window.updateMessages.filter(message=>message.type==='ACTIVATE_UPDATE'))).toEqual([{type:'ACTIVATE_UPDATE'}]);

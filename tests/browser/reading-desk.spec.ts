@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { setTopbarAppearance } from './topbar-helpers.ts';
 
 const setEnglish = () => localStorage.setItem('sela:app:preferences', JSON.stringify({ language: 'en' }));
 
@@ -10,6 +11,7 @@ test('local open-book discovery searches and imports a classic into the React sh
   await page.goto('/app/');
   await page.getByRole('link', { name: 'Discover', exact: true }).click();
   const catalog = page.locator('.catalog-explorer');
+  await catalog.getByRole('button', { name: 'Browse sources', exact: true }).click();
   await expect(catalog.locator('.catalog-result-card').first()).toBeVisible();
   expect(remoteCatalogRequests).toEqual([]);
   await catalog.getByLabel('Search books', { exact: true }).fill('Walden');
@@ -38,7 +40,7 @@ test('mobile focus timer remains reachable without covering the dock', async ({ 
     await timer.evaluate((element: HTMLElement) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
     for (const appearance of ['light', 'dark'] as const) {
       if (await app.getAttribute('data-appearance') !== appearance) {
-        await page.getByRole('button', { name: appearance === 'dark' ? 'Switch to dark mode' : 'Switch to light mode', exact: true }).click();
+        await setTopbarAppearance(page, appearance);
       }
       await expect(app).toHaveAttribute('data-appearance', appearance);
       const layout = await page.evaluate(() => {
@@ -60,7 +62,7 @@ test('failed catalog download stays in discovery and never reports a shelf impor
     failedDownloads += 1;
     return route.fulfill({ status: 503, body: 'Unavailable' });
   });
-  await page.goto('/app/#/discover');
+  await page.goto('/app/#/discover?view=sources');
   const catalog = page.locator('.catalog-explorer');
   await catalog.getByLabel('Search books', { exact: true }).fill('Frankenstein');
   await catalog.getByRole('button', { name: 'Search', exact: true }).click();

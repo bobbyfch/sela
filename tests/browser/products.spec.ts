@@ -1,11 +1,12 @@
 import {test,expect} from '@playwright/test';
+import {setTopbarLanguage} from './topbar-helpers.ts';
 const android='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
 
 test('touch-first tablet signals keep the same React app usable',async({browser})=>{
  const context=await browser.newContext({userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15',viewport:{width:1024,height:768}});
  await context.addInitScript(()=>{Object.defineProperty(navigator,'maxTouchPoints',{get:()=>5});localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'}));});
  const page=await context.newPage();await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await expect(page.locator('.home-screen')).toBeVisible();
- await expect(page.getByRole('button',{name:'Switch to dark mode'})).toBeVisible();await context.close();
+ await expect(page.getByRole('button',{name:'Display settings',exact:true})).toBeVisible();await context.close();
 });
 
 test('blocked localStorage does not prevent the library shell from mounting',async({browser})=>{
@@ -25,7 +26,7 @@ test('public locales and React app language controls update their own visible co
  await page.goto('/?geo=off');const heading=page.locator('.hero-copy h1');const english=await heading.textContent();
  await page.locator('#language').selectOption('id-ID');await expect(page.locator('html')).toHaveAttribute('lang','id-ID');await expect(heading).not.toHaveText(english||'');
  await page.locator('#language').selectOption('ja-JP');await expect(page.locator('html')).toHaveAttribute('lang','ja-JP');
- await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await page.getByRole('button',{name:'Ganti bahasa',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('link',{name:'My shelf',exact:true})).toBeVisible();
+ await page.goto('/app/');await expect(page.locator('.sela-app')).toBeVisible();await setTopbarLanguage(page,'en');await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('link',{name:'My shelf',exact:true})).toBeVisible();
 });
 
 test('public and app layouts stay inside common viewport widths',async({page})=>{

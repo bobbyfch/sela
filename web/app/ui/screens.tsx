@@ -18,6 +18,7 @@ import type { BookMetadata } from '../../../src/public-api.ts';
 import { changeCollection, getAsset, getFile, updateBook, writeBook } from '../../../app/library/storage.ts';
 import { searchBooks, acquireBook } from '../../../app/library/book-sources.ts';
 import { exportLibrary, restoreLibrary } from '../../../app/library/backup.ts';
+import { createTransferPin, decryptBackupForTransfer, encryptBackupForTransfer } from '../../../app/library/transfer.ts';
 import { editPersonal, readPersonal } from '../../../app/library/personal-store.ts';
 import { coverPixelsNeedFallback } from '../../../app/library/cover-analysis.ts';
 import { VERSION } from '../../../app/library/version.ts';
@@ -225,7 +226,7 @@ export function HomeScreen() {
       <div className="home-rail-main">
         {recentBooks.length > 0 && <section className="section-block">
           <div className="section-heading"><div><Text className="page-eyebrow">{copy(lang, 'ON YOUR SHELF', 'DI RAKMU')}</Text><Title order={2}>{copy(lang, 'Recently added', 'Baru ditambahkan')}</Title></div><Button variant="subtle" rightSection={<ArrowUpRight size={15} />} onClick={() => navigate('/shelf')}>{copy(lang, 'View shelf', 'Lihat rak')}</Button></div>
-          <Carousel className="book-carousel" slideSize={{ base: '84%', xs: '62%', sm: '66%', md: '46%', lg: '42%' }} slideGap="md" withControls={recentBooks.length > 3} controlSize={34} emblaOptions={{ loop: false, dragFree: true, align: 'start' }}>
+          <Carousel className="book-carousel" slideSize={{ base: '49%', xs: '50%', sm: '66%', md: '46%', lg: '42%' }} slideGap="md" withControls={recentBooks.length > 3} controlSize={34} emblaOptions={{ loop: false, dragFree: true, align: 'start' }}>
             {recentBooks.map(book => <Carousel.Slide key={book.id}><BookCard book={book} onOpen={next => openBook(navigate, next)} compact /></Carousel.Slide>)}
           </Carousel>
         </section>}
@@ -490,7 +491,7 @@ export function ProgressScreen() {
         <Group justify="space-between" gap="sm"><Badge variant="light" color="quill">{copy(lang, entry.kind, entry.kindId)}</Badge>{entry.page && <Text className="notebook-page">{copy(lang, `Page ${entry.page}`, `Halaman ${entry.page}`)}</Text>}</Group>
         <Title order={3}>{entry.bookName}</Title><Text className="notebook-entry-copy">{entry.text}</Text>
         <Button variant="subtle" rightSection={<ArrowUpRight size={14} />} onClick={() => { window.location.hash = `/read/${entry.bookId}`; }}>{copy(lang, 'Open book', 'Buka buku')}</Button>
-      </Card>)}</div> : <EmptyState title={copy(lang, notebookQuery ? 'No notes match that search.' : 'Your notebook is ready when you are.', notebookQuery ? 'Tidak ada catatan yang cocok.' : 'Notebook-mu siap menampung catatan.')} body={copy(lang, notebookQuery ? 'Try a shorter phrase or another book title.' : 'Bookmark a page or add a note while reading, and it will appear here.', notebookQuery ? 'Coba kata yang lebih singkat atau judul buku lain.' : 'Tandai halaman atau tulis catatan saat membaca; isinya akan muncul di sini.')} />}
+      </Card>)}</div> : notebookQuery ? <EmptyState title={copy(lang, 'No notes match that search.', 'Tidak ada catatan yang cocok.')} body={copy(lang, 'Try a shorter phrase or another book title.', 'Coba kata yang lebih singkat atau judul buku lain.')} /> : <Card className="notebook-empty" withBorder radius="lg" padding="md"><span aria-hidden="true"><BookOpen size={19} /></span><div><Title order={3}>{copy(lang, 'Your notebook is ready when you are.', 'Notebook-mu siap menampung catatan.')}</Title><Text size="sm">{copy(lang, 'Bookmark a page or add a note while reading; it will appear here.', 'Tandai halaman atau tulis catatan saat membaca; isinya akan muncul di sini.')}</Text></div></Card>}
       {matchingNotes.length > shownNotes.length && <Button className="notebook-more" variant="default" onClick={() => setShowAllNotes(true)}>{copy(lang, 'Show more notes', 'Tampilkan catatan lain')}</Button>}
     </section>
   </div>;
@@ -589,6 +590,9 @@ export function SettingsDetail() {
   const restoreRef = useRef<HTMLButtonElement>(null);
   const [restoring, setRestoring] = useState(false);
   const [backupBusy, setBackupBusy] = useState(false);
+  const [transferPin, setTransferPin] = useState('');
+  const [transferFile, setTransferFile] = useState<File | null>(null);
+  const [transferPinInput, setTransferPinInput] = useState('');
   useEffect(() => {
     const handler = (event: Event) => {
       const language = (event as CustomEvent<'id' | 'en'>).detail;
@@ -626,6 +630,30 @@ export function SettingsDetail() {
     } catch (error) { notifications.show({ message: error instanceof Error ? error.message : copy(lang, 'Backup could not be created.', 'Cadangan belum bisa dibuat.'), color: 'red' }); }
     finally { setBackupBusy(false); }
   };
+  const exportPinTransfer = async () => {
+    setBackupBusy(true);
+    try {
+      const pin = createTransferPin();
+      const archive = await makeBackupFile();
+      const encrypted = await encryptBackupForTransfer(archive, pin);
+      const file = new File([encrypted], `sela-transfer-${new Date().toISOString().slice(0, 10)}.sela-transfer`, { type: 'application/vnd.sela.transfer' });
+      downloadBackupFile(file);
+      setTransferPin(pin);
+      notifications.show({ message: copy(lang, 'Encrypted transfer file downloaded. Keep its PIN separate.', 'File transfer terenkripsi diunduh. Simpan PIN secara terpisah.'), color: 'quill' });
+    } catch (error) { notifications.show({ message: error instanceof Error ? error.message : copy(lang, 'Encrypted transfer could not be created.', 'Transfer terenkripsi belum bisa dibuat.'), color: 'red' }); }
+    finally { setBackupBusy(false); }
+  };
+  const restorePinTransfer = async () => {
+    if (!transferFile) return;
+    setRestoring(true);
+    try {
+      const archive = await decryptBackupForTransfer(transferFile, transferPinInput);
+      const result = await restoreLibrary(archive); await store.refresh();
+      setTransferFile(null); setTransferPinInput('');
+      notifications.show({ title: copy(lang, 'Restore complete', 'Pemulihan selesai'), message: copy(lang, `${result.added} books added; ${result.kept} existing books kept.`, `${result.added} buku ditambahkan; ${result.kept} buku yang ada tetap disimpan.`), color: 'quill' });
+    } catch (error) { notifications.show({ message: error instanceof Error ? error.message : copy(lang, 'Transfer could not be restored.', 'Transfer belum bisa dipulihkan.'), color: 'red' }); }
+    finally { setRestoring(false); }
+  };
   const shareBackup = async () => {
     setBackupBusy(true);
     try {
@@ -639,6 +667,7 @@ export function SettingsDetail() {
   };
   const restore = async (file: File | null) => {
     if (!file) return;
+    if (file.name.toLowerCase().endsWith('.sela-transfer')) { setTransferFile(file); setTransferPinInput(''); return; }
     setRestoring(true);
     try {
       const result = await restoreLibrary(file); await store.refresh();
@@ -698,10 +727,16 @@ export function SettingsDetail() {
       <Card className="settings-panel" withBorder radius="xl" padding="lg"><Text className="page-eyebrow">{copy(lang, 'READING PROFILES', 'PROFIL BACA')}</Text><Title order={2}>{copy(lang, 'A comfortable page', 'Halaman yang nyaman')}</Title><Text>{copy(lang, 'The reader supports serif, sans, monospace and OpenDyslexic type, spacing, page tint, filters, bookmarks, notes and highlights.', 'Pembaca mendukung font serif, sans, monospace, OpenDyslexic, jarak baris, warna halaman, filter, penanda, catatan dan sorotan.')}</Text><Button variant="default" leftSection={<BookOpen size={16} />} onClick={() => navigate('/shelf')}>{copy(lang, 'Open a book', 'Buka buku')}</Button></Card>
     </Stack>}
     {section === 'data' && <Stack className="settings-panel-stack">
-      <Card className="settings-panel" withBorder radius="xl" padding="lg"><Text className="page-eyebrow">{copy(lang, 'YOUR BOOKS', 'BUKUMU')}</Text><Title order={2}>{copy(lang, 'Back up the whole shelf', 'Cadangkan seluruh rak')}</Title><Text>{copy(lang, 'A Sela backup includes local book files, collections and reading progress. Keep the ZIP somewhere safe before clearing browser data.', 'Cadangan Sela memuat file buku lokal, koleksi dan progres baca. Simpan file ZIP sebelum menghapus data browser.')}</Text><Group><Button disabled={backupBusy || restoring} leftSection={<Download size={16} />} onClick={() => void exportBackup()}>{copy(lang, 'Export backup', 'Ekspor cadangan')}</Button><Button variant="default" disabled={backupBusy || restoring} leftSection={<Share2 size={16} />} onClick={() => void shareBackup()}>{copy(lang, 'Share backup', 'Bagikan cadangan')}</Button><FileButton onChange={file => void restore(file)} accept=".zip,application/zip">{({ onClick }) => <Button variant="default" disabled={backupBusy} onClick={onClick} leftSection={restoring ? <LoaderCircle className="spin" size={16} /> : <Upload size={16} />} loading={restoring}>{copy(lang, 'Restore a backup', 'Pulihkan cadangan')}</Button>}</FileButton></Group><Text className="backup-count">{copy(lang, `${store.books.length} books currently stored on this device.`, `${store.books.length} buku tersimpan di perangkat ini.`)}</Text></Card>
+      <Card className="settings-panel" withBorder radius="xl" padding="lg"><Text className="page-eyebrow">{copy(lang, 'YOUR BOOKS', 'BUKUMU')}</Text><Title order={2}>{copy(lang, 'Back up the whole shelf', 'Cadangkan seluruh rak')}</Title><Text>{copy(lang, 'A Sela backup includes local book files, collections and reading progress. Keep the ZIP somewhere safe before clearing browser data.', 'Cadangan Sela memuat file buku lokal, koleksi dan progres baca. Simpan file ZIP sebelum menghapus data browser.')}</Text><Group><Button disabled={backupBusy || restoring} leftSection={<Download size={16} />} onClick={() => void exportBackup()}>{copy(lang, 'Export backup', 'Ekspor cadangan')}</Button><Button variant="default" disabled={backupBusy || restoring} leftSection={<Share2 size={16} />} onClick={() => void shareBackup()}>{copy(lang, 'Share backup', 'Bagikan cadangan')}</Button><Button variant="default" disabled={backupBusy || restoring} leftSection={<Share2 size={16} />} onClick={() => void exportPinTransfer()}>{copy(lang, 'Create PIN transfer', 'Buat transfer dengan PIN')}</Button><FileButton onChange={file => void restore(file)} accept=".zip,.sela-transfer,application/zip">{({ onClick }) => <Button variant="default" disabled={backupBusy} onClick={onClick} leftSection={restoring ? <LoaderCircle className="spin" size={16} /> : <Upload size={16} />} loading={restoring}>{copy(lang, 'Restore backup or transfer', 'Pulihkan cadangan atau transfer')}</Button>}</FileButton></Group>{transferPin && <Alert color="quill" title={copy(lang, 'Transfer PIN · keep it separate', 'PIN transfer · simpan terpisah')}><strong className="transfer-pin">{transferPin}</strong><Text size="xs">{copy(lang, 'Send this 12-digit PIN through a different channel from the transfer file. The PIN is shown only on this device.', 'Kirim PIN 12 digit ini melalui jalur berbeda dari file transfer. PIN hanya ditampilkan di perangkat ini.')}</Text></Alert>}<Text className="backup-count">{copy(lang, `${store.books.length} books currently stored on this device.`, `${store.books.length} buku tersimpan di perangkat ini.`)}</Text></Card>
       <Card className="settings-panel" withBorder radius="xl" padding="lg"><Text className="page-eyebrow">{copy(lang, 'STORAGE NOTE', 'CATATAN PENYIMPANAN')}</Text><Title order={2}>{copy(lang, 'Browser storage is private, but not permanent.', 'Penyimpanan browser bersifat pribadi, tetapi tidak permanen.')}</Title><Text>{copy(lang, 'Private browsing, clearing site data or device cleanup may remove local files. Keep your original book files and a recent Sela backup.', 'Mode privat, penghapusan data situs atau pembersihan perangkat dapat menghapus file lokal. Simpan file asli dan cadangan Sela terbaru.')}</Text></Card>
       <UpdateCard lang={lang} />
     </Stack>}
+    <Modal opened={!!transferFile} onClose={() => { if (!restoring) { setTransferFile(null); setTransferPinInput(''); } }} title={copy(lang, 'Restore encrypted transfer', 'Pulihkan transfer terenkripsi')} centered radius="lg">
+      <Stack><Text size="sm">{copy(lang, 'Enter the 12-digit PIN shared separately from this file. Decryption happens on this device.', 'Masukkan PIN 12 digit yang dibagikan terpisah dari file ini. Dekripsi berlangsung di perangkat ini.')}</Text>
+        <TextInput label={copy(lang, 'Transfer PIN', 'PIN transfer')} type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={12} value={transferPinInput} onChange={event => setTransferPinInput(event.currentTarget.value.replace(/\D/g, '').slice(0, 12))} />
+        <Group justify="flex-end"><Button variant="default" onClick={() => { setTransferFile(null); setTransferPinInput(''); }}>{copy(lang, 'Cancel', 'Batal')}</Button><Button disabled={transferPinInput.length !== 12} loading={restoring} onClick={() => void restorePinTransfer()}>{copy(lang, 'Decrypt and restore', 'Dekripsi dan pulihkan')}</Button></Group>
+      </Stack>
+    </Modal>
   </div>;
 }
 
@@ -730,7 +765,7 @@ export function ReaderScreen() {
   const { bookId = '' } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { store, preferences, lang } = useWorkspace();
+  const { store, preferences, lang, setPreferences } = useWorkspace();
   const mountRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [loadingPhase, setLoadingPhase] = useState<'file' | 'engine' | 'rendering' | 'ready' | 'error'>('file');
@@ -840,7 +875,7 @@ export function ReaderScreen() {
       : copy(lang, 'Rendering the pages…', 'Menyiapkan halaman…');
   return <div className="reader-layout">
     <Suspense fallback={null}><FocusTimerBadge /></Suspense>
-    {activeReader && currentBook && <Suspense fallback={null}><ReaderChrome reader={activeReader} title={currentBook.metadata?.title || currentBook.name} author={currentBook.metadata?.author} lang={lang} onBack={() => activeReader.close()} onCaptureSelection={text => { if (text) selectionSnapshot.current = text; }} onOpenTools={() => openReaderTools('layout')} onOpenPreviews={() => setPreviewsOpened(true)} /></Suspense>}
+    {activeReader && currentBook && <Suspense fallback={null}><ReaderChrome reader={activeReader} title={currentBook.metadata?.title || currentBook.name} author={currentBook.metadata?.author} lang={lang} appearance={preferences.appearance} onToggleAppearance={() => setPreferences(value => ({ ...value, appearance: value.appearance === 'light' ? 'dark' : 'light' }))} onBack={() => activeReader.close()} onCaptureSelection={text => { if (text) selectionSnapshot.current = text; }} onOpenTools={() => openReaderTools('layout')} onOpenPreviews={() => setPreviewsOpened(true)} /></Suspense>}
     {activeReader && currentBook && <Suspense fallback={null}><ReaderToolsDialog reader={activeReader} book={currentBook} onSaveMetadata={saveReaderMetadata} opened={toolsOpened} onOpenedChange={setToolsOpened} showTrigger={false} onShowPreviews={() => setPreviewsOpened(true)} initialTab={toolsTab} selectedText={selectedQuoteText} /></Suspense>}
     {activeReader && currentBook && <Suspense fallback={null}><ReaderPreviewsDialog reader={activeReader} format={currentBook.format || ''} lang={lang} opened={previewsOpened} onClose={() => setPreviewsOpened(false)} /></Suspense>}
     {error && <Alert className="reader-error" color="red" title={copy(lang, 'Reader message', 'Pesan pembaca')} role="alert">
