@@ -55,3 +55,28 @@
 ## Recovery deployment · 21 October 2026
 
 The earlier “not deployed” bullets above describe their individual pre-deployment checkpoints. The recovery fix was later merged as PR [#3](https://github.com/bobbyfch/sela/pull/3), commit `240aaba9072e653a50cbd6e55ee783a0440a2683`. CI run [39624764621](https://github.com/bobbyfch/sela/actions/runs/39624764621) passed all 12 jobs, and Pages run [39625890669](https://github.com/bobbyfch/sela/actions/runs/39625890669) succeeded. Live smoke checks opened the homepage, `/app/`, and all 50 pages of the sample PDF. The optional framework matrix and physical-device/assistive-technology checks remain unrun.
+
+## 22 October 2026 · Taman Bacaan MVP
+
+### Starting point
+- Local branch: `codex/reader-polish-transfer-2026-10`, based on PR [#5](https://github.com/bobbyfch/sela/pull/5), head `63c1e3db9a4378e2d072f410e9276150868280ff` before this change. GitHub reports the PR is open and mergeable.
+- The existing P0 recovery and Pages-base work remains in place. The latest run on the prior PR head, [39655995025](https://github.com/bobbyfch/sela/actions/runs/39655995025), completed successfully; it does not include this new Taman Bacaan change.
+
+### Changes in this slice
+- Added a Taman Bacaan lens inside Discover and retained all nine source cards behind a separate in-page view. The selected view is URL-addressable with `?view=sources`.
+- Added local metadata search plus category, language, content-type, rights-note and availability filters.
+- Listed eight existing collections with accurate scope counts, edition/language/source notes and delivery labels. The Taman view adds no book text or cover images.
+- Reused the existing local book/chapter browser. Clarified that included text enters the service-worker cache after a successful fetch; the files are allowlisted but not pre-cached in the install-time app shell.
+- Added unit and browser tests, source/rights notes, and a design record. The Chromium browser job now exports 375px and 1440px Playwright screenshots as an artifact for visual review.
+
+### Verification
+- **PASS** — `npm run build` completed. It emitted the existing >500 KB app-shell warning; the prior checked-in `app/app.js` was 509,420 bytes and the regenerated file is 510,288 bytes.
+- **PASS** — `npm test`: 104 tests passed, including data-count, source-rights-note, and PWA-cache-allowlist checks for Taman Bacaan.
+- **PASS** — `npm run test:types`.
+- **PASS** — `npm run typecheck`.
+- **PASS** — `git diff --check`.
+- **NOT TESTED locally** — `npm run test:browser -- tests/browser/reading-garden.spec.ts --project=chromium` could not launch: the Playwright Chromium executable is not installed in this workspace. No page assertion ran.
+- **PENDING** — PR CI on the new commit must run Chromium, Firefox, all WebKit shards, and the enabled-service-worker suite; inspect the uploaded screenshots before marking browser QA passed.
+
+### Next action
+Push this verified build and test change to PR #5, review the real-browser results and captures, then continue with the optional pack lifecycle and a rights-validated pack pilot. Do not merge or deploy as part of this step.

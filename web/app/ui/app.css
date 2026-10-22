@@ -469,6 +469,42 @@ button, input { font: inherit; }
 .discover-sources .mantine-Text-root:not(.page-eyebrow) { color: var(--color-muted); font-size: 12px; line-height: 1.6; }
 .discover-sources .mantine-Button-root { justify-self: start; padding-left: 0; }
 .catalog-explorer { display: grid; gap: 26px; }
+.discovery-lens-switch { display: inline-flex; width: fit-content; max-width: 100%; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper-soft); }
+.discovery-lens-switch button { min-height: 42px; padding: 0 15px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--color-muted); cursor: pointer; font: inherit; font-size: 12px; font-weight: 620; }
+.discovery-lens-switch button[aria-pressed="true"] { border-color: var(--color-rule); background: var(--color-paper-raised); color: var(--color-ink); box-shadow: 0 2px 8px var(--color-shadow); }
+.discovery-lens-switch button:focus-visible, .reading-garden-categories button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.reading-garden { display: grid; min-width: 0; gap: 17px; }
+.reading-garden-intro { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.reading-garden-intro > div { min-width: 0; }
+.reading-garden-intro .mantine-Title-root { margin: 4px 0 6px; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(23px, 2.3vw, 32px); font-weight: 470; letter-spacing: -.04em; }
+.reading-garden-intro .mantine-Text-root:not(.page-eyebrow) { max-width: 680px; color: var(--color-muted); font-size: 13px; line-height: 1.6; }
+.reading-garden-total { flex: 0 0 auto; color: var(--color-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.reading-garden-filters { display: grid; min-width: 0; grid-template-columns: minmax(210px, 1.6fr) repeat(4, minmax(125px, 1fr)); align-items: end; gap: 10px; padding: 14px; border: 1px solid var(--color-rule); border-radius: 17px; background: var(--color-paper-raised); }
+.reading-garden-filters > * { min-width: 0; }
+.reading-garden-filters .mantine-Input-input { min-height: 42px; }
+.reading-garden-categories { display: flex; min-width: 0; flex-wrap: wrap; gap: 7px; }
+.reading-garden-categories button { min-height: 40px; padding: 0 13px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper-raised); color: var(--color-muted); cursor: pointer; font: inherit; font-size: 11px; font-weight: 590; }
+.reading-garden-categories button[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); color: var(--color-ink); }
+.reading-garden-result-count { margin: 0; color: var(--color-muted); font-size: 11px; }
+.reading-garden-grid { min-width: 0; }
+.reading-garden-card { display: grid; min-width: 0; align-content: start; gap: 12px; border-color: var(--color-rule); background: var(--color-paper-raised); box-shadow: 0 4px 14px var(--color-shadow); }
+.reading-garden-card-heading { display: grid; min-width: 0; grid-template-columns: 34px minmax(0, 1fr); align-items: start; gap: 11px; }
+.reading-garden-mark { display: grid; width: 34px; height: 38px; place-items: center; border: 1px solid var(--color-rule); border-radius: 10px 8px 8px 10px; background: var(--color-paper); color: var(--color-accent); }
+.reading-garden-card-heading .page-eyebrow { margin: 1px 0 4px; font-size: 9px; }
+.reading-garden-card-heading .mantine-Title-root { overflow-wrap: anywhere; margin: 0; color: var(--color-ink); font-family: var(--font-display); font-size: 19px; font-weight: 520; letter-spacing: -.025em; line-height: 1.2; }
+.reading-garden-description { min-height: 42px; color: var(--color-muted); font-size: 12px; line-height: 1.55; }
+.reading-garden-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.reading-garden-badges span { padding: 5px 8px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper); color: var(--color-ink); font-size: 9px; line-height: 1.25; }
+.reading-garden-metadata { display: grid; gap: 0; margin: 0; border-top: 1px solid var(--color-rule); }
+.reading-garden-metadata > div { display: grid; min-width: 0; grid-template-columns: 96px minmax(0, 1fr); gap: 9px; padding: 7px 0; border-bottom: 1px solid var(--color-rule); }
+.reading-garden-metadata dt { color: var(--color-muted); font-size: 10px; }
+.reading-garden-metadata dd { min-width: 0; margin: 0; color: var(--color-ink); font-size: 10px; line-height: 1.45; overflow-wrap: anywhere; }
+.reading-garden-access-note { color: var(--color-muted); font-size: 10px; line-height: 1.5; }
+.reading-garden-actions { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; }
+.reading-garden-actions .mantine-Button-root { min-height: 40px; }
+.reading-garden-source-link { display: inline-flex; min-height: 40px; align-items: center; gap: 5px; padding-inline: 4px; font-size: 11px; }
+.reading-garden-empty { display: grid; justify-items: start; gap: 9px; border-color: var(--color-rule); background: var(--color-paper-raised); }
+.reading-garden-footnote { max-width: 920px; margin: 0; color: var(--color-muted); font-size: 10px; line-height: 1.6; }
 .catalog-heading-row, .catalog-section-heading { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; }
 .catalog-heading-row .mantine-Title-root, .catalog-section-heading .mantine-Title-root { margin-top: 5px; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(22px, 2.2vw, 30px); font-weight: 470; letter-spacing: -.04em; }
 .catalog-heading-row .page-description { max-width: 680px; }
@@ -783,6 +819,10 @@ button, input { font: inherit; }
   .catalog-explorer { gap: 20px; }
   .catalog-heading-row, .catalog-section-heading { align-items: flex-start; }
   .catalog-heading-row { flex-direction: column; gap: 8px; }
+  .reading-garden-intro { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .reading-garden-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 11px; }
+  .reading-garden-search { grid-column: 1 / -1; }
+  .reading-garden-actions .mantine-Button-root { flex: 1 1 155px; }
   .catalog-section-heading { flex-wrap: wrap; gap: 8px 12px; }
   .catalog-section-heading > div { min-width: 0; flex: 1 1 100%; }
   .catalog-section-heading > .catalog-results-tools { width: 100%; flex: 0 0 auto; justify-content: space-between; gap: 8px; }
@@ -809,6 +849,12 @@ button, input { font: inherit; }
   .reader-book-info-list > div { grid-template-columns: 86px minmax(0, 1fr); gap: 7px; }
 }
 .settings-panel .mantine-Select-root { max-width: 460px; }
+@media (max-width: 420px) {
+  .discovery-lens-switch { width: 100%; }
+  .discovery-lens-switch button { flex: 1 1 auto; padding-inline: 9px; }
+  .reading-garden-filters { grid-template-columns: minmax(0, 1fr); }
+  .reading-garden-search { grid-column: auto; }
+}
 .settings-panel .mantine-Switch-root { padding: 2px 0; }
 .settings-panel .mantine-Switch-track { border-color: var(--color-rule); background: var(--color-paper-soft); }
 .settings-panel .mantine-Switch-track[data-checked] { border-color: var(--color-accent); background: var(--color-accent); }
