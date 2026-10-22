@@ -1,6 +1,6 @@
 // Generated from app/site/viewer-sw.ts by npm run build. Do not edit.
 const worker = self;
-const VERSION = "0.9.0-beta.8", CACHE = "sela-viewer-sela-bookshelf-0.9.0-beta.8-e88c22d63f953dcf", ROOT = new URL("./", worker.location.href);
+const VERSION = "0.9.0-beta.8", CACHE = "sela-viewer-sela-bookshelf-0.9.0-beta.8-7d675f20dd972b01", ROOT = new URL("./", worker.location.href);
 const local = (path) => new URL(path, ROOT).href;
 let allowed;
 async function assetList() {

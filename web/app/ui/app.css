@@ -1289,3 +1289,60 @@ button, input { font: inherit; }
     white-space: normal;
   }
 }
+
+/* Taman Bacaan: curated reading collections inside Discover, plus its reader. */
+.discover-lens { display: flex; justify-content: center; padding: 14px 16px 0; }
+.discover-lens .mantine-SegmentedControl-root { max-width: 100%; }
+.discover-lens .mantine-SegmentedControl-label { min-height: 44px; display: grid; place-items: center; padding-inline: 16px; }
+.taman-landing { display: grid; gap: 18px; align-content: start; }
+.taman-intro { display: grid; gap: 8px; max-width: 760px; }
+.taman-intro .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(27px,4vw,40px); font-weight: 470; letter-spacing: -.035em; line-height: 1.12; }
+.taman-lede { margin: 0; color: var(--color-muted); font-family: var(--font-display); font-size: 17px; line-height: 1.65; }
+.taman-search { margin-top: 8px; max-width: 520px; }
+.taman-search .mantine-Input-input { min-height: 44px; }
+.taman-status:empty { display: none; }
+.taman-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.taman-card { min-width: 0; background: var(--color-paper-raised); border-color: var(--color-rule); box-shadow: 0 4px 14px var(--color-shadow); }
+.taman-card .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 23px; font-weight: 500; letter-spacing: -.02em; }
+.taman-card-text { margin-top: 6px; color: var(--color-muted); font-size: 14px; line-height: 1.6; }
+.taman-facts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px 14px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--color-rule); }
+.taman-facts div { min-width: 0; }
+.taman-facts dt { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.taman-facts dd { margin: 2px 0 0; overflow-wrap: anywhere; color: var(--color-ink); font-size: 13px; }
+.taman-sources { margin: 12px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.6; }
+.taman-progress { display: grid; gap: 4px; margin-top: 12px; }
+.taman-empty { color: var(--color-muted); }
+.taman-card .mantine-Button-root { min-height: 44px; }
+.taman-content { max-width: 760px; }
+.taman-index { display: grid; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+.taman-index a { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 12px; min-height: 64px; padding: 14px 16px; border: 1px solid var(--color-rule); border-radius: 16px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; }
+.taman-index a:hover, .taman-index a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.taman-index-order { color: var(--color-accent); font-size: 11px; font-variant-numeric: tabular-nums; }
+.taman-index-name { display: grid; min-width: 0; gap: 2px; }
+.taman-index-name strong { font-family: var(--font-display); font-size: 19px; font-weight: 520; }
+.taman-index-name small { overflow: hidden; color: var(--color-muted); font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.taman-index-meta, .taman-arabic { color: var(--color-ink); font-family: "Noto Naskh Arabic", Amiri, "Traditional Arabic", serif; font-size: 24px; }
+.taman-planned { margin: 14px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.6; }
+.taman-article { max-width: 68ch; }
+.taman-article .page-eyebrow a { color: inherit; }
+.taman-article-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 6px; }
+.taman-article-heading .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(31px,5vw,46px); font-weight: 470; letter-spacing: -.04em; line-height: 1.1; }
+.taman-arabic { font-size: clamp(26px,4vw,34px); }
+.taman-section { margin-top: 30px; }
+.taman-section h3 { margin: 0 0 8px; color: var(--color-ink); font-family: var(--font-display); font-size: 22px; font-weight: 520; }
+.taman-section p { margin: 0 0 14px; color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.8; }
+.taman-section p.taman-refs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 4px 0 0; font-family: inherit; font-size: 12px; line-height: 1.4; }
+.taman-refs > span { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.taman-refs a, .taman-related a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1px solid var(--color-rule); border-radius: 999px; background: var(--color-paper-raised); color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.taman-refs a:hover, .taman-refs a:focus-visible, .taman-related a:hover, .taman-related a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.taman-note, .taman-accuracy { margin-top: 26px; padding: 16px 18px; border-left: 2px solid var(--color-accent); border-radius: 0 14px 14px 0; background: var(--color-paper-raised); }
+.taman-accuracy { border-left-color: var(--color-rule); }
+.taman-note h3, .taman-accuracy h3 { margin: 0 0 6px; color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.taman-note p, .taman-accuracy p { margin: 0 0 8px; color: var(--color-ink); font-size: 14px; line-height: 1.7; }
+.taman-related { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 22px 0 0; }
+.taman-related > span { color: var(--color-muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.taman-position { color: var(--color-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.taman-screen .faith-reader-controls .mantine-Button-root { min-height: 44px; max-width: 100%; }
+.taman-screen .faith-reader-controls .mantine-Button-label { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .taman-facts { grid-template-columns: 1fr; } .taman-index a { grid-template-columns: 28px minmax(0,1fr); } .taman-index-meta { display: none; } }
+@media (prefers-reduced-motion: reduce) { .taman-index a { transition: none; } }

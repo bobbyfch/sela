@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
 import {
   ActionIcon, Alert, Anchor, Badge, Button, Card, Center, Checkbox,
   Divider, FileButton, Grid, Group, Menu, Modal, Paper, Progress, SegmentedControl,
@@ -25,6 +25,7 @@ import { defaultReadingMode, formatDuration, initials, readingStatus, type AppPr
 import { copy, useWorkspace } from './workspace.tsx';
 import { loadReaderSdk } from './reader-sdk.ts';
 
+const TamanBacaan = lazy(() => import('./features/taman/TamanBacaan.tsx'));
 const ShelfRoom = lazy(() => import('./shelf-room.tsx'));
 const CatalogExplorer = lazy(() => import('./features/discovery/CatalogExplorer.tsx').then(module => ({ default: module.CatalogExplorer })));
 const LibraryToolsScreen = lazy(() => import('./features/personal/LibraryToolsScreen.tsx').then(module => ({ default: module.LibraryToolsScreen })));
@@ -411,7 +412,16 @@ function BookListRow({ book, onOpen, onRemove, selection }: { book: LibraryBook;
 }
 
 export function DiscoverScreen() {
-  return <Suspense fallback={<div className="page-shell"><Skeleton height={40} width="42%" radius="md" /><Skeleton mt="md" height={160} radius="xl" /><Skeleton mt="md" height={240} radius="xl" /></div>}><CatalogExplorer /></Suspense>;
+  const { lang } = useWorkspace();
+  const [params, setParams] = useSearchParams();
+  const lens = params.get('lens') === 'taman' ? 'taman' : 'explore';
+  const fallback = <div className="page-shell"><Skeleton height={40} width="42%" radius="md" /><Skeleton mt="md" height={160} radius="xl" /><Skeleton mt="md" height={240} radius="xl" /></div>;
+  return <>
+    <div className="discover-lens">
+      <SegmentedControl aria-label={copy(lang, 'Discover view', 'Tampilan Jelajah')} value={lens} onChange={value => setParams(value === 'taman' ? { lens: 'taman' } : {}, { replace: true })} data={[{ label: copy(lang, 'Explore sources', 'Jelajah sumber'), value: 'explore' }, { label: copy(lang, 'Reading garden', 'Taman Bacaan'), value: 'taman' }]} />
+    </div>
+    <Suspense fallback={fallback}>{lens === 'taman' ? <TamanBacaan /> : <CatalogExplorer />}</Suspense>
+  </>;
 }
 
 export function ProgressScreen() {

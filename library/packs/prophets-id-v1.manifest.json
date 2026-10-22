@@ -1,0 +1,22 @@
+{
+  "id": "sela-prophets-id-v1",
+  "schemaVersion": 1,
+  "kind": "editorial-collection",
+  "status": "pilot",
+  "category": "faith-stories",
+  "language": "id",
+  "title": { "id": "Kisah 25 Nabi", "en": "Stories of the 25 Prophets" },
+  "description": {
+    "id": "Ringkasan naratif yang disusun SELA dari ayat-ayat Al-Qur’an yang dirujuk. Tahap rintisan: 5 dari 25 nabi, belum ditelaah ulama.",
+    "en": "Narrative summaries written by SELA from the cited Quran passages. Pilot stage: 5 of 25 prophets, not yet reviewed by scholars."
+  },
+  "edition": "0.1.0",
+  "itemCount": 5,
+  "plannedItemCount": 25,
+  "source": [
+    { "label": "Al-Qur’an — Kementerian Agama RI (LPMQ)", "url": "https://quran.kemenag.go.id/" },
+    { "label": "Kisah Para Nabi — Pustaka Lajnah Kemenag", "url": "https://pustakalajnah.kemenag.go.id/detail/35" }
+  ],
+  "license": { "code": "MIT", "name": "MIT (teks editorial SELA)", "noticePath": "licenses/sela-prophets-NOTICE.md" },
+  "payload": { "path": "prophets-id-v1.json" }
+}

@@ -1,0 +1,368 @@
+{
+  "schemaVersion": 1,
+  "packId": "sela-prophets-id-v1",
+  "articles": [
+    {
+      "slug": "nuh",
+      "order": 3,
+      "name": "Nabi Nuh",
+      "arabic": "نُوح",
+      "lede": "Seorang rasul yang menyeru kaumnya dalam waktu sangat panjang, membuat bahtera atas petunjuk wahyu, dan diuji lewat anaknya sendiri.",
+      "sections": [
+        {
+          "heading": "Seruan yang tidak berhenti",
+          "paragraphs": [
+            "Nuh diutus kepada kaumnya dengan seruan yang sama seperti rasul-rasul lain: sembahlah Allah, tidak ada tuhan bagimu selain Dia. Ia juga memperingatkan mereka tentang azab pada hari yang besar.",
+            "Al-Qur’an menggambarkan Nuh berdakwah siang dan malam, terang-terangan maupun diam-diam. Setiap kali ia mengajak mereka memohon ampun, mereka menutup telinga dengan jari dan menyelimuti diri dengan pakaian, lalu bersikeras dalam kesombongan. Para pemuka kaum menganggap pengikut Nuh hanyalah orang-orang rendahan, dan menolak untuk duduk setara dengan mereka.",
+            "Al-Qur’an menyebut Nuh tinggal di tengah kaumnya selama seribu tahun kurang lima puluh tahun."
+          ],
+          "refs": [
+            { "surah": 7, "from": 59, "to": 62 },
+            { "surah": 11, "from": 25, "to": 31 },
+            { "surah": 71, "from": 1, "to": 12 },
+            { "surah": 29, "from": 14 }
+          ]
+        },
+        {
+          "heading": "Perintah membuat bahtera",
+          "paragraphs": [
+            "Setelah tahu bahwa tidak akan ada lagi yang beriman selain mereka yang sudah beriman, Nuh diperintahkan membuat bahtera di bawah pengawasan dan wahyu Allah. Setiap kali pemuka kaumnya lewat, mereka mengejeknya. Nuh menjawab bahwa suatu saat ia pula yang akan menertawakan mereka.",
+            "Tanda datangnya perintah itu disebut dengan kata ‘at-tannur’ yang memancarkan air. Ulama tafsir berbeda pendapat tentang makna persisnya, sehingga bacaan ini tidak memilih satu tafsir saja. Nuh diperintahkan membawa sepasang dari setiap jenis, keluarganya (kecuali yang sudah ditetapkan binasa), dan orang-orang beriman yang jumlahnya sedikit."
+          ],
+          "refs": [
+            { "surah": 11, "from": 36, "to": 40 },
+            { "surah": 23, "from": 27 }
+          ]
+        },
+        {
+          "heading": "Air bah dan berlabuhnya bahtera",
+          "paragraphs": [
+            "Air datang dari langit dan memancar dari bumi hingga bertemu dalam satu ketetapan. Bahtera berlayar membawa mereka di tengah gelombang setinggi gunung, dengan ucapan: ‘Dengan nama Allah tempat berlayar dan berlabuhnya.’",
+            "Akhirnya terdengar perintah agar bumi menelan airnya dan langit berhenti. Urusan diselesaikan, dan bahtera berlabuh di atas gunung Judi. Al-Qur’an tidak menyebut lokasi geografis Judi secara rinci, dan tidak menyebut ukuran bahtera."
+          ],
+          "refs": [
+            { "surah": 54, "from": 9, "to": 15 },
+            { "surah": 11, "from": 41, "to": 44 }
+          ]
+        },
+        {
+          "heading": "Doa untuk seorang anak",
+          "paragraphs": [
+            "Di tengah gelombang, Nuh memanggil putranya yang terpisah dari mereka dan mengajaknya naik. Anak itu menolak, mengatakan akan berlindung ke gunung. Gelombang memisahkan keduanya dan ia termasuk yang ditenggelamkan.",
+            "Nuh lalu berdoa mengingat janji Allah tentang keluarganya. Allah menjawab bahwa anak itu bukan bagian dari keluarganya, karena perbuatannya tidak saleh, dan melarang Nuh memohon sesuatu yang ia tidak punya ilmu tentangnya. Nuh segera memohon ampun dan perlindungan. Kisah ditutup dengan ucapan keselamatan dan keberkahan bagi Nuh serta umat-umat yang bersamanya."
+          ],
+          "refs": [
+            { "surah": 11, "from": 42, "to": 48 }
+          ]
+        }
+      ],
+      "notes": [
+        "Catatan SELA (bukan wahyu): kisah Nuh menggabungkan ketekunan dakwah dengan batas harapan manusia. Nuh berusaha sampai akhir, tetapi hasilnya tetap berada di tangan Allah.",
+        "Catatan SELA (bukan wahyu): bagian tentang putra Nuh menunjukkan bahwa kedekatan keluarga tidak otomatis menjadi keselamatan. Ukurannya adalah iman dan amal."
+      ],
+      "accuracy": "Bacaan ini hanya memakai keterangan yang ada dalam ayat yang dirujuk. Jumlah orang di dalam bahtera, ukuran bahtera, dan letak persis gunung Judi tidak dirinci dalam Al-Qur’an. Tafsir ‘at-tannur’ berbeda-beda di kalangan ulama. Ini draf rintisan dan belum ditelaah ulama.",
+      "related": ["ibrahim"]
+    },
+    {
+      "slug": "ibrahim",
+      "order": 6,
+      "name": "Nabi Ibrahim",
+      "arabic": "إِبْرَاهِيم",
+      "lede": "Dari pertanyaan kepada ayahnya hingga doa di dekat Baitullah: perjalanan seorang hamba yang disebut Al-Qur’an sebagai teladan dan kesayangan Allah.",
+      "sections": [
+        {
+          "heading": "Bertanya kepada ayah dan kaumnya",
+          "paragraphs": [
+            "Ibrahim bertanya kepada ayahnya dengan sopan: mengapa menyembah sesuatu yang tidak mendengar, tidak melihat, dan tidak dapat menolongnya? Ia berkata bahwa telah datang kepadanya ilmu yang belum sampai kepada ayahnya, lalu mengajaknya mengikuti jalan yang lurus.",
+            "Ayahnya mengancam akan merajamnya dan menyuruhnya pergi. Ibrahim menjawab dengan salam, berjanji memohonkan ampun bagi ayahnya, dan menjauh dari mereka bersama apa yang mereka sembah."
+          ],
+          "refs": [
+            { "surah": 19, "from": 41, "to": 48 },
+            { "surah": 26, "from": 69, "to": 82 }
+          ]
+        },
+        {
+          "heading": "Mencari Tuhan lewat bintang, bulan, dan matahari",
+          "paragraphs": [
+            "Al-Qur’an menceritakan Ibrahim mengamati bintang, bulan, dan matahari. Setiap kali benda itu terbenam, ia berkata bahwa ia tidak menyukai yang tenggelam. Pada akhirnya ia menyatakan berlepas diri dari semua yang mereka persekutukan dan menghadapkan wajahnya kepada Pencipta langit dan bumi.",
+            "Para penafsir berbeda pandangan apakah bagian ini merupakan pencarian pribadi atau bantahan argumentatif terhadap kaumnya. Bacaan ini tidak memutuskan salah satunya."
+          ],
+          "refs": [
+            { "surah": 6, "from": 74, "to": 79 }
+          ]
+        },
+        {
+          "heading": "Berhala dan api",
+          "paragraphs": [
+            "Ketika kaumnya pergi, Ibrahim menghancurkan berhala mereka kecuali yang terbesar. Saat ditanya siapa pelakunya, ia mengarahkan mereka untuk bertanya kepada berhala itu sendiri jika mereka dapat berbicara. Mereka sempat tersadar, lalu kembali pada kesombongan dan mengakui bahwa berhala itu memang tidak berbicara.",
+            "Mereka memutuskan membakarnya. Allah berfirman: ‘Wahai api, jadilah dingin dan selamatkan Ibrahim.’ Mereka berniat jahat, tetapi Allah menjadikan mereka yang paling merugi."
+          ],
+          "refs": [
+            { "surah": 21, "from": 51, "to": 70 }
+          ]
+        },
+        {
+          "heading": "Keturunan, tamu, dan ujian penyembelihan",
+          "paragraphs": [
+            "Ibrahim menyatakan akan pergi menuju Tuhannya dan memohon dikaruniai anak yang saleh. Ia diberi kabar tentang seorang anak yang sangat sabar. Para malaikat juga datang sebagai tamu dan menyampaikan kabar gembira tentang Ishaq; Ibrahim dan istrinya heran karena usia mereka yang telah lanjut.",
+            "Ketika anak itu telah tumbuh, Ibrahim bermimpi menyembelihnya. Ia menyampaikannya kepada anaknya, dan anak itu menjawab agar ayahnya melaksanakan apa yang diperintahkan. Setelah keduanya berserah, Allah memanggil Ibrahim bahwa ia telah membenarkan mimpi itu, dan menebus anak itu dengan sembelihan yang besar. Al-Qur’an tidak menyebut nama anak dalam ayat-ayat ini."
+          ],
+          "refs": [
+            { "surah": 37, "from": 99, "to": 111 },
+            { "surah": 11, "from": 69, "to": 73 }
+          ]
+        },
+        {
+          "heading": "Meninggikan fondasi Baitullah dan berdoa",
+          "paragraphs": [
+            "Allah menguji Ibrahim dengan beberapa kalimat, lalu menjadikannya imam bagi manusia. Ia dan Ismail diperintahkan membersihkan rumah itu bagi yang berthawaf, beriktikaf, rukuk, dan sujud, lalu keduanya meninggikan fondasinya sambil berdoa agar amal mereka diterima.",
+            "Ibrahim berdoa agar negeri itu aman, agar keturunannya dijauhkan dari penyembahan berhala, dan agar hati sebagian manusia condong kepada mereka. Ia juga meminta agar diutus seorang rasul dari kalangan keturunan mereka."
+          ],
+          "refs": [
+            { "surah": 2, "from": 124, "to": 129 },
+            { "surah": 14, "from": 35, "to": 41 }
+          ]
+        }
+      ],
+      "notes": [
+        "Catatan SELA (bukan wahyu): Ibrahim ditampilkan Al-Qur’an bukan hanya sebagai penantang berhala, tetapi juga sebagai ayah yang berdoa, tamu yang menjamu, dan hamba yang pasrah. Satu tokoh, beberapa peran.",
+        "Catatan SELA (bukan wahyu): dialog Ibrahim dengan ayahnya selalu santun, bahkan ketika ia diancam."
+      ],
+      "accuracy": "Al-Qur’an tidak menyebut nama anak yang disembelih; sebagian ulama menyebut Ismail, sebagian lain Ishaq, sehingga bacaan ini tidak menetapkan nama. Perdebatan Ibrahim dengan seorang penguasa (Al-Baqarah 2:258) dan kisah empat ekor burung (2:260) tidak dibahas pada draf ini. Ini draf rintisan dan belum ditelaah ulama.",
+      "related": ["nuh", "musa"]
+    },
+    {
+      "slug": "yusuf",
+      "order": 11,
+      "name": "Nabi Yusuf",
+      "arabic": "يُوسُف",
+      "lede": "Kisah yang oleh Al-Qur’an disebut sebagai kisah yang terbaik: mimpi seorang anak, sumur, penjara, kekuasaan, dan pemaafan.",
+      "sections": [
+        {
+          "heading": "Mimpi dan iri hati",
+          "paragraphs": [
+            "Yusuf menceritakan kepada ayahnya mimpi tentang sebelas bintang, matahari, dan bulan yang bersujud kepadanya. Yaqub memahami bahwa anaknya akan mendapat kedudukan tinggi, lalu menasihatinya agar tidak menceritakan mimpi itu kepada saudara-saudaranya karena mereka mungkin menyusun tipu daya.",
+            "Saudara-saudara Yusuf merasa ayah mereka lebih mencintai Yusuf dan adiknya. Mereka sepakat menyingkirkannya. Salah seorang dari mereka mengusulkan agar Yusuf tidak dibunuh, melainkan dimasukkan ke dasar sumur."
+          ],
+          "refs": [
+            { "surah": 12, "from": 3, "to": 10 }
+          ]
+        },
+        {
+          "heading": "Sumur dan perjalanan ke Mesir",
+          "paragraphs": [
+            "Mereka membujuk ayah mereka agar mengizinkan Yusuf pergi bermain, lalu melemparkannya ke sumur. Malam harinya mereka pulang sambil menangis dan membawa baju Yusuf yang berlumur darah palsu. Yaqub menjawab bahwa jiwa mereka telah memperindah suatu perbuatan, dan bahwa kesabaran yang baik adalah jalannya.",
+            "Sebuah kafilah datang, menurunkan timba, dan menemukan Yusuf. Ia dijual dengan harga murah. Yang membelinya di Mesir berkata kepada istrinya agar memperlakukan Yusuf dengan baik."
+          ],
+          "refs": [
+            { "surah": 12, "from": 11, "to": 21 }
+          ]
+        },
+        {
+          "heading": "Godaan, fitnah, dan penjara",
+          "paragraphs": [
+            "Ketika dewasa, Yusuf diberi hikmah dan ilmu. Istri penguasa di rumah itu menggodanya. Yusuf berlindung kepada Allah dan lari menuju pintu; baju Yusuf robek dari belakang, dan hal itu menjadi petunjuk bahwa ia tidak bersalah. Kabar itu menyebar di kalangan perempuan kota.",
+            "Yusuf berkata bahwa penjara lebih ia sukai daripada apa yang mereka ajak ia lakukan, dan memohon agar Allah memalingkan tipu daya itu darinya. Ia pun dimasukkan ke penjara."
+          ],
+          "refs": [
+            { "surah": 12, "from": 22, "to": 35 }
+          ]
+        },
+        {
+          "heading": "Tafsir mimpi dan keluar dari penjara",
+          "paragraphs": [
+            "Di penjara dua pemuda mendatangi Yusuf dan menceritakan mimpi mereka. Sebelum menjawab, Yusuf lebih dulu menyampaikan ajaran tauhid yang ia pegang. Ia lalu menafsirkan mimpi keduanya, dan meminta salah satunya mengingatkan tuannya tentang dirinya; namun orang itu lupa.",
+            "Bertahun-tahun kemudian raja bermimpi melihat tujuh sapi gemuk dimakan tujuh sapi kurus. Yusuf menafsirkannya sebagai tujuh tahun masa subur lalu tujuh tahun paceklik, dan menyarankan agar hasil panen disimpan pada tangkainya. Ketika dipanggil keluar, Yusuf meminta agar perkara perempuan-perempuan yang melukai tangan mereka diperiksa lebih dulu, dan kebersihan namanya pun dinyatakan."
+          ],
+          "refs": [
+            { "surah": 12, "from": 36, "to": 53 }
+          ]
+        },
+        {
+          "heading": "Pengelola perbendaharaan dan pertemuan kembali",
+          "paragraphs": [
+            "Yusuf meminta dijadikan pengelola perbendaharaan negeri. Saat paceklik tiba, saudara-saudaranya datang membeli gandum. Yusuf mengenali mereka, sedangkan mereka tidak mengenalinya. Yaqub, yang kehilangan Yusuf dan kemudian saudaranya yang lain, menangis hingga matanya memutih karena sedih, tetapi berkata bahwa ia hanya mengadukan kesusahannya kepada Allah dan melarang anak-anaknya berputus asa dari rahmat-Nya.",
+            "Yusuf akhirnya memperkenalkan dirinya. Kepada saudara-saudaranya ia berkata bahwa tidak ada celaan atas mereka pada hari itu, dan memohon ampun bagi mereka. Baju Yusuf diletakkan di wajah ayahnya, lalu penglihatan Yaqub kembali. Keluarga itu berkumpul di Mesir, dan Yusuf berkata bahwa inilah takwil mimpinya dahulu."
+          ],
+          "refs": [
+            { "surah": 12, "from": 54, "to": 101 }
+          ]
+        }
+      ],
+      "notes": [
+        "Catatan SELA (bukan wahyu): kata ‘sabar yang baik’ (sabrun jamil) diucapkan Yaqub dua kali. Dalam kisah ini kesabaran tidak berarti pasif; Yaqub tetap mencari kabar anaknya dan tetap berharap kepada Allah.",
+        "Catatan SELA (bukan wahyu): ketika memiliki kekuasaan atas saudara-saudaranya, Yusuf memilih memaafkan, bukan membalas."
+      ],
+      "accuracy": "Al-Qur’an tidak menyebut nama istri penguasa dan tidak menyebut nama adik Yusuf; nama-nama yang beredar di masyarakat berasal dari tradisi tafsir dan riwayat di luar Al-Qur’an. Urutan waktu antar-peristiwa hanya diikuti sejauh yang tersirat dari susunan ayat. Episode piala raja (12:70–79) dan beberapa rincian lain tidak diuraikan di draf ini. Ini draf rintisan dan belum ditelaah ulama.",
+      "related": ["ibrahim"]
+    },
+    {
+      "slug": "musa",
+      "order": 14,
+      "name": "Nabi Musa",
+      "arabic": "مُوسَىٰ",
+      "lede": "Nabi yang paling sering disebut dalam Al-Qur’an: seorang bayi yang diselamatkan, pelarian ke Madyan, panggilan di lembah suci, dan perjalanan bersama Bani Israil.",
+      "sections": [
+        {
+          "heading": "Bayi yang dihanyutkan",
+          "paragraphs": [
+            "Fir’aun berlaku sewenang-wenang, memecah belah penduduknya, dan menindas satu golongan di antara mereka. Allah mewahyukan kepada ibu Musa agar menyusuinya, dan jika khawatir, menghanyutkannya ke sungai tanpa takut atau bersedih karena Allah akan mengembalikannya.",
+            "Musa ditemukan keluarga Fir’aun. Hati ibunya menjadi kosong dan hampir saja ia menyingkap rahasianya, tetapi Allah menguatkan hatinya. Atas arahan ibunya, saudari Musa mengikuti dari jauh dan menawarkan seorang penyusu; dengan cara itu Musa kembali kepada ibunya."
+          ],
+          "refs": [
+            { "surah": 28, "from": 3, "to": 13 },
+            { "surah": 20, "from": 37, "to": 40 }
+          ]
+        },
+        {
+          "heading": "Kesalahan yang tidak disengaja dan pergi ke Madyan",
+          "paragraphs": [
+            "Setelah dewasa, Musa diberi hikmah dan ilmu. Dalam sebuah perselisihan ia memukul seorang laki-laki hingga meninggal. Ia segera mengakui kesalahannya dan memohon ampun, lalu Allah mengampuninya.",
+            "Ketika diperingatkan bahwa para pembesar sedang membicarakan dirinya, Musa keluar dari kota dengan rasa takut dan menuju Madyan. Di sana ia menolong dua perempuan memberi minum ternak mereka, lalu berdoa bahwa ia membutuhkan kebaikan apa pun yang diturunkan Allah kepadanya. Ia kemudian bekerja bagi ayah mereka selama beberapa tahun."
+          ],
+          "refs": [
+            { "surah": 28, "from": 14, "to": 28 }
+          ]
+        },
+        {
+          "heading": "Dipanggil di lembah suci",
+          "paragraphs": [
+            "Dalam perjalanan pulang, Musa melihat api dan berniat membawa sebuah bara atau mencari petunjuk. Di sana ia dipanggil: ia berada di lembah suci Thuwa, dan diperintahkan melepas kedua terompahnya. Ia mendengar wahyu pertama yang menetapkan tauhid dan salat.",
+            "Tongkatnya berubah menjadi ular, dan tangannya putih bercahaya tanpa cacat ketika dimasukkan ke dalam ketiak. Musa memohon kelapangan dada, kemudahan urusan, dan agar Harun, saudaranya, dijadikan pembantu dalam tugasnya. Permohonan itu dikabulkan."
+          ],
+          "refs": [
+            { "surah": 20, "from": 9, "to": 36 },
+            { "surah": 28, "from": 29, "to": 35 }
+          ]
+        },
+        {
+          "heading": "Menghadapi Fir’aun",
+          "paragraphs": [
+            "Musa dan Harun diperintahkan menemui Fir’aun dan berbicara dengan ucapan yang lemah lembut, siapa tahu ia ingat atau takut. Fir’aun menuduh tanda-tanda itu sebagai sihir dan mengumpulkan para ahli sihirnya pada hari perayaan.",
+            "Ketika tongkat Musa menelan alat-alat sihir mereka, para ahli sihir langsung bersujud dan beriman kepada Tuhan Musa dan Harun. Fir’aun mengancam mereka, tetapi mereka tetap teguh."
+          ],
+          "refs": [
+            { "surah": 20, "from": 43, "to": 73 },
+            { "surah": 26, "from": 10, "to": 51 }
+          ]
+        },
+        {
+          "heading": "Keluar dari Mesir",
+          "paragraphs": [
+            "Musa diperintahkan membawa hamba-hamba Allah pergi pada malam hari. Ketika pasukan Fir’aun menyusul, para pengikutnya berkata bahwa mereka pasti tersusul. Musa menjawab bahwa Tuhannya bersamanya dan akan memberinya petunjuk.",
+            "Musa diperintahkan memukul laut dengan tongkatnya, maka laut terbelah. Fir’aun dan pasukannya ditenggelamkan. Pada detik terakhir Fir’aun menyatakan beriman, tetapi pernyataan itu tidak diterima."
+          ],
+          "refs": [
+            { "surah": 26, "from": 52, "to": 68 },
+            { "surah": 20, "from": 77, "to": 79 },
+            { "surah": 10, "from": 90, "to": 92 }
+          ]
+        },
+        {
+          "heading": "Empat puluh malam dan anak sapi",
+          "paragraphs": [
+            "Allah menetapkan waktu empat puluh malam bagi Musa. Ia menitipkan kaumnya kepada Harun dan berpesan agar memperbaiki keadaan, serta tidak mengikuti jalan orang yang berbuat kerusakan.",
+            "Selama Musa pergi, Bani Israil dibujuk membuat patung anak sapi dari perhiasan; Al-Qur’an menyebut orang yang menyesatkan mereka sebagai as-Samiri. Harun mengingatkan mereka agar tidak mengikuti hal itu. Ketika Musa kembali dan menegur Harun, Harun menjelaskan bahwa ia takut memecah belah Bani Israil. Al-Qur’an juga menyebut pertemuan Musa dengan Allah dan permintaan agar dapat melihat-Nya, yang dijawab dengan hancurnya gunung."
+          ],
+          "refs": [
+            { "surah": 7, "from": 142, "to": 155 },
+            { "surah": 20, "from": 83, "to": 98 }
+          ]
+        }
+      ],
+      "notes": [
+        "Catatan SELA (bukan wahyu): Musa sering digambarkan lemah dan manusiawi: takut, lari, meminta bantuan. Namun itulah yang membuat doanya di Madyan dan di lembah suci terasa dekat.",
+        "Catatan SELA (bukan wahyu): kisah Harun dan anak sapi mengingatkan bahwa tanggung jawab memimpin dapat membawa dilema yang sulit."
+      ],
+      "accuracy": "Nama Fir’aun yang spesifik, tahun kejadian, dan lokasi penyeberangan tidak disebut dalam Al-Qur’an. Perjalanan Musa bersama seorang hamba saleh (Al-Kahfi 18:60–82) tidak dimasukkan pada draf ini. Ini draf rintisan dan belum ditelaah ulama.",
+      "related": ["ibrahim"]
+    },
+    {
+      "slug": "muhammad",
+      "order": 25,
+      "name": "Nabi Muhammad",
+      "arabic": "مُحَمَّد",
+      "lede": "Perkenalan berbasis Al-Qur’an tentang Rasulullah ﷺ: peran, penghiburan, akhlak, dan beberapa peristiwa yang disinggung ayat. Bukan sirah lengkap.",
+      "sections": [
+        {
+          "heading": "Rasul dan penutup para nabi",
+          "paragraphs": [
+            "Al-Qur’an menyebut bahwa Muhammad hanyalah seorang rasul yang sebelumnya telah didahului rasul-rasul lain. Ia juga disebut sebagai utusan Allah dan penutup para nabi. Nama ‘Ahmad’ muncul dalam kabar gembira yang disampaikan Isa kepada Bani Israil.",
+            "Ayat-ayat lain menegaskan bahwa risalahnya ditujukan kepada seluruh manusia."
+          ],
+          "refs": [
+            { "surah": 3, "from": 144 },
+            { "surah": 33, "from": 40 },
+            { "surah": 48, "from": 29 },
+            { "surah": 61, "from": 6 },
+            { "surah": 7, "from": 158 }
+          ]
+        },
+        {
+          "heading": "Wahyu yang diawali dengan ‘bacalah’",
+          "paragraphs": [
+            "Menurut riwayat yang dikenal luas, lima ayat pertama Surah Al-‘Alaq adalah wahyu yang pertama turun. Isinya perintah membaca dengan nama Tuhan yang menciptakan, yang menciptakan manusia dari segumpal darah, dan yang mengajar dengan pena.",
+            "Rincian peristiwa turunnya wahyu di Gua Hira tidak ada pada ayat itu sendiri, tetapi dalam hadis dan literatur sirah. Bacaan ini hanya memakai Al-Qur’an."
+          ],
+          "refs": [
+            { "surah": 96, "from": 1, "to": 5 }
+          ]
+        },
+        {
+          "heading": "Penghiburan di masa sulit",
+          "paragraphs": [
+            "Surah Ad-Duha menegaskan bahwa Tuhannya tidak meninggalkan dan tidak membencinya, dan bahwa akhir lebih baik baginya daripada permulaan. Allah mengingatkan bahwa dahulu ia yatim lalu dilindungi, bingung lalu diberi petunjuk, miskin lalu dicukupkan.",
+            "Surah Al-Insyirah menyebut bahwa dadanya dilapangkan, beban dari punggungnya diringankan, namanya ditinggikan, dan bahwa bersama kesulitan ada kemudahan."
+          ],
+          "refs": [
+            { "surah": 93, "from": 1, "to": 11 },
+            { "surah": 94, "from": 1, "to": 8 }
+          ]
+        },
+        {
+          "heading": "Akhlak dan kasih sayang",
+          "paragraphs": [
+            "Al-Qur’an menyebut bahwa ia berada di atas budi pekerti yang agung dan diutus sebagai rahmat bagi semesta alam. Ia digambarkan sangat berat merasakan penderitaan umatnya, sangat menginginkan keselamatan mereka, dan penyantun serta penyayang terhadap orang-orang beriman.",
+            "Disebutkan pula bahwa karena rahmat Allah ia bersikap lemah lembut kepada mereka. Seandainya kasar dan keras hati, mereka akan menjauh dari sekitarnya."
+          ],
+          "refs": [
+            { "surah": 68, "from": 4 },
+            { "surah": 21, "from": 107 },
+            { "surah": 9, "from": 128 },
+            { "surah": 3, "from": 159 }
+          ]
+        },
+        {
+          "heading": "Beberapa peristiwa yang disinggung ayat",
+          "paragraphs": [
+            "Beberapa peristiwa disinggung langsung dalam Al-Qur’an: rencana makar kaum musyrik terhadapnya, saat ia dan sahabatnya berada di dalam gua dan ia berkata agar sahabatnya tidak bersedih karena Allah bersama mereka, pertolongan di Badar, kemenangan nyata pada Surah Al-Fath, dan datangnya pertolongan serta kemenangan pada Surah An-Nasr.",
+            "Urutan waktu dan rinciannya dijelaskan oleh sirah, bukan oleh ayat-ayat tersebut."
+          ],
+          "refs": [
+            { "surah": 8, "from": 30 },
+            { "surah": 9, "from": 40 },
+            { "surah": 3, "from": 123 },
+            { "surah": 48, "from": 1 },
+            { "surah": 110, "from": 1, "to": 3 }
+          ]
+        },
+        {
+          "heading": "Teladan",
+          "paragraphs": [
+            "Al-Qur’an menyebut bahwa pada diri Rasulullah terdapat teladan yang baik bagi orang yang mengharap Allah dan hari akhir serta banyak berzikir. Ayat-ayat lain mengaitkan ketaatan kepadanya dengan ketaatan kepada Allah, dan meminta umat menerima apa yang ia berikan serta menjauhi apa yang ia larang."
+          ],
+          "refs": [
+            { "surah": 33, "from": 21 },
+            { "surah": 4, "from": 80 },
+            { "surah": 59, "from": 7 }
+          ]
+        }
+      ],
+      "notes": [
+        "Catatan SELA (bukan wahyu): urutan di atas disusun menurut tema, bukan kronologi. Untuk riwayat hidup yang bertanggal dan rinci, rujuklah karya sirah serta hadis berotoritas."
+      ],
+      "accuracy": "Artikel ini sengaja membatasi diri pada apa yang disebut atau disinggung Al-Qur’an dan tidak menggantikan sirah. Keterangan bahwa Al-‘Alaq 1–5 adalah wahyu pertama berasal dari riwayat di luar ayat itu sendiri. Penafsiran terhadap setiap ayat bisa lebih luas daripada ringkasan di sini. Ini draf rintisan dan belum ditelaah ulama.",
+      "related": ["ibrahim", "musa"]
+    }
+  ]
+}

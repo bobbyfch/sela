@@ -21,6 +21,7 @@ const SettingsScreen = lazy(() => import('./screens.tsx').then(module => ({ defa
 const SettingsDetail = lazy(() => import('./screens.tsx').then(module => ({ default: module.SettingsDetail })));
 const ReaderScreen = lazy(() => import('./screens.tsx').then(module => ({ default: module.ReaderScreen })));
 const FaithReaderScreen = lazy(() => import('./features/faith/FaithReaderScreen.tsx'));
+const TamanReaderScreen = lazy(() => import('./features/taman/TamanReaderScreen.tsx'));
 
 const sections = [
   { to: '/', en: 'Today', id: 'Hari ini', icon: BookOpen, end: true },
@@ -77,7 +78,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const isReader = location.pathname.startsWith('/read/');
-  const isFaithReader = location.pathname.startsWith('/faith');
+  const isFaithReader = location.pathname.startsWith('/faith') || location.pathname.startsWith('/taman');
   const lang = workspace.lang;
 
   useEffect(() => {
@@ -118,6 +119,7 @@ function AppFrame({ workspace }: { workspace: WorkspaceValue }) {
       <Suspense fallback={<div className="screen-loading" role="status">{copy(lang, isReader ? 'Opening your book…' : 'Opening your reading…', isReader ? 'Membuka bukumu…' : 'Membuka bacaan…')}</div>}><Routes>
         <Route path="/read/:bookId" element={<ReaderScreen />} />
         <Route path="/faith/*" element={<FaithReaderScreen />} />
+        <Route path="/taman/*" element={<TamanReaderScreen />} />
       </Routes></Suspense>
     </RouteFailureBoundary>
   </div>;
