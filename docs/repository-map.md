@@ -13,7 +13,7 @@ This map separates editable source from the files that the browser and GitHub Pa
 | `web/app/platform/` | App-scoped PWA worker and offline registration source. |
 | `app/site/` | TypeScript source for the public product demo and site behavior. |
 | `web/` | Astro page source. |
-| `scripts/` | Build, local server, capture, maintenance, and reading-pack scripts (`packs.ts`, `import-readings.ts`). |
+| `scripts/` | Build, local server, capture, maintenance, and reading-pack and deployment scripts (`packs.ts`, `import-readings.ts`, `package-pages.ts`, `verify-deployment.ts`). |
 | `tests/` | Unit, browser, and type-contract checks. |
 | `library/packs/` | Hosted reading packs, their manifests, and the generated `index.json`. See [Faith readings: data contract](faith-readings-data-contract.md). |
 | `docs/`, `examples/`, `example/`, `licenses/` | Documentation, framework samples, reader fixtures/assets, and notices. |

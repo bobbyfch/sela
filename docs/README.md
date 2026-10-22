@@ -50,6 +50,7 @@ Start here to find the right guide. The project overview is in the [README](../R
 | [Repository map](repository-map.md) | Editable source versus served output |
 | [Design system](design-system.md) | Tokens, components and appearance |
 | [Validation](validation-reading-phase.md) | The checks to run before a change |
+| [Deployment](deployment.md) | The workflows, the live check, manual deploy and rollback |
 | [Security, attribution and distribution](security.md) | Local data, document handling and network contacts |
 
 ## Project records

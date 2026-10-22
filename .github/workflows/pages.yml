@@ -14,6 +14,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
+    timeout-minutes: 20
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -48,17 +51,24 @@ jobs:
         run: |
           npm ci
           npm run build
-          mkdir -p pages-site
-          cp index.html logo.svg favicon.svg favicon.png robots.txt sitemap.xml llms.txt manifest.webmanifest sela-sw.js offline-assets.json README.md README.id.md THIRD_PARTY_NOTICES.md pages-site/
-          cp -r site dist example library docs licenses pages-site/
-          mkdir -p pages-site/app
-          cp app/index.html app/*.js app/*.webmanifest app/*-LICENSE.txt pages-site/app/
-          cp app/app.css pages-site/app/
-          cp -r app/assets app/chunks pages-site/app/
-          touch pages-site/.nojekyll
+          node --experimental-strip-types scripts/package-pages.ts pages-site
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: pages-site
       - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
         id: deployment
+
+  verify:
+    needs: deploy
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+      - name: Check the live site, assets and reading packs
+        run: node --experimental-strip-types scripts/verify-deployment.ts "${{ needs.deploy.outputs.page_url }}"

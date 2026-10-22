@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an improvement to Sela Books or the Viewer
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the reading task, not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+    validations:
+      required: false
+  - type: textarea
+    id: source
+    attributes:
+      label: Content source and licence
+      description: For a new reading or catalogue, name the exact edition and its licence. Free to read is not permission to copy.
+    validations:
+      required: false

@@ -72,4 +72,5 @@ Never edit scripture text by hand. Text that Sela does not host (Quran editions 
 - Use short, imperative commit subjects with a type: `feat:`, `fix:`, `test:`, `docs:`, `build:`, `ci:`.
 - One logical change per pull request. Describe what changed and why, what you verified, and what you could not verify.
 - Every change that touches behaviour needs a test. Bug fixes need a regression test that fails without the fix.
+- Read [Deployment](docs/deployment.md) before you touch a workflow or the Pages packaging.
 - A pull request is ready when `npm run typecheck`, `npm test` and the browser tests pass, and the build output is committed.
