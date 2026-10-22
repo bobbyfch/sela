@@ -11,8 +11,8 @@ test('Taman Bacaan downloads a verified pack, reads it offline, and removes it',
 
   await page.goto('/sela/app/#/discover?lens=taman');
   await expect(card(page)).toBeVisible();
-  await expect(card(page).getByText(/^(Pilot|Rintisan)$/)).toBeVisible();
-  await expect(card(page).getByText(/^(5 of 25|5 dari 25)$/)).toBeVisible();
+  await expect(card(page).getByText(/^(Draft|Draf)$/)).toBeVisible();
+  await expect(card(page).getByText('25', { exact: true })).toBeVisible();
 
   await card(page).getByRole('button', { name: download }).click();
   await expect(card(page).getByRole('button', { name: /^(Read|Baca)$/ })).toBeVisible();
@@ -25,6 +25,10 @@ test('Taman Bacaan downloads a verified pack, reads it offline, and removes it',
   await expect(page.getByRole('link', { name: /Y.suf 12:3–10/ })).toBeVisible();
   await expect(page.getByText(/penafsiran, bukan teks wahyu|interpretation, not scripture/i)).toBeVisible();
 
+  await page.getByRole('button', { name: /^(Save|Simpan)$/ }).click();
+  await expect(page.getByRole('button', { name: /^(Saved|Tersimpan)$/ })).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sela-library:personal') || '{}').tamanSaved)).toEqual(['sela-prophets-id-v1/yusuf']);
+
   // Already-open reader keeps working when the network drops; a real offline reload is covered by pwa-taman.spec.ts.
   await context.setOffline(true);
   await page.getByRole('link', { name: /Semua kisah|All entries/i }).click();
@@ -34,6 +38,7 @@ test('Taman Bacaan downloads a verified pack, reads it offline, and removes it',
   await context.setOffline(false);
 
   await page.getByRole('button', { name: /Back to Discover|Kembali ke Jelajah/ }).click();
+  await expect(page.getByRole('region', { name: /Saved|Tersimpan/ }).getByRole('link', { name: /Nabi Yusuf/ })).toBeVisible();
   await card(page).getByRole('button', { name: /^(Remove|Hapus)$/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: /^(Remove|Hapus)$/ }).click();
   await expect(card(page).getByRole('button', { name: download })).toBeVisible();

@@ -1,6 +1,6 @@
 # Taman Bacaan data contract
 
-Taman Bacaan (Reading garden) is a lens inside Discover. It lists optional, user-installed **content packs**.
+Taman Bacaan (Reading garden) is a lens inside Discover. It lists optional, user-installed **content packs** of two kinds: hosted editorial packs and publisher packs.
 Nothing is bundled into the app JavaScript, precached by the service worker, or added to the shelf.
 
 ## Files
@@ -46,12 +46,29 @@ Each article has `slug`, `order`, `name`, `arabic`, `lede`, `sections[{heading, 
 `notes[]` (SELA interpretation, each starting `Catatan SELA (bukan wahyu)`), `accuracy`, `related[]`.
 Story text, citations (`refs`) and interpretation (`notes`) are separate fields and render in separate blocks.
 
-## Not stored in backups
-
-The last-read entry per pack is in `localStorage` key `sela:taman:last-read`. Installed packs are not part of Sela backups;
-they can be downloaded again. This is intentional for the pilot and is a known gap.
-
 ## Adding a pack
 
 Write the manifest and payload, run `scripts/packs.ts --write`, write the notice, record the source and rights in
 [taman-bacaan-sources.md](taman-bacaan-sources.md). Do not ship placeholders (`TO_BE_COMPUTED`, `bytes: 0`).
+
+## Publisher packs (QuranEnc and HadeethEnc)
+
+These are not hosted by Sela. `app/library/source-packs.ts` downloads them from the publisher's API when the reader presses a button.
+Both publishers allow re-use only if the text is unchanged, credited, versioned and kept current, so Sela stores the response verbatim.
+
+| Kind | Source calls | Check before saving | Stored as |
+|---|---|---|---|
+| `quran-edition` | `translations/list/id`, then `translation/sura/<key>/1..114` | 114 surahs, each with exactly the Hafs verse count (`app/library/quran-structure.ts`), 6,236 verses in total, no empty Arabic or translation | `QuranEditionPayload` |
+| `hadith-collection` | `categories/list/`, `hadeeths/list/` (paged), `hadeeths/one/` per id | each record has the requested id, a title and text; the list is not empty | `HadithPayload`, all fields kept except the `translations` language list |
+
+- Four requests run at once, each retried twice. One failure cancels the install and saves nothing.
+- Asking for a list contacts the publisher. That only happens on a button press.
+- An installed Quran edition is read from the device. When it is the selected edition, the Quran reader makes no request to QuranEnc. The edition dropdown asks for the online list only when opened.
+- Version shown: the publisher's `version` for Quran editions; the fetch date for hadith, because the API has none.
+- **Update**: Quran editions show it when the listed version differs. Both kinds have **Download again**.
+- Size: Quran about 2 to 3 MB. Hadith about 3 KB each; the largest category (Fikih, 1,102 items) is a few MB and takes minutes. A pack over 40 MB is refused.
+
+## Saved entries and backups
+
+Saved entries and the last entry read are stored in the personal store (`tamanSaved`, `tamanLast`), so Sela backups and restores carry them.
+Pack payloads are not in backups. They can be downloaded again, and saved entries reappear once the pack is installed.

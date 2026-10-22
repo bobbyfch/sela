@@ -11,6 +11,7 @@ import {
   type QuranTranslationEdition,
 } from '../../../../../app/library/scripture-sources.ts';
 import { PROPHET_PASSAGES } from '../../../../../app/library/prophet-passages.ts';
+import { installedQuranEditions, installedQuranSurah } from '../../../../../app/library/source-packs.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
 import { ISLAMIC_READING_OPTIONS } from './readings.ts';
 
@@ -67,6 +68,7 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
   const [translationSize, setTranslationSize] = useState(stored.quranTranslationSize || 18);
   const [translations, setTranslations] = useState<QuranTranslationEdition[]>([]);
   const [translationsReady, setTranslationsReady] = useState(false);
+  const [savedOnly, setSavedOnly] = useState(false);
   const [surah, setSurah] = useState<QuranSurah | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -75,18 +77,26 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
   const [activeVerse, setActiveVerse] = useState(requestedVerse);
   const [jumpVerse, setJumpVerse] = useState<number | string>(requestedVerse);
 
+  const loadOnlineEditions = (signal: AbortSignal) => listQuranTranslations(language, signal).then(rows => {
+    if (signal.aborted) return;
+    setTranslations(current => [...rows, ...current.filter(saved => !rows.some(row => row.key === saved.key))]);
+    setTranslationKey(current => rows.some(row => row.key === current) || current ? current : rows[0]?.key || '');
+  });
+
   useEffect(() => {
     const controller = new AbortController();
     setTranslationsReady(false);
-    void listQuranTranslations(language, controller.signal).then(rows => {
+    setSavedOnly(false);
+    void installedQuranEditions(language).catch(() => []).then(saved => {
       if (controller.signal.aborted) return;
-      setTranslations(rows);
-      setTranslationKey(current => rows.some(row => row.key === current) ? current : rows[0]?.key || '');
-      setTranslationsReady(true);
-    }).catch(reason => {
-      if (controller.signal.aborted) return;
-      setTranslationsReady(true);
-      setError(reason instanceof Error ? reason.message : t('Translation editions are unavailable.', 'Daftar terjemahan belum tersedia.'));
+      // The chosen edition is saved on this device: do not contact the publisher just to open the reader.
+      if (translationKey && saved.some(row => row.key === translationKey)) { setTranslations(saved); setSavedOnly(true); setTranslationsReady(true); return; }
+      return loadOnlineEditions(controller.signal).then(() => { if (!controller.signal.aborted) setTranslationsReady(true); }).catch(reason => {
+        if (controller.signal.aborted) return;
+        // Offline or the publisher is down: editions saved from Reading garden still work.
+        if (saved.length) { setTranslations(saved); setTranslationKey(current => saved.some(row => row.key === current) ? current : saved[0].key); } else setError(reason instanceof Error ? reason.message : t('Translation editions are unavailable.', 'Daftar terjemahan belum tersedia.'));
+        setTranslationsReady(true);
+      });
     });
     return () => controller.abort();
   }, [language]);
@@ -95,7 +105,8 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
     if (!translationsReady) return;
     const controller = new AbortController();
     setLoading(true); setError(''); setSurah(null);
-    void loadQuranSurah(surahNo, language, controller.signal, translationKey || undefined).then(next => {
+    // A saved edition is read from this device first, so reading it makes no request to the publisher.
+    void installedQuranSurah(surahNo, translationKey).catch(() => null).then(saved => saved ?? loadQuranSurah(surahNo, language, controller.signal, translationKey || undefined)).then(next => {
       if (controller.signal.aborted) return;
       setSurah(next);
       setTranslationKey(next.translationKey);
@@ -152,7 +163,7 @@ function QuranReader({ locationSearch, routeSurah, navigate }: { locationSearch:
       <section className="faith-quran-toolbar" aria-label={t('Quran navigation and reading settings', 'Navigasi dan pengaturan bacaan Al-Qur’an')}>
         <Select label={t('Surah', 'Surah')} searchable value={String(surahNo)} onChange={value => value && navigate(`/faith/quran/${value}`)} data={surahData} allowDeselect={false} />
         <Select label={t('Translation', 'Terjemahan')} value={language} onChange={value => { if (value === 'id' || value === 'en' || value === 'ja') { setLanguage(value); setTranslationKey(''); saveQuranPreferences({ quranLanguage: value, quranTranslationKey: '' }); } }} data={[{ value: 'id', label: 'Bahasa Indonesia' }, { value: 'en', label: 'English' }, { value: 'ja', label: '日本語' }]} allowDeselect={false} />
-        <Select label={t('Edition', 'Edisi')} value={translations.some(row => row.key === translationKey) ? translationKey : translations[0]?.key || null} onChange={value => setTranslationKey(value || '')} data={translations.map(item => ({ value: item.key, label: `${item.title} · ${item.version}` }))} searchable allowDeselect={false} disabled={!translations.length} />
+        <Select label={t('Edition', 'Edisi')} onDropdownOpen={() => { if (savedOnly) { setSavedOnly(false); void loadOnlineEditions(new AbortController().signal).catch(() => undefined); } }} value={translations.some(row => row.key === translationKey) ? translationKey : translations[0]?.key || null} onChange={value => setTranslationKey(value || '')} data={translations.map(item => ({ value: item.key, label: `${item.title} · ${item.version}` }))} searchable allowDeselect={false} disabled={!translations.length} />
         <div className="faith-type-controls">
           <NumberInput label={t('Arabic size', 'Ukuran Arab')} value={arabicSize} onChange={value => { const next = Math.max(20, Math.min(48, Number(value) || 32)); setArabicSize(next); saveQuranPreferences({ quranArabicSize: next }); }} min={20} max={48} step={2} />
           <NumberInput label={t('Translation size', 'Ukuran terjemahan')} value={translationSize} onChange={value => { const next = Math.max(14, Math.min(28, Number(value) || 18)); setTranslationSize(next); saveQuranPreferences({ quranTranslationSize: next }); }} min={14} max={28} step={1} />

@@ -11,34 +11,38 @@
 | P0 error, retry, stale-chunk states | Present. | Not changed. |
 | Taman Bacaan in Discover | Missing. | **Built.** |
 | Content pack model, install, remove, checksum | Missing. | **Built.** |
-| Kisah 25 Nabi | Only short passage starters. | **5 of 25 written** (pilot). 20 not written. |
-| Quran Arabic and Indonesian offline | Missing. | NOT STARTED, needs manual download and a rights check. See [taman-bacaan-sources.md](taman-bacaan-sources.md). |
-| Hadith offline | Missing. | NOT STARTED, terms review first. |
-| P2 scripture, literature, textbook packs | Missing. | NOT STARTED. |
+| Kisah 25 Nabi | Only short passage starters. | **All 25 written** (draft, not scholar-reviewed). |
+| Quran Indonesian with Arabic, offline | Online only. | **Built**, 3 QuranEnc editions, downloaded from the publisher. |
+| Hadith, Indonesian, offline | Missing. | **Built**, 7 HadeethEnc categories, downloaded from the publisher. |
+| Saved entries, last read, backup | Missing. | **Built**, in the personal store so backups carry them. |
+| Built-in scripture texts in Taman Bacaan | Only on Home. | **Listed** (5 editions, values tested against the JSON files). |
 | Import and validate script with dry run | Missing. | **Built**, `scripts/packs.ts`. |
 | Design, sources, data contract docs | Missing. | **Written** (`docs/taman-bacaan-*.md`). |
+| Tanzil Arabic text | Missing. | **Declined**, QuranEnc already returns the Arabic. |
+| Indonesian folklore and classics, SuttaCentral, Sefaria, Standard Ebooks, Aozora, OpenStax packs | Missing. | **NOT STARTED**, each edition needs its own rights check. |
 
 ### Verification (local, Windows, Node 24)
 
 - `npm run typecheck`: PASS.
-- `npm test`: PASS, 108 tests.
+- `npm test`: PASS, 112 tests.
 - `npm run build`: PASS.
-- `tests/browser/taman-bacaan.spec.ts`: PASS in Chromium, Firefox and WebKit.
-- `tests/browser/pwa-taman.spec.ts`: PASS in `chromium-pwa`.
-- Full Playwright run (all 4 projects, 473 cases, 17.2 min): 461 passed, 8 skipped, 4 failed. All 4 failures were WebKit (`personal-reader` x2, `products` x2), none in Taman Bacaan files. Rerun in isolation: 24/24 passed. Cause of the combined-run timeouts is not established; earlier notes show the same WebKit pattern under load.
+- Full Playwright run (all 4 projects, 482 cases, 18.6 min): 474 passed, 8 skipped, 0 failed.
+- Publisher APIs: the browser suite mocks QuranEnc and HadeethEnc. A separate live run in Chromium installed the real Indonesian Quran edition "Sabiq" (114 surahs, 6,236 verses, 2.2 MB) and the real hadith category "Hadis dan Ilmu Hadis" (10 items). All three Indonesian editions were checked against the Hafs verse counts: 114 of 114 surahs each.
+- Not run live: the large hadith categories (Fikih has 1,102 items).
 
 ### Known limits
 
-- Pilot text is not scholar-reviewed. The UI and every article say so.
-- Verse numbers are machine-checked for existence only. Accuracy of each summary is not machine-checkable.
-- Installed packs are not part of Sela backups. Last-read position is in `localStorage`.
-- Bookmarks and highlights inside pack articles are not built.
+- The 25 articles are not scholar-reviewed. The UI shows a Draft badge and every article says so.
+- Verse numbers are machine-checked for existence. About 40 verse ranges were also compared by hand with the Kemenag translation. Accuracy of each summary is not machine-checkable.
+- Pack payloads are not in backups. Saved entries and last-read are.
+- Highlights and notes inside pack articles are not built.
+- HadeethEnc gives no version number, so the fetch date is shown as the version.
 - No physical-device, screen-reader or deployed-URL test. Nothing was pushed or deployed.
-- On this machine `npm ci` failed with EPERM on a locked native file (`@tailwindcss/oxide`). `npm install` worked. Close editors and language servers before `npm ci`.
+- On this machine `npm ci` failed with EPERM on a locked native file (`@tailwindcss/oxide`). `npm install` worked.
 - `npm run build` rewrites hashed files under `app/chunks/`, `app/app.js`, `sela-sw.js` and `offline-assets.json`. These are committed generated files.
 
 ### Next explicit action
 
-1. A scholar or qualified reader reviews the five pilot articles.
-2. Write the other 20 only with verified references; keep short entries short (Idris, Zulkifli, Ilyasa).
-3. Decide the Quran offline source and licence, then build the second pack type.
+1. A qualified reader reviews the 25 articles. Change `status` to `complete` in the manifest only after that.
+2. Pick the next collection and check its rights per edition before writing code.
+3. Push the branch and open a PR when authorised.

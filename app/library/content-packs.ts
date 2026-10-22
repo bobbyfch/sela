@@ -6,7 +6,7 @@
  * a different database and is never touched here.
  */
 export type PackKind = 'editorial-collection';
-export type PackStatus = 'pilot' | 'complete';
+export type PackStatus = 'pilot' | 'draft' | 'complete';
 export interface PackManifest {
   id: string;
   schemaVersion: 1;
@@ -40,6 +40,29 @@ export interface ProphetArticle {
 export interface ProphetPayload { schemaVersion: 1; packId: string; articles: ProphetArticle[] }
 export interface InstalledPack { id: string; manifest: PackManifest; payload: ProphetPayload; installedAt: number; bytes: number }
 
+/**
+ * Packs fetched straight from the publisher's own API when the reader asks. Sela never hosts or republishes this text,
+ * so the publisher's "no changes, keep the version, stay current" terms are met by storing the response verbatim.
+ */
+export type SourceKind = 'quran-edition' | 'hadith-collection';
+export interface SourcePackInfo {
+  id: string;
+  kind: SourceKind;
+  title: string;
+  description: string;
+  language: string;
+  /** Publisher version string, or the fetch date when the publisher gives none. */
+  version: string;
+  itemCount: number;
+  publisher: { label: string; url: string };
+  remoteKey: string;
+}
+export interface QuranEditionPayload { schemaVersion: 1; key: string; language: string; surahs: { number: number; verses: { aya: number; arabic: string; translation: string; footnotes: string }[] }[] }
+export type HadeethRecord = { id: string; title: string; hadeeth: string; [field: string]: unknown };
+export interface HadithPayload { schemaVersion: 1; categoryId: string; language: string; fetchedAt: string; items: HadeethRecord[] }
+export interface InstalledSourcePack { id: string; info: SourcePackInfo; payload: QuranEditionPayload | HadithPayload; installedAt: number; bytes: number }
+export type PackRecord = InstalledPack | InstalledSourcePack;
+
 const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024;
 const MAX_INDEX_BYTES = 256 * 1024;
 const idPattern = /^[a-z0-9][a-z0-9-]{2,63}$/;
@@ -58,7 +81,7 @@ export function validatePackManifest(value: unknown): PackManifest {
   if (typeof id !== 'string' || !idPattern.test(id)) fail('id');
   if (schemaVersion !== 1) fail('unsupported schemaVersion');
   if (kind !== 'editorial-collection') fail('kind');
-  if (status !== 'pilot' && status !== 'complete') fail('status');
+  if (status !== 'pilot' && status !== 'draft' && status !== 'complete') fail('status');
   if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 24)) fail('category, language or edition');
   if (!isRecord(title) || !isText(title.id, 120) || !isText(title.en, 120)) fail('title');
   if (!isRecord(description) || !isText(description.id, 600) || !isText(description.en, 600)) fail('description');
@@ -112,7 +135,7 @@ export function packUrl(path: string, baseUrl: string | URL = document.baseURI):
   return new URL(`../library/packs/${path}`, new URL('./', baseUrl));
 }
 
-async function readLimited(response: Response, limit: number, signal?: AbortSignal, onProgress?: (received: number) => void): Promise<Uint8Array> {
+export async function readLimited(response: Response, limit: number, signal?: AbortSignal, onProgress?: (received: number) => void): Promise<Uint8Array> {
   if (!response.ok) throw new Error(`The content server answered ${response.status}.`);
   const declared = Number(response.headers.get('content-length'));
   if (declared > limit) throw new Error('This file is larger than the size the manifest allows.');
@@ -179,11 +202,16 @@ function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRe
 export async function installPack(manifest: PackManifest, signal?: AbortSignal, onProgress?: (received: number, total: number) => void): Promise<InstalledPack> {
   const { payload, bytes } = await downloadPack(manifest, signal, onProgress);
   const record: InstalledPack = { id: manifest.id, manifest, payload, installedAt: Date.now(), bytes };
-  await run('readwrite', store => store.put(record));
+  await putRecord(record);
   return record;
 }
-export const listInstalledPacks = (): Promise<InstalledPack[]> => run('readonly', store => store.getAll() as IDBRequest<InstalledPack[]>);
-export const getInstalledPack = (id: string): Promise<InstalledPack | undefined> => run('readonly', store => store.get(id) as IDBRequest<InstalledPack | undefined>);
+export const putRecord = (record: PackRecord): Promise<IDBValidKey> => run('readwrite', store => store.put(record));
+export const listRecords = (): Promise<PackRecord[]> => run('readonly', store => store.getAll() as IDBRequest<PackRecord[]>);
+export const getRecord = (id: string): Promise<PackRecord | undefined> => run('readonly', store => store.get(id) as IDBRequest<PackRecord | undefined>);
+export const isEditorial = (record: PackRecord | undefined): record is InstalledPack => !!record && 'manifest' in record;
+export const isSourcePack = (record: PackRecord | undefined): record is InstalledSourcePack => !!record && 'info' in record;
+export const listInstalledPacks = async (): Promise<InstalledPack[]> => (await listRecords()).filter(isEditorial);
+export const getInstalledPack = async (id: string): Promise<InstalledPack | undefined> => { const record = await getRecord(id); return isEditorial(record) ? record : undefined; };
 export const removePack = (id: string): Promise<undefined> => run('readwrite', store => store.delete(id) as IDBRequest<undefined>);
 
 /** Newer catalogue edition than the installed copy. */

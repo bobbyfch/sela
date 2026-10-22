@@ -14,6 +14,14 @@ export function validatePersonal(value) {
   if (["id", "en", "ja"].includes(data.quranLanguage)) result.quranLanguage = data.quranLanguage;
   if (Number.isInteger(data.quranSurah) && data.quranSurah >= 1 && data.quranSurah <= 114) result.quranSurah = data.quranSurah;
   if (Number.isInteger(data.quranVerse) && data.quranVerse >= 1 && data.quranVerse <= 286) result.quranVerse = data.quranVerse;
+  if (Array.isArray(data.tamanSaved)) {
+    const saved = data.tamanSaved.filter((id) => typeof id === "string" && /^[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9]{1,40}(?:-[a-z0-9]{1,40})*$/.test(id));
+    if (saved.length) result.tamanSaved = [...new Set(saved)].slice(0, 500);
+  }
+  if (data.tamanLast && typeof data.tamanLast === "object" && !Array.isArray(data.tamanLast)) {
+    const last = Object.fromEntries(Object.entries(data.tamanLast).filter(([pack, item]) => /^[a-z0-9][a-z0-9-]{2,63}$/.test(pack) && typeof item === "string" && /^[a-z0-9]{1,40}(?:-[a-z0-9]{1,40})*$/.test(item)).slice(0, 100));
+    if (Object.keys(last).length) result.tamanLast = last;
+  }
   if (Number.isFinite(data.quranArabicSize)) result.quranArabicSize = Math.max(20, Math.min(48, Math.round(data.quranArabicSize)));
   if (Number.isFinite(data.quranTranslationSize)) result.quranTranslationSize = Math.max(14, Math.min(28, Math.round(data.quranTranslationSize)));
   const companions = { fox: "fox", tanuki: "tanuki", crane: "crane", rabbit: "rabbit", plant: "plant", cat: "tanuki", hamster: "tanuki", owl: "crane", turtle: "tanuki", "red-panda": "tanuki", penguin: "crane", shiba: "tanuki", fawn: "rabbit" };

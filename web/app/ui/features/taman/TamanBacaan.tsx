@@ -4,6 +4,9 @@ import { ArrowDownToLine, ArrowUpRight, BookOpen, RefreshCw, Search, Trash2, X }
 import { useNavigate } from 'react-router';
 import { fetchPackIndex, installPack, listInstalledPacks, packUpdateAvailable, removePack, type InstalledPack, type PackManifest } from '../../../../../app/library/content-packs.ts';
 import { copy, useWorkspace } from '../../workspace.tsx';
+import TamanSources from './TamanSources.tsx';
+import TamanSaved from './TamanSaved.tsx';
+import TamanBuiltin from './TamanBuiltin.tsx';
 import { forgetTamanPack, lastTamanArticle } from './taman-state.ts';
 
 type Catalogue = { state: 'loading' } | { state: 'ready'; packs: PackManifest[] } | { state: 'error'; message: string };
@@ -98,6 +101,7 @@ export default function TamanBacaan() {
       <p className="taman-lede">{t('Each collection lists its source, licence and edition. Nothing is downloaded until you choose it, and nothing is added to your shelf.', 'Setiap koleksi mencantumkan sumber, lisensi, dan edisinya. Tidak ada yang diunduh sebelum kamu memilih, dan tidak ada yang masuk ke rakmu.')}</p>
       <TextInput className="taman-search" type="search" leftSection={<Search size={16} aria-hidden="true" />} aria-label={t('Search collections', 'Cari koleksi')} placeholder={t('Search collections and downloaded entries', 'Cari koleksi dan kisah yang sudah diunduh')} value={query} onChange={event => setQuery(event.currentTarget.value)} />
     </section>
+    <TamanSaved />
     <div aria-live="polite" className="taman-status">{notice && <Alert color="green" withCloseButton onClose={() => setNotice('')}>{notice}</Alert>}</div>
     {storageError && <Alert color="yellow" role="alert" title={t('Downloads cannot be saved here', 'Unduhan tidak dapat disimpan di sini')}>{storageError}</Alert>}
     {catalogue.state === 'loading' && <div role="status" aria-label={t('Loading collections…', 'Memuat koleksi…')}><Skeleton height={150} radius="xl" /></div>}
@@ -112,7 +116,7 @@ export default function TamanBacaan() {
         const update = !!(pack && listedManifest && packUpdateAvailable(pack, listedManifest));
         return <Card key={manifest.id} className="taman-card" withBorder radius="lg" padding="lg" component="article" aria-labelledby={`taman-${manifest.id}`}>
           <Group gap={6} mb={6}>
-            <Badge variant="light" color={manifest.status === 'pilot' ? 'yellow' : 'green'}>{manifest.status === 'pilot' ? t('Pilot', 'Rintisan') : t('Complete', 'Lengkap')}</Badge>
+            <Badge variant="light" color={manifest.status === 'complete' ? 'green' : 'yellow'}>{manifest.status === 'pilot' ? t('Pilot', 'Rintisan') : manifest.status === 'draft' ? t('Draft', 'Draf') : t('Complete', 'Lengkap')}</Badge>
             <Badge variant="outline" color="gray">{pack ? t('Downloaded', 'Terunduh') : t('Available', 'Tersedia')}</Badge>
             {pack && <Badge variant="outline" color="gray">{t('Works offline', 'Bisa offline')}</Badge>}
           </Group>
@@ -140,6 +144,8 @@ export default function TamanBacaan() {
       })}
     </div>
     {catalogue.state === 'ready' && !rows.length && <Text role="status" className="taman-empty">{query.trim() ? t('No collection matches that search.', 'Tidak ada koleksi yang cocok dengan pencarian itu.') : t('No collections are listed yet.', 'Belum ada koleksi.')}</Text>}
+    <TamanSources query={query} />
+    <TamanBuiltin query={query} />
     <Modal opened={!!removing} onClose={() => setRemoving(null)} title={t('Remove this collection?', 'Hapus koleksi ini?')} centered>
       <Text size="sm">{t('The downloaded copy is deleted from this device. Your shelf, backups, notes and reading progress stay as they are. You can download it again later.', 'Salinan unduhan dihapus dari perangkat ini. Rak, cadangan, catatan, dan progres bacamu tidak berubah. Kamu bisa mengunduhnya lagi nanti.')}</Text>
       <Group mt="md" justify="flex-end"><Button variant="default" onClick={() => setRemoving(null)}>{t('Keep it', 'Simpan')}</Button><Button color="red" onClick={() => void confirmRemove()}>{t('Remove', 'Hapus')}</Button></Group>

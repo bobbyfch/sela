@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Add Taman Bacaan (Reading garden) to Discover: optional, user-installed reading collections with source, licence, version and size shown before download, progress and cancel, checksum verification, and removal that never touches the shelf, notes, progress or backups.
+- Add Kisah 25 Nabi: 25 draft summaries with Quran references on every section, separate interpretation notes and accuracy notes. Not yet reviewed by a scholar.
+- Add offline Indonesian Quran editions (QuranEnc) and hadith collections (HadeethEnc), downloaded unchanged from the publisher on request; the Quran reader uses a saved edition without contacting the publisher.
+- Save entries and last-read positions in the personal store so backups carry them. List the five scripture texts already built into Sela inside Taman Bacaan.
+- Add `scripts/packs.ts` to validate pack sources and rebuild the published catalogue, and a real service-worker offline test for installed packs.
+
 ## 0.9.0-beta.8 — Sela Books rebuild (2026-10-21)
 
 - Rebuild the public site and `/app` around a shared responsive design system; remove the obsolete `/mobile` app and align the Pages packaging workflow with the new routes.

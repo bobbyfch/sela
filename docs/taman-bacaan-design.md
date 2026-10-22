@@ -16,6 +16,7 @@ Dark, OLED and all paper palettes work because nothing is hard-coded.
 
 ## Screens
 
+- **Landing order**: saved entries, hosted collections, publisher packs (Quran, hadith), then scripture editions already built into Sela.
 - **Landing**: eyebrow, one headline, one sentence about consent and sources, search. Cards list status (Pilot), state (Available or Downloaded), entry count ("5 of 25"), language, licence, edition, size, sources. Real actions: Download, Cancel with a real byte progress bar, Read or Continue, Update when the checksum changed, Remove with a confirm dialog.
 - **Index**: numbered list with the Arabic name, two-line lede, and an honest "5 of 25 written" note.
 - **Article**: 68ch measure, section headings, Quran references as chips that open the Quran reader at that verse. SELA interpretation sits in a separate accent-ruled block titled "not scripture". The accuracy note has a quieter rule. Previous and next, related links, reading time.
@@ -33,4 +34,10 @@ Arabic text has `lang="ar" dir="rtl"`. Reduced motion is honoured because nothin
 ## Deliberately not built
 
 Category row, language and licence filters: with one collection they would be empty controls. They appear when there is more than one to filter.
-Bookmarks and highlights inside pack articles: not done. Last-read position is done.
+Highlights and notes inside pack articles: not done. Saving an entry and the last-read position are done.
+
+## Publisher packs
+
+A "From the publishers" section explains that Sela does not host the text. Two buttons load the publisher's list (this contacts the publisher, and the copy says so).
+Cards show version, publisher, size on device and the source link. Quran editions open in the existing Quran reader. Hadith open in a searchable index with 50 rows per page, then one entry per page with the Arabic text, the publisher's grade, narrator reference, explanation and lessons, and a credit line.
+Hadith text is rendered as plain text, never as HTML.

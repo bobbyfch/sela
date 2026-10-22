@@ -1,24 +1,26 @@
 # Taman Bacaan source register
 
 Free to read is not permission to mirror. Each edition keeps its own rights. MIT covers SELA code and SELA-written text only.
-Status values: **SHIPPED** (in the repo and tested), **NOT STARTED**, **BLOCKED** (needs a rights decision or access first).
+Status values: **SHIPPED** (in the repo, tested), **NOT STARTED**, **DECLINED** (deliberately not done, with the reason).
+Terms below were read on 22 October 2026 and must be re-read before any change to how a source is used.
 
-| Collection | Status | Rights basis | Next step |
+| Collection | Status | How it reaches the reader | Rights basis |
 |---|---|---|---|
-| Kisah 25 Nabi, 5 of 25 (Nuh, Ibrahim, Yusuf, Musa, Muhammad) | **SHIPPED**, pilot | Original SELA prose, MIT, see `licenses/sela-prophets-NOTICE.md`. Cites verses by number only; copies no Quran text or translation. | Scholar review. Then the other 20, only with checked references. |
-| Quran Arabic offline | NOT STARTED | Tanzil text is CC BY 3.0, verbatim and unaltered, with attribution (https://tanzil.net/docs/Text_License). Download needs the Tanzil form, not scripted here. | Fetch the exact package by hand, record version and hash, test verse counts (6236). |
-| Quran Indonesian translation offline | NOT STARTED | QuranEnc edition terms not yet reviewed for redistribution. Online per-surah use already exists. | Read the edition's terms. Pin version. No silent edits. |
-| Hadith, Indonesian | NOT STARTED | HadeethEnc forbids changes, additions and deletions. Terms must be re-read before import. | Review terms and the official export. Keep SELA summaries separate from the source text. |
-| Indonesian folklore and classics | NOT STARTED | Needs per-work and per-transcription rights checks. | Pick 1 to 3 verified Wikisource editions. |
-| SuttaCentral, Sefaria, Standard Ebooks, Aozora, OpenStax packs | NOT STARTED | Licence is per edition. | Propose a collection first. |
-| Existing local texts (WEB, DRA, Dhammapada, Gita, Analects) | Already shipped, not part of Taman Bacaan | See `THIRD_PARTY_NOTICES.md`. | Surface them as Taman Bacaan collections later. Do not duplicate them. |
+| Kisah 25 Nabi (25 of 25 written, draft) | **SHIPPED** | Hosted pack `library/packs/prophets-id-v1.json`, SHA-256 checked | Original SELA prose, MIT, `licenses/sela-prophets-NOTICE.md`. Cites verses by number only; copies no Quran text or translation. |
+| Quran, Indonesian, with Arabic (3 QuranEnc editions) | **SHIPPED** | Downloaded by the reader's browser from `quranenc.com/api/v1` on request. Sela hosts nothing. | QuranEnc terms: no modification, addition or deletion; credit publisher and QuranEnc.com; show the version; keep transcript information; keep current; no inappropriate ads. Met by storing the response verbatim with its version and offering Download again. |
+| Hadith, Indonesian (7 HadeethEnc categories) | **SHIPPED** | Downloaded by the reader's browser from `hadeethenc.com/api/v1` on request. Sela hosts nothing. | HadeethEnc has the same seven conditions. The API gives no version number, so the fetch date is shown as the version. |
+| Quran Arabic from Tanzil | **DECLINED** | n/a | QuranEnc already returns the Arabic with each edition. A second Arabic source would mix editions, which Tanzil's "verbatim only" licence makes risky. |
+| Built-in scripture texts (WEB, Douay-Rheims, Dhammapada, Gita, Analects) | Already shipped, now listed in Taman Bacaan | Bundled JSON in `library/assets/` | See `THIRD_PARTY_NOTICES.md`. Card values are tested against those files. |
+| Indonesian folklore and classics | NOT STARTED | n/a | Needs a rights check of the work, the transcription and any modern translation. Discover > Jelajah sumber > Wikisumber already reaches Indonesian Wikisource online. |
+| SuttaCentral suttas, Sefaria, Standard Ebooks, Aozora, OpenStax packs | NOT STARTED | n/a | Licence is per edition. Each needs a named proposal first. OpenStax and Gutenberg are already reachable through Discover. |
 
-## Sources used for the 5 pilot articles
+## Sources for the 25 articles
 
-Quran Kemenag RI (LPMQ), https://quran.kemenag.go.id/ , and Pustaka Lajnah, https://pustakalajnah.kemenag.go.id/detail/35 , are the declared starting references.
-Every claim carries a verse reference. Details not in the verses (for example the name of the sacrificed son, the wife of the Egyptian governor, the Hira scene) are stated as outside the Quran in each article's accuracy note.
+Quran Kemenag RI (LPMQ), https://quran.kemenag.go.id/ , and Pustaka Lajnah, https://pustakalajnah.kemenag.go.id/detail/35 , are the declared references.
+Every section carries verse references. Details not in the verses (for example the name of the sacrificed son, the wife of the Egyptian governor, the Hira scene, the city of Lut) are stated as outside the Quran in each article's accuracy note.
 
-## Review status
+## Checks and their limits
 
-Not reviewed by a scholar. The UI shows the Pilot badge and each article says so. Verse numbers were checked automatically
-against the Hafs verse counts (`tests/unit/content-packs.test.ts`). That proves the verse exists, not that the summary is right.
+- Every cited verse exists in the Hafs verse counts (`tests/unit/content-packs.test.ts`).
+- A sample of claims was compared by hand against the Indonesian Kemenag translation from QuranEnc (about 40 verse ranges). This found and fixed one wrong phrase (Syuaib's punishment "on a dark day" was "the day of the shadowing cloud").
+- Not reviewed by a scholar. The UI shows a Draft badge and each article says so. Machine checks prove a verse exists, not that a summary is right.

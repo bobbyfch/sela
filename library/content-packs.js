@@ -17,7 +17,7 @@ export function validatePackManifest(value) {
   if (typeof id !== "string" || !idPattern.test(id)) fail("id");
   if (schemaVersion !== 1) fail("unsupported schemaVersion");
   if (kind !== "editorial-collection") fail("kind");
-  if (status !== "pilot" && status !== "complete") fail("status");
+  if (status !== "pilot" && status !== "draft" && status !== "complete") fail("status");
   if (!isText(category, 60) || !isText(language, 12) || !isText(edition, 24)) fail("category, language or edition");
   if (!isRecord(title) || !isText(title.id, 120) || !isText(title.en, 120)) fail("title");
   if (!isRecord(description) || !isText(description.id, 600) || !isText(description.en, 600)) fail("description");
@@ -65,7 +65,7 @@ export function packUrl(path, baseUrl = document.baseURI) {
   if (!safePath(path)) fail("path");
   return new URL(`../library/packs/${path}`, new URL("./", baseUrl));
 }
-async function readLimited(response, limit, signal, onProgress) {
+export async function readLimited(response, limit, signal, onProgress) {
   if (!response.ok) throw new Error(`The content server answered ${response.status}.`);
   const declared = Number(response.headers.get("content-length"));
   if (declared > limit) throw new Error("This file is larger than the size the manifest allows.");
@@ -147,11 +147,19 @@ function run(mode, work) {
 export async function installPack(manifest, signal, onProgress) {
   const { payload, bytes } = await downloadPack(manifest, signal, onProgress);
   const record = { id: manifest.id, manifest, payload, installedAt: Date.now(), bytes };
-  await run("readwrite", (store) => store.put(record));
+  await putRecord(record);
   return record;
 }
-export const listInstalledPacks = () => run("readonly", (store) => store.getAll());
-export const getInstalledPack = (id) => run("readonly", (store) => store.get(id));
+export const putRecord = (record) => run("readwrite", (store) => store.put(record));
+export const listRecords = () => run("readonly", (store) => store.getAll());
+export const getRecord = (id) => run("readonly", (store) => store.get(id));
+export const isEditorial = (record) => !!record && "manifest" in record;
+export const isSourcePack = (record) => !!record && "info" in record;
+export const listInstalledPacks = async () => (await listRecords()).filter(isEditorial);
+export const getInstalledPack = async (id) => {
+  const record = await getRecord(id);
+  return isEditorial(record) ? record : void 0;
+};
 export const removePack = (id) => run("readwrite", (store) => store.delete(id));
 export function packUpdateAvailable(installed, listed) {
   return installed.manifest.payload.sha256 !== listed.payload.sha256;

@@ -1346,3 +1346,17 @@ button, input { font: inherit; }
 .taman-screen .faith-reader-controls .mantine-Button-label { overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 480px) { .taman-facts { grid-template-columns: 1fr; } .taman-index a { grid-template-columns: 28px minmax(0,1fr); } .taman-index-meta { display: none; } }
 @media (prefers-reduced-motion: reduce) { .taman-index a { transition: none; } }
+.taman-sources-panel { display: grid; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--color-rule); }
+.taman-sources-panel > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: clamp(22px,3vw,30px); font-weight: 480; letter-spacing: -.03em; }
+.taman-sources-panel .mantine-Button-root { min-height: 44px; }
+.taman-article > .mantine-Title-root { margin-top: 6px; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(24px,4vw,34px); font-weight: 480; letter-spacing: -.03em; line-height: 1.2; }
+.hadith-text { margin: 0 0 14px; color: var(--color-ink); font-family: var(--font-display); font-size: 18px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.hadith-hints { margin: 0; padding-left: 1.2em; color: var(--color-ink); font-size: 15px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.taman-article .faith-reader-arabic { margin-block: 16px; }
+.taman-save { margin: 6px 0 4px; min-height: 44px; }
+.taman-saved { display: grid; gap: 8px; }
+.taman-saved > .mantine-Title-root { color: var(--color-ink); font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.taman-saved-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.taman-saved-list a { display: grid; min-height: 44px; align-content: center; padding: 6px 14px; border: 1px solid var(--color-rule); border-radius: 14px; background: var(--color-paper-raised); color: var(--color-ink); text-decoration: none; }
+.taman-saved-list a:hover, .taman-saved-list a:focus-visible { border-color: var(--color-glass-edge); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.taman-saved-list span { color: var(--color-muted); }
