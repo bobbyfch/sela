@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 test('Discover source cards, search and results stay inside phone, tablet and desktop widths',async({page})=>{
  await page.addInitScript(()=>{if(!localStorage.getItem('sela:app:preferences'))localStorage.setItem('sela:app:preferences',JSON.stringify({language:'en'}));});
  await page.route('**/w/api.php?**',route=>route.fulfill({json:{query:{categorymembers:[]}}}));
- await page.goto('/app/#/discover');
+ await page.goto('/app/#/discover?view=sources');
  const discover=page.locator('.catalog-explorer');
  await expect(discover).toBeVisible();
  await expect(discover.locator('.catalog-source-card')).toHaveCount(9);

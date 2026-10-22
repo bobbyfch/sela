@@ -11,6 +11,7 @@ test('local open-book discovery searches and imports a classic into the React sh
   await page.goto('/app/');
   await page.getByRole('link', { name: 'Discover', exact: true }).click();
   const catalog = page.locator('.catalog-explorer');
+  await catalog.getByRole('button', { name: 'Browse sources', exact: true }).click();
   await expect(catalog.locator('.catalog-result-card').first()).toBeVisible();
   expect(remoteCatalogRequests).toEqual([]);
   await catalog.getByLabel('Search books', { exact: true }).fill('Walden');
@@ -61,7 +62,7 @@ test('failed catalog download stays in discovery and never reports a shelf impor
     failedDownloads += 1;
     return route.fulfill({ status: 503, body: 'Unavailable' });
   });
-  await page.goto('/app/#/discover');
+  await page.goto('/app/#/discover?view=sources');
   const catalog = page.locator('.catalog-explorer');
   await catalog.getByLabel('Search books', { exact: true }).fill('Frankenstein');
   await catalog.getByRole('button', { name: 'Search', exact: true }).click();
