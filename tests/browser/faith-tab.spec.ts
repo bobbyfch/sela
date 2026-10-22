@@ -38,6 +38,8 @@ test('Islam gets the prophets, Quran and hadith; Hinduism does not', async ({ pa
   await start(page, 'islam');
   await page.goto('/sela/app/#/shelf?tab=faith');
   await expect(page.getByRole('article', { name: /Kisah 25 Nabi/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Pengakuan Al-Ghazali/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Syair dan Gurindam Melayu klasik/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Tampilkan koleksi hadis/ })).toBeVisible();
   await expect(page.getByRole('article', { name: /Karya klasik Hindu/ })).toHaveCount(0);
 });
@@ -78,6 +80,7 @@ test('choosing a faith in Settings changes the shelf immediately', async ({ page
   await expect(page.getByRole('heading', { level: 2, name: 'Konghucu' })).toBeVisible();
   await expect(page.getByRole('article', { name: /Tao Teh King/ })).toBeVisible();
   await expect(page.getByRole('article', { name: /Mencius, Da Xue, dan Zhong Yong/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Sabda Konfusius dan Kitab Bakti/ })).toBeVisible();
 });
 
 test('the Faith tab fits a 320px phone without sideways scrolling', async ({ page }) => {
@@ -109,6 +112,7 @@ test('Catholic readers get the deuterocanonical books as a second edition', asyn
   await start(page, 'catholicism');
   await page.goto('/sela/app/#/shelf?tab=faith');
   await expect(page.getByRole('article', { name: /kitab Deuterokanonika/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Kisah Sebuah Jiwa/ })).toBeVisible();
   await expect(page.getByRole('article', { name: 'Douay-Rheims' })).toBeVisible();
   await expect(page.getByRole('article', { name: /Alkitab TSI/ })).toBeVisible();
   await expect(page.getByRole('article', { name: /Karya klasik Hindu/ })).toHaveCount(0);

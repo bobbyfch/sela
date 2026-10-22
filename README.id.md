@@ -118,12 +118,12 @@ Pilih agama atau tradisi di **Pengaturan → Alat perpustakaan**. Tab Agama lalu
 
 | Tradisi | Bacaan |
 | --- | --- |
-| Islam | Al-Qur'an (teks Arab dengan terjemahan Indonesia atau Inggris) dan hadis yang diunduh dari penerbitnya, ditambah kisah 25 nabi, Syair Perahu, dan Gurindam Dua Belas |
+| Islam | Al-Qur'an (teks Arab dengan terjemahan Indonesia atau Inggris) dan hadis yang diunduh dari penerbitnya, ditambah kisah 25 nabi, Pengakuan Al-Ghazali, serta syair dan gurindam Melayu klasik |
 | Kristen Protestan | Alkitab TSI (Indonesia), World English Bible, karya klasik Kristen |
-| Katolik | Alkitab TSI, Douay-Rheims, kitab Deuterokanonika, karya klasik Kristen |
+| Katolik | Alkitab TSI, Douay-Rheims, kitab Deuterokanonika, karya klasik Kristen, Kisah Sebuah Jiwa |
 | Buddha | Khotbah Pali dalam bahasa Inggris (DN, MN, SN, AN, dan kumpulan yang lebih pendek), Samyukta Agama dalam bahasa Indonesia, Dhammapada, kisah Jataka, The Gospel of Buddha |
 | Hindu | Bhagavad-Gita, Upanishad, Yoga Sutra, Ramayana |
-| Konghucu | Analects, Mencius, Da Xue, Zhong Yong, Tao Teh King |
+| Konghucu | Analects dalam dua terjemahan, Mencius, Da Xue, Zhong Yong, Xiao Jing, Tao Teh King |
 
 Unduhan diperiksa sebelum disimpan, bisa dibaca offline, dan bisa dihapus di Pengaturan tanpa menyentuh bukumu, catatan, atau cadangan. Entri yang kamu simpan, catatan dan kutipanmu sendiri, serta posisi bacamu ikut dalam cadangan Sela.
 

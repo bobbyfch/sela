@@ -2,6 +2,43 @@
   "schemaVersion": 1,
   "packs": [
     {
+      "id": "sela-al-ghazali-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "islam"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Pengakuan Al-Ghazali",
+        "en": "The Confessions of Al Ghazzali"
+      },
+      "description": {
+        "id": "Kisah pencarian kebenaran Imam Al-Ghazali (Al-Munqidh min ad-Dalal), terjemahan Claud Field, bahasa Inggris.",
+        "en": "Imam Al-Ghazali’s account of his search for truth (Al-Munqidh min ad-Dalal), translated by Claud Field."
+      },
+      "edition": "Project Gutenberg 58977",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "Project Gutenberg #58977",
+          "url": "https://www.gutenberg.org/ebooks/58977"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-islam-NOTICE.md"
+      },
+      "payload": {
+        "path": "al-ghazali-en-v1.json",
+        "sha256": "bc39121f6540339db3693541b29cbaba2529459340975f3c23cff2430db04dc9",
+        "bytes": 67778
+      }
+    },
+    {
       "id": "sela-buddhist-stories-en",
       "schemaVersion": 1,
       "kind": "text-collection",
@@ -42,8 +79,8 @@
       },
       "payload": {
         "path": "buddhist-stories-en-v1.json",
-        "sha256": "894551c912b4e73d9924f7bc373f4fb9e44eebe312f464715d6768c5c256a4c4",
-        "bytes": 600808
+        "sha256": "c96aa7bf4b84f91eb606625fbfd5e4ccd9cbf7a794f47c26785a3545885e0f19",
+        "bytes": 600661
       }
     },
     {
@@ -126,6 +163,47 @@
       }
     },
     {
+      "id": "sela-confucius-sayings-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "confucianism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Sabda Konfusius dan Kitab Bakti (Xiao Jing)",
+        "en": "The Sayings of Confucius and the Book of Filial Duty"
+      },
+      "description": {
+        "id": "Terjemahan kedua Analects oleh Leonard Lyall, dan Xiao Jing, kitab tentang bakti, terjemahan Ivan Chen.",
+        "en": "A second translation of the Analects by Leonard Lyall, and the Xiao Jing on filial duty translated by Ivan Chen."
+      },
+      "edition": "Project Gutenberg 24055, 75878",
+      "itemCount": 2,
+      "source": [
+        {
+          "label": "Project Gutenberg #24055",
+          "url": "https://www.gutenberg.org/ebooks/24055"
+        },
+        {
+          "label": "Project Gutenberg #75878",
+          "url": "https://www.gutenberg.org/ebooks/75878"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-confucius-NOTICE.md"
+      },
+      "payload": {
+        "path": "confucius-sayings-en-v1.json",
+        "sha256": "f7dd70a252085db6ee89b8e8310638c73cc576330b330b7efb7ea87d691bf0d6",
+        "bytes": 167355
+      }
+    },
+    {
       "id": "sela-hindu-classics-en",
       "schemaVersion": 1,
       "kind": "text-collection",
@@ -166,8 +244,8 @@
       },
       "payload": {
         "path": "hindu-classics-en-v1.json",
-        "sha256": "58ea7523443573dceaa7ddc47dfad0af9d2e65a6dbd845a2f0037b5566154fd8",
-        "bytes": 2597511
+        "sha256": "085ee55aab103508416acd8f52c2f703566585fdadf8e668ba8392a4c446b489",
+        "bytes": 2597499
       }
     },
     {
@@ -226,23 +304,31 @@
       "category": "classics",
       "language": "id",
       "title": {
-        "id": "Syair Perahu dan Gurindam Dua Belas",
-        "en": "Syair Perahu and Gurindam Dua Belas"
+        "id": "Syair dan Gurindam Melayu klasik",
+        "en": "Classic Malay syair and gurindam"
       },
       "description": {
-        "id": "Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.",
-        "en": "Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam."
+        "id": "Karya klasik Melayu bernapas Islam: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, Syair Sinar Gemala Mestika Alam (kisah maulid Nabi), dan Syair Nasehat Kepada Anak.",
+        "en": "Classic Malay works with Islamic themes: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, the mawlid poem Sinar Gemala Mestika Alam, and Syair Nasehat Kepada Anak."
       },
       "edition": "Wikisumber",
-      "itemCount": 2,
+      "itemCount": 5,
       "source": [
+        {
+          "label": "Wikisumber · Gurindam Dua Belas",
+          "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+        },
         {
           "label": "Wikisumber · Syair Perahu",
           "url": "https://id.wikisource.org/wiki/Syair_Perahu"
         },
         {
-          "label": "Wikisumber · Gurindam Dua Belas",
-          "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+          "label": "Wikisumber · Hamzah al-Fansuri",
+          "url": "https://id.wikisource.org/wiki/Hamzah_al-Fansuri"
+        },
+        {
+          "label": "Wikisumber · Raja Ali Haji",
+          "url": "https://id.wikisource.org/wiki/Raja_Ali_Haji"
         }
       ],
       "license": {
@@ -252,8 +338,8 @@
       },
       "payload": {
         "path": "malay-classics-id-v1.json",
-        "sha256": "84641a71d0da770a8ed4f6d17f4f2f1daad13812696f925c40f855821c6d117b",
-        "bytes": 11798
+        "sha256": "dce0bede3da11dfaba80f4d52252f24add01ac81d30bfc5ce5a6f5179ead024f",
+        "bytes": 31952
       }
     },
     {
@@ -335,6 +421,43 @@
       }
     },
     {
+      "id": "sela-story-of-a-soul-en",
+      "schemaVersion": 1,
+      "kind": "text-collection",
+      "status": "complete",
+      "faiths": [
+        "catholicism"
+      ],
+      "category": "classics",
+      "language": "en",
+      "title": {
+        "id": "Kisah Sebuah Jiwa (Thérèse dari Lisieux)",
+        "en": "The Story of a Soul (Thérèse of Lisieux)"
+      },
+      "description": {
+        "id": "Otobiografi Santa Thérèse dari Lisieux dalam bahasa Inggris, sebelas bab.",
+        "en": "The autobiography of St. Thérèse of Lisieux, in eleven chapters."
+      },
+      "edition": "Project Gutenberg 16772",
+      "itemCount": 1,
+      "source": [
+        {
+          "label": "Project Gutenberg #16772",
+          "url": "https://www.gutenberg.org/ebooks/16772"
+        }
+      ],
+      "license": {
+        "code": "PD-US",
+        "name": "Domain publik (Amerika Serikat)",
+        "noticePath": "licenses/sela-gutenberg-catholic-NOTICE.md"
+      },
+      "payload": {
+        "path": "story-of-a-soul-en-v1.json",
+        "sha256": "cc3c6832b54baf080ab965e24cd14fd3d949dcaa2a5b903647132de74d5c8d76",
+        "bytes": 533387
+      }
+    },
+    {
       "id": "sela-suttas-an-en",
       "schemaVersion": 1,
       "kind": "text-collection",
@@ -386,11 +509,11 @@
         "en": "Selected Pali suttas (Sujato)"
       },
       "description": {
-        "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, dan Therigatha dalam terjemahan Bhikkhu Sujato.",
-        "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha and Therigatha in Bhikkhu Sujato’s translation."
+        "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha, dan Cariyapitaka dalam terjemahan Bhikkhu Sujato.",
+        "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha and Cariyapitaka in Bhikkhu Sujato’s translation."
       },
       "edition": "SuttaCentral fdb7ff3",
-      "itemCount": 8,
+      "itemCount": 9,
       "source": [
         {
           "label": "SuttaCentral bilara-data (published)",
@@ -408,8 +531,8 @@
       },
       "payload": {
         "path": "suttas-en-v1.json",
-        "sha256": "1280461ebb1484208c1038b7d7868b49cec2013735a12442d02f18f7fa4373c5",
-        "bytes": 3872347
+        "sha256": "b8e580226e87963ea1d33e738df8d9bf351fc829ab5a13b8513649aab0722344",
+        "bytes": 3920519
       }
     },
     {

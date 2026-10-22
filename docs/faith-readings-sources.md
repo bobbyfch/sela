@@ -24,7 +24,7 @@ Terms were read on 22 October 2026. Re-read them before you change how a source 
 | Douay-Rheims 1899 | Catholic | Bundled | Public domain | eBible.org |
 | World English Bible Classic, the 15 deuterocanonical and apocryphal books | Catholic | Hosted | Public domain, trademark of eBible.org | eBible.org `eng-web` USFM |
 | The Imitation of Christ, The Confessions of St. Augustine | Protestant, Catholic | Hosted | Public domain (US) | Project Gutenberg 1653, 3296 |
-| Selected Pali suttas: DN, MN, SNP, UD, ITI, KP, Thag, Thig | Buddhist | Hosted | CC0 1.0, Bhikkhu Sujato | SuttaCentral bilara-data, commit `fdb7ff3` |
+| Selected Pali suttas: DN, MN, SNP, UD, ITI, KP, Thag, Thig, CP | Buddhist | Hosted | CC0 1.0, Bhikkhu Sujato | SuttaCentral bilara-data, commit `fdb7ff3` |
 | Samyutta Nikaya (56 samyuttas, 1,819 suttas) and Anguttara Nikaya (11 nipatas, 1,408 suttas) | Buddhist | Hosted | CC0 1.0, Bhikkhu Sujato | SuttaCentral bilara-data, commit `fdb7ff3` |
 | Samyukta Agama, first 11 suttas, Indonesian | Buddhist | Hosted | CC0 1.0, Seniya | SuttaCentral bilara-data, commit `fdb7ff3` |
 | Dhammapada | Buddhist | Bundled | CC0 1.0, Bhikkhu Sujato | SuttaCentral |
@@ -33,8 +33,11 @@ Terms were read on 22 October 2026. Re-read them before you change how a source 
 | Bhagavad-Gita (Arnold) | Hindu | Bundled | Public domain (US) | Project Gutenberg 2388 |
 | Analects (Legge) | Confucian | Bundled | Public domain (US) | Project Gutenberg 3330 |
 | Tao Teh King (Legge) | Confucian | Hosted | Public domain (US) | Project Gutenberg 216 |
+| The Sayings of Confucius (Lyall, 1909), The Book of Filial Duty (Ivan Chen) | Confucian | Hosted | Public domain (US) | Project Gutenberg 24055, 75878 |
+| The Confessions of Al Ghazzali (Claud Field) | Islam | Hosted | Public domain (US) | Project Gutenberg 58977 |
+| The Story of a Soul (Thérèse of Lisieux, translated by Thomas N. Taylor) | Catholic | Hosted | Public domain (US) | Project Gutenberg 16772 |
 | Mencius, The Great Learning, The Doctrine of the Mean (Legge) | Confucian | Hosted | CC BY-SA 4.0 (Wikisource transcription of a public-domain translation) | Wikisource, page revisions listed in the notice |
-| Syair Perahu (Hamzah Fansuri), Gurindam Dua Belas (Raja Ali Haji) | Islam | Hosted | CC BY-SA 4.0 (Wikisumber transcription of public-domain works) | Wikisumber, page revisions listed in the notice |
+| Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, Syair Sinar Gemala Mestika Alam, Syair Nasehat Kepada Anak (Hamzah Fansuri, Raja Ali Haji) | Islam | Hosted | CC BY-SA 4.0 (Wikisumber transcription of public-domain works) | Wikisumber, page revisions listed in the notice |
 
 "Public domain (US)" is a statement about the United States. It does not settle the status in Indonesia or elsewhere. Check your local law before you reuse a text outside Sela.
 
@@ -52,6 +55,7 @@ Sela meets this by not hosting the text. The browser stores the publisher's resp
 | Indonesian Catholic Bible | Not available | The Indonesian editions in common use are not freely licensed. The Catholic tab offers the Alkitab TSI (which has no deuterocanonical books), Douay-Rheims, the deuterocanon in English and classics instead. |
 | Alkitab Yang Terbuka (AYT) | Declined | CC BY-ND forbids adaptations, and converting it to a pack is an adaptation. |
 | Mahabharata | Not started | Gutenberg holds only part of the Ganguli translation. |
+| The Practice of the Presence of God (Gutenberg 5657) | Declined | That edition was edited and re-set by a modern editor in 2002. The 1895 translation needs a clean source first. |
 | Indonesian classics beyond the two above | Not started | Hikayat and chronicles on Wikisumber need a check of the text, the transcription and any modern translation. One page titled "Hikayat Sri Rama" is a 2011 poem, not the classic, and is excluded. |
 | Sefaria, Standard Ebooks, Aozora, OpenStax packs | Not started | Licence is per edition. Each needs a named proposal first. See [the roadmap](faith-readings-roadmap.md). |
 

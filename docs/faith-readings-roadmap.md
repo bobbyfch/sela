@@ -12,6 +12,9 @@ Candidates for later work, with what is known about their rights. Nothing here i
 
 ## Worth researching
 
+- Persian and Sufi classics already on Gutenberg: The Kashf al-Mahjub (Nicholson, 1911), The Persian Mystics: Rumi, The Mystics of Islam, Mystics and Saints of Islam. They are long and have uneven structure, so each needs its own splitter.
+- Christian devotional classics: Francis de Sales (Introduction to the Devout Life) and the Little Flowers of St. Francis were not found as clean Gutenberg files. Check other public-domain sources.
+
 - More Indonesian and Malay public-domain classics on Wikisumber (Hikayat Abdullah, Sejarah Melayu, other syair). Check the work, the transcription and any modern translation separately, and beware pages that hold modern poems under a classical title.
 - Standard Ebooks (CC0 typesetting of public-domain works) for philosophy and world literature beyond the faith tab. Better suited to Discover than to the Faith tab.
 - Open textbooks (OpenStax) as optional downloads. Rights are per edition, including NC and SA variants.

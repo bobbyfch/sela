@@ -13,11 +13,11 @@
     "en": "Selected Pali suttas (Sujato)"
   },
   "description": {
-    "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, dan Therigatha dalam terjemahan Bhikkhu Sujato.",
-    "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha and Therigatha in Bhikkhu Sujato’s translation."
+    "id": "Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha, dan Cariyapitaka dalam terjemahan Bhikkhu Sujato.",
+    "en": "The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha and Cariyapitaka in Bhikkhu Sujato’s translation."
   },
   "edition": "SuttaCentral fdb7ff3",
-  "itemCount": 8,
+  "itemCount": 9,
   "source": [
     {
       "label": "SuttaCentral bilara-data (published)",

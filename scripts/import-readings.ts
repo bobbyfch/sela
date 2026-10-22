@@ -62,6 +62,8 @@ function clean(text: string): string {
     .replace(/\[Footnote[^\]]*\]/gi, '')
     .replace(/\(\d{1,4}\)/g, '')
     .replace(/_([^_\n]+)_/g, '$1')
+    .replace(/_(?=\[\d{1,3}\])/g, '')
+    .replace(/(?<=[\p{L}.,;:”’)?!"'\-]\s?)\[\d{1,3}\]/gu, '')
     .replace(/[ \t]+$/gm, '');
 }
 
@@ -73,7 +75,7 @@ function paragraphsOf(block: string): string[] {
     const average = lines.reduce((sum, line) => sum + line.trim().length, 0) / lines.length;
     const verse = lines.length > 1 && longest <= 62 && average <= 48;
     return verse ? lines.map(line => line.trim()).join('\n') : lines.map(line => line.trim()).join(' ').replace(/\s{2,}/g, ' ');
-  }).filter(part => part.length > 0);
+  }).filter(part => part.length > 0 && !/^(FOOTNOTES?:?\s*$|(FOOTNOTES?:?\s*)?\[\d{1,3}\])/.test(part));
 }
 
 async function gutenberg(id: number): Promise<string[]> {
@@ -222,6 +224,47 @@ async function ramayan(): Promise<TextWork[]> {
     work.sections.push(sectionOf(`canto-${marker.label}`, `Canto ${marker.label}: ${title}`, marker.text));
   }
   return finish(works);
+}
+
+async function storyOfASoul(): Promise<TextWork[]> {
+  const lines = await gutenberg(16772);
+  const markers: Marker[] = [];
+  lines.forEach((line, i) => { const match = line.trim().match(/^CHAPTER ([IVXL]+)\s*(.*)$/); if (match) markers.push({ line: i, kind: 'chapter', label: String(roman(match[1])), group: match[2].trim() }); });
+  const sections = spans(lines, markers, 800).map(marker => { const { head, body } = itemParts(marker); return sectionOf(`chapter-${marker.label}`, `Chapter ${marker.label}: ${titleCase(head)}`, body); });
+  return finish([{ id: 'story-of-a-soul', title: 'The Story of a Soul', subtitle: 'The autobiography of St. Thérèse of Lisieux', author: 'Thérèse of Lisieux, translated by Thomas N. Taylor', sections }]);
+}
+
+async function alGhazzali(): Promise<TextWork[]> {
+  const lines = await gutenberg(58977);
+  const end = lines.findIndex(line => line.trim() === 'FOOTNOTES');
+  const isHeading = (line: string) => { const text = line.trim(); return text.length > 3 && text.length < 80 && text === text.toUpperCase() && /[A-Z]{4}/.test(text); };
+  const markers: Marker[] = [];
+  const titles = new Map<number, string>();
+  for (let i = 190; i < (end < 0 ? lines.length : end); i++) {
+    if (!isHeading(lines[i]) || (i > 0 && isHeading(lines[i - 1]))) continue;
+    const parts = [lines[i].trim()];
+    if (isHeading(lines[i + 1] ?? '')) parts.push(lines[i + 1].trim());
+    titles.set(i, parts.join(' '));
+    markers.push({ line: i + parts.length - 1, kind: 'part', label: String(markers.length + 1), group: parts.join(' ') });
+  }
+  const sections = spans(lines.slice(0, end < 0 ? lines.length : end), markers, 800).map(marker => sectionOf(`part-${marker.label}`, titleCase(marker.group), marker.text));
+  return finish([{ id: 'confessions-of-al-ghazzali', title: 'The Confessions of Al Ghazzali', subtitle: 'Al-Munqidh min ad-Dalal', author: 'Abu Hamid al-Ghazali, translated by Claud Field', sections }]);
+}
+
+async function filialDuty(): Promise<TextWork[]> {
+  const lines = await gutenberg(75878);
+  const markers: Marker[] = [];
+  lines.forEach((line, i) => { const match = line.trim().match(/^CHAPTER ([IVXL]+)$/); if (match) markers.push({ line: i, kind: 'chapter', label: String(roman(match[1])), group: '' }); });
+  const sections = spans(lines, markers, 300).map(marker => { const { head, body } = headAndBody(marker.text); return sectionOf(`chapter-${marker.label}`, `Chapter ${marker.label}: ${titleCase(head)}`, body); });
+  return finish([{ id: 'book-of-filial-duty', title: 'The Book of Filial Duty', subtitle: 'Xiao Jing', author: 'Translated by Ivan Chen', sections }]);
+}
+
+async function lyallConfucius(): Promise<TextWork[]> {
+  const lines = await gutenberg(24055);
+  const markers: Marker[] = [];
+  lines.forEach((line, i) => { const match = line.trim().match(/^BOOK\s+([IVXL]+)(?:\[\d+\])?$/); if (match && i > 300) markers.push({ line: i, kind: 'book', label: String(roman(match[1])), group: '' }); });
+  const sections = spans(lines.slice(0, lines.findIndex((line, i) => i > 3900 && line.trim() === 'INDEX') >= 0 ? lines.findIndex((line, i) => i > 3900 && line.trim() === 'INDEX') : lines.length), markers, 600).map(marker => sectionOf(`book-${marker.label}`, `Book ${marker.label}`, marker.text));
+  return finish([{ id: 'sayings-of-confucius', title: 'The Sayings of Confucius', subtitle: 'The Analects', author: 'Translated by Leonard A. Lyall', sections }]);
 }
 
 async function upanishads(): Promise<TextWork[]> {
@@ -494,7 +537,7 @@ const specs: PackSpec[] = [
   {
     id: 'sela-suttas-en', file: 'suttas-en-v1.json', faiths: ['buddhism'], category: 'scripture', language: 'en',
     title: { id: 'Sutta Pali pilihan (Sujato)', en: 'Selected Pali suttas (Sujato)' },
-    description: { id: 'Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, dan Therigatha dalam terjemahan Bhikkhu Sujato.', en: 'The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha and Therigatha in Bhikkhu Sujato’s translation.' },
+    description: { id: 'Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha, dan Cariyapitaka dalam terjemahan Bhikkhu Sujato.', en: 'The Digha Nikaya, Majjhima Nikaya, Sutta Nipata, Udana, Itivuttaka, Khuddakapatha, Theragatha, Therigatha and Cariyapitaka in Bhikkhu Sujato’s translation.' },
     edition: `SuttaCentral ${SUTTA_COMMIT.slice(0, 7)}`, status: 'complete',
     source: [{ label: 'SuttaCentral bilara-data (published)', url: 'https://github.com/suttacentral/bilara-data/tree/published' }, { label: 'SuttaCentral', url: 'https://suttacentral.net/' }],
     license: { code: 'CC0-1.0', name: 'CC0 1.0 · Bhikkhu Sujato', noticePath: 'licenses/sela-suttas-NOTICE.md' },
@@ -507,6 +550,7 @@ const specs: PackSpec[] = [
       suttas('translation/en/sujato/sutta/kn/kp/', 'khuddakapatha', 'Khuddakapatha', 'Basic Passages', 'translation-en-sujato', upper),
       suttas('translation/en/sujato/sutta/kn/thag/', 'theragatha', 'Theragatha', 'Verses of the Senior Monks', 'translation-en-sujato', upper),
       suttas('translation/en/sujato/sutta/kn/thig/', 'therigatha', 'Therigatha', 'Verses of the Senior Nuns', 'translation-en-sujato', upper),
+      suttas('translation/en/sujato/sutta/kn/cp/', 'cariyapitaka', 'Cariyapitaka', 'The Conduct Leading to Buddhahood', 'translation-en-sujato', upper),
     ]),
   },
   {
@@ -538,20 +582,50 @@ const specs: PackSpec[] = [
   },
   {
     id: 'sela-malay-classics-id', file: 'malay-classics-id-v1.json', faiths: ['islam'], category: 'classics', language: 'id',
-    title: { id: 'Syair Perahu dan Gurindam Dua Belas', en: 'Syair Perahu and Gurindam Dua Belas' },
-    description: { id: 'Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.', en: 'Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam.' },
+    title: { id: 'Syair dan Gurindam Melayu klasik', en: 'Classic Malay syair and gurindam' },
+    description: { id: 'Karya klasik Melayu bernapas Islam: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, Syair Sinar Gemala Mestika Alam (kisah maulid Nabi), dan Syair Nasehat Kepada Anak.', en: 'Classic Malay works with Islamic themes: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, the mawlid poem Sinar Gemala Mestika Alam, and Syair Nasehat Kepada Anak.' },
     edition: 'Wikisumber', status: 'complete',
-    source: [{ label: 'Wikisumber · Syair Perahu', url: 'https://id.wikisource.org/wiki/Syair_Perahu' }, { label: 'Wikisumber · Gurindam Dua Belas', url: 'https://id.wikisource.org/wiki/Gurindam_Dua_Belas' }],
+    source: [{ label: 'Wikisumber · Gurindam Dua Belas', url: 'https://id.wikisource.org/wiki/Gurindam_Dua_Belas' }, { label: 'Wikisumber · Syair Perahu', url: 'https://id.wikisource.org/wiki/Syair_Perahu' }, { label: 'Wikisumber · Hamzah al-Fansuri', url: 'https://id.wikisource.org/wiki/Hamzah_al-Fansuri' }, { label: 'Wikisumber · Raja Ali Haji', url: 'https://id.wikisource.org/wiki/Raja_Ali_Haji' }],
     license: { code: 'CC-BY-SA-4.0', name: 'CC BY-SA 4.0 · kontributor Wikisumber', noticePath: 'licenses/sela-wikisource-malay-NOTICE.md' },
     works: async () => {
       const revisions: string[] = [];
       const works = [
         await wikisourceMalay('Gurindam Dua Belas', 'gurindam-dua-belas', 'Gurindam Dua Belas', 'Raja Ali Haji', revisions),
         await wikisourceMalay('Syair Perahu', 'syair-perahu', 'Syair Perahu', 'Hamzah Fansuri', revisions),
+        await wikisourceMalay('Syair Burung Unggas', 'syair-burung-unggas', 'Syair Burung Unggas', 'Hamzah Fansuri', revisions),
+        await wikisourceMalay('Syair Sinar Gemala Mestika Alam', 'sinar-gemala-mestika-alam', 'Syair Sinar Gemala Mestika Alam', 'Raja Ali Haji', revisions),
+        await wikisourceMalay('Syair Nasehat Kepada Anak', 'syair-nasehat-kepada-anak', 'Syair Nasehat Kepada Anak', 'Raja Ali Haji', revisions),
       ];
       process.env.SELA_WIKISOURCE_MALAY_REVISIONS = revisions.join('; ');
       return finish(works);
     },
+  },
+  {
+    id: 'sela-story-of-a-soul-en', file: 'story-of-a-soul-en-v1.json', faiths: ['catholicism'], category: 'classics', language: 'en',
+    title: { id: 'Kisah Sebuah Jiwa (Thérèse dari Lisieux)', en: 'The Story of a Soul (Thérèse of Lisieux)' },
+    description: { id: 'Otobiografi Santa Thérèse dari Lisieux dalam bahasa Inggris, sebelas bab.', en: 'The autobiography of St. Thérèse of Lisieux, in eleven chapters.' },
+    edition: 'Project Gutenberg 16772', status: 'complete',
+    source: [{ label: 'Project Gutenberg #16772', url: 'https://www.gutenberg.org/ebooks/16772' }],
+    license: { code: 'PD-US', name: 'Domain publik (Amerika Serikat)', noticePath: 'licenses/sela-gutenberg-catholic-NOTICE.md' },
+    works: storyOfASoul,
+  },
+  {
+    id: 'sela-al-ghazali-en', file: 'al-ghazali-en-v1.json', faiths: ['islam'], category: 'classics', language: 'en',
+    title: { id: 'Pengakuan Al-Ghazali', en: 'The Confessions of Al Ghazzali' },
+    description: { id: 'Kisah pencarian kebenaran Imam Al-Ghazali (Al-Munqidh min ad-Dalal), terjemahan Claud Field, bahasa Inggris.', en: 'Imam Al-Ghazali’s account of his search for truth (Al-Munqidh min ad-Dalal), translated by Claud Field.' },
+    edition: 'Project Gutenberg 58977', status: 'complete',
+    source: [{ label: 'Project Gutenberg #58977', url: 'https://www.gutenberg.org/ebooks/58977' }],
+    license: { code: 'PD-US', name: 'Domain publik (Amerika Serikat)', noticePath: 'licenses/sela-gutenberg-islam-NOTICE.md' },
+    works: alGhazzali,
+  },
+  {
+    id: 'sela-confucius-sayings-en', file: 'confucius-sayings-en-v1.json', faiths: ['confucianism'], category: 'classics', language: 'en',
+    title: { id: 'Sabda Konfusius dan Kitab Bakti (Xiao Jing)', en: 'The Sayings of Confucius and the Book of Filial Duty' },
+    description: { id: 'Terjemahan kedua Analects oleh Leonard Lyall, dan Xiao Jing, kitab tentang bakti, terjemahan Ivan Chen.', en: 'A second translation of the Analects by Leonard Lyall, and the Xiao Jing on filial duty translated by Ivan Chen.' },
+    edition: 'Project Gutenberg 24055, 75878', status: 'complete',
+    source: [{ label: 'Project Gutenberg #24055', url: 'https://www.gutenberg.org/ebooks/24055' }, { label: 'Project Gutenberg #75878', url: 'https://www.gutenberg.org/ebooks/75878' }],
+    license: { code: 'PD-US', name: 'Domain publik (Amerika Serikat)', noticePath: 'licenses/sela-gutenberg-confucius-NOTICE.md' },
+    works: async () => [...await lyallConfucius(), ...await filialDuty()],
   },
   {
     id: 'sela-sa-id', file: 'samyukta-agama-id-v1.json', faiths: ['buddhism'], category: 'scripture', language: 'id',
@@ -618,7 +692,7 @@ const notices: Record<string, () => string> = {
   ]),
   'licenses/sela-suttas-NOTICE.md': () => notice('SuttaCentral translations (CC0)', [
     `Teks diambil dari repositori bilara-data cabang published di SuttaCentral, commit ${SUTTA_COMMIT} (https://github.com/suttacentral/bilara-data).`,
-    'Terjemahan bahasa Inggris oleh Bhikkhu Sujato (DN, MN, SN, AN, SNP, UD, ITI, KP), Bhikkhu Sujato bersama Jessica Walton (THAG, THIG), dan terjemahan bahasa Indonesia oleh Seniya (Samyukta Agama). Semuanya berlisensi CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/) menurut _publication.json pada commit itu.',
+    'Terjemahan bahasa Inggris oleh Bhikkhu Sujato (DN, MN, SN, AN, SNP, UD, ITI, KP, CP), Bhikkhu Sujato bersama Jessica Walton (THAG, THIG), dan terjemahan bahasa Indonesia oleh Seniya (Samyukta Agama). Semuanya berlisensi CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/) menurut _publication.json pada commit itu.',
     'Perubahan: segmen dikelompokkan menjadi paragraf per sutta. Kata-kata tidak diubah.',
     'Kode SELA berlisensi MIT.',
   ]),
@@ -629,7 +703,7 @@ const notices: Record<string, () => string> = {
     'SELA code is MIT licensed. That licence does not apply to this text.',
   ]),
   'licenses/sela-wikisource-malay-NOTICE.md': () => notice('Syair Perahu dan Gurindam Dua Belas (Wikisumber)', [
-    'Syair Perahu (Hamzah Fansuri, abad ke-16) dan Gurindam Dua Belas (Raja Ali Haji, 1847) adalah karya domain publik. Transkripsinya di Wikisumber dilisensikan CC BY-SA 4.0 oleh kontributor Wikisumber (https://id.wikisource.org/wiki/Wikisumber:Hak_cipta).',
+    'Syair Perahu dan Syair Burung Unggas (Hamzah Fansuri, abad ke-16 hingga ke-17), serta Gurindam Dua Belas (1847), Syair Sinar Gemala Mestika Alam dan Syair Nasehat Kepada Anak (Raja Ali Haji, abad ke-19) adalah karya domain publik. Transkripsinya di Wikisumber dilisensikan CC BY-SA 4.0 oleh kontributor Wikisumber (https://id.wikisource.org/wiki/Wikisumber:Hak_cipta).',
     `Revisi yang dipakai: ${process.env.SELA_WIKISOURCE_MALAY_REVISIONS ?? 'lihat riwayat halaman'}.`,
     'Perubahan: tag halaman, galeri, dan templat dibuang, dan bait dipertahankan sebagai baris. Kata-kata tidak diubah.',
     'Kode SELA berlisensi MIT, dan lisensi itu tidak berlaku untuk teks ini.',
@@ -643,6 +717,9 @@ const notices: Record<string, () => string> = {
   'licenses/sela-gutenberg-christian-NOTICE.md': () => gutenbergNotice(['The Imitation of Christ (Thomas à Kempis), Project Gutenberg #1653', 'The Confessions of St. Augustine, Project Gutenberg #3296']),
   'licenses/sela-gutenberg-buddhist-NOTICE.md': () => gutenbergNotice(['Jataka Tales (Ellen C. Babbitt), #62514', 'More Jataka Tales (Ellen C. Babbitt), #7518', 'The Gospel of Buddha (Paul Carus), #35895']),
   'licenses/sela-gutenberg-hindu-NOTICE.md': () => gutenbergNotice(['The Upanishads (Swami Paramananda), #3283', 'The Yoga Sutras of Patanjali (Charles Johnston), #2526', 'The Rámáyan of Válmíki (Ralph T. H. Griffith), #24869']),
+  'licenses/sela-gutenberg-catholic-NOTICE.md': () => gutenbergNotice(['The Story of a Soul (Thérèse of Lisieux, translated by Thomas N. Taylor), Project Gutenberg #16772']),
+  'licenses/sela-gutenberg-islam-NOTICE.md': () => gutenbergNotice(['The Confessions of Al Ghazzali (translated by Claud Field), Project Gutenberg #58977']),
+  'licenses/sela-gutenberg-confucius-NOTICE.md': () => gutenbergNotice(['The Sayings of Confucius (translated by Leonard A. Lyall), Project Gutenberg #24055', 'The Book of Filial Duty (translated by Ivan Chen), Project Gutenberg #75878']),
   'licenses/sela-gutenberg-confucian-NOTICE.md': () => gutenbergNotice(['The Tao Teh King (James Legge), #216']),
 };
 

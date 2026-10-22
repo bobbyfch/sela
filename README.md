@@ -118,12 +118,12 @@ Choose a faith or tradition under **Settings → Library tools**. The Faith tab 
 
 | Tradition | Readings |
 | --- | --- |
-| Islam | Quran (Arabic with Indonesian or English translation) and hadith downloaded from their publishers, plus the stories of the 25 prophets, Syair Perahu and Gurindam Dua Belas |
+| Islam | Quran (Arabic with Indonesian or English translation) and hadith downloaded from their publishers, plus the stories of the 25 prophets, the Confessions of Al Ghazzali, and classic Malay syair and gurindam |
 | Protestant Christianity | Alkitab TSI (Indonesian), World English Bible, Christian classics |
-| Catholic Christianity | Alkitab TSI, Douay-Rheims, the deuterocanonical books, Christian classics |
+| Catholic Christianity | Alkitab TSI, Douay-Rheims, the deuterocanonical books, Christian classics, The Story of a Soul |
 | Buddhism | The Pali discourses in English (DN, MN, SN, AN and the shorter collections), Samyukta Agama in Indonesian, Dhammapada, Jataka tales, The Gospel of Buddha |
 | Hinduism | Bhagavad-Gita, Upanishads, Yoga Sutras, Ramayana |
-| Confucianism | Analects, Mencius, The Great Learning, The Doctrine of the Mean, Tao Teh King |
+| Confucianism | Analects in two translations, Mencius, The Great Learning, The Doctrine of the Mean, The Book of Filial Duty, Tao Teh King |
 
 Downloads are checked before they are saved, work offline, and can be removed in Settings without touching your books, notes or backups. Saved entries, your own notes and quotes, and your reading position are part of Sela backups.
 

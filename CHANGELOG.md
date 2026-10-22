@@ -7,6 +7,7 @@
 - Make Settings drive the whole experience: the chosen tradition shapes the shelf, the Home reading and prayer tools, and Library tools lists and removes every download.
 - Add notes and saved quotes to every reading entry, listed on the Faith tab. Saved entries, notes, quotes and the reading position live in the personal store, so backups carry them.
 - Add the Samyutta and Anguttara Nikaya (CC0), the World English Bible deuterocanonical books, Mencius (Legge), Syair Perahu and Gurindam Dua Belas.
+- Add The Story of a Soul (Thérèse of Lisieux), The Confessions of Al Ghazzali, the Lyall translation of the Analects, The Book of Filial Duty, the Cariyapitaka, and three more Malay syair.
 - Enlarge small touch targets on the Discover surprise button, the water-goal button and the password toggle.
 - Fix accessibility findings from an axe-core pass over every route in light, dark and OLED: unlabelled calendar and add-books buttons, filled-button contrast in dark appearances, dimmed text contrast, and public-site contrast, link and scroll-region issues.
 - Add `scripts/packs.ts` and `scripts/import-readings.ts` to build and verify reading packs, and a real service-worker offline test for installed packs.

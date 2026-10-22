@@ -1,0 +1,35 @@
+{
+  "id": "sela-story-of-a-soul-en",
+  "schemaVersion": 1,
+  "kind": "text-collection",
+  "status": "complete",
+  "faiths": [
+    "catholicism"
+  ],
+  "category": "classics",
+  "language": "en",
+  "title": {
+    "id": "Kisah Sebuah Jiwa (Thérèse dari Lisieux)",
+    "en": "The Story of a Soul (Thérèse of Lisieux)"
+  },
+  "description": {
+    "id": "Otobiografi Santa Thérèse dari Lisieux dalam bahasa Inggris, sebelas bab.",
+    "en": "The autobiography of St. Thérèse of Lisieux, in eleven chapters."
+  },
+  "edition": "Project Gutenberg 16772",
+  "itemCount": 1,
+  "source": [
+    {
+      "label": "Project Gutenberg #16772",
+      "url": "https://www.gutenberg.org/ebooks/16772"
+    }
+  ],
+  "license": {
+    "code": "PD-US",
+    "name": "Domain publik (Amerika Serikat)",
+    "noticePath": "licenses/sela-gutenberg-catholic-NOTICE.md"
+  },
+  "payload": {
+    "path": "story-of-a-soul-en-v1.json"
+  }
+}

@@ -9,23 +9,31 @@
   "category": "classics",
   "language": "id",
   "title": {
-    "id": "Syair Perahu dan Gurindam Dua Belas",
-    "en": "Syair Perahu and Gurindam Dua Belas"
+    "id": "Syair dan Gurindam Melayu klasik",
+    "en": "Classic Malay syair and gurindam"
   },
   "description": {
-    "id": "Dua karya klasik Melayu bernapas Islam: syair Hamzah Fansuri dan dua belas gurindam Raja Ali Haji.",
-    "en": "Two classic Malay works with Islamic themes: Hamzah Fansuri’s syair and Raja Ali Haji’s twelve gurindam."
+    "id": "Karya klasik Melayu bernapas Islam: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, Syair Sinar Gemala Mestika Alam (kisah maulid Nabi), dan Syair Nasehat Kepada Anak.",
+    "en": "Classic Malay works with Islamic themes: Gurindam Dua Belas, Syair Perahu, Syair Burung Unggas, the mawlid poem Sinar Gemala Mestika Alam, and Syair Nasehat Kepada Anak."
   },
   "edition": "Wikisumber",
-  "itemCount": 2,
+  "itemCount": 5,
   "source": [
+    {
+      "label": "Wikisumber · Gurindam Dua Belas",
+      "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+    },
     {
       "label": "Wikisumber · Syair Perahu",
       "url": "https://id.wikisource.org/wiki/Syair_Perahu"
     },
     {
-      "label": "Wikisumber · Gurindam Dua Belas",
-      "url": "https://id.wikisource.org/wiki/Gurindam_Dua_Belas"
+      "label": "Wikisumber · Hamzah al-Fansuri",
+      "url": "https://id.wikisource.org/wiki/Hamzah_al-Fansuri"
+    },
+    {
+      "label": "Wikisumber · Raja Ali Haji",
+      "url": "https://id.wikisource.org/wiki/Raja_Ali_Haji"
     }
   ],
   "license": {
